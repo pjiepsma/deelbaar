@@ -33,6 +33,7 @@
       "expo-router"
     ],
     "experiments": {
+      "baseUrl": "/expo-gh-pages",
       "typedRoutes": true
     }
   }
