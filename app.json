@@ -33,7 +33,7 @@
       "expo-router"
     ],
     "experiments": {
-      "baseUrl": "/expo-gh-pages",
+      "baseUrl": "/deelbaar",
       "typedRoutes": true
     }
   }
