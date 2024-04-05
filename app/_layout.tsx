@@ -6,8 +6,10 @@ import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Provider, useAuth } from "./auth/auth";
 import * as SecureStore from "expo-secure-store";
+import {StatusBar} from "expo-status-bar";
 
-// const APPWRITE_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_API_KEY;
+const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
 const tokenCache = {
   async getToken(key: string) {
     try {
@@ -73,18 +75,17 @@ function RootLayoutNav() {
 
   useEffect(() => {
     if (isLoaded && !user) {
-      router.push("/(modals)/login");
+      router.push("/(modals)/sign-in");
     }
   }, [user, isLoaded]);
 
   return (
     <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
-        name="(modals)/login"
+        name="(modals)/sign-in"
         options={{
           presentation: "modal",
-          title: "Log in or sign up",
+          title: "Log in",
           animation: "slide_from_bottom",
           headerTitleStyle: {
             fontFamily: "mon-sb",
@@ -96,9 +97,10 @@ function RootLayoutNav() {
           ),
         }}
       />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
         name="listing/[id]"
-        options={{ headerTitle: "" }}
+        options={{ headerTitle: "", headerTransparent: true }}
       ></Stack.Screen>
       <Stack.Screen
         name="(modals)/booking"

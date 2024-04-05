@@ -1,23 +1,16 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Account, Client, ID, Models } from "appwrite";
+import { ID, Models, OAuthProvider } from "appwrite";
 import {
-  AuthContextValue,
+  Authentication,
   ProviderProps,
   SignInResponse,
   SignOutResponse,
-} from "@/app/auth/interfaces";
+} from "@/interfaces/authentication";
+import { appwrite } from "@/app/auth/appwrite-service";
 
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+const AuthContext = createContext<Authentication | undefined>(undefined);
 
 export function Provider(props: ProviderProps) {
-  // TODO Add context from parenet to inject to envs
-
-  const client = new Client();
-  client
-    .setEndpoint(process.env.EXPO_PUBLIC_API_URL!)
-    .setProject(process.env.EXPO_PUBLIC_API_KEY!);
-  const account = new Account(client);
-
   const [user, setAuth] = useState<Models.User<Models.Preferences> | null>(
     null,
   );
@@ -26,7 +19,7 @@ export function Provider(props: ProviderProps) {
   useEffect(() => {
     (async () => {
       try {
-        const user = await account.get();
+        const user = await appwrite.account.get();
         setAuth(user);
       } catch (error) {
         setAuth(null);
@@ -38,7 +31,7 @@ export function Provider(props: ProviderProps) {
 
   const signOut = async (): Promise<SignOutResponse> => {
     try {
-      const response = await account.deleteSession("current");
+      const response = await appwrite.account.deleteSession("current");
       return { error: undefined, data: response };
     } catch (error) {
       return { error, data: undefined };
@@ -53,12 +46,25 @@ export function Provider(props: ProviderProps) {
   ): Promise<SignInResponse> => {
     try {
       console.log(email, password);
-      const response = await account.createEmailPasswordSession(
+      const response = await appwrite.account.createEmailPasswordSession(
         email,
         password,
       );
 
-      const user = await account.get();
+      const user = await appwrite.account.get();
+      setAuth(user);
+      return { data: user, error: undefined };
+    } catch (error) {
+      setAuth(null);
+      return { error: error as Error, data: undefined };
+    }
+  };
+
+  const signInGoogle = async (): Promise<SignInResponse> => {
+    try {
+      const uri = appwrite.account.createOAuth2Session(OAuthProvider.Google);
+      console.log(uri);
+      const user = await appwrite.account.get();
       setAuth(user);
       return { data: user, error: undefined };
     } catch (error) {
@@ -76,13 +82,13 @@ export function Provider(props: ProviderProps) {
       console.log(email, password, username);
 
       // create the user
-      await account.create(ID.unique(), email, password, username);
+      await appwrite.account.create(ID.unique(), email, password, username);
 
       // create the session by logging in
-      await account.createEmailPasswordSession(email, password);
+      await appwrite.account.createEmailPasswordSession(email, password);
 
       // get Account information for the user / TODO: Could use create User response
-      const user = await account.get();
+      const user = await appwrite.account.get();
       setAuth(user);
       return { data: user, error: undefined };
     } catch (error) {
@@ -91,10 +97,11 @@ export function Provider(props: ProviderProps) {
     }
   };
 
-  const context: AuthContextValue = {
+  const context: Authentication = {
     signIn,
     signOut,
     signUp,
+    signInGoogle,
     user,
     isLoaded,
   };
