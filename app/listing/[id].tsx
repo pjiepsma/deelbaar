@@ -78,7 +78,7 @@ const Page = () => {
     return {
       opacity: interpolate(scrollOffset.value, [ 0, IMG_HEIGHT / 1.5], [0, 1]),
     }
-  });
+     });
 
 
   return (

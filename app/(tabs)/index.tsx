@@ -4,7 +4,11 @@ import { Stack } from "expo-router";
 import ExploreHeader from "@/components/ExploreHeader";
 import Listings from "@/components/Listings";
 import listingsData from "@/assets/data/airbnb-listings.json";
+import listingsDataGeo from "@/assets/data/airbnb-listings.geo.json";
+import miniBiebDataGeo from "@/assets/data/minibieb-listings.geo.json";
+
 import {StatusBar} from "expo-status-bar";
+import ListingsMap from "@/components/ListingsMap";
 
 const Page = () => {
   const items = useMemo(() => listingsData as any, []);
@@ -23,7 +27,8 @@ const Page = () => {
           header: () => <ExploreHeader onCategoryChanged={onDataChanged} />,
         }}
       />
-      <Listings listings={items} category={category} />
+      {/*<Listings listings={items} category={category} />*/}
+        <ListingsMap listings={miniBiebDataGeo} />
     </View>
   );
 };

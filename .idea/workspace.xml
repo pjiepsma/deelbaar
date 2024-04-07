@@ -5,48 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32c75142-6df1-4e43-91b3-767198364f03" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/(modals)/sign-in.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/(modals)/sign-up.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/data/airbnb-listings.geo.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/data/airbnb-listings.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/data/places.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/data/world-0.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/data/world-1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/data/world-2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/data/world-3.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/data/world-4.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/data/world-5.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ExploreHeader.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/Listings.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/constants/Styles.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hooks/useWarmUpBrowser.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/interfaces/listing.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/prettier.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/booking.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/login.tsx" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/data/minibieb-listings.geo.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/profile.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/auth/appwrite-service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/auth/appwrite-service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/auth/auth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/auth/auth.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/auth/interfaces.ts" beforeDir="false" afterPath="$PROJECT_DIR$/interfaces/authentication.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/listing/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/listing/[id].tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/EditScreenInfo.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/ExternalLink.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/StyledText.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Themed.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/__tests__/StyledText-test.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/useClientOnlyValue.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/useClientOnlyValue.web.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/useColorScheme.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/useColorScheme.web.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/constants/Colors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/constants/Colors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/.nojekyll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ListingsMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/interfaces/listing.ts" beforeDir="false" afterPath="$PROJECT_DIR$/interfaces/listing.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,10 +23,10 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 8
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="2eg0uge8xKFwV9YO1kjftOVzkN2" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -82,6 +46,7 @@
     "nodejs_package_manager_path": "npm",
     "npm.clean.executor": "Run",
     "npm.start.executor": "Run",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "ts.external.directory.path": "D:\\Code\\Projects\\deelbaar\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
@@ -91,7 +56,7 @@
       <recent name="D:\Code\Projects\deelbaar\interfaces" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="npm.clean">
     <configuration name="clean" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -114,8 +79,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="npm.clean" />
         <item itemvalue="npm.start" />
+        <item itemvalue="npm.clean" />
       </list>
     </recent_temporary>
   </component>
@@ -127,7 +92,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1712311140712</updated>
-      <workItem from="1712311143755" duration="4437000" />
+      <workItem from="1712311143755" duration="6402000" />
+      <workItem from="1712513406944" duration="7753000" />
     </task>
     <servers />
   </component>
