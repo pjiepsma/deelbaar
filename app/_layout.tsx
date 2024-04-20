@@ -6,7 +6,8 @@ import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Provider, useAuth } from "./auth/auth";
 import * as SecureStore from "expo-secure-store";
-import {StatusBar} from "expo-status-bar";
+import { StatusBar } from "expo-status-bar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -63,9 +64,11 @@ export default function RootLayout() {
   }
 
   return (
-    <Provider>
-      <RootLayoutNav />
-    </Provider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Provider>
+        <RootLayoutNav />
+      </Provider>
+    </GestureHandlerRootView>
   );
 }
 

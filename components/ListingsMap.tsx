@@ -1,18 +1,19 @@
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import React, { memo, useEffect, useRef } from 'react';
-import { defaultStyles } from '@/constants/Styles';
-import  {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import Colors from '@/constants/Colors';
-import * as Location from 'expo-location';
-import {Features, ListingsGeo } from "@/interfaces/listing";
-import MapView from 'react-native-map-clustering';
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import React, { memo, useEffect, useRef } from "react";
+import { defaultStyles } from "@/constants/Styles";
+import { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import Colors from "@/constants/Colors";
+import * as Location from "expo-location";
+import { Features, ListingsGeo } from "@/interfaces/listing";
+import MapView from "react-native-map-clustering";
 
 // Todo Expo location to get the user location
 
 interface Props {
   listings: any;
+  category: string;
 }
 
 const INITIAL_REGION = {
@@ -22,13 +23,13 @@ const INITIAL_REGION = {
   longitudeDelta: 9,
 };
 
-const ListingsMap = memo(({ listings }: Props) => {
+const ListingsMap = memo(({ listings, category }: Props) => {
   const router = useRouter();
   const mapRef = useRef<any>(null);
 
   useEffect(() => {
     onLocateMe();
-  }, []);
+  }, [category]);
 
   const onMarkerSelected = (event: any) => {
     router.push(`/listing/${event.properties.id}`);
@@ -36,7 +37,7 @@ const ListingsMap = memo(({ listings }: Props) => {
 
   const onLocateMe = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
+    if (status !== "granted") {
       return;
     }
 
@@ -63,14 +64,16 @@ const ListingsMap = memo(({ listings }: Props) => {
           longitude: geometry.coordinates[0],
           latitude: geometry.coordinates[1],
         }}
-        onPress={onPress}>
+        onPress={onPress}
+      >
         <View style={styles.marker}>
           <Text
             style={{
-              color: '#000',
-              textAlign: 'center',
-              fontFamily: 'mon-sb',
-            }}>
+              color: "#000",
+              textAlign: "center",
+              fontFamily: "mon-sb",
+            }}
+          >
             {points}
           </Text>
         </View>
@@ -88,7 +91,7 @@ const ListingsMap = memo(({ listings }: Props) => {
         clusterColor="#fff"
         clusterTextColor="#000"
         clusterFontFamily="mon-sb"
-        radius={ 100 }
+        radius={100}
         provider={PROVIDER_GOOGLE}
         renderCluster={renderCluster}
         showsUserLocation
@@ -101,10 +104,13 @@ const ListingsMap = memo(({ listings }: Props) => {
               latitude: item.geometry.coordinates[1],
             }}
             key={item.properties.original_Adres}
-            onPress={() => onMarkerSelected(item)}>
+            onPress={() => onMarkerSelected(item)}
+          >
             <View style={styles.marker}>
-              <Text style={styles.markerText}>{ item.properties.original_name}</Text>
-            {/*   € {item.properties.price} */}
+              <Text style={styles.markerText}>
+                {item.properties.original_name}
+              </Text>
+              {/*   € {item.properties.price} */}
             </View>
           </Marker>
         ))}
@@ -122,12 +128,12 @@ const styles = StyleSheet.create({
   },
   marker: {
     padding: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
     elevation: 5,
     borderRadius: 12,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 6,
     shadowOffset: {
@@ -137,17 +143,17 @@ const styles = StyleSheet.create({
   },
   markerText: {
     fontSize: 14,
-    fontFamily: 'mon-sb',
+    fontFamily: "mon-sb",
   },
   locateBtn: {
-    position: 'absolute',
+    position: "absolute",
     top: 70,
     right: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 10,
     borderRadius: 10,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 6,
     shadowOffset: {

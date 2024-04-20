@@ -1,4 +1,6 @@
 import {
+  Dimensions,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,34 +14,45 @@ import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 // import * as Haptics from "expo-haptics";
 
-const categories: { name: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+const categories: {
+  name: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  width: number;
+}[] = [
   {
     name: "Books",
     icon: "library-outline",
+    width: 20,
   },
   {
     name: "Water",
     icon: "water-outline",
+    width: 20,
   },
   {
     name: "Tiny homes",
     icon: "home",
+    width: 20,
   },
   {
     name: "Food",
     icon: "fast-food-outline",
+    width: 20,
   },
   {
     name: "Groceries",
     icon: "cart-outline",
+    width: 20,
   },
   {
     name: "Clothes",
     icon: "shirt-outline",
+    width: 20,
   },
   {
     name: "Electronics",
     icon: "phone-portrait-outline",
+    width: 20,
   },
 ];
 
@@ -97,8 +110,11 @@ const ExploreHeader = ({ onCategoryChanged }: Props) => {
         </View>
         <ScrollView
           horizontal
+          pagingEnabled
+          snapToAlignment="start"
+          showsHorizontalScrollIndicator={true}
+          snapToInterval={Dimensions.get("window").width / categories.length}
           ref={scrollRef}
-          showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
             alignItems: "center",
             gap: 30,
