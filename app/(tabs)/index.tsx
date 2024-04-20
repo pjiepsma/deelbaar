@@ -31,7 +31,6 @@ const Page = () => {
           header: () => <ExploreCarousel onCategoryChanged={onDataChanged} />,
         }}
       />
-      {/*<Listings listings={items} category={category} />*/}
       <ListingsMap listings={miniBiebDataGeo} category={category} />
       <ListingsBottomSheet listings={items} category={category} />
     </View>

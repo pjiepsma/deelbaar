@@ -5,19 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32c75142-6df1-4e43-91b3-767198364f03" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/prettier.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/data/water-listings.geo.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ExploreCarousel.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/SButton.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/constants/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hooks/useToggleButton.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/ExploreHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ExploreHeader.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ListingsMap.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ExploreCarousel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ExploreCarousel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/Listings.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Listings.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ListingsBottomSheet.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ListingsBottomSheet.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,7 +109,7 @@
       <workItem from="1713366409768" duration="6971000" />
       <workItem from="1713418405083" duration="4582000" />
       <workItem from="1713553488667" duration="9691000" />
-      <workItem from="1713612733970" duration="6211000" />
+      <workItem from="1713612733970" duration="7264000" />
     </task>
     <servers />
   </component>
