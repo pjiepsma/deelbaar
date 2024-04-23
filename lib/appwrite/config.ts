@@ -1,14 +1,16 @@
 import { Account, Client, Databases, Storage, Avatars } from "appwrite";
 
 export const appwriteConfig = {
-  url: process.env.EXPO_PUBLIC_APPWRITE_API,
-  projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID,
-  databaseId: process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID,
-  storageId: process.env.EXPO_PUBLIC_APPWRITE_STORAGE_ID,
-  userCollectionId: process.env.EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID,
-  favoritesCollectionId:
-    process.env.EXPO_PUBLIC_APPWRITE_FAVORITES_COLLECTION_ID,
-  listingsCollectionId: process.env.EXPO_PUBLIC_APPWRITE_LISTINGS_COLLECTION_ID,
+  url: process.env.EXPO_PUBLIC_APPWRITE_API as string,
+  projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID as string,
+  databaseId: process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID as string,
+  storageId: process.env.EXPO_PUBLIC_APPWRITE_STORAGE_ID as string,
+  userCollectionId: process.env
+    .EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID as string,
+  favoritesCollectionId: process.env
+    .EXPO_PUBLIC_APPWRITE_FAVORITES_COLLECTION_ID as string,
+  listingsCollectionId: process.env
+    .EXPO_PUBLIC_APPWRITE_LISTINGS_COLLECTION_ID as string,
 };
 
 export const client = new Client();

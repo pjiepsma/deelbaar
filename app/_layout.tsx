@@ -4,12 +4,13 @@ import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Provider, useAuth } from "./auth/auth";
 import * as SecureStore from "expo-secure-store";
-import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useReactQueryDevTools } from "@dev-plugins/react-query";
+import { AuthProvider } from "@/app/auth/auth";
 
-const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+const client = new QueryClient();
 
 const tokenCache = {
   async getToken(key: string) {
@@ -59,28 +60,32 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  useReactQueryDevTools(client);
+
   if (!loaded) {
     return null;
   }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Provider>
-        <RootLayoutNav />
-      </Provider>
+      <AuthProvider>
+        <QueryClientProvider client={client}>
+          <RootLayoutNav />
+        </QueryClientProvider>
+      </AuthProvider>
     </GestureHandlerRootView>
   );
 }
 
 function RootLayoutNav() {
   const router = useRouter();
-  const { isLoaded, user } = useAuth();
-
-  useEffect(() => {
-    if (isLoaded && !user) {
-      router.push("/(modals)/sign-in");
-    }
-  }, [user, isLoaded]);
+  // const { checkAuthUser, isLoading } = useUserContext();
+  //
+  // useEffect(() => {
+  //   if (!isLoading && !checkAuthUser) {
+  //     router.push("/(modals)/sign-in");
+  //   }
+  // }, [checkAuthUser, isLoading]);
 
   return (
     <Stack>

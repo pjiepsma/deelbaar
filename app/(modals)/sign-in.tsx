@@ -10,13 +10,13 @@ import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
 import { defaultStyles } from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuth } from "@/app/auth/auth";
 import { useRouter } from "expo-router";
+import { useSignInAccount } from "@/lib/query/auth";
 
 export default function SignIn() {
   useWarmUpBrowser();
 
-  const { signIn, signInGoogle } = useAuth();
+  const { mutateAsync: signIn } = useSignInAccount();
   const router = useRouter();
 
   const emailRef = useRef("");
@@ -54,14 +54,14 @@ export default function SignIn() {
       </View>
       <TouchableOpacity
         onPress={async () => {
-          const { data, error } = await signIn(
-            emailRef.current,
-            passwordRef.current,
-          );
-          if (data) {
+          const user = await signIn({
+            email: emailRef.current,
+            password: passwordRef.current,
+          });
+          if (user) {
             router.replace("/");
           } else {
-            console.log(error);
+            console.log(user);
           }
         }}
         style={styles.button}
@@ -83,18 +83,15 @@ export default function SignIn() {
         <View style={styles.separatorLine}></View>
       </View>
       <View style={{ gap: 20 }}>
-        <TouchableOpacity
-          style={styles.btnOutline}
-          onPress={() => signInGoogle()}
-        >
-          <Ionicons
-            style={defaultStyles.btnIcon}
-            name="logo-google"
-            size={24}
-            color="#000"
-          />
-          <Text style={styles.btnOutlineText}>Continue with Google</Text>
-        </TouchableOpacity>
+        {/*<TouchableOpacity style={styles.btnOutline} onPress={() => signIn()}>*/}
+        {/*  <Ionicons*/}
+        {/*    style={defaultStyles.btnIcon}*/}
+        {/*    name="logo-google"*/}
+        {/*    size={24}*/}
+        {/*    color="#000"*/}
+        {/*  />*/}
+        {/*  <Text style={styles.btnOutlineText}>Continue with Google</Text>*/}
+        {/*</TouchableOpacity>*/}
       </View>
     </View>
   );

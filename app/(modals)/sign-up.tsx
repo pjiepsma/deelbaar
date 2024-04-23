@@ -7,12 +7,14 @@ import {
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { useRef } from "react";
-import { useAuth } from "@/app/auth/auth";
+import { useUserContext } from "@/app/auth/auth";
 import Colors from "@/constants/Colors";
+import { createUserAccount } from "@/lib/appwrite/user";
+import { useCreateUserAccount } from "@/lib/query/auth";
 
 export default function SignUp() {
-  const { signUp } = useAuth();
   const router = useRouter();
+  const { mutateAsync: createUserAccount } = useCreateUserAccount(); // TODO isLoading is missing
 
   const emailRef = useRef("");
   const passwordRef = useRef("");
@@ -84,11 +86,11 @@ export default function SignUp() {
               password: passwordRef.current,
               username: userNameRef.current,
             };
-            const { data, error } = await signUp(user);
-            if (data) {
+            const newUser = await createUserAccount(user);
+            if (newUser) {
               router.replace("/");
             } else {
-              console.log(error);
+              console.log("error");
             }
           }}
           style={styles.button}
