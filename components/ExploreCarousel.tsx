@@ -86,6 +86,8 @@ const ExploreCarousel = ({ onCategoryChanged }: ExploreProps) => {
     const currentIndex = ref.current?.getCurrentIndex() || 0;
 
     if (absoluteProgress > 0.5 || currentIndex === 0) {
+      onCategoryChanged(DATA[currentIndex].name);
+
       setActiveItem(DATA[currentIndex]);
     }
   };

@@ -17,6 +17,7 @@ export default function SignUp() {
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const userNameRef = useRef("");
+  const nameRef = useRef("");
 
   return (
     <>
@@ -31,9 +32,9 @@ export default function SignUp() {
           <TextInput
             placeholder="Enter your name"
             autoCapitalize="none"
-            nativeID="userName"
+            nativeID="name"
             onChangeText={(text) => {
-              userNameRef.current = text;
+              nameRef.current = text;
             }}
             style={styles.textInput}
           />
@@ -46,6 +47,18 @@ export default function SignUp() {
             nativeID="email"
             onChangeText={(text) => {
               emailRef.current = text;
+            }}
+            style={styles.textInput}
+          />
+        </View>
+        <View>
+          <Text style={styles.label}>Your username</Text>
+          <TextInput
+            placeholder="Enter your username"
+            autoCapitalize="none"
+            nativeID="userName"
+            onChangeText={(text) => {
+              userNameRef.current = text;
             }}
             style={styles.textInput}
           />
@@ -65,11 +78,13 @@ export default function SignUp() {
 
         <TouchableOpacity
           onPress={async () => {
-            const { data, error } = await signUp(
-              emailRef.current,
-              passwordRef.current,
-              userNameRef.current,
-            );
+            const user = {
+              email: emailRef.current,
+              name: nameRef.current,
+              password: passwordRef.current,
+              username: userNameRef.current,
+            };
+            const { data, error } = await signUp(user);
             if (data) {
               router.replace("/");
             } else {

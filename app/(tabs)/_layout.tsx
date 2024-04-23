@@ -33,7 +33,7 @@ const Layout = () => {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="trips"
         options={{
           tabBarLabel: "Trips",
@@ -41,8 +41,8 @@ const Layout = () => {
             <FontAwesome6 name="airbnb" size={size} color={color} />
           ),
         }}
-      />
-      <Tabs.Screen
+      />*/}
+      {/* <Tabs.Screen
         name="inbox"
         options={{
           tabBarLabel: "Inbox",
@@ -54,7 +54,7 @@ const Layout = () => {
             />
           ),
         }}
-      />
+      />*/}
       <Tabs.Screen
         name="profile"
         options={{

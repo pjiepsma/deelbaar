@@ -12,7 +12,10 @@ import { useEffect, useRef, useState } from "react";
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 import { Listing } from "@/interfaces/listing";
-import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import {
+  BottomSheetFlatList,
+  BottomSheetFlatListMethods,
+} from "@gorhom/bottom-sheet";
 
 interface Props {
   listings: any[];
@@ -21,7 +24,7 @@ interface Props {
 }
 
 const Listings = ({ listings: items, refresh, category }: Props) => {
-  const listRef = useRef<any>(null);
+  const listRef = useRef<BottomSheetFlatListMethods>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   // Update the view to scroll the list back top
