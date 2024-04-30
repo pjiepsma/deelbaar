@@ -10,16 +10,57 @@ import { useRef } from "react";
 import { useUserContext } from "@/app/auth/auth";
 import Colors from "@/constants/Colors";
 import { createUserAccount } from "@/lib/appwrite/user";
-import { useCreateUserAccount } from "@/lib/query/auth";
+import { useCreateUserAccount, useSignInAccount } from "@/lib/query/auth";
+import { toast } from "@/lib/toast";
 
 export default function SignUp() {
   const router = useRouter();
-  const { mutateAsync: createUserAccount } = useCreateUserAccount(); // TODO isLoading is missing
+
+  const { mutateAsync: createUserAccountisCreatingAccount } =
+    useCreateUserAccount();
+  const { mutateAsync: signInAccount } = useSignInAccount();
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
 
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const userNameRef = useRef("");
   const nameRef = useRef("");
+
+  const handleSignup = async (user: any) => {
+    try {
+      const newUser = await createUserAccount(user);
+
+      if (!newUser) {
+        // toast({ title: "Sign up failed. Please try again." });
+
+        return;
+      }
+
+      const session = await signInAccount({
+        email: user.email,
+        password: user.password,
+      });
+
+      if (!session) {
+        // toast({ title: "Something went wrong. Please login your new account" });
+
+        // navigate("/sign-in");
+
+        return;
+      }
+
+      const isLoggedIn = await checkAuthUser();
+
+      if (isLoggedIn) {
+        router.replace("/");
+      } else {
+        console.log("error");
+        //toast({ title: "Login failed. Please try again." });
+      }
+    } catch (error) {
+      console.log({ error });
+    }
+  };
 
   return (
     <>
@@ -86,12 +127,7 @@ export default function SignUp() {
               password: passwordRef.current,
               username: userNameRef.current,
             };
-            const newUser = await createUserAccount(user);
-            if (newUser) {
-              router.replace("/");
-            } else {
-              console.log("error");
-            }
+            await handleSignup(user);
           }}
           style={styles.button}
         >

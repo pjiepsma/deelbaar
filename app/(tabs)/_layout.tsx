@@ -25,36 +25,14 @@ const Layout = () => {
         }}
       />
       <Tabs.Screen
-        name="wishlists"
+        name="favorites"
         options={{
-          tabBarLabel: "Wishlists",
+          tabBarLabel: "Favorites",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="heart-outline" size={size} color={color} />
           ),
         }}
       />
-      {/* <Tabs.Screen
-        name="trips"
-        options={{
-          tabBarLabel: "Trips",
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome6 name="airbnb" size={size} color={color} />
-          ),
-        }}
-      />*/}
-      {/* <Tabs.Screen
-        name="inbox"
-        options={{
-          tabBarLabel: "Inbox",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="message-outline"
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />*/}
       <Tabs.Screen
         name="profile"
         options={{

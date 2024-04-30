@@ -64,6 +64,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  useEffect(() => {
+    checkAuthUser();
+  }, []);
+
   const value = {
     user,
     setUser,

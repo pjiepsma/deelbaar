@@ -1,10 +1,15 @@
-import { ID, OAuthProvider, Query } from "appwrite";
-
-import { appwriteConfig, account, databases, storage, avatars } from "./config";
-import { IUpdatePost, INewPost, INewUser, IUpdateUser } from "@/types";
-import { ImageGravity } from "appwrite/types/enums/image-gravity";
+import { ID, Query } from "appwrite";
+import { account, databases, avatars } from "./config";
+import { INewUser, IUpdateUser } from "@/types";
 import { deleteFile, getFilePreview, uploadFile } from "@/lib/appwrite/file";
-import { SignInResponse, SignOutResponse } from "@/interfaces/authentication";
+
+export const EXPO_PUBLIC_APPWRITE_STORAGE_ID = "66254e3d0ca08a1aadd6";
+export const EXPO_PUBLIC_APPWRITE_DATABASE_ID = "66254eb03e35034a8292";
+export const EXPO_PUBLIC_APPWRITE_FAVORITES_COLLECTION_ID =
+  "66254f92427775b378fd";
+export const EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID = "66254f570ff00a062aa4";
+export const EXPO_PUBLIC_APPWRITE_LISTINGS_COLLECTION_ID =
+  "66254f2cd989ffe86946";
 
 export async function createUserAccount(user: INewUser) {
   try {
@@ -44,8 +49,8 @@ export async function saveUserToDB(user: {
 }) {
   try {
     const newUser = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      EXPO_PUBLIC_APPWRITE_DATABASE_ID,
+      EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID,
       ID.unique(),
       user,
     );
@@ -58,10 +63,7 @@ export async function saveUserToDB(user: {
 
 export async function signInAccount(user: { email: string; password: string }) {
   try {
-    const session = await account.createEmailPasswordSession(
-      user.email,
-      user.password,
-    );
+    const session = await account.createEmailSession(user.email, user.password);
 
     return session;
   } catch (error) {
@@ -87,9 +89,9 @@ export async function getCurrentUser() {
     if (!currentAccount) throw Error;
 
     const currentUser = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      [Query.equal("accountId", currentAccount.$id)],
+      EXPO_PUBLIC_APPWRITE_DATABASE_ID,
+      EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID,
+      [Query.equal("accountId", [currentAccount.$id])], // TODO
     );
 
     if (!currentUser) throw Error;
@@ -120,8 +122,8 @@ export async function getUsers(limit?: number) {
 
   try {
     const users = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      EXPO_PUBLIC_APPWRITE_DATABASE_ID,
+      EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID,
       queries,
     );
 
@@ -137,8 +139,8 @@ export async function getUsers(limit?: number) {
 export async function getUserById(userId: string) {
   try {
     const user = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      EXPO_PUBLIC_APPWRITE_DATABASE_ID,
+      EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID,
       userId,
     );
 
@@ -176,8 +178,8 @@ export async function updateUser(user: IUpdateUser) {
 
     //  Update user
     const updatedUser = await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      EXPO_PUBLIC_APPWRITE_DATABASE_ID,
+      EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID,
       user.userId,
       {
         name: user.name,

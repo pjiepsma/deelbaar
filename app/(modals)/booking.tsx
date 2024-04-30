@@ -1,10 +1,21 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import React from "react";
 
 const Booking = () => {
   return (
     <View>
-      <Text>Booking</Text>
+      <View>
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          placeholder="password"
+          secureTextEntry={true}
+          nativeID="password"
+          onChangeText={(text) => {
+            passwordRef.current = text;
+          }}
+          style={styles.textInput}
+        />
+      </View>
     </View>
   );
 };

@@ -1,7 +1,7 @@
 // ============================== GET FILE URL
 import { appwriteConfig, storage } from "@/lib/appwrite/config";
 import { ID } from "appwrite";
-import { ImageGravity } from "appwrite/src/enums/image-gravity";
+// import { ImageGravity } from "appwrite/src/enums/image-gravity";
 
 // ============================== UPLOAD FILE
 export async function uploadFile(file: File) {
@@ -25,7 +25,7 @@ export function getFilePreview(fileId: string) {
       fileId,
       2000,
       2000,
-      ImageGravity.Top,
+      "Top",
       100,
     );
 

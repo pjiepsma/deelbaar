@@ -12,15 +12,42 @@ import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useSignInAccount } from "@/lib/query/auth";
+import { createUserAccount } from "@/lib/appwrite/user";
+import { useUserContext } from "@/app/auth/auth";
 
 export default function SignIn() {
   useWarmUpBrowser();
 
   const { mutateAsync: signIn } = useSignInAccount();
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+
   const router = useRouter();
 
   const emailRef = useRef("");
   const passwordRef = useRef("");
+
+  const handleSignin = async (user: any) => {
+    try {
+      const session = await signIn({
+        email: user.email,
+        password: user.password,
+      });
+
+      if (!session) {
+        return;
+      }
+
+      const isLoggedIn = await checkAuthUser();
+
+      if (isLoggedIn) {
+        router.replace("/");
+      } else {
+        console.log("error");
+      }
+    } catch (error) {
+      console.log({ error });
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -54,15 +81,10 @@ export default function SignIn() {
       </View>
       <TouchableOpacity
         onPress={async () => {
-          const user = await signIn({
+          await handleSignin({
             email: emailRef.current,
             password: passwordRef.current,
           });
-          if (user) {
-            router.replace("/");
-          } else {
-            console.log(user);
-          }
         }}
         style={styles.button}
       >

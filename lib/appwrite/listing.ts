@@ -2,7 +2,6 @@ import { ID, Query } from "appwrite";
 
 import { appwriteConfig, account, databases, storage, avatars } from "./config";
 import { IUpdatePost, INewPost, INewUser, IUpdateUser } from "@/types";
-import { ImageGravity } from "appwrite/types/enums/image-gravity";
 import { deleteFile, getFilePreview, uploadFile } from "@/lib/appwrite/file";
 
 export async function createPost(post: INewPost) {
