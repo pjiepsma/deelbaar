@@ -29,10 +29,10 @@ const Page = () => {
   const dots = [1, 2, 3];
 
   const { user } = useUserContext();
-  const isLoading = true;
+  // const isLoading = true;
   const {
     data: creator,
-    // isLoading
+    isLoading,
     isError: isErrorCreators,
   } = useGetUserById(user.id); // Fetch farovites of User instead of whole user
   const listRef = useRef<FlatList>(null);
@@ -81,7 +81,7 @@ const Page = () => {
   return (
     <View style={defaultStyles.container}>
       {isLoading || !creator ? (
-        <Loader delay={250} amount={5} />
+        <Loader delay={200} amount={3} />
       ) : (
         <FlatList
           renderItem={renderRow}

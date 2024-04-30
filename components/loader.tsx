@@ -11,6 +11,7 @@ import Animated, {
   withSequence,
   Easing,
 } from "react-native-reanimated";
+import Colors from "@/constants/Colors";
 
 export default function Loader({
   delay,
@@ -48,18 +49,18 @@ function Dot({
     offset.value = withDelay(
       delay * index,
       withRepeat(
-        withDelay(
-          delay * amount * 0.75,
-          withSequence(
-            withTiming(2, {
-              duration: delay,
-              easing: Easing.inOut(Easing.ease),
-            }),
-            withTiming(1, {
-              duration: delay,
-              easing: Easing.inOut(Easing.ease),
-            }),
-          ),
+        withSequence(
+          withTiming(2, {
+            duration: delay,
+            easing: Easing.inOut(Easing.ease),
+          }),
+          withTiming(1, {
+            duration: delay,
+            easing: Easing.inOut(Easing.ease),
+          }),
+          withTiming(1, {
+            duration: delay * amount * 0.75,
+          }),
         ),
         -1,
       ),
@@ -72,18 +73,16 @@ function Dot({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     height: 50,
-    flexDirection: "row",
     gap: 10,
-    borderWidth: 1,
-    borderColor: "red",
   },
   box: {
     height: 10,
     width: 10,
-    backgroundColor: "#b58df1",
+    backgroundColor: Colors.primary,
     borderRadius: 60,
   },
 });

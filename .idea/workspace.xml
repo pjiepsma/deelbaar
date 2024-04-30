@@ -5,27 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32c75142-6df1-4e43-91b3-767198364f03" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/components/Position.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/loader.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/toast.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/booking.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/booking.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/sign-in.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/sign-in.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/sign-up.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/sign-up.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/profile.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/wishlists.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/auth/auth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/auth/auth.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/auth/data.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/data/water-listings.geo.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/data/water-listings.geo.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/appwrite/config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/appwrite/config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/appwrite/file.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/appwrite/file.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/appwrite/listing.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/appwrite/listing.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/appwrite/user.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/appwrite/user.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/loader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/loader.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -152,7 +134,8 @@
       <workItem from="1714073899105" duration="7376000" />
       <workItem from="1714110496687" duration="15525000" />
       <workItem from="1714330899122" duration="1564000" />
-      <workItem from="1714459777599" duration="12124000" />
+      <workItem from="1714459777599" duration="15775000" />
+      <workItem from="1714479203248" duration="4152000" />
     </task>
     <servers />
   </component>
