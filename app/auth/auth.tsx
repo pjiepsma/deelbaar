@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { IUser } from "@/types";
-import { getCurrentUser } from "@/lib/appwrite/user";
-import { router, useRouter } from "expo-router";
+import { getAccountLabels, getCurrentUser } from "@/lib/appwrite/user";
 
 export const INITIAL_USER = {
   id: "",
@@ -10,6 +9,7 @@ export const INITIAL_USER = {
   email: "",
   imageUrl: "",
   bio: "",
+  imageId: "",
 };
 
 const INITIAL_STATE = {
@@ -19,6 +19,7 @@ const INITIAL_STATE = {
   setUser: () => {},
   setIsAuthenticated: () => {},
   checkAuthUser: async () => false as boolean,
+  isAdmin: false,
 };
 
 type IContextType = {
@@ -28,6 +29,7 @@ type IContextType = {
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   checkAuthUser: () => Promise<boolean>;
+  isAdmin: boolean;
 };
 
 const AuthContext = createContext<IContextType>(INITIAL_STATE);
@@ -35,14 +37,18 @@ const AuthContext = createContext<IContextType>(INITIAL_STATE);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<IUser>(INITIAL_USER);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const checkAuthUser = async () => {
     setIsLoading(true);
     try {
       const currentAccount = await getCurrentUser();
+      const currentAccountLabels = await getAccountLabels();
+
       if (currentAccount) {
         setUser({
+          imageId: "",
           id: currentAccount.$id,
           name: currentAccount.name,
           username: currentAccount.username,
@@ -50,8 +56,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           imageUrl: currentAccount.imageUrl,
           bio: currentAccount.bio,
         });
+        setIsAdmin(
+          currentAccountLabels ? currentAccountLabels.includes("admin") : false,
+        );
         setIsAuthenticated(true);
-
         return true;
       }
 
@@ -73,6 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser,
     isLoading,
     isAuthenticated,
+    isAdmin,
     setIsAuthenticated,
     checkAuthUser,
   };

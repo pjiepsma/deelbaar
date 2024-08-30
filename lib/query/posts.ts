@@ -5,11 +5,12 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/lib/query/queryKeys";
-import { INewPost, IUpdatePost } from "@/types";
+import { INewListing, IUpdatePost } from "@/types";
 import {
-  createPost,
+  createListing,
   deletePost,
   deleteSavedPost,
+  getListingById,
   getPostById,
   getRecentPosts,
   getUserPosts,
@@ -19,20 +20,10 @@ import {
   updatePost,
 } from "@/lib/appwrite/listing";
 
-// export const useGetPosts = () => { TODO
-//   return useInfiniteQuery({
-//     queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
-//     queryFn: getInfinitePosts as any,
-//     getNextPageParam: (lastPage: any) => {
-//       // If there's no data, there are no more pages.
-//       if (lastPage && lastPage.documents.length === 0) {
-//         return null;
-//       }
-//
-//       // Use the $id of the last document as the cursor.
-//       const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
-//       return lastId;
-//     },
+// export const useGetPosts = () => {
+//   return useQuery({
+//     queryKey: [QUERY_KEYS.GET_POSTS],
+//     queryFn: getPosts,
 //   });
 // };
 
@@ -51,15 +42,23 @@ export const useGetRecentPosts = () => {
   });
 };
 
-export const useCreatePost = () => {
+export const useCreateListing = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (post: INewPost) => createPost(post),
+    mutationFn: (listing: INewListing) => createListing(listing),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
       });
     },
+  });
+};
+
+export const useGetListingById = (listingId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_LISTING_BY_ID, listingId],
+    queryFn: () => getListingById(listingId),
+    enabled: !!listingId,
   });
 };
 

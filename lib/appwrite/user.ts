@@ -1,5 +1,5 @@
-import { ID, Query } from "appwrite";
-import { account, databases, avatars } from "./config";
+import { ID, Query } from "react-native-appwrite";
+import { account, avatars, databases } from "./config";
 import { INewUser, IUpdateUser } from "@/types";
 import { deleteFile, getFilePreview, uploadFile } from "@/lib/appwrite/file";
 
@@ -63,9 +63,7 @@ export async function saveUserToDB(user: {
 
 export async function signInAccount(user: { email: string; password: string }) {
   try {
-    const session = await account.createEmailSession(user.email, user.password);
-
-    return session;
+    return await account.createEmailPasswordSession(user.email, user.password);
   } catch (error) {
     console.log(error);
   }
@@ -73,11 +71,19 @@ export async function signInAccount(user: { email: string; password: string }) {
 
 export async function getAccount() {
   try {
-    const currentAccount = await account.get();
-
-    return currentAccount;
+    return await account.get();
   } catch (error) {
     console.log(error);
+  }
+}
+
+export async function getAccountLabels() {
+  try {
+    const currentAccount = await getAccount();
+    if (!currentAccount) throw Error;
+    return currentAccount.labels;
+  } catch (error) {
+    return null;
   }
 }
 
@@ -85,7 +91,6 @@ export async function getAccount() {
 export async function getCurrentUser() {
   try {
     const currentAccount = await getAccount();
-
     if (!currentAccount) throw Error;
 
     const currentUser = await databases.listDocuments(
@@ -154,16 +159,15 @@ export async function getUserById(userId: string) {
 
 // ============================== UPDATE USER
 export async function updateUser(user: IUpdateUser) {
-  const hasFileToUpdate = user.file.length > 0;
   try {
     let image = {
       imageUrl: user.imageUrl,
       imageId: user.imageId,
     };
 
-    if (hasFileToUpdate) {
+    if (user.file) {
       // Upload new file to appwrite storage
-      const uploadedFile = await uploadFile(user.file[0]);
+      const uploadedFile = await uploadFile(user.file);
       if (!uploadedFile) throw Error;
 
       // Get new file url

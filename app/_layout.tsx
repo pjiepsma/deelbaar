@@ -2,13 +2,15 @@ import { useFonts } from "expo-font";
 import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useReactQueryDevTools } from "@dev-plugins/react-query";
 import { AuthProvider } from "@/app/auth/auth";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 const client = new QueryClient();
 
@@ -70,7 +72,9 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
         <QueryClientProvider client={client}>
-          <RootLayoutNav />
+          <BottomSheetModalProvider>
+            <RootLayoutNav />
+          </BottomSheetModalProvider>
         </QueryClientProvider>
       </AuthProvider>
     </GestureHandlerRootView>
@@ -89,8 +93,9 @@ function RootLayoutNav() {
 
   return (
     <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
-        name="(modals)/sign-in"
+        name="(modals)/profile/sign-in"
         options={{
           presentation: "modal",
           title: "Log in",
@@ -105,23 +110,92 @@ function RootLayoutNav() {
           ),
         }}
       />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
-        name="listing/[id]"
+        name="(modals)/profile/profile-edit"
+        options={{
+          presentation: "modal",
+          title: "Edit Profile",
+          animation: "slide_from_right",
+          headerTitleStyle: {
+            fontFamily: "mon-sb",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/profile/profile-photo"
+        options={{
+          presentation: "modal",
+          title: "Edit Profile",
+          animation: "slide_from_right",
+          headerTitleStyle: {
+            fontFamily: "mon-sb",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/profile/admin"
+        options={{
+          presentation: "modal",
+          title: "Admin",
+          animation: "slide_from_right",
+          headerTitleStyle: {
+            fontFamily: "mon-sb",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/listing/listings"
+        options={{
+          presentation: "modal",
+          title: "Listings",
+          animation: "slide_from_right",
+          headerTitleStyle: {
+            fontFamily: "mon-sb",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/listing/listing-add"
+        options={{
+          presentation: "modal",
+          title: "Add listing",
+          animation: "slide_from_right",
+          headerTitleStyle: {
+            fontFamily: "mon-sb",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/listing/listing-edit"
+        options={{
+          presentation: "modal",
+          title: "Edit listing",
+          animation: "slide_from_right",
+          headerTitleStyle: {
+            fontFamily: "mon-sb",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/listing/[id]"
         options={{ headerTitle: "", headerTransparent: true }}
       ></Stack.Screen>
       <Stack.Screen
-        name="(modals)/booking"
-        options={{
-          presentation: "transparentModal",
-          animation: "fade",
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="close-outline" size={24} color="black" />
-            </TouchableOpacity>
-          ),
-        }}
+        name="(modals)/listing/address"
+        options={{ headerTitle: "", headerTransparent: true }}
       ></Stack.Screen>
+      {/*<Stack.Screen*/}
+      {/*  name="(modals)/booking"*/}
+      {/*  options={{*/}
+      {/*    presentation: "transparentModal",*/}
+      {/*    animation: "fade",*/}
+      {/*    headerLeft: () => (*/}
+      {/*      <TouchableOpacity onPress={() => router.back()}>*/}
+      {/*        <Ionicons name="close-outline" size={24} color="black" />*/}
+      {/*      </TouchableOpacity>*/}
+      {/*    ),*/}
+      {/*  }}*/}
+      {/*></Stack.Screen>*/}
     </Stack>
   );
 }

@@ -1,18 +1,22 @@
 // ============================== GET FILE URL
 import { appwriteConfig, storage } from "@/lib/appwrite/config";
-import { ID } from "appwrite";
+import { ID } from "react-native-appwrite";
 // import { ImageGravity } from "appwrite/src/enums/image-gravity";
+export const EXPO_PUBLIC_APPWRITE_STORAGE_ID = "66254e3d0ca08a1aadd6";
 
 // ============================== UPLOAD FILE
-export async function uploadFile(file: File) {
+export async function uploadFile(file: {
+  name: string;
+  type: string;
+  size: number;
+  uri: string;
+}) {
   try {
-    const uploadedFile = await storage.createFile(
+    return await storage.createFile(
       appwriteConfig.storageId,
       ID.unique(),
       file,
     );
-
-    return uploadedFile;
   } catch (error) {
     console.log(error);
   }
