@@ -1,49 +1,20 @@
-import {
-  Button,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Stack } from "expo-router";
-import listingsData from "@/assets/data/airbnb-listings.json";
-import miniBiebDataGeo from "@/assets/data/minibieb-listings.geo.json";
-import { StatusBar } from "expo-status-bar";
-import Header from "@/components/Header";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useGetRecentPosts } from "@/lib/query/posts";
-import FilterModal from "@/app/(modals)/explore/filter";
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import React, { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { useSharedValue } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import Explore from "@/components/Explore";
-import { defaultStyles } from "@/constants/Styles";
-import { Ionicons } from "@expo/vector-icons";
-import Colors from "@/constants/Colors";
-import Dropdown from "@/components/deprecated/Dropdown";
-import ActionRow from "@/components/ActionRow";
-import Animated, {
-  interpolateColor,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withDelay,
-  withTiming,
-} from "react-native-reanimated";
-import { ImageAssets } from "@/assets/images/ImageAssets";
-import ListingsMap from "@/components/listing/ListingsMap";
-import ListingsBottomSheet from "@/components/listing/ListingsBottomSheet";
+import FilterModal from '~/app/(modals)/filter';
+import ActionRow from '~/components/ActionRow';
+import Header from '~/components/Header';
+import ListingsBottomSheet from '~/components/listing/ListingsBottomSheet';
+import ListingsMap from '~/components/listing/ListingsMap';
 
 const Index = () => {
-  const [category, setCategory] = useState("Books");
+  const [category, setCategory] = useState('Books');
   const [modalState, setModalState] = useState(false);
   const animatedPosition = useSharedValue(0);
-
-  const {
-    data: posts,
-    isLoading: isPostLoading,
-    isError: isErrorPosts,
-  } = useGetRecentPosts();
 
   return (
     <View style={styles.container}>
@@ -52,10 +23,7 @@ const Index = () => {
         options={{
           header: () => (
             <SafeAreaView style={styles.safeArea}>
-              <Header
-                onNotificationsPress={() => {}}
-                onProfilePress={() => {}}
-              />
+              <Header onNotificationsPress={() => {}} onProfilePress={() => {}} />
             </SafeAreaView>
           ),
         }}
@@ -65,14 +33,8 @@ const Index = () => {
         setModalState={setModalState}
         animatedPosition={animatedPosition}
       />
-
-      <ListingsMap listings={posts} category={category} />
-
-      <ListingsBottomSheet
-        listings={posts}
-        category={category}
-        animatedPosition={animatedPosition}
-      />
+      <ListingsMap listings={[]} category={category} />
+      <ListingsBottomSheet listings={[]} category={category} animatedPosition={animatedPosition} />
       <FilterModal state={modalState} setState={setModalState} />
     </View>
   );
@@ -85,7 +47,7 @@ const styles = StyleSheet.create({
   },
 
   safeArea: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     // paddingTop: 10,
     // paddingBottom: 10,
   },

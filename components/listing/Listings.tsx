@@ -1,11 +1,9 @@
-import { StyleSheet, Text, View } from "react-native";
-import { defaultStyles } from "@/constants/Styles";
-import { useEffect, useRef, useState } from "react";
-import {
-  BottomSheetFlatList,
-  BottomSheetFlatListMethods,
-} from "@gorhom/bottom-sheet";
-import { ListingItem } from "@/components/listing/ListingItem";
+import { BottomSheetFlatList, BottomSheetFlatListMethods } from '@gorhom/bottom-sheet';
+import { useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+
+import { ListingItem } from '~/components/listing/ListingItem';
+import { defaultStyles } from '~/constants/Styles';
 
 interface Props {
   listings: any;
@@ -50,13 +48,13 @@ const Listings = ({ listings: items, refresh, category }: Props) => {
 
 const styles = StyleSheet.create({
   image: {
-    width: "100%",
+    width: '100%',
     height: 300,
     borderRadius: 10,
   },
   info: {
-    textAlign: "center",
-    fontFamily: "mon-sb",
+    textAlign: 'center',
+    fontFamily: 'mon-sb',
     fontSize: 16,
   },
 });

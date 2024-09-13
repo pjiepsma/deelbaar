@@ -1,13 +1,21 @@
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
-import React, { memo, useEffect, useRef } from "react";
-import { defaultStyles } from "@/constants/Styles";
-import { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import Colors from "@/constants/Colors";
-import * as Location from "expo-location";
-import MapView from "react-native-map-clustering";
-import { Models } from "react-native-appwrite";
+import { Ionicons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
+import { useRouter } from 'expo-router';
+import React, { memo, useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import MapView from 'react-native-map-clustering';
+import { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { Details } from 'react-native-maps/lib/MapView.types';
+import { Region } from 'react-native-maps/lib/sharedTypes';
+
+import Colors from '~/constants/Colors';
+import { defaultStyles } from '~/constants/Styles';
+import { useAuth } from '~/lib/AuthProvider';
+import { Store, STORES_TABLE } from '~/lib/powersync/AppSchema';
+import { useSystem } from '~/lib/powersync/PowerSync';
+import { StoreEntry } from '~/lib/types/types';
+import { uuid } from '~/lib/util/uuid';
+// import { useBaseAuth } from '~/provider/AuthProvider';
 
 // Todo Expo location to get the user location
 
@@ -24,25 +32,72 @@ const INITIAL_REGION = {
 };
 
 const ListingsMap = memo(({ listings, category }: Props) => {
+  const [stores, setStores] = useState<Store[]>([]);
   const router = useRouter();
   const mapRef = useRef<any>(null);
+  const { connector, db } = useSystem();
+  const { user } = useAuth();
+
+  const addGeoStore = async (info: StoreEntry) => {
+    // Add a new database entry using the POINT() syntax for the coordinates
+
+    const todoId = uuid();
+    const point = `POINT(${info.long}, ${info.lat})`;
+    const data = await db
+      .insertInto(STORES_TABLE)
+      .values({ id: todoId, name: info.name, description: info.description, location: point })
+      .execute();
+
+    if (data && info.image) {
+      // // Upload the image to Supabase
+      // const foo = await connector.storage
+      //   .from('stores')
+      //   .upload(`/images/${data.id}.png`, info.image);
+    }
+  };
+
+  const loadStores = async () => {
+    return await db.selectFrom(STORES_TABLE).selectAll().execute();
+  };
+
+  const getNearbyStores = async (lat: number = 52, long: number = 52) => {
+    const { data, error } = await connector.client.rpc('nearby_stores', {
+      lat,
+      long,
+    });
+    return data;
+  };
+
+  const getStoresInView = async (
+    min_lat: number,
+    min_long: number,
+    max_lat: number,
+    max_long: number
+  ) => {
+    const { data } = await connector.client.rpc('stores_in_view', {
+      min_lat,
+      min_long,
+      max_lat,
+      max_long,
+    });
+    return data;
+  };
 
   useEffect(() => {
     onLocateMe();
   }, []);
 
   const onMarkerSelected = (event: any) => {
-    router.push(`/listing/${event.$id}`);
+    // router.push(`/listing/${event.$id}`);
   };
 
   const onLocateMe = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
       return;
     }
 
-    let location = await Location.getCurrentPositionAsync({});
-
+    const location = await Location.getCurrentPositionAsync({});
     const region = {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
@@ -64,21 +119,32 @@ const ListingsMap = memo(({ listings, category }: Props) => {
           longitude: geometry.coordinates[0],
           latitude: geometry.coordinates[1],
         }}
-        onPress={onPress}
-      >
+        onPress={onPress}>
         <View style={styles.marker}>
           <Text
             style={{
-              color: "#000",
-              textAlign: "center",
-              fontFamily: "mon-sb",
-            }}
-          >
+              color: '#000',
+              textAlign: 'center',
+              fontFamily: 'mon-sb',
+            }}>
             {points}
           </Text>
         </View>
       </Marker>
     );
+  };
+
+  const handleRegionChangeComplete = async (region: Region, details: Details) => {
+    const bounds = await mapRef.current?.getMapBoundaries();
+    const stores = await getStoresInView(
+      bounds.southWest.latitude,
+      bounds.southWest.longitude,
+      bounds.northEast.latitude,
+      bounds.northEast.longitude
+    );
+    setStores(stores);
+    console.log(stores);
+    // TODO update markers
   };
 
   return (
@@ -87,6 +153,7 @@ const ListingsMap = memo(({ listings, category }: Props) => {
         ref={mapRef}
         animationEnabled={false}
         style={StyleSheet.absoluteFillObject}
+        onRegionChangeComplete={handleRegionChangeComplete}
         initialRegion={INITIAL_REGION}
         clusterColor="#fff"
         clusterTextColor="#000"
@@ -95,19 +162,18 @@ const ListingsMap = memo(({ listings, category }: Props) => {
         provider={PROVIDER_GOOGLE}
         renderCluster={renderCluster}
         showsUserLocation
-        showsMyLocationButton
-      >
-        {listings?.documents.map((listing: Models.Document) => (
+        showsMyLocationButton>
+        {stores?.map((store: any) => (
           <Marker
             coordinate={{
-              longitude: listing.longitude,
-              latitude: listing.latitude,
+              longitude: store.long,
+              latitude: store.lat,
             }}
-            key={listing.$id}
-            onPress={() => onMarkerSelected(listing)}
+            key={store.longitude}
+            onPress={() => onMarkerSelected} // onMarkerSelected(places)
           >
             <View style={styles.marker}>
-              <Text style={styles.markerText}>{listing.caption}</Text>
+              <Text style={styles.markerText}>{store.name}</Text>
             </View>
           </Marker>
         ))}
@@ -123,14 +189,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  map: {
+    width: '100%',
+    height: '100%',
+  },
   marker: {
     padding: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
     elevation: 5,
     borderRadius: 12,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 6,
     shadowOffset: {
@@ -140,17 +210,17 @@ const styles = StyleSheet.create({
   },
   markerText: {
     fontSize: 14,
-    fontFamily: "mon-sb",
+    fontFamily: 'mon-sb',
   },
   locateBtn: {
-    position: "absolute",
+    position: 'absolute',
     top: 70,
     right: 20,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10,
     elevation: 2,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 6,
     shadowOffset: {

@@ -1,12 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Dropdown from "@/components/deprecated/Dropdown";
-import { Ionicons } from "@expo/vector-icons";
-import Colors from "@/constants/Colors";
-import React, { useEffect, useState } from "react";
-import { defaultStyles } from "@/constants/Styles";
-import { OptionItem } from "@/constants/Types";
-import { interpolateColor, useAnimatedStyle } from "react-native-reanimated";
-import Animated from "react-native-reanimated";
+import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { interpolateColor, useAnimatedStyle } from 'react-native-reanimated';
+
+import Colors from '~/constants/Colors';
+import { OptionItem } from '~/constants/Types';
+import Dropdown from '~/components/Dropdown';
 
 interface Props {
   onCategoryChanged: (category: string) => void;
@@ -14,29 +13,21 @@ interface Props {
   animatedPosition: any;
 }
 
-const ActionRow = ({
-  onCategoryChanged,
-  setModalState,
-  animatedPosition,
-}: Props) => {
+const ActionRow = ({ onCategoryChanged, setModalState, animatedPosition }: Props) => {
   const DATA: OptionItem[] = [
     {
-      value: "Books",
-      icon: "library-outline",
+      value: 'Books',
+      icon: 'library-outline',
     },
     {
-      value: "Water",
-      icon: "water-outline",
+      value: 'Water',
+      icon: 'water-outline',
     },
   ];
 
   const backdropStyle = useAnimatedStyle(() => ({
     // move this from index to here, included animationPosition
-    backgroundColor: interpolateColor(
-      animatedPosition.value,
-      [0.9, 1],
-      ["transparent", "white"],
-    ),
+    backgroundColor: interpolateColor(animatedPosition.value, [0.9, 1], ['transparent', 'white']),
   }));
   const [selected, setSelected] = useState(undefined);
   const onDataChanged = (item: OptionItem) => {
@@ -47,10 +38,7 @@ const ActionRow = ({
       <View style={styles.container}>
         <Dropdown label="Select Item" data={DATA} onSelect={setSelected} />
 
-        <TouchableOpacity
-          style={styles.filterButton}
-          onPress={() => setModalState(true)}
-        >
+        <TouchableOpacity style={styles.filterButton} onPress={() => setModalState(true)}>
           <Ionicons name="options-outline" size={24} color={Colors.dark} />
           <Text>Filter</Text>
           <View style={styles.round}>
@@ -64,18 +52,18 @@ const ActionRow = ({
 
 const styles = StyleSheet.create({
   container: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 5,
     padding: 10,
   },
   filter: {
-    display: "flex",
+    display: 'flex',
   },
   actions: {
-    width: "100%",
-    position: "absolute",
+    width: '100%',
+    position: 'absolute',
     zIndex: 3,
   },
   round: {
@@ -85,22 +73,22 @@ const styles = StyleSheet.create({
     height: 16,
     width: 16,
     borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   filterText: {
     fontSize: 10,
-    color: "white",
+    color: 'white',
   },
   filterButton: {
     height: 40,
-    justifyContent: "center",
-    flexDirection: "row",
-    backgroundColor: "#fff",
+    justifyContent: 'center',
+    flexDirection: 'row',
+    backgroundColor: '#fff',
     width: 100,
     paddingHorizontal: 10,
-    alignItems: "center",
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: Colors.grey,
     borderRadius: 8,

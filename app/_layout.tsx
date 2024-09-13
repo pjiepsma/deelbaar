@@ -1,201 +1,73 @@
-import { useFonts } from "expo-font";
-import { Stack, useRouter } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react";
-import { TouchableOpacity, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import * as SecureStore from "expo-secure-store";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useReactQueryDevTools } from "@dev-plugins/react-query";
-import { AuthProvider } from "@/app/auth/auth";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { Session } from '@supabase/supabase-js';
+import { Stack, useRouter, useSegments } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-const client = new QueryClient();
+import { AuthProvider } from '~/lib/AuthProvider';
+import { useSystem } from '~/lib/powersync/PowerSync';
+import { PowerSyncProvider } from '~/lib/powersync/PowerSyncProvider';
 
-const tokenCache = {
-  async getToken(key: string) {
-    try {
-      return SecureStore.getItemAsync(key);
-    } catch (err) {
-      return null;
-    }
-  },
-  async saveToken(key: string, value: string) {
-    try {
-      return SecureStore.setItemAsync(key, value);
-    } catch (err) {
-      return null;
-    }
-  },
-};
+const InitialLayout = () => {
+  const [session, setSession] = useState<Session | null>(null);
+  const [initialized, setInitialized] = useState<boolean>(false);
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from "expo-router";
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "(tabs)",
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    mon: require("../assets/fonts/Montserrat-Regular.ttf"),
-    "mon-b": require("../assets/fonts/Montserrat-Bold.ttf"),
-    "mon-sb": require("../assets/fonts/Montserrat-SemiBold.ttf"),
-  });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  useReactQueryDevTools(client);
-
-  if (!loaded) {
-    return null;
-  }
-
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <AuthProvider>
-        <QueryClientProvider client={client}>
-          <BottomSheetModalProvider>
-            <RootLayoutNav />
-          </BottomSheetModalProvider>
-        </QueryClientProvider>
-      </AuthProvider>
-    </GestureHandlerRootView>
-  );
-}
-
-function RootLayoutNav() {
+  const segments = useSegments();
   const router = useRouter();
-  // const { checkAuthUser, isLoading } = useUserContext();
-  //
-  // useEffect(() => {
-  //   if (!isLoading && !checkAuthUser) {
-  //     router.push("/(modals)/sign-in");
-  //   }
-  // }, [checkAuthUser, isLoading]);
+
+  const { connector } = useSystem();
+  const system = useSystem();
+
+  useEffect(() => {
+    system.init();
+  }, []);
+
+  useEffect(() => {
+    // Listen for changes to authentication state
+    const { data } = connector.client.auth.onAuthStateChange(async (event, session) => {
+      console.log('supabase.auth.onAuthStateChange', event, session);
+      setSession(session);
+      setInitialized(true);
+    });
+    return () => {
+      data.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!initialized) return;
+
+    // Check if the path/url is in the (auth) group
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (session && !inAuthGroup) {
+      // Redirect authenticated users to the list page
+      router.replace('/(tabs)/');
+    } else if (!session) {
+      // Redirect unauthenticated users to the login page
+      router.replace('/(modals)/login');
+    }
+  }, [session, initialized]);
 
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="(modals)/profile/sign-in"
-        options={{
-          presentation: "modal",
-          title: "Log in",
-          animation: "slide_from_bottom",
-          headerTitleStyle: {
-            fontFamily: "mon-sb",
-          },
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="close-outline" size={24} color="black" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/profile/profile-edit"
-        options={{
-          presentation: "modal",
-          title: "Edit Profile",
-          animation: "slide_from_right",
-          headerTitleStyle: {
-            fontFamily: "mon-sb",
-          },
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/profile/profile-photo"
-        options={{
-          presentation: "modal",
-          title: "Edit Profile",
-          animation: "slide_from_right",
-          headerTitleStyle: {
-            fontFamily: "mon-sb",
-          },
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/profile/admin"
-        options={{
-          presentation: "modal",
-          title: "Admin",
-          animation: "slide_from_right",
-          headerTitleStyle: {
-            fontFamily: "mon-sb",
-          },
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/listing/listings"
-        options={{
-          presentation: "modal",
-          title: "Listings",
-          animation: "slide_from_right",
-          headerTitleStyle: {
-            fontFamily: "mon-sb",
-          },
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/listing/listing-add"
-        options={{
-          presentation: "modal",
-          title: "Add listing",
-          animation: "slide_from_right",
-          headerTitleStyle: {
-            fontFamily: "mon-sb",
-          },
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/listing/listing-edit"
-        options={{
-          presentation: "modal",
-          title: "Edit listing",
-          animation: "slide_from_right",
-          headerTitleStyle: {
-            fontFamily: "mon-sb",
-          },
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/listing/[id]"
-        options={{ headerTitle: "", headerTransparent: true }}
-      ></Stack.Screen>
-      <Stack.Screen
-        name="(modals)/listing/address"
-        options={{ headerTitle: "", headerTransparent: true }}
-      ></Stack.Screen>
-      {/*<Stack.Screen*/}
-      {/*  name="(modals)/booking"*/}
-      {/*  options={{*/}
-      {/*    presentation: "transparentModal",*/}
-      {/*    animation: "fade",*/}
-      {/*    headerLeft: () => (*/}
-      {/*      <TouchableOpacity onPress={() => router.back()}>*/}
-      {/*        <Ionicons name="close-outline" size={24} color="black" />*/}
-      {/*      </TouchableOpacity>*/}
-      {/*    ),*/}
-      {/*  }}*/}
-      {/*></Stack.Screen>*/}
     </Stack>
   );
-}
+};
+
+const RootLayout = () => {
+  return (
+    <PowerSyncProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <BottomSheetModalProvider>
+          <AuthProvider>
+            <InitialLayout />
+          </AuthProvider>
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
+    </PowerSyncProvider>
+  );
+};
+
+export default RootLayout;

@@ -1,32 +1,32 @@
 {
   "expo": {
+    "name": "Deelbaar",
+    "slug": "deelbaar",
+    "version": "1.0.0",
+    "scheme": "deelbaar",
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/favicon.png"
+    },
     "plugins": [
       "expo-router",
-      "expo-secure-store",
       [
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
-      ],
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "The app accesses your photos to let you share them with your friends.",
-          "cameraPermission": "Allow ${PRODUCT_NAME} to access your camera."
-        }
-      ],
-      "expo-font"
+      ]
     ],
-    "name": "deelbaar",
-    "slug": "deelbaar",
-    "version": "1.0.0",
+    "experiments": {
+      "typedRoutes": true,
+      "tsconfigPaths": true
+    },
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -34,23 +34,29 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.deelbaar.app"
     },
     "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDqSk5m03Tz9jpBfy18UMJ3ThjNyTYCEDk"
+        }
+      },
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.deelbaar"
+      "package": "com.deelbaar.app"
     },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "de8a44a5-2432-4b69-8dcb-22b1ef299d63"
+      }
     },
-    "experiments": {
-      "baseUrl": "/deelbaar",
-      "typedRoutes": true
-    }
+    "owner": "iepsma"
   }
 }
