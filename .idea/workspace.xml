@@ -5,41 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81ed2e15-f48e-4376-a224-23fc8ae7ace9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/(modals)/filter.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/(tabs)/_layout.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/(tabs)/profile.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ActionRow.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/Dropdown.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/Header.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/listing/ListingItem.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/listing/Listings.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/listing/ListingsBottomSheet.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/listing/ListingsMap.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/constants/Colors.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/constants/Styles.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/constants/Types.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/constants/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/eas.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/interfaces/authentication.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/interfaces/listing.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/AuthProvider.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/types/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/types/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DUMMY.env" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(auth)/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/hidden/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(auth)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/todos.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/login.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/data/minibieb-gelderland.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/default-placeholder.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/Loader.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/carousel/Dot.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/carousel/Item.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/carousel/Pagination.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/carousel/Slider.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/powersync/AppConfig.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/powersync/PhotoAttachmentQueue.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/powersync/storage/KVStorage.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ActionRow.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ActionRow.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/listing/ListingItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/listing/ListingItem.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/listing/Listings.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/listing/Listings.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/listing/ListingsBottomSheet.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/listing/ListingsBottomSheet.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/listing/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/listing/ListingsMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/AuthProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/AuthProvider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/PowerSync.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/PowerSync.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/powersync/AppSchema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/powersync/PowerSync.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/PowerSync.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/powersync/PowerSyncProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/PowerSyncProvider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/powersync/SupabaseConnector.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/powersync/uuid.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/util/uuid.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,10 +56,10 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "local-first",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/Git/react-native-local-first/lib/powersync",
+    "last_opened_file_path": "D:/Git/deelbaar/components",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.standard": "true",
     "node.js.detected.package.tslint": "true",
@@ -79,26 +69,29 @@
     "nodejs_package_manager_path": "npm",
     "npm.android.executor": "Run",
     "npm.start.executor": "Run",
-    "prettierjs.PrettierConfiguration.Package": "D:\\Git\\react-native-local-first\\node_modules\\prettier",
+    "prettierjs.PrettierConfiguration.Package": "D:\\Git\\deelbaar\\node_modules\\prettier",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
     "settings.editor.selected.configurable": "settings.javascript.linters.eslint",
-    "ts.external.directory.path": "D:\\Git\\react-native-local-first\\node_modules\\typescript\\lib",
+    "ts.external.directory.path": "D:\\Git\\deelbaar\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Git\deelbaar\components" />
+      <recent name="D:\Git\deelbaar\assets\images" />
+      <recent name="D:\Git\deelbaar\app\(modals)\listing" />
       <recent name="D:\Git\react-native-local-first\lib\powersync" />
       <recent name="D:\Git\react-native-local-first\lib" />
-      <recent name="D:\Git\react-native-local-first\components\lib" />
-      <recent name="D:\Git\react-native-local-first\components" />
-      <recent name="D:\Git\react-native-local-first\app" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Git\deelbaar\assets\data" />
       <recent name="D:\Git\react-native-local-first\app\(modals)" />
       <recent name="D:\Git\react-native-local-first\app\(auth)" />
       <recent name="D:\Git\react-native-local-first\lib\util" />
       <recent name="D:\Git\react-native-local-first\lib" />
-      <recent name="D:\Git\react-native-local-first" />
     </key>
   </component>
   <component name="RunManager" selected="npm.android">
@@ -149,6 +142,7 @@
       <workItem from="1726055346534" duration="14908000" />
       <workItem from="1726114340521" duration="10591000" />
       <workItem from="1726206284660" duration="16100000" />
+      <workItem from="1726228139404" duration="8810000" />
     </task>
     <servers />
   </component>

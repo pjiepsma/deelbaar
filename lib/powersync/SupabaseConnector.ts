@@ -6,7 +6,9 @@ import {
 } from '@powersync/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
 import 'react-native-url-polyfill/auto';
+import { SupabaseStorageAdapter } from '~/lib/powersync/storage/SupabaseStorageAdapter';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL as string;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string;
@@ -32,9 +34,11 @@ const FATAL_RESPONSE_CODES = [
 
 export class SupabaseConnector implements PowerSyncBackendConnector {
   client: SupabaseClient;
+  storage: SupabaseStorageAdapter;
 
   constructor() {
     this.client = supabase;
+    this.storage = new SupabaseStorageAdapter({ client: this.client });
   }
 
   async login(username: string, password: string) {

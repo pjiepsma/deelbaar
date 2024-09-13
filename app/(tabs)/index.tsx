@@ -10,11 +10,13 @@ import ActionRow from '~/components/ActionRow';
 import Header from '~/components/Header';
 import ListingsBottomSheet from '~/components/listing/ListingsBottomSheet';
 import ListingsMap from '~/components/listing/ListingsMap';
+import { Store } from '~/lib/powersync/AppSchema';
 
 const Index = () => {
   const [category, setCategory] = useState('Books');
   const [modalState, setModalState] = useState(false);
   const animatedPosition = useSharedValue(0);
+  const [listings, setListings] = useState<Store[]>([]);
 
   return (
     <View style={styles.container}>
@@ -33,8 +35,12 @@ const Index = () => {
         setModalState={setModalState}
         animatedPosition={animatedPosition}
       />
-      <ListingsMap listings={[]} category={category} />
-      <ListingsBottomSheet listings={[]} category={category} animatedPosition={animatedPosition} />
+      <ListingsMap category={category} setListings={setListings} listings={listings} />
+      <ListingsBottomSheet
+        listings={listings}
+        category={category}
+        animatedPosition={animatedPosition}
+      />
       <FilterModal state={modalState} setState={setModalState} />
     </View>
   );

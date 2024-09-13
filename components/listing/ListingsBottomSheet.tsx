@@ -6,9 +6,10 @@ import { SharedValue } from 'react-native-reanimated';
 
 import Listings from '~/components/listing/Listings';
 import Colors from '~/constants/Colors';
+import { Store } from '~/lib/powersync/AppSchema';
 
 interface Props {
-  listings: any;
+  listings: Store[];
   category: string;
   animatedPosition: SharedValue<number>;
 }

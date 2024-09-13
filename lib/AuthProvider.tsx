@@ -47,10 +47,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data } = await supabase.auth.getSession();
 
     if (data.session) {
+      // TODO check if user is admin
       setSession(data.session);
       setUser(data.session.user);
     }
-
     setIsLoading(false);
   }
 

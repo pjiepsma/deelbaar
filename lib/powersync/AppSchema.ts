@@ -10,6 +10,7 @@ const todos = new Table({
 });
 
 const stores = new Table({
+  id: column.text,
   name: column.text,
   description: column.text,
   location: column.text,

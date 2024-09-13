@@ -1,21 +1,20 @@
 import { BottomSheetFlatList, BottomSheetFlatListMethods } from '@gorhom/bottom-sheet';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { ListingItem } from '~/components/listing/ListingItem';
 import { defaultStyles } from '~/constants/Styles';
+import { Store } from '~/lib/powersync/AppSchema';
 
 interface Props {
-  listings: any;
+  listings: Store[];
   refresh: number;
   category: string;
 }
 
-const Listings = ({ listings: items, refresh, category }: Props) => {
+const Listings = ({ listings, refresh, category }: Props) => {
   const listRef = useRef<BottomSheetFlatListMethods>(null);
-  const [loading, setLoading] = useState<boolean>(false);
 
-  // Update the view to scroll the list back top
   useEffect(() => {
     if (refresh) {
       scrollListTop();
@@ -26,19 +25,11 @@ const Listings = ({ listings: items, refresh, category }: Props) => {
     listRef.current?.scrollToOffset({ offset: 0, animated: true });
   };
 
-  useEffect(() => {
-    setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-    }, 200);
-  }, [category]);
-
   return (
     <View style={defaultStyles.container}>
       <BottomSheetFlatList
         renderItem={ListingItem}
-        data={loading ? [] : items?.documents}
+        data={listings}
         ref={listRef}
         ListHeaderComponent={<Text style={styles.info}> Overview </Text>}
       />

@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { interpolateColor, useAnimatedStyle } from 'react-native-reanimated';
 
+import Dropdown from '~/components/Dropdown';
 import Colors from '~/constants/Colors';
 import { OptionItem } from '~/constants/Types';
-import Dropdown from '~/components/Dropdown';
 
 interface Props {
   onCategoryChanged: (category: string) => void;
@@ -29,10 +29,8 @@ const ActionRow = ({ onCategoryChanged, setModalState, animatedPosition }: Props
     // move this from index to here, included animationPosition
     backgroundColor: interpolateColor(animatedPosition.value, [0.9, 1], ['transparent', 'white']),
   }));
-  const [selected, setSelected] = useState(undefined);
-  const onDataChanged = (item: OptionItem) => {
-    // setCategory(category);
-  };
+  const [selected, setSelected] = useState<{ label: string; value: string }>();
+  const onDataChanged = (item: OptionItem) => {};
   return (
     <Animated.View style={[styles.actions, backdropStyle]}>
       <View style={styles.container}>

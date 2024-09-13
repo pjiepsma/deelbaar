@@ -20,29 +20,36 @@ import { uuid } from '~/lib/util/uuid';
 // Todo Expo location to get the user location
 
 interface Props {
-  listings: any;
+  setListings: (state: Store[]) => void;
+  listings: Store[];
   category: string;
 }
 
-const INITIAL_REGION = {
-  latitude: 37.33,
-  longitude: -122,
-  latitudeDelta: 9,
-  longitudeDelta: 9,
-};
+// const INITIAL_REGION = {
+//   latitude: 37.33,
+//   longitude: -122,
+//   latitudeDelta: 9,
+//   longitudeDelta: 9,
+// };
 
-const ListingsMap = memo(({ listings, category }: Props) => {
-  const [stores, setStores] = useState<Store[]>([]);
+interface MapRegion {
+  latitude: number;
+  longitude: number;
+  latitudeDelta: number;
+  longitudeDelta: number;
+}
+
+const ListingsMap = memo(({ category, listings, setListings }: Props) => {
   const router = useRouter();
   const mapRef = useRef<any>(null);
   const { connector, db } = useSystem();
   const { user } = useAuth();
+  const [region, setRegion] = useState<MapRegion>();
 
   const addGeoStore = async (info: StoreEntry) => {
-    // Add a new database entry using the POINT() syntax for the coordinates
-
+    const location = await Location.getCurrentPositionAsync({});
     const todoId = uuid();
-    const point = `POINT(${info.long}, ${info.lat})`;
+    const point = `POINT(${location.coords.longitude}, ${location.coords.latitude})`;
     const data = await db
       .insertInto(STORES_TABLE)
       .values({ id: todoId, name: info.name, description: info.description, location: point })
@@ -87,10 +94,6 @@ const ListingsMap = memo(({ listings, category }: Props) => {
     onLocateMe();
   }, []);
 
-  const onMarkerSelected = (event: any) => {
-    // router.push(`/listing/${event.$id}`);
-  };
-
   const onLocateMe = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
@@ -98,14 +101,12 @@ const ListingsMap = memo(({ listings, category }: Props) => {
     }
 
     const location = await Location.getCurrentPositionAsync({});
-    const region = {
+    setRegion({
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
-      latitudeDelta: 7,
-      longitudeDelta: 7,
-    };
-
-    mapRef.current?.animateToRegion(region);
+      latitudeDelta: 0.05,
+      longitudeDelta: 0.05,
+    });
   };
 
   const renderCluster = (cluster: any) => {
@@ -142,42 +143,45 @@ const ListingsMap = memo(({ listings, category }: Props) => {
       bounds.northEast.latitude,
       bounds.northEast.longitude
     );
-    setStores(stores);
-    console.log(stores);
-    // TODO update markers
+    setListings(stores);
+  };
+
+  const handleMarkerPress = (store: Store) => {
+    router.push(`/listing/${store.id}`);
   };
 
   return (
     <View style={defaultStyles.container}>
-      <MapView
-        ref={mapRef}
-        animationEnabled={false}
-        style={StyleSheet.absoluteFillObject}
-        onRegionChangeComplete={handleRegionChangeComplete}
-        initialRegion={INITIAL_REGION}
-        clusterColor="#fff"
-        clusterTextColor="#000"
-        clusterFontFamily="mon-sb"
-        radius={40}
-        provider={PROVIDER_GOOGLE}
-        renderCluster={renderCluster}
-        showsUserLocation
-        showsMyLocationButton>
-        {stores?.map((store: any) => (
-          <Marker
-            coordinate={{
-              longitude: store.long,
-              latitude: store.lat,
-            }}
-            key={store.longitude}
-            onPress={() => onMarkerSelected} // onMarkerSelected(places)
-          >
-            <View style={styles.marker}>
-              <Text style={styles.markerText}>{store.name}</Text>
-            </View>
-          </Marker>
-        ))}
-      </MapView>
+      {region && (
+        <MapView
+          ref={mapRef}
+          animationEnabled={false}
+          style={StyleSheet.absoluteFillObject}
+          onRegionChangeComplete={handleRegionChangeComplete}
+          initialRegion={region}
+          clusterColor="#fff"
+          clusterTextColor="#000"
+          clusterFontFamily="mon-sb"
+          radius={40}
+          provider={PROVIDER_GOOGLE}
+          showsUserLocation
+          showsMyLocationButton>
+          {listings.map((store: any) => (
+            <Marker
+              coordinate={{
+                longitude: store.long,
+                latitude: store.lat,
+              }}
+              key={uuid()}
+              onPress={() => handleMarkerPress(store)} // Handle marker press
+            >
+              <View style={styles.marker}>
+                <Text style={styles.markerText}>{store.name}</Text>
+              </View>
+            </Marker>
+          ))}
+        </MapView>
+      )}
       <TouchableOpacity style={styles.locateBtn} onPress={onLocateMe}>
         <Ionicons name="navigate" size={24} color={Colors.dark} />
       </TouchableOpacity>
