@@ -1,121 +1,117 @@
-import { Stack } from 'expo-router';
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useQuery, useStatus } from '@powersync/react-native';
+import { router, Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import * as React from 'react';
+import { ScrollView, View } from 'react-native';
+import { FAB, Text } from 'react-native-elements';
+import prompt from 'react-native-prompt-android';
 
-import Todos from '~/app/(auth)/todos';
-import Colors from '~/constants/Colors';
-import { defaultStyles } from '~/constants/Styles';
-import { OptionItem } from '~/constants/Types';
+import { ListItemWidget } from '~/components/widget/ListItemWidget';
+import { LIST_TABLE, ListRecord, TODO_TABLE } from '~/lib/powersync/AppSchema';
+import { useSystem } from '~/lib/powersync/PowerSync';
 
-const DATA: OptionItem[] = [
-  {
-    value: 'Books',
-    icon: 'library-outline',
-  },
-  {
-    value: 'Water',
-    icon: 'water-outline',
-  },
-];
+const description = (total: number, completed: number = 0) => {
+  return `${total - completed} pending, ${completed} completed`;
+};
 
-const Page = () => {
-  // const { user } = useUserContext();
-  // const {
-  //   data: creator,
-  //   isLoading,
-  //   isError: isErrorCreators,
-  // } = useGetUserById(user.id); // Fetch farovites of User instead of whole user. Filter data by category and use
-  // const listRef = useRef<FlatList>(null);
-  // const [category, setCategory] = useState<OptionItem>(DATA[0]);
-  // const [list, setList] = useState<any | null>(null);
+const ListsViewWidget: React.FC = () => {
+  const system = useSystem();
+  const status = useStatus();
+  const { data: listRecords } = useQuery<
+    ListRecord & { total_tasks: number; completed_tasks: number }
+  >(`
+        SELECT ${LIST_TABLE}.*,
+               COUNT(${TODO_TABLE}.id)                                         AS total_tasks,
+               SUM(CASE WHEN ${TODO_TABLE}.completed = true THEN 1 ELSE 0 END) as completed_tasks
+        FROM ${LIST_TABLE}
+                 LEFT JOIN ${TODO_TABLE} ON ${LIST_TABLE}.id = ${TODO_TABLE}.list_id
+        GROUP BY ${LIST_TABLE}.id;
+    `);
 
-  // useEffect(() => {
-  //   // filter creator.favorite by category
-  //   const filtered = creator?.favorite
-  //     .filter((item: any) => item.listing.category === category.value)
-  //     .map((item: any) => item.listing);
-  //   setList(filtered);
-  //   console.log("Category", category);
-  //   console.log("list", creator?.favorite);
-  //   console.log("filtered", filtered);
-  // }, [category, creator]);
+  const createNewList = async (name: string) => {
+    const { userID } = await system.connector.fetchCredentials();
+
+    const res = await system.powersync.execute(
+      `INSERT INTO ${LIST_TABLE} (id, created_at, name, owner_id)
+             VALUES (uuid(), datetime(), ?, ?) RETURNING *`,
+      [name, userID]
+    );
+
+    const resultRecord = res.rows?.item(0);
+    if (!resultRecord) {
+      throw new Error('Could not create list');
+    }
+  };
+
+  const deleteList = async (id: string) => {
+    await system.powersync.writeTransaction(async (tx) => {
+      // Delete associated todos
+      await tx.execute(
+        `DELETE
+                 FROM ${TODO_TABLE}
+                 WHERE list_id = ?`,
+        [id]
+      );
+      // Delete list record
+      await tx.execute(
+        `DELETE
+                 FROM ${LIST_TABLE}
+                 WHERE id = ?`,
+        [id]
+      );
+    });
+  };
 
   return (
-    <View style={defaultStyles.container}>
+    <View style={{ flex: 1, flexGrow: 1 }}>
       <Stack.Screen
         options={{
-          header: () => <SafeAreaView style={styles.safeArea} />,
+          headerShown: false,
         }}
       />
-      <Todos />
-      {/*{isLoading || !creator ? (*/}
-      {/*  <Loader delay={200} amount={3} />*/}
-      {/*) : (*/}
-      {/*  <View style={styles.box}>*/}
-      {/*    <Dropdown label="Select Item" data={DATA} onSelect={setCategory} />*/}
-      {/*    {list && (*/}
-      {/*      <FlatList renderItem={ListingItem} data={list} ref={listRef} />*/}
-      {/*    )}*/}
-      {/*  </View>*/}
-      {/*)}*/}
+      <FAB
+        style={{ zIndex: 99, bottom: 0 }}
+        icon={{ name: 'add', color: 'white' }}
+        size="small"
+        placement="right"
+        onPress={() => {
+          prompt(
+            'Add a new list',
+            '',
+            async (name) => {
+              if (!name) {
+                return;
+              }
+              await createNewList(name);
+            },
+            { placeholder: 'List name', style: 'shimo' }
+          );
+        }}
+      />
+      <ScrollView key="lists" style={{ maxHeight: '90%' }}>
+        {!status.hasSynced ? (
+          <Text>Busy with sync...</Text>
+        ) : (
+          listRecords.map((r) => (
+            <ListItemWidget
+              key={r.id}
+              title={r.name}
+              description={description(r.total_tasks, r.completed_tasks)}
+              onDelete={() => deleteList(r.id)}
+              onPress={() => {
+                router.push({
+                  pathname: '/(modals)/todo/[id]',
+                  params: { id: r.id },
+                });
+              }}
+            />
+          ))
+        )}
+      </ScrollView>
+
+      <StatusBar style="light" />
     </View>
   );
 };
-export default Page;
 
-const styles = StyleSheet.create({
-  box: {
-    left: 10,
-  },
-  contentContainer: {
-    flex: 1,
-  },
-  safeArea: {
-    backgroundColor: '#fff',
-    paddingTop: 10,
-  },
-  absoluteView: {
-    position: 'absolute',
-    bottom: 30,
-    width: '100%',
-    alignItems: 'center',
-  },
-  btn: {
-    backgroundColor: Colors.dark,
-    padding: 14,
-    height: 50,
-    borderRadius: 30,
-    flexDirection: 'row',
-    marginHorizontal: 'auto',
-    alignItems: 'center',
-  },
-  sheetContainer: {
-    backgroundColor: '#fff',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    shadowOffset: {
-      width: 1,
-      height: 1,
-    },
-  },
-  listing: {
-    padding: 16,
-    gap: 10,
-    marginVertical: 0,
-  },
-  image: {
-    width: '100%',
-    height: 300,
-    borderRadius: 10,
-  },
-  info: {
-    textAlign: 'center',
-    fontFamily: 'mon-sb',
-    fontSize: 16,
-    marginTop: 4,
-    color: Colors.dark,
-  },
-});
+export default ListsViewWidget;

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 import AppleStyleSwipeableRow from '~/components/SwipeableRow';
-import { Todo, TODOS_TABLE } from '~/lib/powersync/AppSchema';
+import { Todo, TODO_TABLE } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
 import { uuid } from '~/lib/util/uuid';
 
@@ -25,7 +25,7 @@ const Page = () => {
   }, []);
 
   const loadTodos = async () => {
-    const result = await db.selectFrom(TODOS_TABLE).selectAll().execute();
+    const result = await db.selectFrom(TODO_TABLE).selectAll().execute();
     setTodos(result);
   };
 
@@ -34,7 +34,7 @@ const Page = () => {
     const todoId = uuid();
 
     await db
-      .insertInto(TODOS_TABLE)
+      .insertInto(TODO_TABLE)
       .values({ id: todoId, task, user_id: userID, is_complete: 0 })
       .execute();
 
@@ -44,7 +44,7 @@ const Page = () => {
 
   const updateTodo = async (todo: Todo) => {
     await db
-      .updateTable(TODOS_TABLE)
+      .updateTable(TODO_TABLE)
       .where('id', '=', todo.id)
       .set({ is_complete: todo.is_complete === 1 ? 0 : 1 })
       .execute();
@@ -52,7 +52,7 @@ const Page = () => {
   };
 
   const deleteTodo = async (todo: Todo) => {
-    const result = await db.deleteFrom(TODOS_TABLE).where('id', '=', todo.id).execute();
+    const result = await db.deleteFrom(TODO_TABLE).where('id', '=', todo.id).execute();
     loadTodos();
   };
 

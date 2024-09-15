@@ -2,13 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 import { useSystem } from '~/lib/powersync/PowerSync';
 
 const Layout = () => {
-  const { connector, powerSync } = useSystem();
+  const { connector, powersync } = useSystem();
 
   const onSignOut = async () => {
-    await powerSync.disconnectAndClear();
+    await powersync.disconnectAndClear();
     await connector.client.auth.signOut();
   };
 

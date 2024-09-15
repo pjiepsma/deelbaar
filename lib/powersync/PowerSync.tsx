@@ -14,7 +14,7 @@ import { SupabaseStorageAdapter } from '~/lib/powersync/storage/SupabaseStorageA
 
 export class System {
   connector: SupabaseConnector;
-  powerSync: AbstractPowerSyncDatabase;
+  powersync: AbstractPowerSyncDatabase;
   attachmentQueue: PhotoAttachmentQueue | undefined = undefined;
   storage: SupabaseStorageAdapter;
   db: Kysely<Database>;
@@ -29,11 +29,11 @@ export class System {
 
     this.connector = new SupabaseConnector();
     this.storage = this.connector.storage;
-    this.powerSync = powerSyncDb;
-    this.db = wrapPowerSyncWithKysely(this.powerSync);
+    this.powersync = powerSyncDb;
+    this.db = wrapPowerSyncWithKysely(this.powersync);
     if (AppConfig.supabaseBucket) {
       this.attachmentQueue = new PhotoAttachmentQueue({
-        powersync: this.powerSync,
+        powersync: this.powersync,
         storage: this.storage,
         // Use this to handle download errors where you can use the attachment
         // and/or the exception to decide if you want to retry the download
@@ -49,8 +49,8 @@ export class System {
   }
 
   async init() {
-    await this.powerSync.init();
-    await this.powerSync.connect(this.connector);
+    await this.powersync.init();
+    await this.powersync.connect(this.connector);
 
     if (this.attachmentQueue) {
       await this.attachmentQueue.init();

@@ -137,6 +137,7 @@ const ListingsMap = memo(({ category, listings, setListings }: Props) => {
 
   const handleRegionChangeComplete = async (region: Region, details: Details) => {
     const bounds = await mapRef.current?.getMapBoundaries();
+    console.log('New bounds');
     const stores = await getStoresInView(
       bounds.southWest.latitude,
       bounds.southWest.longitude,

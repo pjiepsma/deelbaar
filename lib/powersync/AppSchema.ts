@@ -1,27 +1,62 @@
-import { column, Schema, Table } from '@powersync/react-native';
+import { AttachmentTable } from '@powersync/attachments';
+import { Column, ColumnType, Index, IndexedColumn, Schema, Table } from '@powersync/react-native';
 
-export const TODOS_TABLE = 'todos';
-export const STORES_TABLE = 'stores';
+export const TODO_TABLE = 'todos';
+export const LIST_TABLE = 'lists';
 
-const todos = new Table({
-  task: column.text,
-  user_id: column.text,
-  is_complete: column.integer,
-});
+export interface ListRecord {
+  id: string;
+  name: string;
+  created_at: string;
+  owner_id?: string;
+}
 
-const stores = new Table({
-  id: column.text,
-  name: column.text,
-  description: column.text,
-  location: column.text,
-});
+export interface TodoRecord {
+  id: string;
+  created_at: string;
+  completed: boolean;
+  description: string;
+  completed_at?: string;
 
-export const AppSchema = new Schema({
-  todos,
-  stores,
-});
+  created_by: string;
+  completed_by?: string;
+  list_id: string;
+
+  photo_id?: string; // This is the attachment id, 1:1 relationship with `id` in AttachmentTable
+}
+
+export const AppSchema = new Schema([
+  new Table({
+    name: 'todos',
+    columns: [
+      new Column({ name: 'list_id', type: ColumnType.TEXT }),
+      new Column({ name: 'photo_id', type: ColumnType.TEXT }),
+      new Column({ name: 'created_at', type: ColumnType.TEXT }),
+      new Column({ name: 'completed_at', type: ColumnType.TEXT }),
+      new Column({ name: 'description', type: ColumnType.TEXT }),
+      new Column({ name: 'completed', type: ColumnType.INTEGER }),
+      new Column({ name: 'created_by', type: ColumnType.TEXT }),
+      new Column({ name: 'completed_by', type: ColumnType.TEXT }),
+    ],
+    indexes: [
+      new Index({
+        name: 'list',
+        columns: [new IndexedColumn({ name: 'list_id' })],
+      }),
+    ],
+  }),
+  new Table({
+    name: 'lists',
+    columns: [
+      new Column({ name: 'created_at', type: ColumnType.TEXT }),
+      new Column({ name: 'name', type: ColumnType.TEXT }),
+      new Column({ name: 'owner_id', type: ColumnType.TEXT }),
+    ],
+  }),
+  // Add Attachment table
+  new AttachmentTable(),
+]);
 
 export type Database = (typeof AppSchema)['types'];
-
-export type Todo = Database['todos'];
-export type Store = Database['stores'];
+// export type Todo = Database['todos'];
+// export type Store = Database['stores'];

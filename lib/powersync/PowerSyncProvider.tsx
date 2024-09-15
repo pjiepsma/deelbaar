@@ -4,10 +4,10 @@ import { ReactNode, useMemo } from 'react';
 import { useSystem } from '~/lib/powersync/PowerSync';
 
 export const PowerSyncProvider = ({ children }: { children: ReactNode }) => {
-  const { powerSync } = useSystem();
+  const { powersync } = useSystem();
 
   const db = useMemo(() => {
-    return powerSync;
+    return powersync;
   }, []);
 
   return <PowerSyncContext.Provider value={db}>{children}</PowerSyncContext.Provider>;

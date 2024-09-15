@@ -5,29 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81ed2e15-f48e-4376-a224-23fc8ae7ace9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/data/minibieb-gelderland.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/default-placeholder.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/Loader.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/carousel/Dot.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/carousel/Item.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/carousel/Pagination.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/carousel/Slider.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/powersync/AppConfig.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/powersync/PhotoAttachmentQueue.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/powersync/storage/KVStorage.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/(modals)/todo/[id].tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/widget/CameraWidget.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/widget/ListItemWidget.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/widget/TodoItemWidget.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/ActionRow.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ActionRow.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/listing/ListingItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/listing/ListingItem.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/listing/Listings.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/listing/Listings.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/listing/ListingsBottomSheet.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/listing/ListingsBottomSheet.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(auth)/todos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/hidden/todos.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/listing/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/listing/ListingsMap.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/AuthProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/AuthProvider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hidden/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/hidden/_layout.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/PhotoAttachmentQueue.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/PhotoAttachmentQueue.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/powersync/PowerSync.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/PowerSync.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/PowerSyncProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/PowerSyncProvider.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
@@ -53,31 +43,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "local-first",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/Git/deelbaar/components",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.standard": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.standard": "",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.android.executor": "Run",
-    "npm.start.executor": "Run",
-    "prettierjs.PrettierConfiguration.Package": "D:\\Git\\deelbaar\\node_modules\\prettier",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "settings.javascript.linters.eslint",
-    "ts.external.directory.path": "D:\\Git\\deelbaar\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;local-first&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Git/deelbaar/components&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.android.executor&quot;: &quot;Run&quot;,
+    &quot;npm.start.executor&quot;: &quot;Run&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;D:\\Git\\deelbaar\\node_modules\\prettier&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;settings.javascript.linters.eslint&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;D:\\Git\\deelbaar\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Git\deelbaar\components" />
@@ -87,11 +77,11 @@
       <recent name="D:\Git\react-native-local-first\lib" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Git\deelbaar\hidden" />
       <recent name="D:\Git\deelbaar\assets\data" />
       <recent name="D:\Git\react-native-local-first\app\(modals)" />
       <recent name="D:\Git\react-native-local-first\app\(auth)" />
       <recent name="D:\Git\react-native-local-first\lib\util" />
-      <recent name="D:\Git\react-native-local-first\lib" />
     </key>
   </component>
   <component name="RunManager" selected="npm.android">
@@ -142,7 +132,9 @@
       <workItem from="1726055346534" duration="14908000" />
       <workItem from="1726114340521" duration="10591000" />
       <workItem from="1726206284660" duration="16100000" />
-      <workItem from="1726228139404" duration="8810000" />
+      <workItem from="1726228139404" duration="10766000" />
+      <workItem from="1726333750345" duration="4908000" />
+      <workItem from="1726390546836" duration="5469000" />
     </task>
     <servers />
   </component>
