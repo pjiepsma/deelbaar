@@ -1,4 +1,5 @@
 import { useQuery, useStatus } from '@powersync/react-native';
+import * as Location from 'expo-location';
 import { router, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
@@ -7,58 +8,47 @@ import { FAB, Text } from 'react-native-elements';
 import prompt from 'react-native-prompt-android';
 
 import { ListItemWidget } from '~/components/widget/ListItemWidget';
-import { LIST_TABLE, ListRecord, TODO_TABLE } from '~/lib/powersync/AppSchema';
+import { useAuth } from '~/lib/AuthProvider';
+import { ListingRecord } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
+import {
+  DeleteListing,
+  DeleteListingPictures,
+  InsertListing,
+  SelectListings,
+} from '~/lib/powersync/Queries';
 
 const description = (total: number, completed: number = 0) => {
   return `${total - completed} pending, ${completed} completed`;
 };
 
 const ListsViewWidget: React.FC = () => {
-  const system = useSystem();
+  const { powersync, connector } = useSystem();
+  const { user, signIn } = useAuth();
   const status = useStatus();
-  const { data: listRecords } = useQuery<
-    ListRecord & { total_tasks: number; completed_tasks: number }
-  >(`
-        SELECT ${LIST_TABLE}.*,
-               COUNT(${TODO_TABLE}.id)                                         AS total_tasks,
-               SUM(CASE WHEN ${TODO_TABLE}.completed = true THEN 1 ELSE 0 END) as completed_tasks
-        FROM ${LIST_TABLE}
-                 LEFT JOIN ${TODO_TABLE} ON ${LIST_TABLE}.id = ${TODO_TABLE}.list_id
-        GROUP BY ${LIST_TABLE}.id;
-    `);
+  const { data: ListingRecords } = useQuery<ListingRecord>(SelectListings);
 
-  const createNewList = async (name: string) => {
-    const { userID } = await system.connector.fetchCredentials();
+  const createListing = async (name: string) => {
+    if (user) {
+      const location = await Location.getCurrentPositionAsync({});
+      const point = `POINT(${location.coords.longitude} ${location.coords.latitude})`;
+      const res = await powersync.execute(InsertListing, [name, 'todo', point, user.id]);
 
-    const res = await system.powersync.execute(
-      `INSERT INTO ${LIST_TABLE} (id, created_at, name, owner_id)
-             VALUES (uuid(), datetime(), ?, ?) RETURNING *`,
-      [name, userID]
-    );
-
-    const resultRecord = res.rows?.item(0);
-    if (!resultRecord) {
-      throw new Error('Could not create list');
+      const resultRecord = res.rows?.item(0);
+      if (!resultRecord) {
+        throw new Error('Could not create list');
+      }
+    } else {
+      router.replace('/(modals)/login');
     }
   };
 
   const deleteList = async (id: string) => {
-    await system.powersync.writeTransaction(async (tx) => {
+    await powersync.writeTransaction(async (tx) => {
       // Delete associated todos
-      await tx.execute(
-        `DELETE
-                 FROM ${TODO_TABLE}
-                 WHERE list_id = ?`,
-        [id]
-      );
+      await tx.execute(DeleteListingPictures, [id]);
       // Delete list record
-      await tx.execute(
-        `DELETE
-                 FROM ${LIST_TABLE}
-                 WHERE id = ?`,
-        [id]
-      );
+      await tx.execute(DeleteListing, [id]);
     });
   };
 
@@ -82,7 +72,7 @@ const ListsViewWidget: React.FC = () => {
               if (!name) {
                 return;
               }
-              await createNewList(name);
+              await createListing(name);
             },
             { placeholder: 'List name', style: 'shimo' }
           );
@@ -92,15 +82,15 @@ const ListsViewWidget: React.FC = () => {
         {!status.hasSynced ? (
           <Text>Busy with sync...</Text>
         ) : (
-          listRecords.map((r) => (
+          ListingRecords.map((r) => (
             <ListItemWidget
               key={r.id}
               title={r.name}
-              description={description(r.total_tasks, r.completed_tasks)}
+              description={description(0, 0)}
               onDelete={() => deleteList(r.id)}
               onPress={() => {
                 router.push({
-                  pathname: '/(modals)/todo/[id]',
+                  pathname: '/(modals)/picture/[id]',
                   params: { id: r.id },
                 });
               }}

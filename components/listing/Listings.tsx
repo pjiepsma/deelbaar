@@ -1,19 +1,20 @@
 import { BottomSheetFlatList, BottomSheetFlatListMethods } from '@gorhom/bottom-sheet';
 import { useEffect, useRef } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ListRenderItem, StyleSheet, Text } from 'react-native';
 
 import { ListingItem } from '~/components/listing/ListingItem';
-import { defaultStyles } from '~/constants/Styles';
-import { Store } from '~/lib/powersync/AppSchema';
+import { ListingRecord } from '~/lib/powersync/AppSchema';
+import { useSystem } from '~/lib/powersync/PowerSync';
 
 interface Props {
-  listings: Store[];
+  listings: ListingRecord[];
   refresh: number;
   category: string;
 }
 
 const Listings = ({ listings, refresh, category }: Props) => {
   const listRef = useRef<BottomSheetFlatListMethods>(null);
+  const { powersync } = useSystem();
 
   useEffect(() => {
     if (refresh) {
@@ -25,15 +26,16 @@ const Listings = ({ listings, refresh, category }: Props) => {
     listRef.current?.scrollToOffset({ offset: 0, animated: true });
   };
 
+  const renderItem: ListRenderItem<ListingRecord> = ({ item }) => <ListingItem item={item} />;
+
   return (
-    <View style={defaultStyles.container}>
-      <BottomSheetFlatList
-        renderItem={ListingItem}
-        data={listings}
-        ref={listRef}
-        ListHeaderComponent={<Text style={styles.info}> Overview </Text>}
-      />
-    </View>
+    <BottomSheetFlatList
+      renderItem={renderItem}
+      data={listings}
+      keyExtractor={(item) => item.id}
+      ref={listRef}
+      ListHeaderComponent={<Text style={styles.info}> Overview </Text>}
+    />
   );
 };
 

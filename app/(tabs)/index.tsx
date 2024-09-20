@@ -1,47 +1,55 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-import FilterModal from '~/app/(modals)/filter';
 import ActionRow from '~/components/ActionRow';
-import Header from '~/components/Header';
+import ListingBottomSheet from '~/components/listing/ListingBottomSheet';
 import ListingsBottomSheet from '~/components/listing/ListingsBottomSheet';
 import ListingsMap from '~/components/listing/ListingsMap';
-import { Store } from '~/lib/powersync/AppSchema';
+import { ListingRecord } from '~/lib/powersync/AppSchema';
 
 const Index = () => {
   const [category, setCategory] = useState('Books');
   const [modalState, setModalState] = useState(false);
+  const [listingModal, setListingModal] = useState(false);
+
   const animatedPosition = useSharedValue(0);
-  const [listings, setListings] = useState<Store[]>([]);
+  const [listings, setListings] = useState<ListingRecord[]>([]);
+  const [listing, setListing] = useState<ListingRecord | null>(null);
+
+  useEffect(() => {
+    setListingModal(true);
+  }, [listing]);
 
   return (
     <View style={styles.container}>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <Stack.Screen
         options={{
-          header: () => (
-            <SafeAreaView style={styles.safeArea}>
-              <Header onNotificationsPress={() => {}} onProfilePress={() => {}} />
-            </SafeAreaView>
-          ),
+          headerShown: false,
         }}
       />
       <ActionRow
         onCategoryChanged={setCategory}
         setModalState={setModalState}
         animatedPosition={animatedPosition}
+        listing={listing}
       />
-      <ListingsMap category={category} setListings={setListings} listings={listings} />
+      <ListingsMap
+        category={category}
+        setListings={setListings}
+        listings={listings}
+        setListing={setListing}
+      />
       <ListingsBottomSheet
         listings={listings}
         category={category}
         animatedPosition={animatedPosition}
+        setListing={setListing}
       />
-      <FilterModal state={modalState} setState={setModalState} />
+      <ListingBottomSheet listing={listing} setListing={setListing} />
     </View>
   );
 };

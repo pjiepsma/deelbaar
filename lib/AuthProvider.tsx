@@ -1,13 +1,14 @@
-import type { AuthSession, AuthUser } from '@supabase/supabase-js';
+import { Session, User } from '@supabase/supabase-js'; // Corrected import types
+import { useRouter, useSegments } from 'expo-router';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 
-import { supabase } from '~/lib/powersync/SupabaseConnector';
+import { useSystem } from '~/lib/powersync/PowerSync';
 
 export const AuthContext = createContext<{
-  session: AuthSession | null;
-  user: AuthUser | null;
-  signIn: ({ session, user }: { session: AuthSession | null; user: AuthUser | null }) => void;
+  session: Session | null;
+  user: User | null;
+  signIn: ({ session, user }: { session: Session | null; user: User | null }) => void;
   signOut: () => void;
 }>({
   session: null,
@@ -21,46 +22,83 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<AuthSession | null>(null);
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true); // Initialize loading state
+  const [initialized, setInitialized] = useState<boolean>(false);
 
-  async function signIn({ session, user }: { session: AuthSession | null; user: AuthUser | null }) {
-    console.log('signIn');
+  const segments = useSegments();
+  const router = useRouter();
+
+  const { connector } = useSystem();
+  const system = useSystem();
+
+  useEffect(() => {
+    // Asynchronous initialization of the system
+    const initSystem = async () => {
+      await system.init(); // Assuming `init()` is asynchronous and returns a promise
+    };
+
+    initSystem().then(() => setIsLoading(false)); // Set loading to false after initialization
+  }, [system]);
+
+  useEffect(() => {
+    // Listen for changes to authentication state
+    const { data } = connector.client.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      setInitialized(true); // Mark initialization as complete
+      setIsLoading(false); // Set loading state to false once auth state is checked
+      if (session) {
+        setUser(session.user);
+      } else {
+        setUser(null);
+      }
+    });
+
+    // Cleanup subscription on component unmount
+    return () => {
+      data.subscription.unsubscribe();
+    };
+  }, [connector]);
+
+  useEffect(() => {
+    if (!initialized || isLoading) return; // Avoid routing until initialization is complete
+
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (session && inAuthGroup) {
+      router.replace('/(tabs)/');
+    } else if (!session && !inAuthGroup) {
+      router.replace('/(modals)/login');
+    }
+  }, [session, initialized]);
+
+  async function signIn({ session, user }: { session: Session | null; user: User | null }) {
     setSession(session);
     setUser(user);
   }
 
   async function signOut() {
-    console.log('signOut');
-    const { error } = await supabase.auth.signOut();
+    setIsLoading(true); // Set loading state to true during sign-out
 
-    setSession(null);
-    setUser(null);
+    try {
+      const { error } = await connector.client.auth.signOut();
+      setSession(null);
+      setUser(null);
 
-    if (error) {
-      console.error(error);
+      if (error) {
+        console.error('Error during sign-out:', error.message);
+      }
+    } catch (e) {
+      console.error('Sign-out error:', e);
+    } finally {
+      setIsLoading(false); // Set loading state back to false after sign-out
     }
   }
-
-  async function getSession() {
-    const { data } = await supabase.auth.getSession();
-
-    if (data.session) {
-      // TODO check if user is admin
-      setSession(data.session);
-      setUser(data.session.user);
-    }
-    setIsLoading(false);
-  }
-
-  useEffect(() => {
-    if (!session) getSession();
-    // if (session && !user) getUser();
-  }, [session, user]);
 
   if (isLoading) {
-    return <View />; // spinner
+    // Show a loading indicator while loading
+    return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   return (

@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
-import React, { memo, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { debounce } from 'lodash';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import MapView from 'react-native-map-clustering';
 import { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Details } from 'react-native-maps/lib/MapView.types';
@@ -11,26 +12,15 @@ import { Region } from 'react-native-maps/lib/sharedTypes';
 import Colors from '~/constants/Colors';
 import { defaultStyles } from '~/constants/Styles';
 import { useAuth } from '~/lib/AuthProvider';
-import { Store, STORES_TABLE } from '~/lib/powersync/AppSchema';
+import { ListingRecord } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
-import { StoreEntry } from '~/lib/types/types';
-import { uuid } from '~/lib/util/uuid';
-// import { useBaseAuth } from '~/provider/AuthProvider';
-
-// Todo Expo location to get the user location
 
 interface Props {
-  setListings: (state: Store[]) => void;
-  listings: Store[];
+  setListings: (state: ListingRecord[]) => void;
+  setListing: (state: ListingRecord) => void;
+  listings: ListingRecord[];
   category: string;
 }
-
-// const INITIAL_REGION = {
-//   latitude: 37.33,
-//   longitude: -122,
-//   latitudeDelta: 9,
-//   longitudeDelta: 9,
-// };
 
 interface MapRegion {
   latitude: number;
@@ -39,49 +29,24 @@ interface MapRegion {
   longitudeDelta: number;
 }
 
-const ListingsMap = memo(({ category, listings, setListings }: Props) => {
+const ListingsMap = memo(({ category, listings, setListings, setListing }: Props) => {
   const router = useRouter();
   const mapRef = useRef<any>(null);
-  const { connector, db } = useSystem();
+  const { connector } = useSystem();
   const { user } = useAuth();
   const [region, setRegion] = useState<MapRegion>();
 
-  const addGeoStore = async (info: StoreEntry) => {
-    const location = await Location.getCurrentPositionAsync({});
-    const todoId = uuid();
-    const point = `POINT(${location.coords.longitude}, ${location.coords.latitude})`;
-    const data = await db
-      .insertInto(STORES_TABLE)
-      .values({ id: todoId, name: info.name, description: info.description, location: point })
-      .execute();
-
-    if (data && info.image) {
-      // // Upload the image to Supabase
-      // const foo = await connector.storage
-      //   .from('stores')
-      //   .upload(`/images/${data.id}.png`, info.image);
-    }
-  };
-
-  const loadStores = async () => {
-    return await db.selectFrom(STORES_TABLE).selectAll().execute();
-  };
-
-  const getNearbyStores = async (lat: number = 52, long: number = 52) => {
-    const { data, error } = await connector.client.rpc('nearby_stores', {
-      lat,
-      long,
-    });
-    return data;
-  };
-
-  const getStoresInView = async (
+  const getListingsInView = async (
+    lat: number,
+    long: number,
     min_lat: number,
     min_long: number,
     max_lat: number,
     max_long: number
   ) => {
-    const { data } = await connector.client.rpc('stores_in_view', {
+    const { data } = await connector.client.rpc('listings_in_view', {
+      lat,
+      long,
       min_lat,
       min_long,
       max_lat,
@@ -109,36 +74,12 @@ const ListingsMap = memo(({ category, listings, setListings }: Props) => {
     });
   };
 
-  const renderCluster = (cluster: any) => {
-    const { id, geometry, onPress, properties } = cluster;
-
-    const points = properties.point_count;
-    return (
-      <Marker
-        key={`cluster-${id}`}
-        coordinate={{
-          longitude: geometry.coordinates[0],
-          latitude: geometry.coordinates[1],
-        }}
-        onPress={onPress}>
-        <View style={styles.marker}>
-          <Text
-            style={{
-              color: '#000',
-              textAlign: 'center',
-              fontFamily: 'mon-sb',
-            }}>
-            {points}
-          </Text>
-        </View>
-      </Marker>
-    );
-  };
-
   const handleRegionChangeComplete = async (region: Region, details: Details) => {
     const bounds = await mapRef.current?.getMapBoundaries();
-    console.log('New bounds');
-    const stores = await getStoresInView(
+    const { coords } = await Location.getCurrentPositionAsync({});
+    const stores = await getListingsInView(
+      coords.latitude,
+      coords.longitude,
       bounds.southWest.latitude,
       bounds.southWest.longitude,
       bounds.northEast.latitude,
@@ -146,10 +87,29 @@ const ListingsMap = memo(({ category, listings, setListings }: Props) => {
     );
     setListings(stores);
   };
+  const debounceRegionChangeComplete = useCallback(debounce(handleRegionChangeComplete, 500), []);
 
-  const handleMarkerPress = (store: Store) => {
-    router.push(`/listing/${store.id}`);
+  const handleMarkerPress = (listing: ListingRecord) => {
+    setListing(listing);
   };
+
+  const renderMarker = useCallback(
+    (store) => (
+      <Marker
+        coordinate={{
+          longitude: store.long,
+          latitude: store.lat,
+        }}
+        key={store.id}
+        onPress={() => handleMarkerPress(store)}>
+        <View style={styles.marker}>
+          <Ionicons name="library-outline" size={20} color={Colors.light} />
+          {/*<Text style={styles.markerText}>{store.name}</Text>*/}
+        </View>
+      </Marker>
+    ),
+    []
+  );
 
   return (
     <View style={defaultStyles.container}>
@@ -158,7 +118,7 @@ const ListingsMap = memo(({ category, listings, setListings }: Props) => {
           ref={mapRef}
           animationEnabled={false}
           style={StyleSheet.absoluteFillObject}
-          onRegionChangeComplete={handleRegionChangeComplete}
+          onRegionChangeComplete={debounceRegionChangeComplete}
           initialRegion={region}
           clusterColor="#fff"
           clusterTextColor="#000"
@@ -167,20 +127,7 @@ const ListingsMap = memo(({ category, listings, setListings }: Props) => {
           provider={PROVIDER_GOOGLE}
           showsUserLocation
           showsMyLocationButton>
-          {listings.map((store: any) => (
-            <Marker
-              coordinate={{
-                longitude: store.long,
-                latitude: store.lat,
-              }}
-              key={uuid()}
-              onPress={() => handleMarkerPress(store)} // Handle marker press
-            >
-              <View style={styles.marker}>
-                <Text style={styles.markerText}>{store.name}</Text>
-              </View>
-            </Marker>
-          ))}
+          {listings.map(renderMarker)}
         </MapView>
       )}
       <TouchableOpacity style={styles.locateBtn} onPress={onLocateMe}>
@@ -199,12 +146,13 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   marker: {
-    padding: 8,
+    flexDirection: 'row',
+    padding: 4,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.primary,
     elevation: 5,
-    borderRadius: 12,
+    borderRadius: 8,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 6,
@@ -214,7 +162,7 @@ const styles = StyleSheet.create({
     },
   },
   markerText: {
-    fontSize: 14,
+    fontSize: 10,
     fontFamily: 'mon-sb',
   },
   locateBtn: {

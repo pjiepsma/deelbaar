@@ -1,5 +1,7 @@
-import { CameraCapturedPicture, CameraType } from 'expo-camera';
+import { CameraType } from 'expo-camera';
 import { CameraView, useCameraPermissions } from 'expo-camera/next';
+import * as ImagePicker from 'expo-image-picker';
+import { ImagePickerResult } from 'expo-image-picker';
 import React, { useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -13,7 +15,7 @@ import {
 import { Button, Icon } from 'react-native-elements';
 
 export interface Props {
-  onCaptured: (photo: CameraCapturedPicture) => void;
+  onCaptured: (photo: ImagePickerResult) => void;
   onClose: () => void;
 }
 
@@ -32,21 +34,32 @@ export const CameraWidget = (props: Props) => {
   const height = Math.round((width * 16) / 9);
 
   const captureImageAsync = async () => {
+    console.log('capture image async');
     if (loading) {
       return;
     }
-    if (cameraRef.current && ready) {
-      setLoading(true);
-      const options = {
-        base64: true,
-        quality: 0.5,
-        skipProcessing: isAndroid,
-      };
-      const photo = await cameraRef.current.takePictureAsync(options);
-      setLoading(false);
-      props.onCaptured(photo);
-      props.onClose();
-    }
+
+    const options = {
+      base64: true,
+      quality: 0.5,
+      skipProcessing: isAndroid,
+    };
+    const photo = await ImagePicker.launchImageLibraryAsync(options);
+    setLoading(false);
+    props.onCaptured(photo);
+    props.onClose();
+    // if (cameraRef.current && ready) {
+    //   setLoading(true);
+    //   const options = {
+    //     base64: true,
+    //     quality: 0.5,
+    //     skipProcessing: isAndroid,
+    //   };
+    //   const photo = await cameraRef.current.takePictureAsync(options);
+    //   setLoading(false);
+    //   props.onCaptured(photo);
+    //   props.onClose();
+    // }
   };
 
   const onReady = () => {

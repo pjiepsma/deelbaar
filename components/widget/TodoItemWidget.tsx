@@ -1,42 +1,49 @@
 import { AttachmentRecord } from '@powersync/attachments';
-import { CameraCapturedPicture } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
+import { ImagePickerResult } from 'expo-image-picker';
 import React from 'react';
-import { ActivityIndicator, Alert, Modal, StyleSheet, View } from 'react-native';
-import { Button, Icon, Image, ListItem } from 'react-native-elements';
-
-import { CameraWidget } from './CameraWidget';
+import {
+  ActivityIndicator,
+  Alert,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { Button, Image, ListItem } from 'react-native-elements';
 
 import { AppConfig } from '~/lib/powersync/AppConfig';
-import { TodoRecord } from '~/lib/powersync/AppSchema';
+import { PictureRecord } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
 
 export interface TodoItemWidgetProps {
-  record: TodoRecord;
+  record: PictureRecord;
   photoAttachment: AttachmentRecord | null;
-  onSavePhoto: (data: CameraCapturedPicture) => Promise<void>;
-  onToggleCompletion: (completed: boolean) => Promise<void>;
+  onSavePhoto: (data: ImagePickerResult) => Promise<void>;
+  // onToggleCompletion: (completed: boolean) => Promise<void>;
   onDelete?: () => Promise<void>;
 }
 
+const isAndroid = Platform.OS === 'android';
+
 export const TodoItemWidget: React.FC<TodoItemWidgetProps> = (props) => {
-  const { record, photoAttachment, onDelete, onToggleCompletion, onSavePhoto } = props;
+  const { record, photoAttachment, onDelete, onSavePhoto } = props;
   const [loading, setLoading] = React.useState(false);
-  const [isCameraVisible, setCameraVisible] = React.useState(false);
   const system = useSystem();
 
-  const handleCancel = React.useCallback(() => {
-    setCameraVisible(false);
-  }, []);
+  const captureImageAsync = async () => {
+    const options = {
+      base64: true,
+      quality: 0.5,
+      skipProcessing: isAndroid,
+    };
+    const photo = await ImagePicker.launchImageLibraryAsync(options);
+    await onSavePhoto(photo);
+  };
 
   return (
     <View key={`todo-item-${record.id}`} style={{ padding: 10 }}>
-      <Modal
-        animationType="slide"
-        transparent={false}
-        visible={isCameraVisible}
-        onRequestClose={handleCancel}>
-        <CameraWidget onCaptured={onSavePhoto} onClose={handleCancel} />
-      </Modal>
       <ListItem.Swipeable
         bottomDivider
         rightContent={
@@ -65,21 +72,24 @@ export const TodoItemWidget: React.FC<TodoItemWidgetProps> = (props) => {
             iconType="material-community"
             checkedIcon="checkbox-marked"
             uncheckedIcon="checkbox-blank-outline"
-            checked={record.completed}
-            onPress={async () => {
-              setLoading(true);
-              await onToggleCompletion(!record.completed);
-              setLoading(false);
-            }}
+            // checked={record.completed}
+            // onPress={async () => {
+            //   setLoading(true);
+            //   await onToggleCompletion(!record.completed);
+            //   setLoading(false);
+            // }}
           />
         )}
         <ListItem.Content style={{ minHeight: 80 }}>
-          <ListItem.Title>{record.description}</ListItem.Title>
+          <ListItem.Title>{record.created_at}</ListItem.Title>
         </ListItem.Content>
         {AppConfig.supabaseBucket &&
           (record.photo_id == null ? (
-            <Icon name="camera" type="font-awesome" onPress={() => setCameraVisible(true)} />
-          ) : photoAttachment?.local_uri != null ? (
+            <TouchableOpacity onPress={captureImageAsync}>
+              <Text>Flip Camera</Text>
+            </TouchableOpacity>
+          ) : // <Icon name="camera" type="font-awesome" onPress={() => setCameraVisible(true)} /> // Photo window TODO open expo camera
+          photoAttachment?.local_uri != null ? (
             <Image
               source={{ uri: system.attachmentQueue?.getLocalUri(photoAttachment.local_uri) }}
               containerStyle={styles.item}

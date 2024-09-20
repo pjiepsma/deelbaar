@@ -1,56 +1,53 @@
 import { AttachmentTable } from '@powersync/attachments';
 import { Column, ColumnType, Index, IndexedColumn, Schema, Table } from '@powersync/react-native';
 
-export const TODO_TABLE = 'todos';
-export const LIST_TABLE = 'lists';
+export const PICTURE_TABLE = 'pictures';
+export const LISTING_TABLE = 'listings';
 
-export interface ListRecord {
+export interface ListingRecord {
   id: string;
   name: string;
+  description: string;
   created_at: string;
   owner_id?: string;
+  location: string;
+  dist_meters: string;
+  lat: number;
+  long: number;
 }
 
-export interface TodoRecord {
+export interface PictureRecord {
   id: string;
   created_at: string;
-  completed: boolean;
-  description: string;
-  completed_at?: string;
-
   created_by: string;
-  completed_by?: string;
-  list_id: string;
-
-  photo_id?: string; // This is the attachment id, 1:1 relationship with `id` in AttachmentTable
+  listing_id: string;
+  photo_id: string;
 }
 
 export const AppSchema = new Schema([
   new Table({
-    name: 'todos',
+    name: 'listings',
     columns: [
-      new Column({ name: 'list_id', type: ColumnType.TEXT }),
-      new Column({ name: 'photo_id', type: ColumnType.TEXT }),
-      new Column({ name: 'created_at', type: ColumnType.TEXT }),
-      new Column({ name: 'completed_at', type: ColumnType.TEXT }),
+      new Column({ name: 'name', type: ColumnType.TEXT }),
       new Column({ name: 'description', type: ColumnType.TEXT }),
-      new Column({ name: 'completed', type: ColumnType.INTEGER }),
-      new Column({ name: 'created_by', type: ColumnType.TEXT }),
-      new Column({ name: 'completed_by', type: ColumnType.TEXT }),
-    ],
-    indexes: [
-      new Index({
-        name: 'list',
-        columns: [new IndexedColumn({ name: 'list_id' })],
-      }),
+      new Column({ name: 'created_at', type: ColumnType.TEXT }),
+      new Column({ name: 'owner_id', type: ColumnType.TEXT }),
+      new Column({ name: 'location', type: ColumnType.TEXT }),
     ],
   }),
   new Table({
-    name: 'lists',
+    name: 'pictures',
     columns: [
       new Column({ name: 'created_at', type: ColumnType.TEXT }),
-      new Column({ name: 'name', type: ColumnType.TEXT }),
-      new Column({ name: 'owner_id', type: ColumnType.TEXT }),
+      new Column({ name: 'created_by', type: ColumnType.TEXT }),
+      new Column({ name: 'listing_id', type: ColumnType.TEXT }),
+      new Column({ name: 'photo_id', type: ColumnType.TEXT }),
+    ],
+    indexes: [
+      new Index({
+        name: 'picture',
+        columns: [new IndexedColumn({ name: 'picture_id' })],
+      }),
     ],
   }),
   // Add Attachment table

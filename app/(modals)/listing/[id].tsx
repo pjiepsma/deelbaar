@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import * as Location from 'expo-location';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { Dimensions, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -15,39 +14,32 @@ import Loader from '~/components/Loader';
 import Colors from '~/constants/Colors';
 import { defaultStyles } from '~/constants/Styles';
 import { useAuth } from '~/lib/AuthProvider';
-import { Store, STORES_TABLE } from '~/lib/powersync/AppSchema';
+import { ListingRecord } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
-import { uuid } from '~/lib/util/uuid';
+import { SelectListing } from '~/lib/powersync/Queries';
 
 const { width } = Dimensions.get('window');
 const IMG_HEIGHT = 300;
 
 const DetailsPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { connector, db } = useSystem();
+  const { connector, powersync } = useSystem();
   const defaultImage = require('~/assets/images/default-placeholder.png');
   const navigation = useNavigation();
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const { user } = useAuth();
-  const [listing, setListing] = useState<Store>(); // change type
+  const [listing, setListing] = useState<ListingRecord>(); // change type
   const [isLoading, setLoading] = useState(false);
+
   useEffect(() => {
-    setLoading(true);
-    if (id) {
-      setStoreById(id);
-    }
-    setLoading(false);
+    getListing(id);
   }, [id]);
 
-  const setStoreById = async (storeId: string): Promise<void> => {
-    // Fetch the store from the database based on the ID
-    const store = await db
-      .selectFrom(STORES_TABLE)
-      .selectAll() // Select all columns, or you can specify specific columns
-      .where('id', '=', storeId) // Condition to filter by the store ID
-      .executeTakeFirst(); // Get the first matching result
-
-    setListing(store);
+  const getListing = async (id: string): Promise<void> => {
+    const result = await powersync.execute(SelectListing, [id]);
+    const resultRecord = result.rows?.item(0);
+    console.log(resultRecord);
+    // setListing(resultRecord);
   };
 
   const shareListing = async () => {
@@ -62,27 +54,27 @@ const DetailsPage = () => {
     }
   };
 
-  const saveListing = async () => {
-    const location = await Location.getCurrentPositionAsync({});
-    const todoId = uuid();
-    const point = `POINT(${location.coords.longitude}, ${location.coords.latitude})`;
-    const data = await db
-      .insertInto(STORES_TABLE)
-      .values({ id: todoId, name: '', description: '', location: point })
-      .execute();
-  };
-
-  const editListing = async () => {
-    if (listing) {
-      const location = await Location.getCurrentPositionAsync({});
-      const todoId = uuid();
-      const point = `POINT(${location.coords.longitude}, ${location.coords.latitude})`;
-      const data = await db
-        .insertInto(STORES_TABLE)
-        .values({ id: todoId, name: '', description: '', location: point })
-        .execute();
-    }
-  };
+  // const saveListing = async () => {
+  //   const location = await Location.getCurrentPositionAsync({});
+  //   const todoId = uuid();
+  //   const point = `POINT(${location.coords.longitude}, ${location.coords.latitude})`;
+  //   const data = await db
+  //     .insertInto(STORES_TABLE)
+  //     .values({ id: todoId, name: '', description: '', location: point })
+  //     .execute();
+  // };
+  //
+  // const editListing = async () => {
+  //   if (listing) {
+  //     const location = await Location.getCurrentPositionAsync({});
+  //     const todoId = uuid();
+  //     const point = `POINT(${location.coords.longitude}, ${location.coords.latitude})`;
+  //     const data = await db
+  //       .insertInto(STORES_TABLE)
+  //       .values({ id: todoId, name: '', description: '', location: point })
+  //       .execute();
+  //   }
+  // };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -100,9 +92,9 @@ const DetailsPage = () => {
           <TouchableOpacity style={styles.roundButton} onPress={shareListing}>
             <Ionicons name="share-outline" size={22} color="#000" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.roundButton} onPress={saveListing}>
-            <Ionicons name="heart-outline" size={22} color="#000" />
-          </TouchableOpacity>
+          {/*<TouchableOpacity style={styles.roundButton} onPress={saveListing}>*/}
+          {/*  <Ionicons name="heart-outline" size={22} color="#000" />*/}
+          {/*</TouchableOpacity>*/}
         </View>
       ),
       headerLeft: () => (

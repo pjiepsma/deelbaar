@@ -1,25 +1,31 @@
 import { Ionicons } from '@expo/vector-icons';
-import BottomSheet, { BottomSheetBackgroundProps } from '@gorhom/bottom-sheet';
-import { useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import BottomSheet, {
+  BottomSheetBackgroundProps,
+  BottomSheetFlatList,
+  BottomSheetFlatListMethods,
+} from '@gorhom/bottom-sheet';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ListRenderItem, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 
-import Listings from '~/components/listing/Listings';
+import { ListingItem } from '~/components/listing/ListingItem';
 import Colors from '~/constants/Colors';
-import { Store } from '~/lib/powersync/AppSchema';
+import { ListingRecord } from '~/lib/powersync/AppSchema';
+import { useSystem } from '~/lib/powersync/PowerSync';
 
 interface Props {
-  listings: Store[];
+  listings: ListingRecord[];
   category: string;
   animatedPosition: SharedValue<number>;
+  setListing: (state: ListingRecord | null) => void;
 }
 
 const CustomBackground: React.FC<BottomSheetBackgroundProps> = ({ style }) => {
   return <View pointerEvents="none" style={[style, { backgroundColor: Colors.light }]} />;
 };
 
-const ListingsBottomSheet = ({ listings, category, animatedPosition }: Props) => {
-  const snapPoints = useMemo(() => ['8%', '100%'], []);
+const ListingsBottomSheet = ({ listings, category, animatedPosition, setListing }: Props) => {
+  const snapPoints = useMemo(() => ['10%', '50%', '100%'], []);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [refresh, setRefresh] = useState<number>(0);
 
@@ -28,18 +34,41 @@ const ListingsBottomSheet = ({ listings, category, animatedPosition }: Props) =>
     setRefresh(refresh + 1);
   };
 
+  const listRef = useRef<BottomSheetFlatListMethods>(null);
+  const { powersync } = useSystem();
+
+  useEffect(() => {
+    if (refresh) {
+      scrollListTop();
+    }
+  }, [refresh]);
+
+  const scrollListTop = () => {
+    listRef.current?.scrollToOffset({ offset: 0, animated: true });
+  };
+
+  const renderItem: ListRenderItem<ListingRecord> = ({ item }) => (
+    <ListingItem listing={item} setListing={setListing} />
+  );
+
   return (
     <BottomSheet
       backgroundComponent={CustomBackground}
       animatedIndex={animatedPosition}
       ref={bottomSheetRef}
-      index={1}
+      index={0}
       snapPoints={snapPoints}
       enablePanDownToClose={false}
       handleIndicatorStyle={{ backgroundColor: Colors.grey }}
       style={styles.sheetContainer}>
       <View style={styles.contentContainer}>
-        <Listings listings={listings} refresh={refresh} category={category} />
+        <BottomSheetFlatList
+          renderItem={renderItem}
+          data={listings}
+          keyExtractor={(item) => item.id}
+          ref={listRef}
+          ListHeaderComponent={<Text style={styles.info}> Overview </Text>}
+        />
       </View>
       <View style={styles.absoluteView}>
         <TouchableOpacity onPress={onShowMap} style={styles.btn}>
@@ -56,8 +85,14 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
   },
+  info: {
+    textAlign: 'center',
+    fontFamily: 'mon-sb',
+    fontSize: 16,
+  },
   contentContainer: {
     flex: 1,
+    paddingTop: 14,
   },
   absoluteView: {
     position: 'absolute',

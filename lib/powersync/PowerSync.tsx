@@ -1,11 +1,10 @@
 import '@azure/core-asynciterator-polyfill';
 import 'react-native-polyfill-globals/auto';
 import { AttachmentRecord } from '@powersync/attachments';
-import { Kysely, wrapPowerSyncWithKysely } from '@powersync/kysely-driver';
 import { AbstractPowerSyncDatabase, PowerSyncDatabase } from '@powersync/react-native';
 import { createContext, useContext } from 'react';
 
-import { AppSchema, Database } from './AppSchema';
+import { AppSchema } from './AppSchema';
 
 import { AppConfig } from '~/lib/powersync/AppConfig';
 import { PhotoAttachmentQueue } from '~/lib/powersync/PhotoAttachmentQueue';
@@ -17,7 +16,8 @@ export class System {
   powersync: AbstractPowerSyncDatabase;
   attachmentQueue: PhotoAttachmentQueue | undefined = undefined;
   storage: SupabaseStorageAdapter;
-  db: Kysely<Database>;
+
+  // db: Kysely<Database>;
 
   constructor() {
     const powerSyncDb = new PowerSyncDatabase({
@@ -30,7 +30,7 @@ export class System {
     this.connector = new SupabaseConnector();
     this.storage = this.connector.storage;
     this.powersync = powerSyncDb;
-    this.db = wrapPowerSyncWithKysely(this.powersync);
+    // this.db = wrapPowerSyncWithKysely(this.powersync);
     if (AppConfig.supabaseBucket) {
       this.attachmentQueue = new PhotoAttachmentQueue({
         powersync: this.powersync,

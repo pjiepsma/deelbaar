@@ -3,7 +3,7 @@ import { randomUUID } from 'expo-crypto';
 import * as FileSystem from 'expo-file-system';
 
 import { AppConfig } from '~/lib/powersync/AppConfig';
-import { TODO_TABLE } from '~/lib/powersync/AppSchema';
+import { PICTURE_TABLE } from '~/lib/powersync/AppSchema';
 
 export class PhotoAttachmentQueue extends AbstractAttachmentQueue {
   async init() {
@@ -20,7 +20,7 @@ export class PhotoAttachmentQueue extends AbstractAttachmentQueue {
   onAttachmentIdsChange(onUpdate: (ids: string[]) => void): void {
     this.powersync.watch(
       `SELECT photo_id as id
-             FROM ${TODO_TABLE}
+             FROM ${PICTURE_TABLE}
              WHERE photo_id IS NOT NULL`,
       [],
       {

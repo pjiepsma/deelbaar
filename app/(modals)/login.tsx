@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -8,7 +9,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+
+import { useAuth } from '~/lib/AuthProvider';
 import { useSystem } from '~/lib/powersync/PowerSync';
 
 const Login = () => {
@@ -16,13 +18,14 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { connector } = useSystem();
-
+  const { signIn } = useAuth();
   // Sign in with email and password
   const onSignInPress = async () => {
     setLoading(true);
     try {
       // Use the PowerSync specific login method
-      await connector.login(email, password);
+      const data = await connector.login(email, password);
+      signIn(data);
     } catch (error: any) {
       Alert.alert(error.message);
     } finally {
@@ -38,8 +41,8 @@ const Login = () => {
       data: { session },
       error,
     } = await connector.client.auth.signUp({
-      email: email,
-      password: password,
+      email,
+      password,
     });
 
     if (error) {
@@ -89,7 +92,7 @@ const Login = () => {
       <TouchableOpacity onPress={onSignInPress} style={styles.button}>
         <Text style={{ color: '#fff' }}>Sign in</Text>
       </TouchableOpacity>
-      <Button onPress={onSignUpPress} title="Create Account" color={'#fff'}></Button>
+      <Button onPress={onSignUpPress} title="Create Account" color="#fff" />
     </View>
   );
 };
