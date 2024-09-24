@@ -33,6 +33,8 @@ export const AppSchema = new Schema([
       new Column({ name: 'created_at', type: ColumnType.TEXT }),
       new Column({ name: 'owner_id', type: ColumnType.TEXT }),
       new Column({ name: 'location', type: ColumnType.TEXT }),
+      new Column({ name: 'category', type: ColumnType.TEXT }),
+      new Column({ name: 'tags', type: ColumnType.TEXT }),
     ],
   }),
   new Table({

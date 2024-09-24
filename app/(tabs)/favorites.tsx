@@ -1,11 +1,10 @@
 import { useQuery, useStatus } from '@powersync/react-native';
 import * as Location from 'expo-location';
-import { router, Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { ScrollView, View } from 'react-native';
-import { FAB, Text } from 'react-native-elements';
-import prompt from 'react-native-prompt-android';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Icon } from 'react-native-elements';
 
 import { ListItemWidget } from '~/components/widget/ListItemWidget';
 import { useAuth } from '~/lib/AuthProvider';
@@ -27,6 +26,7 @@ const ListsViewWidget: React.FC = () => {
   const { user, signIn } = useAuth();
   const status = useStatus();
   const { data: ListingRecords } = useQuery<ListingRecord>(SelectListings);
+  const router = useRouter();
 
   const createListing = async (name: string) => {
     if (user) {
@@ -59,25 +59,35 @@ const ListsViewWidget: React.FC = () => {
           headerShown: false,
         }}
       />
-      <FAB
-        style={{ zIndex: 99, bottom: 0 }}
-        icon={{ name: 'add', color: 'white' }}
-        size="small"
-        placement="right"
-        onPress={() => {
-          prompt(
-            'Add a new list',
-            '',
-            async (name) => {
-              if (!name) {
-                return;
-              }
-              await createListing(name);
-            },
-            { placeholder: 'List name', style: 'shimo' }
-          );
-        }}
-      />
+      {/*<TouchableOpacity*/}
+      {/*  style={styles.button}*/}
+      {/*  onPress={async () => {*/}
+      {/*    const name = await new Promise<string | null>((resolve) => {*/}
+      {/*      prompt(*/}
+      {/*        'Add a new list',*/}
+      {/*        '',*/}
+      {/*        (inputName) => {*/}
+      {/*          resolve(inputName);*/}
+      {/*        },*/}
+      {/*        { placeholder: 'List name', style: 'shimo' }*/}
+      {/*      );*/}
+      {/*    });*/}
+
+      {/*    if (name) {*/}
+      {/*      try {*/}
+      {/*        await createListing(name);*/}
+      {/*        // Optionally, provide feedback to the user (e.g., Toast notification)*/}
+      {/*      } catch (error) {*/}
+      {/*        console.error('Error creating listing:', error);*/}
+      {/*        // Handle error (e.g., show an alert to the user)*/}
+      {/*      }*/}
+      {/*    }*/}
+      {/*  }}>*/}
+      {/*  <Icon name="add" size={24} color="white" />*/}
+      {/*</TouchableOpacity>*/}
+      <TouchableOpacity style={styles.button} onPress={() => router.navigate('(auth)/admin')}>
+        <Icon name="add" size={24} color="white" />
+      </TouchableOpacity>
       <ScrollView key="lists" style={{ maxHeight: '90%' }}>
         {!status.hasSynced ? (
           <Text>Busy with sync...</Text>
@@ -103,5 +113,23 @@ const ListsViewWidget: React.FC = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  button: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    backgroundColor: 'blue', // Adjust color as needed
+    borderRadius: 30,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5, // Android shadow effect
+  },
+  buttonText: {
+    color: 'white',
+    marginTop: 8, // Space between icon and text
+  },
+});
 
 export default ListsViewWidget;

@@ -9,8 +9,8 @@ export const SelectListings = `
     GROUP BY ${LISTING_TABLE}.id;
 `;
 
-export const InsertListing = `INSERT INTO ${LISTING_TABLE} (id, name, description, location, owner_id, created_at)
-                              VALUES (uuid(), ?, ?, ?, ?, datetime()) RETURNING *`;
+export const InsertListing = `INSERT INTO ${LISTING_TABLE} (id, name, description, location, owner_id, created_at, category)
+                              VALUES (uuid(), ?, ?, ?, ?, datetime(), ?)`;
 
 export const DeleteListingPictures = `DELETE
                                       FROM ${PICTURE_TABLE}

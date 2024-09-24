@@ -14,9 +14,9 @@ import Loader from '~/components/Loader';
 import Colors from '~/constants/Colors';
 import { defaultStyles } from '~/constants/Styles';
 import { useAuth } from '~/lib/AuthProvider';
-import { ListingRecord } from '~/lib/powersync/AppSchema';
+import { LISTING_TABLE, ListingRecord, PICTURE_TABLE } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
-import { SelectListing } from '~/lib/powersync/Queries';
+import { supabase } from '~/lib/powersync/SupabaseConnector';
 
 const { width } = Dimensions.get('window');
 const IMG_HEIGHT = 300;
@@ -36,10 +36,28 @@ const DetailsPage = () => {
   }, [id]);
 
   const getListing = async (id: string): Promise<void> => {
-    const result = await powersync.execute(SelectListing, [id]);
-    const resultRecord = result.rows?.item(0);
-    console.log(resultRecord);
-    // setListing(resultRecord);
+    // const result = await powersync.execute(SelectListing, [id]);
+    // const resultRecord = result.rows?.item(0);
+    // console.log(resultRecord);
+    const { data, error } = await supabase
+      .from(LISTING_TABLE) // Your listings table
+      .select(
+        `
+      *,
+      ST_X(location) AS longitude,
+      ST_Y(location) AS latitude,
+      pictures: ${PICTURE_TABLE} (*)
+    `
+      )
+      .eq('id', id) // Filter by primary key
+      .single(); // Get a single object
+
+    if (error) {
+      console.error('Error fetching listing:', error);
+    }
+    console.log(data);
+
+    // setListing(data);
   };
 
   const shareListing = async () => {

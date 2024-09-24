@@ -6,9 +6,9 @@ import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import MapView from 'react-native-map-clustering';
 import { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { Details } from 'react-native-maps/lib/MapView.types';
 import { Region } from 'react-native-maps/lib/sharedTypes';
 
+import Loader from '~/components/Loader';
 import Colors from '~/constants/Colors';
 import { defaultStyles } from '~/constants/Styles';
 import { useAuth } from '~/lib/AuthProvider';
@@ -29,12 +29,29 @@ interface MapRegion {
   longitudeDelta: number;
 }
 
+interface MarkerComponentProps {
+  store: ListingRecord;
+  onPress: () => void;
+}
+
+const MarkerComponent: React.FC<MarkerComponentProps> = memo(({ store, onPress }) => (
+  <Marker
+    coordinate={{ latitude: store.lat, longitude: store.long }}
+    onPress={onPress}
+    tracksViewChanges={false}>
+    <View style={styles.marker}>
+      <Ionicons name="library-outline" size={20} color={Colors.light} />
+    </View>
+  </Marker>
+));
+
 const ListingsMap = memo(({ category, listings, setListings, setListing }: Props) => {
   const router = useRouter();
   const mapRef = useRef<any>(null);
   const { connector } = useSystem();
   const { user } = useAuth();
   const [region, setRegion] = useState<MapRegion>();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const getListingsInView = async (
     lat: number,
@@ -55,66 +72,94 @@ const ListingsMap = memo(({ category, listings, setListings, setListing }: Props
     return data;
   };
 
+  const calculateBounds = (
+    latitude: number,
+    longitude: number,
+    latitudeDelta: number,
+    longitudeDelta: number
+  ) => {
+    return {
+      minLat: latitude - latitudeDelta / 2,
+      maxLat: latitude + latitudeDelta / 2,
+      minLong: longitude - longitudeDelta / 2,
+      maxLong: longitude + longitudeDelta / 2,
+    };
+  };
+
   useEffect(() => {
     onLocateMe();
   }, []);
 
   const onLocateMe = async () => {
+    setLoading(true); // Start loading when locating the user
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
+      setLoading(false); // Stop loading if permission is not granted
       return;
     }
 
     const location = await Location.getCurrentPositionAsync({});
-    setRegion({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
+    const latitude = location.coords.latitude;
+    const longitude = location.coords.longitude;
+
+    const newRegion = {
+      latitude,
+      longitude,
       latitudeDelta: 0.05,
       longitudeDelta: 0.05,
-    });
+    };
+    setRegion(newRegion);
+
+    const { minLat, maxLat, minLong, maxLong } = calculateBounds(
+      latitude,
+      longitude,
+      newRegion.latitudeDelta,
+      newRegion.longitudeDelta
+    );
+
+    const stores = await getListingsInView(latitude, longitude, minLat, minLong, maxLat, maxLong);
+    setListings(stores);
+    setLoading(false); // Stop loading after fetching
   };
 
-  const handleRegionChangeComplete = async (region: Region, details: Details) => {
-    const bounds = await mapRef.current?.getMapBoundaries();
+  const handleRegionChangeComplete = async (region: Region) => {
+    if (!region) return;
+
+    setLoading(true); // Start loading when region changes
+    const { latitude, longitude, latitudeDelta, longitudeDelta } = region;
+
+    const { minLat, maxLat, minLong, maxLong } = calculateBounds(
+      latitude,
+      longitude,
+      latitudeDelta,
+      longitudeDelta
+    );
+
     const { coords } = await Location.getCurrentPositionAsync({});
     const stores = await getListingsInView(
       coords.latitude,
       coords.longitude,
-      bounds.southWest.latitude,
-      bounds.southWest.longitude,
-      bounds.northEast.latitude,
-      bounds.northEast.longitude
+      minLat,
+      minLong,
+      maxLat,
+      maxLong
     );
+
     setListings(stores);
+    setLoading(false); // Stop loading after fetching
   };
-  const debounceRegionChangeComplete = useCallback(debounce(handleRegionChangeComplete, 500), []);
+
+  const debounceRegionChangeComplete = useCallback(debounce(handleRegionChangeComplete, 1000), []);
 
   const handleMarkerPress = (listing: ListingRecord) => {
     setListing(listing);
   };
 
-  const renderMarker = useCallback(
-    (store) => (
-      <Marker
-        coordinate={{
-          longitude: store.long,
-          latitude: store.lat,
-        }}
-        key={store.id}
-        onPress={() => handleMarkerPress(store)}>
-        <View style={styles.marker}>
-          <Ionicons name="library-outline" size={20} color={Colors.light} />
-          {/*<Text style={styles.markerText}>{store.name}</Text>*/}
-        </View>
-      </Marker>
-    ),
-    []
-  );
-
   return (
     <View style={defaultStyles.container}>
       {region && (
         <MapView
+          minZoomLevel={12}
           ref={mapRef}
           animationEnabled={false}
           style={StyleSheet.absoluteFillObject}
@@ -127,8 +172,19 @@ const ListingsMap = memo(({ category, listings, setListings, setListing }: Props
           provider={PROVIDER_GOOGLE}
           showsUserLocation
           showsMyLocationButton>
-          {listings.map(renderMarker)}
+          {listings.map((store) => (
+            <MarkerComponent
+              key={store.id}
+              store={store}
+              onPress={() => handleMarkerPress(store)}
+            />
+          ))}
         </MapView>
+      )}
+      {loading && ( // Show loader based on loading state
+        <View style={styles.loaderContainer}>
+          <Loader delay={200} amount={3} />
+        </View>
       )}
       <TouchableOpacity style={styles.locateBtn} onPress={onLocateMe}>
         <Ionicons name="navigate" size={24} color={Colors.dark} />
@@ -140,10 +196,6 @@ const ListingsMap = memo(({ category, listings, setListings, setListing }: Props
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  map: {
-    width: '100%',
-    height: '100%',
   },
   marker: {
     flexDirection: 'row',
@@ -161,10 +213,6 @@ const styles = StyleSheet.create({
       height: 10,
     },
   },
-  markerText: {
-    fontSize: 10,
-    fontFamily: 'mon-sb',
-  },
   locateBtn: {
     position: 'absolute',
     top: 70,
@@ -180,6 +228,21 @@ const styles = StyleSheet.create({
       width: 1,
       height: 10,
     },
+  },
+  loaderContainer: {
+    position: 'absolute',
+    zIndex: 1,
+    top: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: Colors.dark,
+    fontWeight: '600',
   },
 });
 
