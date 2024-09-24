@@ -8,23 +8,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81ed2e15-f48e-4376-a224-23fc8ae7ace9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/(auth)/admin.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/data/minibieb-gelderland-points.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/data/todo.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/data/transformed.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/listing/ListingMapStorage.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/powersync/AsyncStorageConnector.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/data/minibieb-gelderland.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/data/minibieb-gelderland.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/Loader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Loader.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/listing/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/listing/ListingsMap.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/Queries.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/Queries.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/storage/KVStorage.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -149,7 +135,7 @@
       <workItem from="1726807523937" duration="19809000" />
       <workItem from="1727111131167" duration="3795000" />
       <workItem from="1727115209567" duration="10980000" />
-      <workItem from="1727158711366" duration="12141000" />
+      <workItem from="1727158711366" duration="14500000" />
     </task>
     <servers />
   </component>

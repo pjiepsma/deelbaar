@@ -12,7 +12,15 @@ import Animated, {
 
 import Colors from '~/constants/Colors';
 
-export default function Loader({ delay, amount }: { delay: number; amount: number }) {
+export default function Loader({
+  delay,
+  amount,
+  visible,
+}: {
+  delay: number;
+  amount: number;
+  visible: boolean;
+}) {
   // Create a shared value for opacity
   const opacity = useSharedValue(0);
 
@@ -24,12 +32,18 @@ export default function Loader({ delay, amount }: { delay: number; amount: numbe
   });
 
   useEffect(() => {
-    // Start the fade-in effect
-    opacity.value = withSequence(
-      withTiming(1, { duration: 600, easing: Easing.inOut(Easing.ease) }), // Fade in
-      withDelay(500, withTiming(0, { duration: 600, easing: Easing.inOut(Easing.ease) })) // Fade out
-    );
-  }, []);
+    if (visible) {
+      opacity.value = withDelay(
+        0,
+        withTiming(1, { duration: 250, easing: Easing.inOut(Easing.ease) })
+      );
+    } else {
+      opacity.value = withDelay(
+        250,
+        withTiming(0, { duration: 250, easing: Easing.inOut(Easing.ease) })
+      );
+    }
+  }, [visible]);
 
   return (
     <Animated.View style={[styles.loaderContainer, animatedLoaderStyle]}>

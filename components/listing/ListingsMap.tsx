@@ -4,8 +4,7 @@ import { useRouter } from 'expo-router';
 import { debounce } from 'lodash';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import MapView from 'react-native-map-clustering';
-import { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Region } from 'react-native-maps/lib/sharedTypes';
 
 import Loader from '~/components/Loader';
@@ -40,7 +39,7 @@ const MarkerComponent: React.FC<MarkerComponentProps> = memo(({ store, onPress }
     onPress={onPress}
     tracksViewChanges={false}>
     <View style={styles.marker}>
-      <Ionicons name="library-outline" size={20} color={Colors.light} />
+      <Ionicons name="library-outline" size={14} color={Colors.light} />
     </View>
   </Marker>
 ));
@@ -161,14 +160,9 @@ const ListingsMap = memo(({ category, listings, setListings, setListing }: Props
         <MapView
           minZoomLevel={12}
           ref={mapRef}
-          animationEnabled={false}
           style={StyleSheet.absoluteFillObject}
           onRegionChangeComplete={debounceRegionChangeComplete}
           initialRegion={region}
-          clusterColor="#fff"
-          clusterTextColor="#000"
-          clusterFontFamily="mon-sb"
-          radius={40}
           provider={PROVIDER_GOOGLE}
           showsUserLocation
           showsMyLocationButton>
@@ -181,11 +175,9 @@ const ListingsMap = memo(({ category, listings, setListings, setListing }: Props
           ))}
         </MapView>
       )}
-      {loading && ( // Show loader based on loading state
-        <View style={styles.loaderContainer}>
-          <Loader delay={200} amount={3} />
-        </View>
-      )}
+      <View style={styles.loaderContainer}>
+        <Loader delay={200} amount={3} visible={loading} />
+      </View>
       <TouchableOpacity style={styles.locateBtn} onPress={onLocateMe}>
         <Ionicons name="navigate" size={24} color={Colors.dark} />
       </TouchableOpacity>
@@ -237,6 +229,7 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     justifyContent: 'center',
+    pointerEvents: 'box-none', // Allows touch events to pass through
   },
   loadingText: {
     marginTop: 10,
