@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
+  cancelAnimation,
   Easing,
   useAnimatedStyle,
   useSharedValue,
@@ -21,7 +22,6 @@ export default function Loader({
   amount: number;
   visible: boolean;
 }) {
-  // Create a shared value for opacity
   const opacity = useSharedValue(0);
 
   // Animated style for the loader's opacity
@@ -49,15 +49,26 @@ export default function Loader({
     <Animated.View style={[styles.loaderContainer, animatedLoaderStyle]}>
       <View style={styles.container}>
         {[...Array(amount)].map((_, i) => (
-          <Dot delay={delay} index={i} amount={amount} key={i} />
+          <Dot delay={delay} index={i} amount={amount} visible={visible} key={i} />
         ))}
       </View>
     </Animated.View>
   );
 }
 
-function Dot({ delay, index, amount }: { delay: number; index: number; amount: number }) {
+function Dot({
+  delay,
+  index,
+  amount,
+  visible,
+}: {
+  delay: number;
+  index: number;
+  amount: number;
+  visible: boolean;
+}) {
   const offset = useSharedValue<number>(0.75);
+
   const animatedStyles = useAnimatedStyle(() => {
     return {
       transform: [{ scale: offset.value }],
@@ -65,26 +76,34 @@ function Dot({ delay, index, amount }: { delay: number; index: number; amount: n
   });
 
   useEffect(() => {
-    offset.value = withDelay(
-      delay * index,
-      withRepeat(
-        withSequence(
-          withTiming(2, {
-            duration: delay,
-            easing: Easing.inOut(Easing.ease),
-          }),
-          withTiming(1, {
-            duration: delay,
-            easing: Easing.inOut(Easing.ease),
-          }),
-          withTiming(1, {
-            duration: delay * amount * 0.75,
-          })
-        ),
-        -1
-      )
-    );
-  }, []);
+    if (visible) {
+      // Start animation when visible is true
+      offset.value = withDelay(
+        delay * index,
+        withRepeat(
+          withSequence(
+            withTiming(1.5, {
+              duration: delay,
+              easing: Easing.inOut(Easing.ease),
+            }),
+            withTiming(1, {
+              duration: delay,
+              easing: Easing.inOut(Easing.ease),
+            }),
+            withTiming(1, {
+              duration: delay * amount * 0.5,
+            })
+          ),
+          -1,
+          false
+        )
+      );
+    } else {
+      // Reset and cancel animation when visible is false
+      cancelAnimation(offset);
+      offset.value = 0.75; // Reset to initial scale
+    }
+  }, [visible, delay, index, amount]);
 
   return <Animated.View style={[styles.box, animatedStyles]} />;
 }

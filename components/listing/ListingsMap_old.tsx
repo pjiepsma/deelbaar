@@ -1,11 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
-import { useRouter } from 'expo-router';
-import { debounce } from 'lodash';
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { Region } from 'react-native-maps/lib/sharedTypes';
+import MapView, { Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Loader from '~/components/Loader';
 import Colors from '~/constants/Colors';
@@ -18,7 +16,6 @@ interface Props {
   setListings: (state: ListingRecord[]) => void;
   setListing: (state: ListingRecord) => void;
   listings: ListingRecord[];
-  category: string;
 }
 
 interface MapRegion {
@@ -28,45 +25,31 @@ interface MapRegion {
   longitudeDelta: number;
 }
 
-interface MarkerComponentProps {
-  store: ListingRecord;
-  onPress: () => void;
-}
-
-const MarkerComponent: React.FC<MarkerComponentProps> = memo(({ store, onPress }) => (
-  <Marker
-    coordinate={{ latitude: store.lat, longitude: store.long }}
-    onPress={onPress}
-    tracksViewChanges={false}>
-    <View style={styles.marker}>
-      <Ionicons name="library-outline" size={14} color={Colors.light} />
-    </View>
-  </Marker>
-));
-
-const ListingsMap = memo(({ category, listings, setListings, setListing }: Props) => {
-  const router = useRouter();
-  const mapRef = useRef<any>(null);
+const ListingsMap_old = memo(({ listings, setListings, setListing }: Props) => {
+  const mapRef = useRef<MapView | null>(null);
   const { connector } = useSystem();
   const { user } = useAuth();
-  const [region, setRegion] = useState<MapRegion>();
+  const [region, setRegion] = useState<MapRegion | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const insets = useSafeAreaInsets();
+  const previousRegionRef = useRef<MapRegion | null>(null);
+  const SIGNIFICANT_CHANGE_THRESHOLD = 0.015;
 
   const getListingsInView = async (
     lat: number,
     long: number,
-    min_lat: number,
-    min_long: number,
-    max_lat: number,
-    max_long: number
-  ) => {
-    const { data } = await connector.client.rpc('listings_in_view', {
-      lat,
-      long,
-      min_lat,
-      min_long,
-      max_lat,
-      max_long,
+    minLat: number,
+    minLong: number,
+    maxLat: number,
+    maxLong: number
+  ): Promise<ListingRecord[]> => {
+    const { data } = await connector.client.rpc('listings_with_distance', {
+      min_lat: minLat,
+      min_long: minLong,
+      max_lat: maxLat,
+      max_long: maxLong,
+      input_long: long,
+      input_lat: lat,
     });
     return data;
   };
@@ -90,24 +73,25 @@ const ListingsMap = memo(({ category, listings, setListings, setListing }: Props
   }, []);
 
   const onLocateMe = async () => {
-    setLoading(true); // Start loading when locating the user
+    setLoading(true);
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      setLoading(false); // Stop loading if permission is not granted
+      alert('Permission to access location was denied');
+      setLoading(false);
       return;
     }
 
     const location = await Location.getCurrentPositionAsync({});
-    const latitude = location.coords.latitude;
-    const longitude = location.coords.longitude;
+    const { latitude, longitude } = location.coords;
 
-    const newRegion = {
+    const newRegion: MapRegion = {
       latitude,
       longitude,
       latitudeDelta: 0.05,
       longitudeDelta: 0.05,
     };
     setRegion(newRegion);
+    previousRegionRef.current = newRegion;
 
     const { minLat, maxLat, minLong, maxLong } = calculateBounds(
       latitude,
@@ -115,25 +99,51 @@ const ListingsMap = memo(({ category, listings, setListings, setListing }: Props
       newRegion.latitudeDelta,
       newRegion.longitudeDelta
     );
-
     const stores = await getListingsInView(latitude, longitude, minLat, minLong, maxLat, maxLong);
     setListings(stores);
-    setLoading(false); // Stop loading after fetching
+    setLoading(false);
   };
 
   const handleRegionChangeComplete = async (region: Region) => {
     if (!region) return;
 
-    setLoading(true); // Start loading when region changes
     const { latitude, longitude, latitudeDelta, longitudeDelta } = region;
+    const prevRegion = previousRegionRef.current;
 
+    if (prevRegion) {
+      const latitudeChange = Math.abs(latitude - prevRegion.latitude);
+      const longitudeChange = Math.abs(longitude - prevRegion.longitude);
+
+      if (
+        latitudeChange < SIGNIFICANT_CHANGE_THRESHOLD &&
+        longitudeChange < SIGNIFICANT_CHANGE_THRESHOLD
+      ) {
+        const { minLat, maxLat, minLong, maxLong } = calculateBounds(
+          latitude,
+          longitude,
+          latitudeDelta,
+          longitudeDelta
+        );
+        const filteredListings = listings.filter(
+          (store) =>
+            store.lat >= minLat &&
+            store.lat <= maxLat &&
+            store.long >= minLong &&
+            store.long <= maxLong
+        );
+
+        setListings(filteredListings);
+        return;
+      }
+    }
+
+    setLoading(true);
     const { minLat, maxLat, minLong, maxLong } = calculateBounds(
       latitude,
       longitude,
       latitudeDelta,
       longitudeDelta
     );
-
     const { coords } = await Location.getCurrentPositionAsync({});
     const stores = await getListingsInView(
       coords.latitude,
@@ -143,52 +153,61 @@ const ListingsMap = memo(({ category, listings, setListings, setListing }: Props
       maxLat,
       maxLong
     );
-
     setListings(stores);
-    setLoading(false); // Stop loading after fetching
+    setLoading(false);
+    previousRegionRef.current = region;
   };
-
-  const debounceRegionChangeComplete = useCallback(debounce(handleRegionChangeComplete, 1000), []);
 
   const handleMarkerPress = (listing: ListingRecord) => {
     setListing(listing);
   };
 
   return (
-    <View style={defaultStyles.container}>
+    <View style={[defaultStyles.container]}>
       {region && (
         <MapView
           minZoomLevel={12}
           ref={mapRef}
           style={StyleSheet.absoluteFillObject}
-          onRegionChangeComplete={debounceRegionChangeComplete}
+          onRegionChangeComplete={handleRegionChangeComplete}
           initialRegion={region}
           provider={PROVIDER_GOOGLE}
           showsUserLocation
-          showsMyLocationButton>
+          showsMyLocationButton={false}>
           {listings.map((store) => (
-            <MarkerComponent
+            <Marker
               key={store.id}
-              store={store}
+              coordinate={{ latitude: store.lat, longitude: store.long }}
               onPress={() => handleMarkerPress(store)}
-            />
+              tracksViewChanges={false}>
+              <View style={styles.marker}>
+                <Ionicons name="library-outline" size={14} color={Colors.light} />
+              </View>
+            </Marker>
           ))}
         </MapView>
       )}
       <View style={styles.loaderContainer}>
         <Loader delay={200} amount={3} visible={loading} />
       </View>
-      <TouchableOpacity style={styles.locateBtn} onPress={onLocateMe}>
+      <TouchableOpacity style={[styles.locateBtn, { top: insets.top + 10 }]} onPress={onLocateMe}>
         <Ionicons name="navigate" size={24} color={Colors.dark} />
       </TouchableOpacity>
     </View>
   );
 });
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+const commonShadowStyle = {
+  shadowColor: '#000',
+  shadowOpacity: 0.1,
+  shadowRadius: 6,
+  shadowOffset: {
+    width: 1,
+    height: 10,
   },
+};
+
+const styles = StyleSheet.create({
   marker: {
     flexDirection: 'row',
     padding: 4,
@@ -197,29 +216,16 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     elevation: 5,
     borderRadius: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: {
-      width: 1,
-      height: 10,
-    },
+    ...commonShadowStyle,
   },
   locateBtn: {
     position: 'absolute',
-    top: 70,
     right: 20,
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10,
     elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: {
-      width: 1,
-      height: 10,
-    },
+    ...commonShadowStyle,
   },
   loaderContainer: {
     position: 'absolute',
@@ -229,14 +235,8 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    pointerEvents: 'box-none', // Allows touch events to pass through
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: Colors.dark,
-    fontWeight: '600',
+    pointerEvents: 'box-none',
   },
 });
 
-export default ListingsMap;
+export default ListingsMap_old;

@@ -7,7 +7,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import ActionRow from '~/components/ActionRow';
 import ListingBottomSheet from '~/components/listing/ListingBottomSheet';
 import ListingsBottomSheet from '~/components/listing/ListingsBottomSheet';
-import ListingsMap from '~/components/listing/ListingsMap';
+import ListingsMap from '~/components/map/organisms/ListingsMap';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
 
 const Index = () => {
@@ -25,7 +25,7 @@ const Index = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <Stack.Screen
         options={{
           headerShown: false,

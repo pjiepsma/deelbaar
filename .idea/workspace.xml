@@ -8,9 +8,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81ed2e15-f48e-4376-a224-23fc8ae7ace9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/components/map/atom/Button.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/map/atom/Marker.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/map/molecules/MapWithMarkers.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/map/styles/commonStyles.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/_layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ActionRow.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ActionRow.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/Dropdown.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Dropdown.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/Loader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Loader.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/listing/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/listing/ListingsMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/listing/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/listing/ListingsMap_old.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,11 +77,11 @@
       <recent name="D:\Git\deelbaar\assets\images" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Git\deelbaar\components\map\atom" />
       <recent name="D:\Git\deelbaar\lib\powersync" />
       <recent name="D:\Git\deelbaar\hidden" />
       <recent name="D:\Git\deelbaar\assets\data" />
       <recent name="D:\Git\react-native-local-first\app\(modals)" />
-      <recent name="D:\Git\react-native-local-first\app\(auth)" />
     </key>
   </component>
   <component name="RunManager" selected="npm.android">
@@ -136,6 +145,7 @@
       <workItem from="1727111131167" duration="3795000" />
       <workItem from="1727115209567" duration="10980000" />
       <workItem from="1727158711366" duration="14500000" />
+      <workItem from="1727329723687" duration="9560000" />
     </task>
     <servers />
   </component>

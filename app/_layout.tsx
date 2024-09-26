@@ -3,6 +3,7 @@ import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AuthProvider } from '~/lib/AuthProvider';
 import { PowerSyncProvider } from '~/lib/powersync/PowerSyncProvider';
@@ -38,13 +39,15 @@ const RootLayout = () => {
 
   return (
     <PowerSyncProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <BottomSheetModalProvider>
-          <AuthProvider>
-            <InitialLayout />
-          </AuthProvider>
-        </BottomSheetModalProvider>
-      </GestureHandlerRootView>
+      <SafeAreaProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <BottomSheetModalProvider>
+            <AuthProvider>
+              <InitialLayout />
+            </AuthProvider>
+          </BottomSheetModalProvider>
+        </GestureHandlerRootView>
+      </SafeAreaProvider>
     </PowerSyncProvider>
   );
 };

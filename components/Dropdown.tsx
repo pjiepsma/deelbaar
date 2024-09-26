@@ -74,18 +74,21 @@ const Dropdown: FC<Props> = ({ label, data, onSelect }) => {
 
 const styles = StyleSheet.create({
   button: {
-    zIndex: 1,
-
-    height: 40,
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
+    justifyContent: 'center',
     flexDirection: 'row',
-    width: 100,
+    paddingHorizontal: 10,
     alignItems: 'center',
-    paddingHorizontal: 15,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.grey,
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 10,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: {
+      width: 1,
+      height: 10,
+    },
   },
   buttonText: {
     flex: 1,

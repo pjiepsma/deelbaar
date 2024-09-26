@@ -9,6 +9,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Dropdown from '~/components/Dropdown';
 import Colors from '~/constants/Colors';
@@ -76,11 +77,17 @@ const ActionRow = ({ onCategoryChanged, setModalState, animatedPosition, listing
   const backdropStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(animatedPosition.value, [0.9, 1], ['transparent', 'white']),
   }));
-
+  const insets = useSafeAreaInsets();
+  const safeAreaPadding = {
+    paddingTop: insets.top,
+    paddingBottom: insets.bottom,
+    paddingLeft: insets.left,
+    paddingRight: insets.right,
+  };
   const [selected, setSelected] = useState<{ label: string; value: string }>();
   const onDataChanged = (item: OptionItem) => {};
   return (
-    <Animated.View style={[styles.actions, backdropStyle, animatedStyle]}>
+    <Animated.View style={[styles.actions, backdropStyle, animatedStyle, safeAreaPadding]}>
       {isVisible && (
         <View style={styles.container}>
           <Dropdown label="Select Item" data={DATA} onSelect={setSelected} />
@@ -95,6 +102,7 @@ const ActionRow = ({ onCategoryChanged, setModalState, animatedPosition, listing
         </View>
       )}
     </Animated.View>
+    // </View>
   );
 };
 
@@ -130,16 +138,21 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   filterButton: {
-    height: 40,
     justifyContent: 'center',
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    width: 100,
     paddingHorizontal: 10,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.grey,
-    borderRadius: 8,
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 10,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: {
+      width: 1,
+      height: 10,
+    },
   },
 });
 export default ActionRow;
