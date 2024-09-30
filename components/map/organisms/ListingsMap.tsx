@@ -1,7 +1,6 @@
-// organisms/ListingsMap.tsx
 import * as Location from 'expo-location';
 import { debounce } from 'lodash';
-import React, { memo, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Region } from 'react-native-maps/lib/sharedTypes';
 
@@ -17,36 +16,28 @@ interface Props {
   setListings: (state: ListingRecord[]) => void;
   setListing: (state: ListingRecord) => void;
   listings: ListingRecord[];
+  setRegionBounds: (bounds: {
+    minLat: number;
+    maxLat: number;
+    minLong: number;
+    maxLong: number;
+  }) => void; // Added setRegionBounds prop
   category: string;
 }
 
-const ListingsMap: React.FC<Props> = memo(({ category, listings, setListings, setListing }) => {
+const ListingsMap: React.FC<Props> = ({ listings, setListings, setListing, setRegionBounds }) => {
   const { connector } = useSystem();
   const { user } = useAuth();
   const [region, setRegion] = useState<Region>();
   const [loading, setLoading] = useState<boolean>(false);
-  const previousRegionRef = useRef<Region | undefined>(undefined);
-  const SIGNIFICANT_CHANGE_THRESHOLD = 0.015;
+  const fetchedBoundsRef = useRef<{
+    minLat: number;
+    maxLat: number;
+    minLong: number;
+    maxLong: number;
+  } | null>(null);
 
-  const getListingsInView = async (
-    lat: number,
-    long: number,
-    min_lat: number,
-    min_long: number,
-    max_lat: number,
-    max_long: number
-  ) => {
-    const { data } = await connector.client.rpc('listings_with_distance', {
-      min_lat,
-      min_long,
-      max_lat,
-      max_long,
-      input_long: long,
-      input_lat: lat,
-    });
-    return data;
-  };
-
+  // Function to calculate bounds from the current region
   const calculateBounds = (
     latitude: number,
     longitude: number,
@@ -59,32 +50,44 @@ const ListingsMap: React.FC<Props> = memo(({ category, listings, setListings, se
     maxLong: longitude + longitudeDelta / 2,
   });
 
-  useEffect(() => {
-    onLocateMe();
-  }, []);
+  // Function to fetch listings within a given view area
+  const getListingsInView = async (
+    lat: number,
+    long: number,
+    min_lat: number,
+    min_long: number,
+    max_lat: number,
+    max_long: number
+  ) => {
+    try {
+      const { data, error } = await connector.client.rpc('listings_with_details', {
+        min_lat,
+        min_long,
+        max_lat,
+        max_long,
+        input_long: long,
+        input_lat: lat,
+      });
 
-  const moveToUserLocation = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Permission to access location was denied');
-      return;
+      if (error) {
+        console.error('Error calling function:', error);
+        throw error; // Optional: throw if you want to handle it elsewhere
+      }
+
+      return data;
+    } catch (err) {
+      console.error('Error in fetching listings:', err);
+      return null; // Handle error as needed
     }
-    const location = await Location.getCurrentPositionAsync({});
-    const { latitude, longitude } = location.coords;
-
-    setRegion({
-      latitude,
-      longitude,
-      latitudeDelta: 0.005,
-      longitudeDelta: 0.005,
-    });
   };
 
+  // Function to center the map on the user's current location and fetch listings
   const onLocateMe = async () => {
     setLoading(true);
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       setLoading(false);
+      alert('Permission to access location was denied');
       return;
     }
 
@@ -99,8 +102,6 @@ const ListingsMap: React.FC<Props> = memo(({ category, listings, setListings, se
     };
     setRegion(newRegion);
 
-    previousRegionRef.current = newRegion;
-
     const { minLat, maxLat, minLong, maxLong } = calculateBounds(
       latitude,
       longitude,
@@ -110,66 +111,53 @@ const ListingsMap: React.FC<Props> = memo(({ category, listings, setListings, se
 
     const stores = await getListingsInView(latitude, longitude, minLat, minLong, maxLat, maxLong);
     setListings(stores);
+    setRegionBounds({ minLat, maxLat, minLong, maxLong }); // Update region bounds via the prop
+    fetchedBoundsRef.current = { minLat, maxLat, minLong, maxLong }; // Store the fetched bounds
     setLoading(false);
   };
+
+  useEffect(() => {
+    onLocateMe();
+  }, []);
 
   const handleRegionChangeComplete = async (region: Region) => {
     if (!region) return;
 
     const { latitude, longitude, latitudeDelta, longitudeDelta } = region;
-    const prevRegion = previousRegionRef.current;
-
-    if (prevRegion) {
-      const latitudeChange = Math.abs(latitude - prevRegion.latitude);
-      const longitudeChange = Math.abs(longitude - prevRegion.longitude);
-
-      if (
-        latitudeChange < SIGNIFICANT_CHANGE_THRESHOLD &&
-        longitudeChange < SIGNIFICANT_CHANGE_THRESHOLD
-      ) {
-        const newMinLat = latitude - latitudeDelta / 2;
-        const newMaxLat = latitude + latitudeDelta / 2;
-        const newMinLong = longitude - longitudeDelta / 2;
-        const newMaxLong = longitude + longitudeDelta / 2;
-
-        const filteredListings = listings.filter(
-          (store) =>
-            store.lat >= newMinLat &&
-            store.lat <= newMaxLat &&
-            store.long >= newMinLong &&
-            store.long <= newMaxLong
-        );
-
-        setListings(filteredListings);
-        return;
-      }
-    }
-
-    setLoading(true);
     const { minLat, maxLat, minLong, maxLong } = calculateBounds(
       latitude,
       longitude,
       latitudeDelta,
       longitudeDelta
     );
+    setRegionBounds({ minLat, maxLat, minLong, maxLong }); // Call setRegionBounds with updated bounds
 
-    const { coords } = await Location.getCurrentPositionAsync();
-    const newStores = await getListingsInView(
-      coords.latitude,
-      coords.longitude,
-      minLat,
-      minLong,
-      maxLat,
-      maxLong
-    );
-    setListings(newStores);
-    setRegion(region);
-    previousRegionRef.current = region;
+    // Check if the current region is outside the fetched bounds
+    if (fetchedBoundsRef.current) {
+      const {
+        minLat: fetchedMinLat,
+        maxLat: fetchedMaxLat,
+        minLong: fetchedMinLong,
+        maxLong: fetchedMaxLong,
+      } = fetchedBoundsRef.current;
+
+      const isWithinFetchedBounds =
+        minLat >= fetchedMinLat &&
+        maxLat <= fetchedMaxLat &&
+        minLong >= fetchedMinLong &&
+        maxLong <= fetchedMaxLong;
+
+      if (isWithinFetchedBounds) {
+        return;
+      }
+    }
+
+    // Refetch listings if outside the bounds
+    setLoading(true);
+    const stores = await getListingsInView(latitude, longitude, minLat, minLong, maxLat, maxLong);
+    setListings(stores);
+    fetchedBoundsRef.current = { minLat, maxLat, minLong, maxLong }; // Update fetched bounds
     setLoading(false);
-  };
-
-  const handleMarkerPress = (store: any) => {
-    setListing(store);
   };
 
   return (
@@ -181,14 +169,14 @@ const ListingsMap: React.FC<Props> = memo(({ category, listings, setListings, se
         <MapWithMarkers
           region={region}
           listings={listings}
-          onMarkerPress={handleMarkerPress}
-          onRegionChangeComplete={debounce(handleRegionChangeComplete, 300)}
+          onMarkerPress={setListing}
+          onRegionChangeComplete={debounce(handleRegionChangeComplete, 500)}
         />
       )}
-      <LocateButton onPress={moveToUserLocation} />
+      <LocateButton onPress={onLocateMe} />
     </View>
   );
-});
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -203,7 +191,7 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    pointerEvents: 'box-none', // Allows touch events to pass through
+    pointerEvents: 'box-none',
   },
 });
 

@@ -6,18 +6,40 @@ import { useSharedValue } from 'react-native-reanimated';
 
 import ActionRow from '~/components/ActionRow';
 import ListingBottomSheet from '~/components/listing/ListingBottomSheet';
-import ListingsBottomSheet from '~/components/listing/ListingsBottomSheet';
+import HikeCarousel from '~/components/map/molecules/HikeCarousel';
 import ListingsMap from '~/components/map/organisms/ListingsMap';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
+import { useSystem } from '~/lib/powersync/PowerSync';
 
 const Index = () => {
   const [category, setCategory] = useState('Books');
   const [modalState, setModalState] = useState(false);
   const [listingModal, setListingModal] = useState(false);
+  const { connector, powersync, attachmentQueue } = useSystem();
 
   const animatedPosition = useSharedValue(0);
-  const [listings, setListings] = useState<ListingRecord[]>([]);
   const [listing, setListing] = useState<ListingRecord | null>(null);
+
+  const [listings, setListings] = useState<ListingRecord[]>([]); // Full listings
+  const [filteredListings, setFilteredListings] = useState<ListingRecord[]>([]); // Filtered listings
+  const [regionBounds, setRegionBounds] = useState<{
+    minLat: number;
+    maxLat: number;
+    minLong: number;
+    maxLong: number;
+  } | null>(null);
+
+  // Whenever regionBounds change, filter listings
+  useEffect(() => {
+    if (!regionBounds || listings.length === 0) return;
+
+    const { minLat, maxLat, minLong, maxLong } = regionBounds;
+    const filtered = listings.filter(
+      (store) =>
+        store.lat >= minLat && store.lat <= maxLat && store.long >= minLong && store.long <= maxLong
+    );
+    setFilteredListings(filtered);
+  }, [regionBounds, listings]);
 
   useEffect(() => {
     setListingModal(true);
@@ -38,17 +60,19 @@ const Index = () => {
         listing={listing}
       />
       <ListingsMap
-        category={category}
         setListings={setListings}
         listings={listings}
         setListing={setListing}
-      />
-      <ListingsBottomSheet
-        listings={listings}
+        setRegionBounds={setRegionBounds}
         category={category}
-        animatedPosition={animatedPosition}
-        setListing={setListing}
       />
+      {/*<ListingsCarousel*/}
+      {/*  listings={filteredListings}*/}
+      {/*  // animatedPosition={animatedPosition}*/}
+      {/*  // setListing={setListing}*/}
+      {/*  onClose={() => {}}*/}
+      {/*/>*/}
+      <HikeCarousel listing={listing} listings={filteredListings} setListing={setListing} />
       <ListingBottomSheet listing={listing} setListing={setListing} />
     </View>
   );

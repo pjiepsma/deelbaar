@@ -33,7 +33,7 @@ const ListsViewWidget: React.FC = () => {
       const location = await Location.getCurrentPositionAsync({});
       const point = `POINT(${location.coords.longitude} ${location.coords.latitude})`;
       const res = await powersync.execute(InsertListing, [name, 'todo', point, user.id]);
-
+      console.log(res);
       const resultRecord = res.rows?.item(0);
       if (!resultRecord) {
         throw new Error('Could not create list');

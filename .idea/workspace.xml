@@ -8,18 +8,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81ed2e15-f48e-4376-a224-23fc8ae7ace9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/components/map/atom/Button.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/map/atom/Marker.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/map/molecules/MapWithMarkers.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/map/styles/commonStyles.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/listing/ListingsCarousel.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/map/molecules/HikeCarousel.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/ActionRow.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ActionRow.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Dropdown.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Dropdown.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Loader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Loader.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/listing/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/listing/ListingsMap_old.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/listing/ListingsBottomSheet.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/listing/ListingsBottomSheet.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/Queries.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/Queries.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,6 +34,9 @@
   <component name="OptimizeOnSaveOptions">
     <option name="myRunOnSave" value="true" />
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
 }</component>
@@ -49,7 +51,7 @@
     &quot;git-widget-placeholder&quot;: &quot;local-first&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Git/deelbaar/app/(auth)&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Git/powersync-js/demos/react-native-supabase-todolist&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -145,12 +147,28 @@
       <workItem from="1727111131167" duration="3795000" />
       <workItem from="1727115209567" duration="10980000" />
       <workItem from="1727158711366" duration="14500000" />
-      <workItem from="1727329723687" duration="9560000" />
+      <workItem from="1727329723687" duration="10955000" />
+      <workItem from="1727431104090" duration="47549000" />
+      <workItem from="1727594788207" duration="5910000" />
+      <workItem from="1727613214752" duration="98000" />
+      <workItem from="1727674630453" duration="3068000" />
+      <workItem from="1727716636011" duration="7292000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -10,7 +10,7 @@ export const SelectListings = `
 `;
 
 export const InsertListing = `INSERT INTO ${LISTING_TABLE} (id, name, description, location, owner_id, created_at, category)
-                              VALUES (uuid(), ?, ?, ?, ?, datetime(), ?)`;
+                              VALUES (uuid(), ?, ?, ?, ?, datetime(), ?) RETURNING *`;
 
 export const DeleteListingPictures = `DELETE
                                       FROM ${PICTURE_TABLE}
@@ -30,9 +30,11 @@ export const SelectListing = `
 export const UpdatePicture = `UPDATE ${PICTURE_TABLE}
                               SET photo_id = ?
                               WHERE id = ?`;
+
 export const InsertPicture = `INSERT INTO ${PICTURE_TABLE}
-                                  (id, created_at, created_by, listing_id)
-                              VALUES (uuid(), datetime(), ?, ?)`;
+                                  (id, created_at, created_by, listing_id, photo_id)
+                              VALUES (uuid(), datetime(), ?, ?, ?)`;
+
 export const DeletePicture = `DELETE
                               FROM ${PICTURE_TABLE}
                               WHERE id = ?`;

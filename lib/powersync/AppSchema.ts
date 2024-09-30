@@ -8,12 +8,10 @@ export interface ListingRecord {
   id: string;
   name: string;
   description: string;
-  created_at: string;
-  owner_id?: string;
-  location: string;
-  dist_meters: string;
   lat: number;
   long: number;
+  dist_meters: string;
+  photo_ids: string[];
 }
 
 export interface PictureRecord {
@@ -28,10 +26,10 @@ export const AppSchema = new Schema([
   new Table({
     name: 'listings',
     columns: [
-      new Column({ name: 'name', type: ColumnType.TEXT }),
-      new Column({ name: 'description', type: ColumnType.TEXT }),
       new Column({ name: 'created_at', type: ColumnType.TEXT }),
+      new Column({ name: 'name', type: ColumnType.TEXT }),
       new Column({ name: 'owner_id', type: ColumnType.TEXT }),
+      new Column({ name: 'description', type: ColumnType.TEXT }),
       new Column({ name: 'location', type: ColumnType.TEXT }),
       new Column({ name: 'category', type: ColumnType.TEXT }),
       new Column({ name: 'tags', type: ColumnType.TEXT }),
@@ -47,8 +45,8 @@ export const AppSchema = new Schema([
     ],
     indexes: [
       new Index({
-        name: 'picture',
-        columns: [new IndexedColumn({ name: 'picture_id' })],
+        name: 'listing',
+        columns: [new IndexedColumn({ name: 'listing_id' })],
       }),
     ],
   }),
