@@ -8,11 +8,13 @@ import { useSystem } from '~/lib/powersync/PowerSync';
 export const AuthContext = createContext<{
   session: Session | null;
   user: User | null;
+  isAnonymous: boolean;
   signIn: ({ session, user }: { session: Session | null; user: User | null }) => void;
   signOut: () => void;
 }>({
   session: null,
   user: null,
+  isAnonymous: false,
   signIn: () => {},
   signOut: () => {},
 });
@@ -26,6 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true); // Initialize loading state
   const [initialized, setInitialized] = useState<boolean>(false);
+  const [isAnonymous, setIsAnonymous] = useState(false);
 
   const segments = useSegments();
   const router = useRouter();
@@ -38,40 +41,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const initSystem = async () => {
       await system.init(); // Assuming `init()` is asynchronous and returns a promise
     };
+    console.log('init');
 
     initSystem().then(() => setIsLoading(false)); // Set loading to false after initialization
   }, [system]);
 
   useEffect(() => {
-    // Listen for changes to authentication state
     const { data } = connector.client.auth.onAuthStateChange((event, session) => {
+      setInitialized(true);
+      setIsLoading(false);
       setSession(session);
-      setInitialized(true); // Mark initialization as complete
-      setIsLoading(false); // Set loading state to false once auth state is checked
-      if (session) {
+
+      if (session && session.user) {
         setUser(session.user);
-      } else {
-        setUser(null);
+        setIsAnonymous(session.user.is_anonymous!);
       }
     });
 
-    // Cleanup subscription on component unmount
     return () => {
       data.subscription.unsubscribe();
     };
   }, [connector]);
 
   useEffect(() => {
-    if (!initialized || isLoading) return; // Avoid routing until initialization is complete
+    if (!initialized || isLoading) return;
 
     const inAuthGroup = segments[0] === '(auth)';
 
-    if (session && inAuthGroup) {
-      router.replace('/(tabs)/');
-    } else if (!session && !inAuthGroup) {
+    if (!session && initialized) {
+      const signInAnonymously = async () => {
+        const { error } = await connector.client.auth.signInAnonymously();
+        if (error) {
+          console.error('Anonymous sign-in error:', error.message);
+        }
+      };
+
+      signInAnonymously();
+    }
+    if (inAuthGroup && isAnonymous) {
       router.replace('/(modals)/login');
     }
-  }, [session, initialized]);
+  }, [session, initialized, isLoading]);
 
   async function signIn({ session, user }: { session: Session | null; user: User | null }) {
     setSession(session);
@@ -106,6 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         session,
         user,
+        isAnonymous,
         signIn,
         signOut,
       }}>

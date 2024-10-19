@@ -1,12 +1,12 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useStatus } from '@powersync/react-native';
 import * as Location from 'expo-location';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-elements';
 
-import { ListItemWidget } from '~/components/widget/ListItemWidget';
 import { useAuth } from '~/lib/AuthProvider';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
@@ -88,27 +88,9 @@ const ListsViewWidget: React.FC = () => {
       <TouchableOpacity style={styles.button} onPress={() => router.navigate('(auth)/admin')}>
         <Icon name="add" size={24} color="white" />
       </TouchableOpacity>
-      <ScrollView key="lists" style={{ maxHeight: '90%' }}>
-        {!status.hasSynced ? (
-          <Text>Busy with sync...</Text>
-        ) : (
-          ListingRecords.map((r) => (
-            <ListItemWidget
-              key={r.id}
-              title={r.name}
-              description={description(0, 0)}
-              onDelete={() => deleteList(r.id)}
-              onPress={() => {
-                router.push({
-                  pathname: '/(modals)/picture/[id]',
-                  params: { id: r.id },
-                });
-              }}
-            />
-          ))
-        )}
-      </ScrollView>
-
+      <TouchableOpacity style={styles.login} onPress={() => router.navigate('(modals)/login')}>
+        <Ionicons name="accessibility-outline" size={24} color="white" />
+      </TouchableOpacity>
       <StatusBar style="light" />
     </View>
   );
@@ -119,6 +101,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 16,
     right: 16,
+    backgroundColor: 'blue', // Adjust color as needed
+    borderRadius: 30,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5, // Android shadow effect
+  },
+  login: {
+    position: 'absolute',
+    bottom: 16,
+    left: 16,
     backgroundColor: 'blue', // Adjust color as needed
     borderRadius: 30,
     padding: 16,

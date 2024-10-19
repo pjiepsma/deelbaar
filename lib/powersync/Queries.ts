@@ -21,9 +21,8 @@ export const DeleteListing = `DELETE
                               WHERE id = ?`;
 
 export const SelectListing = `
-    SELECT ${LISTING_TABLE}.*,
+    SELECT ${LISTING_TABLE}.*
     FROM ${LISTING_TABLE}
-             LEFT JOIN ${PICTURE_TABLE} ON ${LISTING_TABLE}.id = ${PICTURE_TABLE}.listing_id
     WHERE ${LISTING_TABLE}.id = ?
 `;
 
@@ -38,6 +37,18 @@ export const InsertPicture = `INSERT INTO ${PICTURE_TABLE}
 export const DeletePicture = `DELETE
                               FROM ${PICTURE_TABLE}
                               WHERE id = ?`;
+
+export const SelectListingWithPictures = `
+    SELECT ${LISTING_TABLE}.*,
+           ${PICTURE_TABLE}.id    AS picture_id,
+           ${PICTURE_TABLE}.*,
+           ${ATTACHMENT_TABLE}.id AS attachment_id,
+           ${ATTACHMENT_TABLE}.*
+    FROM ${LISTING_TABLE}
+             LEFT JOIN ${PICTURE_TABLE} ON ${LISTING_TABLE}.id = ${PICTURE_TABLE}.listing_id
+             LEFT JOIN ${ATTACHMENT_TABLE} ON ${PICTURE_TABLE}.photo_id = ${ATTACHMENT_TABLE}.id
+    WHERE ${LISTING_TABLE}.id = ?
+`;
 
 export const SelectPictures = `
     SELECT ${PICTURE_TABLE}.id    AS picture_id,

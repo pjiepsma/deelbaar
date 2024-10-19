@@ -1,5 +1,5 @@
 // molecules/MapWithMarkers.tsx
-import React from 'react';
+import React, { forwardRef } from 'react';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { Region } from 'react-native-maps/lib/sharedTypes';
 
@@ -10,26 +10,30 @@ interface MapWithMarkersProps {
   listings: { lat: number; long: number; id: string }[];
   onMarkerPress: (store: any) => void;
   onRegionChangeComplete: (region: Region) => void;
+  selectedListingId: string | null; // Add this prop
 }
 
-const MapWithMarkers: React.FC<MapWithMarkersProps> = ({
-  region,
-  listings,
-  onMarkerPress,
-  onRegionChangeComplete,
-}) => (
-  <MapView
-    minZoomLevel={12}
-    style={{ flex: 1 }}
-    onRegionChangeComplete={onRegionChangeComplete}
-    initialRegion={region}
-    provider={PROVIDER_GOOGLE}
-    showsUserLocation
-    showsMyLocationButton={false}>
-    {listings.map((store) => (
-      <MarkerComponent key={store.id} store={store} onPress={() => onMarkerPress(store)} />
-    ))}
-  </MapView>
+const MapWithMarkers = forwardRef<MapView, MapWithMarkersProps>(
+  ({ region, listings, onMarkerPress, onRegionChangeComplete, selectedListingId }, ref) => (
+    <MapView
+      ref={ref}
+      minZoomLevel={12}
+      style={{ flex: 1 }}
+      onRegionChangeComplete={onRegionChangeComplete}
+      initialRegion={region}
+      provider={PROVIDER_GOOGLE}
+      showsUserLocation
+      showsMyLocationButton={false}>
+      {listings.map((listing) => (
+        <MarkerComponent
+          key={listing.id}
+          store={listing}
+          selected={listing.id === selectedListingId}
+          onPress={() => onMarkerPress(listing)}
+        />
+      ))}
+    </MapView>
+  )
 );
 
 export default MapWithMarkers;

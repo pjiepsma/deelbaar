@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Button,
   StyleSheet,
   Text,
   TextInput,
@@ -17,7 +16,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { connector } = useSystem();
+  const { connector, powersync } = useSystem();
   const { signIn } = useAuth();
   // Sign in with email and password
   const onSignInPress = async () => {
@@ -26,6 +25,31 @@ const Login = () => {
       // Use the PowerSync specific login method
       const data = await connector.login(email, password);
       signIn(data);
+    } catch (error: any) {
+      Alert.alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onAnonymouslyPress = async () => {
+    setLoading(true);
+    try {
+      // Use the PowerSync specific login method
+      const data = await connector.anonymously();
+      signIn(data);
+    } catch (error: any) {
+      Alert.alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSignOutPress = async () => {
+    setLoading(true);
+    try {
+      await powersync.disconnectAndClear();
+      await connector.client.auth.signOut();
     } catch (error: any) {
       Alert.alert(error.message);
     } finally {
@@ -92,7 +116,15 @@ const Login = () => {
       <TouchableOpacity onPress={onSignInPress} style={styles.button}>
         <Text style={{ color: '#fff' }}>Sign in</Text>
       </TouchableOpacity>
-      <Button onPress={onSignUpPress} title="Create Account" color="#fff" />
+      <TouchableOpacity onPress={onAnonymouslyPress} style={styles.button}>
+        <Text style={{ color: '#fff' }}>Anonymously</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={onSignUpPress} style={styles.button}>
+        <Text style={{ color: '#fff' }}>Create Account</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={onSignOutPress} style={styles.button}>
+        <Text style={{ color: '#fff' }}>Sign out</Text>
+      </TouchableOpacity>
     </View>
   );
 };

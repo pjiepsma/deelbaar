@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Dimensions, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import Animated, {
   interpolate,
   SlideInDown,
@@ -9,20 +10,30 @@ import Animated, {
   useAnimatedStyle,
   useScrollViewOffset,
 } from 'react-native-reanimated';
+import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 import Loader from '~/components/Loader';
+import RatingScreen from '~/components/review/RatingScreen';
+import ReviewsScreen from '~/components/review/ReviewScreen';
 import Colors from '~/constants/Colors';
 import { defaultStyles } from '~/constants/Styles';
 import { useAuth } from '~/lib/AuthProvider';
-import { LISTING_TABLE, ListingRecord, PICTURE_TABLE } from '~/lib/powersync/AppSchema';
-import { useSystem } from '~/lib/powersync/PowerSync';
-import { supabase } from '~/lib/powersync/SupabaseConnector';
+import { ListingRecord } from '~/lib/powersync/AppSchema';
+import { system, useSystem } from '~/lib/powersync/PowerSync';
+import { SelectListing, SelectPictures } from '~/lib/powersync/Queries';
+import { toAttachmentRecord } from '~/lib/util/util';
 
 const { width } = Dimensions.get('window');
 const IMG_HEIGHT = 300;
 
 const DetailsPage = () => {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, dist_meters, lat, long } = useLocalSearchParams<{
+    id: string;
+    dist_meters: string;
+    lat: string;
+    long: string;
+  }>();
+
   const { connector, powersync } = useSystem();
   const defaultImage = require('~/assets/images/default-placeholder.png');
   const navigation = useNavigation();
@@ -30,34 +41,26 @@ const DetailsPage = () => {
   const { user } = useAuth();
   const [listing, setListing] = useState<ListingRecord>(); // change type
   const [isLoading, setLoading] = useState(false);
-
+  const [images, setImages] = useState([]);
   useEffect(() => {
-    getListing(id);
+    if (id) {
+      const distance = (Number(dist_meters) / 1000).toFixed(1);
+      // TODO fetch additional details
+      getListing(id);
+    }
   }, [id]);
 
   const getListing = async (id: string): Promise<void> => {
-    // const result = await powersync.execute(SelectListing, [id]);
-    // const resultRecord = result.rows?.item(0);
-    // console.log(resultRecord);
-    const { data, error } = await supabase
-      .from(LISTING_TABLE) // Your listings table
-      .select(
-        `
-      *,
-      ST_X(location) AS longitude,
-      ST_Y(location) AS latitude,
-      pictures: ${PICTURE_TABLE} (*)
-    `
-      )
-      .eq('id', id) // Filter by primary key
-      .single(); // Get a single object
-
-    if (error) {
-      console.error('Error fetching listing:', error);
+    const result = await powersync.execute(SelectListing, [id]);
+    const images = await powersync.execute(SelectPictures, [id]);
+    if (result.rows) {
+      setListing(result.rows._array[0]);
+      console.log(result.rows._array);
     }
-    console.log(data);
-
-    // setListing(data);
+    if (images.rows) {
+      setImages(images.rows._array);
+      console.log(images.rows._array);
+    }
   };
 
   const shareListing = async () => {
@@ -72,27 +75,17 @@ const DetailsPage = () => {
     }
   };
 
-  // const saveListing = async () => {
-  //   const location = await Location.getCurrentPositionAsync({});
-  //   const todoId = uuid();
-  //   const point = `POINT(${location.coords.longitude}, ${location.coords.latitude})`;
-  //   const data = await db
-  //     .insertInto(STORES_TABLE)
-  //     .values({ id: todoId, name: '', description: '', location: point })
-  //     .execute();
-  // };
-  //
-  // const editListing = async () => {
-  //   if (listing) {
-  //     const location = await Location.getCurrentPositionAsync({});
-  //     const todoId = uuid();
-  //     const point = `POINT(${location.coords.longitude}, ${location.coords.latitude})`;
-  //     const data = await db
-  //       .insertInto(STORES_TABLE)
-  //       .values({ id: todoId, name: '', description: '', location: point })
-  //       .execute();
-  //   }
-  // };
+  const editListing = async () => {
+    if (listing) {
+      // const location = await Location.getCurrentPositionAsync({});
+      // const todoId = uuid();
+      // const point = `POINT(${location.coords.longitude}, ${location.coords.latitude})`;
+      // const data = await db
+      //   .insertInto(STORES_TABLE)
+      //   .values({ id: todoId, name: '', description: '', location: point })
+      //   .execute();
+    }
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -102,11 +95,11 @@ const DetailsPage = () => {
       headerBackground: () => <Animated.View style={[headerAnimatedStyle, styles.header]} />,
       headerRight: () => (
         <View style={styles.bar}>
-          {/*{isAdmin && (
+          {user && (
             <TouchableOpacity style={styles.roundButton} onPress={editListing}>
-              <Ionicons name="create-outline" size={22} color={"#000"} />
+              <Ionicons name="create-outline" size={22} color="#000" />
             </TouchableOpacity>
-          )}*/}
+          )}
           <TouchableOpacity style={styles.roundButton} onPress={shareListing}>
             <Ionicons name="share-outline" size={22} color="#000" />
           </TouchableOpacity>
@@ -147,34 +140,58 @@ const DetailsPage = () => {
     };
   }, []);
 
+  const { width: screenWidth } = Dimensions.get('window');
+  const baseOptions = {
+    vertical: false,
+    width: screenWidth,
+    height: 300,
+  };
+  const carouselRef = useRef<ICarouselInstance>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+
+  const CarouselItem = React.memo(({ picture }: { picture: any }) => {
+    const photoAttachment = toAttachmentRecord(picture);
+    const uri = system.attachmentQueue?.getLocalUri(photoAttachment?.local_uri!);
+    return (
+      <View>
+        <FastImage
+          key={photoAttachment?.id}
+          source={photoAttachment ? { uri, priority: FastImage.priority.normal } : defaultImage}
+          style={styles.image}
+          resizeMode={FastImage.resizeMode.cover}
+        />
+      </View>
+    );
+  });
+
   return (
     <View style={styles.container}>
       <View>
-        <Animated.ScrollView
-          contentContainerStyle={{ paddingBottom: 100 }}
-          ref={scrollRef}
-          scrollEventThrottle={16}>
+        <Animated.ScrollView ref={scrollRef} scrollEventThrottle={16}>
           {isLoading || !listing ? (
-            <Loader delay={200} amount={3} />
+            <Loader delay={200} amount={3} visible />
           ) : (
-            <View>
-              {/*<Slider*/}
-              {/*  images={listing.images.lenght ? listing.images : [defaultImage]}*/}
-              {/*  deleteImage={() => {}}*/}
-              {/*  mode="show"*/}
-              {/*/>*/}
+            <View style={styles.listingContainer}>
+              <Carousel
+                {...baseOptions}
+                loop={false}
+                ref={carouselRef}
+                style={{
+                  justifyContent: 'center',
+                }}
+                data={images}
+                pagingEnabled
+                onSnapToItem={(index: number) => setSelectedIndex(index)}
+                renderItem={({ item }) => <CarouselItem picture={item} />}
+              />
               <View style={styles.infoContainer}>
-                {/*<Text style={styles.name}>{listing.name}</Text>*/}
-                {/*<Text style={styles.name}>{listing.caption}</Text>*/}
-                {/*<Text style={styles.name}>{listing.coordinates}</Text>*/}
-                {/*Show map based on coordinates*/}
-                {/*<Text style={styles.location}>*/}
-                {/*  {listing.room_type} in {listing.smart_location}*/}
-                {/*</Text>*/}
-                {/*<Text style={styles.rooms}>*/}
-                {/*  {data.guests_included} guests · {data.bedrooms} bedrooms · {data.beds} bed ·{' '}*/}
-                {/*  {data.bathrooms} bathrooms*/}
-                {/*</Text>*/}
+                <Text style={styles.name}>{listing.name}</Text>
+                <Text style={styles.name}>{listing.description}</Text>
+                <Text style={styles.name}>{listing.name}</Text>
+                <Text style={styles.location}>
+                  {listing.name} in {listing.name}
+                </Text>
+                <Text style={styles.rooms}>{listing.name} bathrooms</Text>
                 <View style={{ flexDirection: 'row', gap: 4 }}>
                   <Ionicons name="star" size={16} />
                   {/*<Text style={styles.ratings}>*/}
@@ -183,7 +200,6 @@ const DetailsPage = () => {
                 </View>
                 <View style={styles.divider} />
                 <View style={styles.hostView}>
-                  {/*<Image source={{ uri: data.host_picture_url }} style={styles.host} />*/}
                   <View>
                     {/*<Text style={{ fontWeight: '500', fontSize: 16 }}>*/}
                     {/*  Hosted by {listing.host_name}*/}
@@ -208,6 +224,13 @@ const DetailsPage = () => {
               justifyContent: 'space-between',
               alignItems: 'center',
             }}>
+            {/*<RatingSummary />*/}
+
+            {/* Star rating input (rate and review) */}
+            <RatingScreen />
+
+            {/* Review list with sorting */}
+            <ReviewsScreen />
             <TouchableOpacity style={styles.footerText}>
               {/*<Text style={styles.footerPrice}>€{listing.price}</Text>*/}
               <Text>night</Text>
@@ -228,13 +251,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
+  listingContainer: {
+    // backgroundColor: 'red',
+    // flex: 1,
+  },
   image: {
     height: IMG_HEIGHT,
     width,
   },
   infoContainer: {
     padding: 24,
-    backgroundColor: '#fff',
   },
   name: {
     fontSize: 26,
@@ -271,6 +297,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    backgroundColor: 'red',
   },
   footerText: {
     height: '100%',

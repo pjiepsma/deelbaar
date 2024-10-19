@@ -2,6 +2,7 @@ import * as Location from 'expo-location';
 import { debounce } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import MapView from 'react-native-maps';
 import { Region } from 'react-native-maps/lib/sharedTypes';
 
 import Loader from '~/components/Loader';
@@ -15,6 +16,7 @@ import { useSystem } from '~/lib/powersync/PowerSync';
 interface Props {
   setListings: (state: ListingRecord[]) => void;
   setListing: (state: ListingRecord) => void;
+  listing: ListingRecord | null;
   listings: ListingRecord[];
   setRegionBounds: (bounds: {
     minLat: number;
@@ -25,11 +27,19 @@ interface Props {
   category: string;
 }
 
-const ListingsMap: React.FC<Props> = ({ listings, setListings, setListing, setRegionBounds }) => {
+const ListingsMap: React.FC<Props> = ({
+  listings,
+  setListings,
+  setListing,
+  listing,
+  setRegionBounds,
+}) => {
   const { connector } = useSystem();
   const { user } = useAuth();
   const [region, setRegion] = useState<Region>();
   const [loading, setLoading] = useState<boolean>(false);
+  const mapRef = useRef<MapView>(null); // Create ref for MapView
+
   const fetchedBoundsRef = useRef<{
     minLat: number;
     maxLat: number;
@@ -120,6 +130,27 @@ const ListingsMap: React.FC<Props> = ({ listings, setListings, setListing, setRe
     onLocateMe();
   }, []);
 
+  useEffect(() => {
+    if (listing) {
+      // zoomInOnMarker(listing.lat, listing.long);
+    }
+    // zoom
+  }, [listing]);
+
+  const zoomInOnMarker = (latitude: number, longitude: number) => {
+    if (mapRef.current && region) {
+      mapRef.current.animateToRegion(
+        {
+          latitude,
+          longitude,
+          latitudeDelta: 0.005,
+          longitudeDelta: 0.005,
+        },
+        500
+      );
+    }
+  };
+
   const handleRegionChangeComplete = async (region: Region) => {
     if (!region) return;
 
@@ -167,9 +198,11 @@ const ListingsMap: React.FC<Props> = ({ listings, setListings, setListing, setRe
       </View>
       {region && (
         <MapWithMarkers
+          ref={mapRef}
           region={region}
           listings={listings}
           onMarkerPress={setListing}
+          selectedListingId={listing ? listing.id : null}
           onRegionChangeComplete={debounce(handleRegionChangeComplete, 500)}
         />
       )}

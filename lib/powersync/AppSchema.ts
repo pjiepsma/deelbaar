@@ -1,6 +1,8 @@
 import { AttachmentTable } from '@powersync/attachments';
 import { Column, ColumnType, Index, IndexedColumn, Schema, Table } from '@powersync/react-native';
 
+import { PictureEntry } from '~/lib/types/types';
+
 export const PICTURE_TABLE = 'pictures';
 export const LISTING_TABLE = 'listings';
 
@@ -11,7 +13,7 @@ export interface ListingRecord {
   lat: number;
   long: number;
   dist_meters: string;
-  photo_ids: string[];
+  picture: PictureEntry;
 }
 
 export interface PictureRecord {

@@ -8,15 +8,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81ed2e15-f48e-4376-a224-23fc8ae7ace9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/components/listing/ListingsCarousel.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/map/molecules/HikeCarousel.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/(auth)/account.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/(modals)/auth.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/review/RatingScreen.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/review/RatingSummary.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/review/ReviewScreen.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/widget/AvatarWidget.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/%ProgramData%/Microsoft/Windows/UUS/State/_active.uusver" beforeDir="false" afterPath="$PROJECT_DIR$/%ProgramData%/Microsoft/Windows/UUS/State/_active.uusver" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/login.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/listing/ListingsBottomSheet.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/listing/ListingsBottomSheet.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(tabs)/profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/profile.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/map/atom/Marker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/atom/Marker.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/map/molecules/HikeCarousel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/molecules/HikeCarousel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/map/molecules/MapWithMarkers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/molecules/MapWithMarkers.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/AuthProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/AuthProvider.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/PowerSync.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/PowerSync.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/powersync/Queries.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/Queries.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
@@ -152,7 +165,20 @@
       <workItem from="1727594788207" duration="5910000" />
       <workItem from="1727613214752" duration="98000" />
       <workItem from="1727674630453" duration="3068000" />
-      <workItem from="1727716636011" duration="7292000" />
+      <workItem from="1727716636011" duration="12764000" />
+      <workItem from="1727754116558" duration="1213000" />
+      <workItem from="1727848418137" duration="2613000" />
+      <workItem from="1727937516657" duration="20104000" />
+      <workItem from="1728024005984" duration="2395000" />
+      <workItem from="1728539764968" duration="13440000" />
+      <workItem from="1728633752116" duration="14723000" />
+      <workItem from="1728885236469" duration="654000" />
+      <workItem from="1729056035060" duration="4426000" />
+      <workItem from="1729099364424" duration="4047000" />
+      <workItem from="1729165005543" duration="11303000" />
+      <workItem from="1729227982030" duration="4929000" />
+      <workItem from="1729271244543" duration="5237000" />
+      <workItem from="1729318898476" duration="2520000" />
     </task>
     <servers />
   </component>
