@@ -1,4 +1,4 @@
-import { Session, User } from '@supabase/supabase-js'; // Corrected import types
+import { Session, User } from '@supabase/supabase-js';
 import { useRouter, useSegments } from 'expo-router';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
@@ -8,13 +8,11 @@ import { useSystem } from '~/lib/powersync/PowerSync';
 export const AuthContext = createContext<{
   session: Session | null;
   user: User | null;
-  isAnonymous: boolean;
   signIn: ({ session, user }: { session: Session | null; user: User | null }) => void;
   signOut: () => void;
 }>({
   session: null,
   user: null,
-  isAnonymous: false,
   signIn: () => {},
   signOut: () => {},
 });
@@ -26,9 +24,9 @@ export function useAuth() {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Initialize loading state
+  const [isLoading, setIsLoading] = useState(true);
   const [initialized, setInitialized] = useState<boolean>(false);
-  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState<boolean>(false);
 
   const segments = useSegments();
   const router = useRouter();
@@ -37,13 +35,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const system = useSystem();
 
   useEffect(() => {
-    // Asynchronous initialization of the system
     const initSystem = async () => {
-      await system.init(); // Assuming `init()` is asynchronous and returns a promise
+      await system.init();
     };
-    console.log('init');
 
-    initSystem().then(() => setIsLoading(false)); // Set loading to false after initialization
+    initSystem().then(() => setIsLoading(false));
   }, [system]);
 
   useEffect(() => {
@@ -52,9 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
       setSession(session);
 
-      if (session && session.user) {
+      if (session && session.user && !session.user.is_anonymous) {
         setUser(session.user);
-        setIsAnonymous(session.user.is_anonymous!);
+      } else {
+        setUser(null);
       }
     });
 
@@ -64,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [connector]);
 
   useEffect(() => {
-    if (!initialized || isLoading) return;
+    if (!initialized || isLoading || isSigningOut) return;
 
     const inAuthGroup = segments[0] === '(auth)';
 
@@ -78,18 +75,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       signInAnonymously();
     }
-    if (inAuthGroup && isAnonymous) {
+    if (inAuthGroup && !user) {
       router.replace('/(modals)/login');
     }
-  }, [session, initialized, isLoading]);
+  }, [session, initialized, isLoading, isSigningOut]);
 
   async function signIn({ session, user }: { session: Session | null; user: User | null }) {
+    console.log('Signing in with session and user', session, user);
     setSession(session);
     setUser(user);
   }
 
   async function signOut() {
-    setIsLoading(true); // Set loading state to true during sign-out
+    // setIsLoading(true);
+    setIsSigningOut(true);
 
     try {
       const { error } = await connector.client.auth.signOut();
@@ -102,12 +101,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       console.error('Sign-out error:', e);
     } finally {
-      setIsLoading(false); // Set loading state back to false after sign-out
+      setIsLoading(false);
+      setIsSigningOut(false);
     }
   }
 
   if (isLoading) {
-    // Show a loading indicator while loading
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
@@ -116,7 +115,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         session,
         user,
-        isAnonymous,
         signIn,
         signOut,
       }}>

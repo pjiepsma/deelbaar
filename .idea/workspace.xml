@@ -8,28 +8,50 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81ed2e15-f48e-4376-a224-23fc8ae7ace9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/(auth)/account.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/(modals)/auth.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/review/RatingScreen.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/review/RatingSummary.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/review/ReviewScreen.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/widget/AvatarWidget.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/%ProgramData%/Microsoft/Windows/UUS/State/_active.uusver" beforeDir="false" afterPath="$PROJECT_DIR$/%ProgramData%/Microsoft/Windows/UUS/State/_active.uusver" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/(modals)/review.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/map/molecules/ListingCard.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/review/atom/Avatar.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/review/atom/FullImageModal.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/review/atom/ReviewText.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/review/atom/SortOptions.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/review/atom/ThumbnailImage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/review/atom/UserInfo.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/review/organisms/RatingScreen.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/review/organisms/RatingSummary.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/review/organisms/ReviewsScreen.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(auth)/account.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/account.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/auth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/auth.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/login.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/hidden/login.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(tabs)/profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/profile.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/map/atom/Marker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/atom/Marker.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/map/molecules/HikeCarousel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/molecules/HikeCarousel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ActionRow.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ActionRow.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/Header.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/LocationCard.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/SwipeableRow.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/carousel/Dot.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/carousel/Item.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/carousel/Pagination.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/carousel/Slider.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/listing/ListingBottomSheet.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/listing/ListingItem.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/listing/ListingMapStorage.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/listing/Listings.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/listing/ListingsBottomSheet.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/listing/ListingsCarousel.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/listing/ListingsMap_old.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/map/molecules/HikeCarousel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingCarousel.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/map/molecules/MapWithMarkers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/molecules/MapWithMarkers.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/review/RatingScreen.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/review/RatingSummary.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/review/ReviewScreen.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/constants/Colors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/constants/Colors.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/AuthProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/AuthProvider.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/PowerSync.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/PowerSync.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/powersync/Queries.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/Queries.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
@@ -64,7 +86,7 @@
     &quot;git-widget-placeholder&quot;: &quot;local-first&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Git/powersync-js/demos/react-native-supabase-todolist&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Git/deelbaar/components/review&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -78,25 +100,25 @@
     &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,
     &quot;ts.external.directory.path&quot;: &quot;D:\\Git\\deelbaar\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Git\deelbaar\components\review" />
       <recent name="D:\Git\deelbaar\app\(auth)" />
       <recent name="D:\Git\deelbaar\components\listing" />
       <recent name="D:\Git\deelbaar\assets" />
       <recent name="D:\Git\deelbaar\components" />
-      <recent name="D:\Git\deelbaar\assets\images" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Git\deelbaar\components\map\atom" />
-      <recent name="D:\Git\deelbaar\lib\powersync" />
+      <recent name="D:\Git\deelbaar\components\map\organisms" />
       <recent name="D:\Git\deelbaar\hidden" />
-      <recent name="D:\Git\deelbaar\assets\data" />
-      <recent name="D:\Git\react-native-local-first\app\(modals)" />
+      <recent name="D:\Git\deelbaar\components\review\organisms" />
+      <recent name="D:\Git\deelbaar\app\(modals)\review" />
+      <recent name="D:\Git\deelbaar\app\(modals)" />
     </key>
   </component>
   <component name="RunManager" selected="npm.android">
@@ -179,6 +201,18 @@
       <workItem from="1729227982030" duration="4929000" />
       <workItem from="1729271244543" duration="5237000" />
       <workItem from="1729318898476" duration="2520000" />
+      <workItem from="1729350638741" duration="7511000" />
+      <workItem from="1729441513348" duration="5671000" />
+      <workItem from="1729573336750" duration="2707000" />
+      <workItem from="1729752441459" duration="3917000" />
+      <workItem from="1729850404524" duration="3368000" />
+      <workItem from="1730268450514" duration="5272000" />
+      <workItem from="1730315698857" duration="791000" />
+      <workItem from="1730357398266" duration="23008000" />
+      <workItem from="1730454536150" duration="744000" />
+      <workItem from="1730455299708" duration="4802000" />
+      <workItem from="1730468026287" duration="5913000" />
+      <workItem from="1730536729892" duration="20031000" />
     </task>
     <servers />
   </component>

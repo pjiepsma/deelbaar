@@ -67,17 +67,21 @@ const ListingsMap: React.FC<Props> = ({
     min_lat: number,
     min_long: number,
     max_lat: number,
-    max_long: number
+    max_long: number,
+    user_id: string | null = null
   ) => {
     try {
-      const { data, error } = await connector.client.rpc('listings_with_details', {
+      const { data, error } = await connector.client.rpc('listings_in_view', {
         min_lat,
         min_long,
         max_lat,
         max_long,
         input_long: long,
         input_lat: lat,
+        user_id,
       });
+      // TODO Also fix disappearing actionRow
+      console.log(data);
 
       if (error) {
         console.error('Error calling function:', error);
@@ -119,7 +123,15 @@ const ListingsMap: React.FC<Props> = ({
       newRegion.longitudeDelta
     );
 
-    const stores = await getListingsInView(latitude, longitude, minLat, minLong, maxLat, maxLong);
+    const stores = await getListingsInView(
+      latitude,
+      longitude,
+      minLat,
+      minLong,
+      maxLat,
+      maxLong,
+      user?.id
+    );
     setListings(stores);
     setRegionBounds({ minLat, maxLat, minLong, maxLong }); // Update region bounds via the prop
     fetchedBoundsRef.current = { minLat, maxLat, minLong, maxLong }; // Store the fetched bounds
@@ -129,27 +141,6 @@ const ListingsMap: React.FC<Props> = ({
   useEffect(() => {
     onLocateMe();
   }, []);
-
-  useEffect(() => {
-    if (listing) {
-      // zoomInOnMarker(listing.lat, listing.long);
-    }
-    // zoom
-  }, [listing]);
-
-  const zoomInOnMarker = (latitude: number, longitude: number) => {
-    if (mapRef.current && region) {
-      mapRef.current.animateToRegion(
-        {
-          latitude,
-          longitude,
-          latitudeDelta: 0.005,
-          longitudeDelta: 0.005,
-        },
-        500
-      );
-    }
-  };
 
   const handleRegionChangeComplete = async (region: Region) => {
     if (!region) return;
@@ -185,7 +176,15 @@ const ListingsMap: React.FC<Props> = ({
 
     // Refetch listings if outside the bounds
     setLoading(true);
-    const stores = await getListingsInView(latitude, longitude, minLat, minLong, maxLat, maxLong);
+    const stores = await getListingsInView(
+      latitude,
+      longitude,
+      minLat,
+      minLong,
+      maxLat,
+      maxLong,
+      user?.id
+    );
     setListings(stores);
     fetchedBoundsRef.current = { minLat, maxLat, minLong, maxLong }; // Update fetched bounds
     setLoading(false);

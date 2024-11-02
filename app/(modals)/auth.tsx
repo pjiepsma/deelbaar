@@ -4,35 +4,29 @@ import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'reac
 import { useAuth } from '~/lib/AuthProvider';
 import { useSystem } from '~/lib/powersync/PowerSync';
 
-// // Tells Supabase Auth to continuously refresh the session automatically if
-// // the app is in the foreground. When this is added, you will continue to receive
-// // `onAuthStateChange` events with the `TOKEN_REFRESHED` or `SIGNED_OUT` event
-// // if the user's session is terminated. This should only be registered once.
-// AppState.addEventListener('change', (state) => {
-//   if (state === 'active') {
-//     supabase.auth.startAutoRefresh();
-//   } else {
-//     supabase.auth.stopAutoRefresh();
-//   }
-// });
-
 export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { connector } = useSystem();
-  const { user, isAnonymous } = useAuth();
-
-  const isActiveUser = user && !isAnonymous;
+  const { user, signIn, signOut } = useAuth();
 
   async function signInWithEmail() {
     setLoading(true);
-    const { error } = await connector.client.auth.signInWithPassword({
+    const {
+      data: { session, user },
+      error,
+    } = await connector.client.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) Alert.alert(error.message);
+    if (error) {
+      Alert.alert(error.message);
+    } else {
+      signIn({ session, user });
+    }
+
     setLoading(false);
   }
 
@@ -48,14 +42,6 @@ export default function Auth() {
 
     if (error) Alert.alert(error.message);
     if (!session) Alert.alert('Please check your inbox for email verification!');
-    setLoading(false);
-  }
-
-  async function signOut() {
-    setLoading(true);
-    const { error } = await connector.client.auth.signOut();
-
-    if (error) Alert.alert(error.message);
     setLoading(false);
   }
 
@@ -94,7 +80,7 @@ export default function Auth() {
           <Text style={{ color: '#fff' }}>Sign up</Text>
         </TouchableOpacity>
       </View>
-      {isActiveUser && (
+      {user && (
         <View style={styles.verticallySpaced}>
           <TouchableOpacity disabled={loading} onPress={() => signOut()} style={styles.button}>
             <Text style={{ color: '#fff' }}>Sign out</Text>

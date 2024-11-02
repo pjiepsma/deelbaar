@@ -1,26 +1,28 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Dimensions, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/core';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import {
+  Dimensions,
+  ScrollView,
+  Share,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
-import Animated, {
-  interpolate,
-  SlideInDown,
-  useAnimatedRef,
-  useAnimatedStyle,
-  useScrollViewOffset,
-} from 'react-native-reanimated';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 import Loader from '~/components/Loader';
-import RatingScreen from '~/components/review/RatingScreen';
-import ReviewsScreen from '~/components/review/ReviewScreen';
+import Avatar from '~/components/review/atom/Avatar';
+import RatingScreen from '~/components/review/organisms/RatingScreen';
+import RatingSummary from '~/components/review/organisms/RatingSummary';
+import ReviewsScreen from '~/components/review/organisms/ReviewsScreen';
 import Colors from '~/constants/Colors';
-import { defaultStyles } from '~/constants/Styles';
 import { useAuth } from '~/lib/AuthProvider';
-import { ListingRecord } from '~/lib/powersync/AppSchema';
 import { system, useSystem } from '~/lib/powersync/PowerSync';
-import { SelectListing, SelectPictures } from '~/lib/powersync/Queries';
+import { SelectListing, SelectPictures, SelectReviews } from '~/lib/powersync/Queries';
 import { toAttachmentRecord } from '~/lib/util/util';
 
 const { width } = Dimensions.get('window');
@@ -34,32 +36,80 @@ const DetailsPage = () => {
     long: string;
   }>();
 
-  const { connector, powersync } = useSystem();
+  const { powersync } = useSystem();
   const defaultImage = require('~/assets/images/default-placeholder.png');
   const navigation = useNavigation();
-  const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  // const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const { user } = useAuth();
-  const [listing, setListing] = useState<ListingRecord>(); // change type
-  const [isLoading, setLoading] = useState(false);
-  const [images, setImages] = useState([]);
+  const [listing, setListing] = useState<any>(); // improve type
+  const [rating, setRating] = useState(null);
+  const router = useRouter();
+
   useEffect(() => {
     if (id) {
-      const distance = (Number(dist_meters) / 1000).toFixed(1);
-      // TODO fetch additional details
       getListing(id);
     }
   }, [id]);
 
-  const getListing = async (id: string): Promise<void> => {
-    const result = await powersync.execute(SelectListing, [id]);
-    const images = await powersync.execute(SelectPictures, [id]);
-    if (result.rows) {
-      setListing(result.rows._array[0]);
-      console.log(result.rows._array);
+  useFocusEffect(
+    useCallback(() => {
+      setRating(null);
+    }, [])
+  );
+
+  // const averageRating = useMemo(() => {
+  //   if (reviews) {
+  //     const totalRating = reviews.reduce((sum, { rating }) => sum + rating, 0);
+  //     return (totalRating / reviews.length).toFixed(2);
+  //   }
+  // }, [reviews]);
+  //
+  // useEffect(() => {
+  //   if (listing && averageRating) {
+  //     const newListing: ListingRecord = {
+  //       ...listing,
+  //       rating: averageRating,
+  //     };
+  //     setListing(newListing);
+  //   }
+  // }, [averageRating]);
+
+  useEffect(() => {
+    if (rating !== null) {
+      router.push({
+        pathname: '/(modals)/review',
+        params: {
+          id,
+          rating,
+        },
+      });
     }
-    if (images.rows) {
-      setImages(images.rows._array);
-      console.log(images.rows._array);
+  }, [rating]);
+
+  const getListing = async (id: string): Promise<void> => {
+    try {
+      const [listingResult, imagesResult, reviewsResult] = await Promise.all([
+        powersync.execute(SelectListing, [id]),
+        powersync.execute(SelectPictures, [id]),
+        powersync.execute(SelectReviews, [id]),
+      ]);
+
+      const newListing = listingResult.rows?._array[0] || null;
+      const newImages = imagesResult.rows?._array || [];
+      const newReviews = reviewsResult.rows?._array || [];
+
+      const distance = (Number(dist_meters) / 1000).toFixed(1); // Convert to kilometers
+      setListing({
+        ...newListing,
+        distance,
+        lat: Number(lat),
+        long: Number(long),
+        images: newImages,
+        reviews: newReviews,
+      });
+      console.log(listing);
+    } catch (error) {
+      console.error('Error fetching listing data:', error);
     }
   };
 
@@ -92,7 +142,7 @@ const DetailsPage = () => {
       headerTitle: '',
       headerTransparent: true,
 
-      headerBackground: () => <Animated.View style={[headerAnimatedStyle, styles.header]} />,
+      // headerBackground: () => <Animated.View style={[headerAnimatedStyle, styles.header]} />,
       headerRight: () => (
         <View style={styles.bar}>
           {user && (
@@ -116,29 +166,29 @@ const DetailsPage = () => {
     });
   }, []);
 
-  const scrollOffset = useScrollViewOffset(scrollRef);
-  const imageAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateY: interpolate(
-            scrollOffset.value,
-            [-IMG_HEIGHT, 0, IMG_HEIGHT, IMG_HEIGHT],
-            [-IMG_HEIGHT / 2, 0, IMG_HEIGHT * 0.75]
-          ),
-        },
-        {
-          scale: interpolate(scrollOffset.value, [-IMG_HEIGHT, 0, IMG_HEIGHT], [2, 1, 1]),
-        },
-      ],
-    };
-  });
-
-  const headerAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: interpolate(scrollOffset.value, [0, IMG_HEIGHT / 1.5], [0, 1]),
-    };
-  }, []);
+  // const scrollOffset = useScrollViewOffset(scrollRef);
+  // const imageAnimatedStyle = useAnimatedStyle(() => {
+  //   return {
+  //     transform: [
+  //       {
+  //         translateY: interpolate(
+  //           scrollOffset.value,
+  //           [-IMG_HEIGHT, 0, IMG_HEIGHT, IMG_HEIGHT],
+  //           [-IMG_HEIGHT / 2, 0, IMG_HEIGHT * 0.75]
+  //         ),
+  //       },
+  //       {
+  //         scale: interpolate(scrollOffset.value, [-IMG_HEIGHT, 0, IMG_HEIGHT], [2, 1, 1]),
+  //       },
+  //     ],
+  //   };
+  // });
+  //
+  // const headerAnimatedStyle = useAnimatedStyle(() => {
+  //   return {
+  //     opacity: interpolate(scrollOffset.value, [0, IMG_HEIGHT / 1.5], [0, 1]),
+  //   };
+  // }, []);
 
   const { width: screenWidth } = Dimensions.get('window');
   const baseOptions = {
@@ -163,15 +213,14 @@ const DetailsPage = () => {
       </View>
     );
   });
-
   return (
     <View style={styles.container}>
       <View>
-        <Animated.ScrollView ref={scrollRef} scrollEventThrottle={16}>
-          {isLoading || !listing ? (
+        <View>
+          {!listing ? (
             <Loader delay={200} amount={3} visible />
           ) : (
-            <View style={styles.listingContainer}>
+            <ScrollView style={styles.listingContainer}>
               <Carousel
                 {...baseOptions}
                 loop={false}
@@ -179,7 +228,7 @@ const DetailsPage = () => {
                 style={{
                   justifyContent: 'center',
                 }}
-                data={images}
+                data={listing.images}
                 pagingEnabled
                 onSnapToItem={(index: number) => setSelectedIndex(index)}
                 renderItem={({ item }) => <CarouselItem picture={item} />}
@@ -191,56 +240,31 @@ const DetailsPage = () => {
                 <Text style={styles.location}>
                   {listing.name} in {listing.name}
                 </Text>
-                <Text style={styles.rooms}>{listing.name} bathrooms</Text>
-                <View style={{ flexDirection: 'row', gap: 4 }}>
-                  <Ionicons name="star" size={16} />
-                  {/*<Text style={styles.ratings}>*/}
-                  {/*  {listing.review_scores_rating / 20} · {listing.number_of_reviews} reviews*/}
-                  {/*</Text>*/}
-                </View>
-                <View style={styles.divider} />
-                <View style={styles.hostView}>
-                  <View>
-                    {/*<Text style={{ fontWeight: '500', fontSize: 16 }}>*/}
-                    {/*  Hosted by {listing.host_name}*/}
-                    {/*</Text>*/}
-                    {/*<Text style={{ fontWeight: '500', fontSize: 16 }}>*/}
-                    {/*  Hosted by {data.creator.name}*/}
-                    {/*</Text>*/}
-                    {/*<Text>Host since {data.host_since}</Text>*/}
-                  </View>
-                </View>
-                <View style={styles.divider} />
                 <Text style={styles.description}>{listing.description}</Text>
+                <View style={styles.divider} />
               </View>
-            </View>
+              <View style={styles.reviewContainer}>
+                <RatingSummary reviews={listing.reviews} />
+                <View style={styles.divider} />
+                {user ? (
+                  <View>
+                    <Text>Rate and review</Text>
+                    <Avatar profile="A" />
+                    <RatingScreen setRating={setRating} rating={rating} />
+                  </View>
+                ) : (
+                  <View>
+                    <Text>Sign in to rate and review</Text>
+                  </View>
+                )}
+                <View style={styles.divider} />
+                <ReviewsScreen reviews={listing.reviews} images={listing.images} />
+              </View>
+            </ScrollView>
           )}
-        </Animated.ScrollView>
+        </View>
 
-        <Animated.View style={defaultStyles.footer} entering={SlideInDown.delay(200)}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            {/*<RatingSummary />*/}
-
-            {/* Star rating input (rate and review) */}
-            <RatingScreen />
-
-            {/* Review list with sorting */}
-            <ReviewsScreen />
-            <TouchableOpacity style={styles.footerText}>
-              {/*<Text style={styles.footerPrice}>€{listing.price}</Text>*/}
-              <Text>night</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={[defaultStyles.btn, { paddingRight: 20, paddingLeft: 20 }]}>
-              <Text style={defaultStyles.btnText}>Reserve</Text>
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
+        {/*<Animated.View style={defaultStyles.footer} entering={SlideInDown.delay(200)} />*/}
       </View>
     </View>
   );
@@ -260,6 +284,9 @@ const styles = StyleSheet.create({
     width,
   },
   infoContainer: {
+    padding: 24,
+  },
+  reviewContainer: {
     padding: 24,
   },
   name: {

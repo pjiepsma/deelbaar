@@ -1,0 +1,63 @@
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+
+import Colors from '~/constants/Colors';
+
+interface UserInfoProps {
+  profile: string;
+  userName?: string;
+}
+
+const Color = {
+  GREEN: '#A0CFA0',
+  BLUE: '#8BBEDD',
+  YELLOW: '#D4D200',
+  CYAN: '#7FD6D6',
+  GRAY: '#B0B0B0',
+  BEIGE: '#D9D9A0',
+  MINT: '#7EC7C7',
+  PEACH: '#FFCBA4',
+};
+
+function getRandomColor() {
+  const colors = Object.values(Color);
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
+const Avatar: React.FC<UserInfoProps> = ({ profile, userName }) => {
+  const randomColor = getRandomColor(); // Get a random pastel color
+  return (
+    <View style={styles.container}>
+      <View style={[styles.avatar, { backgroundColor: '#D9D9A0' }]}>
+        {userName && <Text style={styles.avatarText}>{profile}</Text>}
+      </View>
+      <Text style={styles.userName}>{userName}</Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#ccc',
+    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: {
+    color: Colors.light,
+  },
+  userName: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+});
+
+export default Avatar;

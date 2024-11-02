@@ -1,128 +1,120 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useQuery, useStatus } from '@powersync/react-native';
-import * as Location from 'expo-location';
+import { useFocusEffect } from '@react-navigation/core';
 import { Stack, useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Icon } from 'react-native-elements';
+import { useState } from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
 
+import Loader from '~/components/Loader';
+import ListingCard from '~/components/map/molecules/ListingCard';
 import { useAuth } from '~/lib/AuthProvider';
-import { ListingRecord } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
-import {
-  DeleteListing,
-  DeleteListingPictures,
-  InsertListing,
-  SelectListings,
-} from '~/lib/powersync/Queries';
+import { GetFavoriteListings, RemoveFavorite, SelectLatestImages } from '~/lib/powersync/Queries';
+import { PictureEntry } from '~/lib/types/types';
 
-const description = (total: number, completed: number = 0) => {
-  return `${total - completed} pending, ${completed} completed`;
-};
+interface Listing {
+  id: string;
+  name: string;
+  description: string;
+  location: string;
+  // Add other listing properties as needed
+}
 
-const ListsViewWidget: React.FC = () => {
+const Favorites = () => {
   const { powersync, connector } = useSystem();
-  const { user, signIn } = useAuth();
-  const status = useStatus();
-  const { data: ListingRecords } = useQuery<ListingRecord>(SelectListings);
+  const { user } = useAuth();
   const router = useRouter();
+  const [favorites, setFavorites] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const createListing = async (name: string) => {
-    if (user) {
-      const location = await Location.getCurrentPositionAsync({});
-      const point = `POINT(${location.coords.longitude} ${location.coords.latitude})`;
-      const res = await powersync.execute(InsertListing, [name, 'todo', point, user.id]);
-      console.log(res);
-      const resultRecord = res.rows?.item(0);
-      if (!resultRecord) {
-        throw new Error('Could not create list');
+  const fetchFavorites = async () => {
+    if (user?.id) {
+      console.log('Fetching favorites...');
+
+      setLoading(true);
+      const result = await getFavoriteListings(user.id);
+      if (Array.isArray(result)) {
+        setFavorites(result);
+      } else {
+        setFavorites([]);
       }
-    } else {
-      router.replace('/(modals)/login');
+
+      setLoading(false);
+      console.log('Favorites fetched: ', favorites);
     }
   };
 
-  const deleteList = async (id: string) => {
-    await powersync.writeTransaction(async (tx) => {
-      // Delete associated todos
-      await tx.execute(DeleteListingPictures, [id]);
-      // Delete list record
-      await tx.execute(DeleteListing, [id]);
-    });
+  // useEffect(() => {
+  //   fetchFavorites();
+  // }, [user]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchFavorites();
+    }, [user])
+  );
+
+  const getFavoriteListings = async (userId: string) => {
+    const result = await powersync.execute(GetFavoriteListings, [userId]);
+    const listings = result.rows?._array || [];
+    if (listings.length > 0) {
+      const listing_ids = listings.map((location) => location.id);
+      try {
+        const sql = SelectLatestImages(listing_ids);
+        const pictures: PictureEntry[] = await powersync.getAll(sql, listing_ids);
+        return listings.map((location) => {
+          const picture = pictures.find((pic) => pic.listing_id === location.id) || null;
+          return {
+            ...location,
+            favorite: true,
+            picture,
+          };
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    return [];
+  };
+
+  const removeFavorite = async (userId: string, listingId: string) => {
+    const result = await powersync.execute(RemoveFavorite, [userId, listingId]);
+    return result;
+  };
+
+  const handleRemoveFavorite = async (listingId: string) => {
+    if (user?.id) {
+      await removeFavorite(user.id, listingId);
+      const result = await getFavoriteListings(user.id);
+      if (Array.isArray(result)) {
+        setFavorites(result);
+      } else {
+        setFavorites([]);
+      }
+    }
   };
 
   return (
     <View style={{ flex: 1, flexGrow: 1 }}>
       <Stack.Screen
         options={{
-          headerShown: false,
+          headerShown: true,
         }}
       />
-      {/*<TouchableOpacity*/}
-      {/*  style={styles.button}*/}
-      {/*  onPress={async () => {*/}
-      {/*    const name = await new Promise<string | null>((resolve) => {*/}
-      {/*      prompt(*/}
-      {/*        'Add a new list',*/}
-      {/*        '',*/}
-      {/*        (inputName) => {*/}
-      {/*          resolve(inputName);*/}
-      {/*        },*/}
-      {/*        { placeholder: 'List name', style: 'shimo' }*/}
-      {/*      );*/}
-      {/*    });*/}
-
-      {/*    if (name) {*/}
-      {/*      try {*/}
-      {/*        await createListing(name);*/}
-      {/*        // Optionally, provide feedback to the user (e.g., Toast notification)*/}
-      {/*      } catch (error) {*/}
-      {/*        console.error('Error creating listing:', error);*/}
-      {/*        // Handle error (e.g., show an alert to the user)*/}
-      {/*      }*/}
-      {/*    }*/}
-      {/*  }}>*/}
-      {/*  <Icon name="add" size={24} color="white" />*/}
-      {/*</TouchableOpacity>*/}
-      <TouchableOpacity style={styles.button} onPress={() => router.navigate('(auth)/admin')}>
-        <Icon name="add" size={24} color="white" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.login} onPress={() => router.navigate('(modals)/login')}>
-        <Ionicons name="accessibility-outline" size={24} color="white" />
-      </TouchableOpacity>
-      <StatusBar style="light" />
+      {loading ? (
+        <Loader delay={200} amount={3} visible={loading} />
+      ) : (
+        <FlatList
+          data={favorites}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <ListingCard item={item} onRemoveFavorite={handleRemoveFavorite} category="Books" />
+          )}
+        />
+      )}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  button: {
-    position: 'absolute',
-    bottom: 16,
-    right: 16,
-    backgroundColor: 'blue', // Adjust color as needed
-    borderRadius: 30,
-    padding: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 5, // Android shadow effect
-  },
-  login: {
-    position: 'absolute',
-    bottom: 16,
-    left: 16,
-    backgroundColor: 'blue', // Adjust color as needed
-    borderRadius: 30,
-    padding: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 5, // Android shadow effect
-  },
-  buttonText: {
-    color: 'white',
-    marginTop: 8, // Space between icon and text
-  },
-});
+const styles = StyleSheet.create({});
 
-export default ListsViewWidget;
+export default Favorites;

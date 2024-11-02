@@ -17,6 +17,7 @@ const MapWithMarkers = forwardRef<MapView, MapWithMarkersProps>(
   ({ region, listings, onMarkerPress, onRegionChangeComplete, selectedListingId }, ref) => (
     <MapView
       ref={ref}
+      moveOnMarkerPress={false}
       minZoomLevel={12}
       style={{ flex: 1 }}
       onRegionChangeComplete={onRegionChangeComplete}

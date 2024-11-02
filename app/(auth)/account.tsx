@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import Avatar from '~/components/widget/AvatarWidget';
+import { useAuth } from '~/lib/AuthProvider';
 import { useSystem } from '~/lib/powersync/PowerSync';
 
 export default function Account({ session }: { session: Session }) {
@@ -11,6 +12,7 @@ export default function Account({ session }: { session: Session }) {
   const [website, setWebsite] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   const { connector } = useSystem();
+  const { signOut } = useAuth();
   useEffect(() => {
     if (session) getProfile();
   }, [session]);
@@ -118,10 +120,7 @@ export default function Account({ session }: { session: Session }) {
       </View>
 
       <View style={styles.verticallySpaced}>
-        <TouchableOpacity
-          disabled={loading}
-          onPress={() => connector.client.auth.signOut()}
-          style={styles.button}>
+        <TouchableOpacity disabled={loading} onPress={() => signOut()} style={styles.button}>
           <Text style={{ color: '#fff' }}>Sign Out</Text>
         </TouchableOpacity>
       </View>

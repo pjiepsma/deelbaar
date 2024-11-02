@@ -1,6 +1,6 @@
 import { ATTACHMENT_TABLE } from '@powersync/attachments';
 
-import { LISTING_TABLE, PICTURE_TABLE } from '~/lib/powersync/AppSchema';
+import { LISTING_TABLE, PICTURE_TABLE, REVIEW_TABLE } from '~/lib/powersync/AppSchema';
 
 export const SelectListings = `
     SELECT ${LISTING_TABLE}.*
@@ -21,9 +21,21 @@ export const DeleteListing = `DELETE
                               WHERE id = ?`;
 
 export const SelectListing = `
-    SELECT ${LISTING_TABLE}.*
+    SELECT *
     FROM ${LISTING_TABLE}
-    WHERE ${LISTING_TABLE}.id = ?
+    WHERE id = ?
+`;
+
+export const SelectFavoriteListings = `
+    SELECT *
+    FROM ${LISTING_TABLE}
+    WHERE id = ?
+`;
+
+export const SelectReviews = `
+    SELECT *
+    FROM ${REVIEW_TABLE}
+    WHERE listing_id = ?
 `;
 
 export const UpdatePicture = `UPDATE ${PICTURE_TABLE}
@@ -31,23 +43,31 @@ export const UpdatePicture = `UPDATE ${PICTURE_TABLE}
                               WHERE id = ?`;
 
 export const InsertPicture = `INSERT INTO ${PICTURE_TABLE}
-                                  (id, created_at, created_by, listing_id, photo_id)
-                              VALUES (uuid(), datetime(), ?, ?, ?)`;
+                                  (id, created_at, created_by, listing_id, photo_id, review_id)
+                              VALUES (uuid(), datetime(), ?, ?, ?, ?) RETURNING *`;
+
+export const InsertReview = `INSERT INTO ${REVIEW_TABLE}
+                                 (id, created_at, rating, description, created_by, listing_id)
+                             VALUES (uuid(), datetime(), ?, ?, ?, ?) RETURNING *`;
 
 export const DeletePicture = `DELETE
                               FROM ${PICTURE_TABLE}
                               WHERE id = ?`;
 
-export const SelectListingWithPictures = `
-    SELECT ${LISTING_TABLE}.*,
-           ${PICTURE_TABLE}.id    AS picture_id,
-           ${PICTURE_TABLE}.*,
-           ${ATTACHMENT_TABLE}.id AS attachment_id,
-           ${ATTACHMENT_TABLE}.*
-    FROM ${LISTING_TABLE}
-             LEFT JOIN ${PICTURE_TABLE} ON ${LISTING_TABLE}.id = ${PICTURE_TABLE}.listing_id
-             LEFT JOIN ${ATTACHMENT_TABLE} ON ${PICTURE_TABLE}.photo_id = ${ATTACHMENT_TABLE}.id
-    WHERE ${LISTING_TABLE}.id = ?
+export const SelectLatestImages = (listing_ids: string[]) => `
+    SELECT P.id AS picture_id,
+           P.*,
+           A.id AS attachment_id,
+           A.*
+    FROM ${PICTURE_TABLE} AS P
+             LEFT JOIN ${ATTACHMENT_TABLE} AS A ON P.photo_id = A.id
+    WHERE P.id IN (SELECT P1.id
+                   FROM ${PICTURE_TABLE} AS P1
+                   WHERE P1.listing_id IN (${listing_ids.map(() => '?').join(',')})
+                     AND P1.created_at = (SELECT MAX(P2.created_at)
+                                          FROM ${PICTURE_TABLE} AS P2
+                                          WHERE P2.listing_id = P1.listing_id))
+    ORDER BY P.created_at DESC
 `;
 
 export const SelectPictures = `
@@ -61,3 +81,22 @@ export const SelectPictures = `
              LEFT JOIN
          ${ATTACHMENT_TABLE} ON ${PICTURE_TABLE}.photo_id = ${ATTACHMENT_TABLE}.id
     WHERE ${PICTURE_TABLE}.listing_id = ?`;
+
+export const AddFavorite = `
+    INSERT INTO favorites (id, created_by, listing_id)
+    VALUES (uuid(), ?, ?) RETURNING *;
+`;
+
+export const RemoveFavorite = `
+    DELETE
+    FROM favorites
+    WHERE created_by = ?
+      AND listing_id = ? RETURNING *;
+`;
+
+export const GetFavoriteListings = `
+    SELECT l.*
+    FROM listings l
+             JOIN favorites f ON l.id = f.listing_id
+    WHERE f.created_by = ?;
+`;

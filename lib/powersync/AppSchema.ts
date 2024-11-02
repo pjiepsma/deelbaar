@@ -1,10 +1,10 @@
 import { AttachmentTable } from '@powersync/attachments';
 import { Column, ColumnType, Index, IndexedColumn, Schema, Table } from '@powersync/react-native';
 
-import { PictureEntry } from '~/lib/types/types';
-
 export const PICTURE_TABLE = 'pictures';
+export const REVIEW_TABLE = 'reviews';
 export const LISTING_TABLE = 'listings';
+export const FAVORITES_TABLE = 'favorites';
 
 export interface ListingRecord {
   id: string;
@@ -12,8 +12,8 @@ export interface ListingRecord {
   description: string;
   lat: number;
   long: number;
-  dist_meters: string;
-  picture: PictureEntry;
+  distance: string;
+  rating?: string;
 }
 
 export interface PictureRecord {
@@ -22,6 +22,16 @@ export interface PictureRecord {
   created_by: string;
   listing_id: string;
   photo_id: string;
+  review_id: string;
+}
+
+export interface ReviewRecord {
+  id: string;
+  rating: number;
+  description: string;
+  created_at: string;
+  created_by: string;
+  listing_id: string;
 }
 
 export const AppSchema = new Schema([
@@ -44,6 +54,39 @@ export const AppSchema = new Schema([
       new Column({ name: 'created_by', type: ColumnType.TEXT }),
       new Column({ name: 'listing_id', type: ColumnType.TEXT }),
       new Column({ name: 'photo_id', type: ColumnType.TEXT }),
+      new Column({ name: 'review_id', type: ColumnType.TEXT }),
+    ],
+    indexes: [
+      new Index({
+        name: 'listing',
+        columns: [new IndexedColumn({ name: 'listing_id' })],
+      }),
+    ],
+  }),
+  new Table({
+    name: 'reviews',
+    columns: [
+      new Column({ name: 'rating', type: ColumnType.INTEGER }),
+      new Column({ name: 'description', type: ColumnType.TEXT }),
+      new Column({ name: 'created_at', type: ColumnType.TEXT }),
+      new Column({ name: 'created_by', type: ColumnType.TEXT }),
+      new Column({ name: 'listing_id', type: ColumnType.TEXT }),
+    ],
+    indexes: [
+      new Index({
+        name: 'listing',
+        columns: [new IndexedColumn({ name: 'listing_id' })],
+      }),
+    ],
+  }),
+  new Table({
+    name: 'favorites',
+    columns: [
+      new Column({ name: 'rating', type: ColumnType.INTEGER }),
+      new Column({ name: 'description', type: ColumnType.TEXT }),
+      new Column({ name: 'created_at', type: ColumnType.TEXT }),
+      new Column({ name: 'created_by', type: ColumnType.TEXT }),
+      new Column({ name: 'listing_id', type: ColumnType.TEXT }),
     ],
     indexes: [
       new Index({

@@ -59,7 +59,7 @@ const ActionRow = ({ onCategoryChanged, setModalState, animatedPosition, listing
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      opacity: fadeInOpacity.value, // Use the value directly
+      opacity: fadeInOpacity.value,
     };
   });
 
@@ -67,10 +67,6 @@ const ActionRow = ({ onCategoryChanged, setModalState, animatedPosition, listing
     {
       value: 'Books',
       icon: 'library-outline',
-    },
-    {
-      value: 'Water',
-      icon: 'water-outline',
     },
   ];
 
