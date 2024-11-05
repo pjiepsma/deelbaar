@@ -1,8 +1,8 @@
 import { useFocusEffect } from '@react-navigation/core';
 import { Stack, useRouter } from 'expo-router';
 import * as React from 'react';
-import { useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import Loader from '~/components/Loader';
 import ListingCard from '~/components/map/molecules/ListingCard';
@@ -24,12 +24,10 @@ const Favorites = () => {
   const { user } = useAuth();
   const router = useRouter();
   const [favorites, setFavorites] = useState<Listing[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const fetchFavorites = async () => {
     if (user?.id) {
-      console.log('Fetching favorites...');
-
       setLoading(true);
       const result = await getFavoriteListings(user.id);
       if (Array.isArray(result)) {
@@ -39,16 +37,11 @@ const Favorites = () => {
       }
 
       setLoading(false);
-      console.log('Favorites fetched: ', favorites);
     }
   };
 
-  // useEffect(() => {
-  //   fetchFavorites();
-  // }, [user]);
-
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       fetchFavorites();
     }, [user])
   );
@@ -93,28 +86,60 @@ const Favorites = () => {
     }
   };
 
+  const handleNavigate = (item) => {
+    router.push({
+      pathname: '/(modals)/listing/[id]', // Adjust this to your actual detail page path
+      params: {
+        id: item.id,
+        dist_meters: item.dist_meters,
+        lat: item.lat,
+        long: item.long,
+      },
+    });
+  };
+
   return (
     <View style={{ flex: 1, flexGrow: 1 }}>
       <Stack.Screen
         options={{
           headerShown: true,
+          title: 'Favorite',
         }}
       />
       {loading ? (
         <Loader delay={200} amount={3} visible={loading} />
-      ) : (
+      ) : user ? (
         <FlatList
           data={favorites}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <ListingCard item={item} onRemoveFavorite={handleRemoveFavorite} category="Books" />
+            <ListingCard
+              item={item}
+              onRemoveFavorite={handleRemoveFavorite}
+              category="Books"
+              onPress={() => handleNavigate(item)}
+            />
           )}
         />
+      ) : (
+        <View style={styles.messageContainer}>
+          <Text style={styles.message}>Log in om je favorieten te zien.</Text>
+        </View>
       )}
     </View>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  messageContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  message: {
+    fontSize: 16,
+    color: '#777',
+  },
+});
 
 export default Favorites;

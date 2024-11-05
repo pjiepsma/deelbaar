@@ -1,11 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 
 import Colors from '~/constants/Colors';
 
 interface UserInfoProps {
-  profile: string;
-  userName?: string;
+  name: string;
+  uri?: string | null;
 }
 
 const Color = {
@@ -24,14 +25,21 @@ function getRandomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-const Avatar: React.FC<UserInfoProps> = ({ profile, userName }) => {
+const Avatar: React.FC<UserInfoProps> = ({ name, uri }) => {
   const randomColor = getRandomColor(); // Get a random pastel color
   return (
     <View style={styles.container}>
       <View style={[styles.avatar, { backgroundColor: '#D9D9A0' }]}>
-        {userName && <Text style={styles.avatarText}>{profile}</Text>}
+        {uri ? (
+          <FastImage
+            source={{ uri, priority: FastImage.priority.normal }}
+            resizeMode={FastImage.resizeMode.cover}
+            style={styles.image}
+          />
+        ) : (
+          <Text style={styles.avatarText}>{name}</Text>
+        )}
       </View>
-      <Text style={styles.userName}>{userName}</Text>
     </View>
   );
 };
@@ -50,6 +58,11 @@ const styles = StyleSheet.create({
     marginRight: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
   },
   avatarText: {
     color: Colors.light,

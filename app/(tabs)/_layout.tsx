@@ -14,28 +14,30 @@ const Layout = () => {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarLabel: 'Explore',
-          tabBarIcon: ({ color, size }) => <Ionicons name="search" size={size} color={color} />,
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="favorites"
         options={{
           tabBarLabel: 'Favorites',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="heart-outline" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'heart' : 'heart-outline'} size={size} color={color} />
           ),
         }}
       />
-      {/*<Tabs.Screen*/}
-      {/*  name="profile"*/}
-      {/*  options={{*/}
-      {/*    tabBarLabel: 'Profile',*/}
-      {/*    tabBarIcon: ({ color, size }) => (*/}
-      {/*      <Ionicons name="person-circle-outline" size={size} color={color} />*/}
-      {/*    ),*/}
-      {/*  }}*/}
-      {/*/>*/}
+      <Tabs.Screen
+        name="profile"
+        options={{
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 };

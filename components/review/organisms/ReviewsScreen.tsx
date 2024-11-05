@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Avatar from '../atom/Avatar';
 import FullImageModal from '../atom/FullImageModal';
 import ReviewText from '../atom/ReviewText';
 import SortOptions from '../atom/SortOptions';
-import ThumbnailImage from '../atom/ThumbnailImage';
+import Thumbnail from '../atom/Thumbnail';
 import UserInfo from '../atom/UserInfo';
 
 import { useSystem } from '~/lib/powersync/PowerSync';
@@ -42,20 +42,23 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({ reviews, images }) => {
 
   const renderReview = (item: Review) => {
     const image = images.find((img) => img.review_id === item.id);
-    const uri = image ? attachmentQueue?.getLocalUri(image.local_uri) : null;
-
+    const photoUri = image ? attachmentQueue?.getLocalUri(image.local_uri) : null;
+    const avatarUri = item.local_uri ? attachmentQueue!.getLocalUri(item.local_uri) : null;
     return (
       <View key={item.id} style={styles.reviewContainer}>
         <View style={styles.userDetails}>
-          <Avatar profile="A" userName={item.id} />
+          <View style={styles.row}>
+            <Avatar name={item.name} uri={avatarUri} />
+            <Text style={styles.username}>{item.name}</Text>
+          </View>
           <UserInfo userName={item.created_by} rating={item.rating} date={item.created_at} />
         </View>
         <ReviewText description={item.description} />
-        {uri && (
-          <ThumbnailImage
-            uri={uri}
+        {photoUri && (
+          <Thumbnail
+            uri={photoUri}
             onPress={() => {
-              setSelectedImageUri(uri);
+              setSelectedImageUri(photoUri);
               setModalVisible(true);
             }}
           />
@@ -93,6 +96,15 @@ const styles = StyleSheet.create({
   userDetails: {
     flexDirection: 'column',
     marginBottom: 8,
+  },
+  username: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 4,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 

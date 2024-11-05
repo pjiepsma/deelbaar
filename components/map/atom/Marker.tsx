@@ -30,9 +30,12 @@ const MarkerComponent: React.FC<MarkerComponentProps> = memo(({ store, onPress, 
       coordinate={{ latitude: store.lat, longitude: store.long }}
       onPress={onPress}
       tracksViewChanges={trackChanges}>
-      <View
-        style={[styles.marker, { backgroundColor: selected ? Colors.secondary : Colors.primary }]}>
-        <Ionicons name="library-outline" size={14} color={Colors.light} />
+      <View style={[styles.marker, { backgroundColor: selected ? Colors.light : Colors.primary }]}>
+        <Ionicons
+          name="library-outline"
+          size={10}
+          color={selected ? Colors.primary : Colors.light}
+        />
       </View>
     </Marker>
   );
@@ -42,6 +45,8 @@ const styles = StyleSheet.create({
   marker: {
     flexDirection: 'row',
     padding: 4,
+    borderColor: Colors.primary,
+    borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import Avatar from '~/components/widget/AvatarWidget';
+import Colors from '~/constants/Colors';
 import { useAuth } from '~/lib/AuthProvider';
 import { useSystem } from '~/lib/powersync/PowerSync';
 
@@ -13,6 +14,7 @@ export default function Account({ session }: { session: Session }) {
   const [avatarUrl, setAvatarUrl] = useState('');
   const { connector } = useSystem();
   const { signOut } = useAuth();
+
   useEffect(() => {
     if (session) getProfile();
   }, [session]);
@@ -82,7 +84,7 @@ export default function Account({ session }: { session: Session }) {
 
   return (
     <View style={styles.container}>
-      <View>
+      <View style={styles.avatarContainer}>
         <Avatar
           size={200}
           url={avatarUrl}
@@ -92,8 +94,8 @@ export default function Account({ session }: { session: Session }) {
           }}
         />
       </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <TextInput value={session?.user?.email} editable={false} />
+      <View style={styles.verticallySpaced}>
+        <TextInput value={session?.user?.email} editable={false} style={styles.inputField} />
       </View>
       <View style={styles.verticallySpaced}>
         <TextInput
@@ -110,18 +112,18 @@ export default function Account({ session }: { session: Session }) {
         />
       </View>
 
-      <View style={[styles.verticallySpaced, styles.mt20]}>
+      <View style={styles.verticallySpaced}>
         <TouchableOpacity
           disabled={loading}
           onPress={() => updateProfile({ username, website, avatar_url: avatarUrl })}
           style={styles.button}>
-          <Text style={{ color: '#fff' }}>{loading ? 'Loading ...' : 'Update'}</Text>
+          <Text style={styles.buttonText}>{loading ? 'Loading ...' : 'Update'}</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.verticallySpaced}>
         <TouchableOpacity disabled={loading} onPress={() => signOut()} style={styles.button}>
-          <Text style={{ color: '#fff' }}>Sign Out</Text>
+          <Text style={styles.buttonText}>Sign Out</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -130,32 +132,33 @@ export default function Account({ session }: { session: Session }) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 40,
-    padding: 12,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  avatarContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
   },
   verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: 'stretch',
-  },
-  mt20: {
-    marginTop: 20,
+    marginVertical: 10,
   },
   inputField: {
-    marginVertical: 4,
-    height: 50,
+    height: 40,
+    borderColor: '#ccc',
     borderWidth: 1,
-    borderColor: '#A700FF',
-    borderRadius: 4,
-    padding: 10,
-    color: '#fff',
-    backgroundColor: '#363636',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    backgroundColor: '#f9f9f9',
   },
   button: {
-    marginVertical: 15,
     alignItems: 'center',
-    backgroundColor: '#A700FF',
+    backgroundColor: Colors.primary,
     padding: 12,
-    borderRadius: 4,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });

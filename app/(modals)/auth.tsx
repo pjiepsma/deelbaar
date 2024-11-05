@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import Colors from '~/constants/Colors';
 import { useAuth } from '~/lib/AuthProvider';
 import { useSystem } from '~/lib/powersync/PowerSync';
 
@@ -41,18 +42,19 @@ export default function Auth() {
     });
 
     if (error) Alert.alert(error.message);
-    if (!session) Alert.alert('Please check your inbox for email verification!');
     setLoading(false);
   }
 
   return (
     <View style={styles.container}>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
+      <Text style={styles.title}>Login</Text>
+      <View style={styles.verticallySpaced}>
         <TextInput
           onChangeText={(text) => setEmail(text)}
           value={email}
           placeholder="email@address.com"
           autoCapitalize="none"
+          style={styles.input}
         />
       </View>
       <View style={styles.verticallySpaced}>
@@ -62,53 +64,65 @@ export default function Auth() {
           secureTextEntry
           placeholder="Password"
           autoCapitalize="none"
+          style={styles.input}
         />
       </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <TouchableOpacity
-          disabled={loading}
-          onPress={() => signInWithEmail()}
-          style={styles.button}>
-          <Text style={{ color: '#fff' }}>Sign in</Text>
+      <TouchableOpacity disabled={loading} onPress={signInWithEmail} style={styles.button}>
+        <Text style={styles.buttonText}>Sign in</Text>
+      </TouchableOpacity>
+      <View style={styles.footerText}>
+        <Text>Don't have an account? </Text>
+        <TouchableOpacity onPress={signUpWithEmail}>
+          <Text style={styles.link}>Sign Up</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.verticallySpaced}>
-        <TouchableOpacity
-          disabled={loading}
-          onPress={() => signUpWithEmail()}
-          style={styles.button}>
-          <Text style={{ color: '#fff' }}>Sign up</Text>
-        </TouchableOpacity>
-      </View>
-      {user && (
-        <View style={styles.verticallySpaced}>
-          <TouchableOpacity disabled={loading} onPress={() => signOut()} style={styles.button}>
-            <Text style={{ color: '#fff' }}>Sign out</Text>
-          </TouchableOpacity>
-        </View>
-      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 40,
-    padding: 12,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: Colors.primary,
+    marginBottom: 20,
+    textAlign: 'center',
   },
   verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: 'stretch',
+    marginVertical: 10,
   },
-  mt20: {
-    marginTop: 20,
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
   },
   button: {
-    marginVertical: 15,
     alignItems: 'center',
-    backgroundColor: '#A700FF',
+    backgroundColor: Colors.primary,
     padding: 12,
-    borderRadius: 4,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  footerText: {
+    marginTop: 20,
+    textAlign: 'center',
+    color: '#666',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  link: {
+    color: Colors.primary,
+    fontWeight: 'bold',
   },
 });

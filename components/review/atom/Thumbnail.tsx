@@ -7,7 +7,7 @@ interface ThumbnailImageProps {
   onPress: () => void;
 }
 
-const ThumbnailImage: React.FC<ThumbnailImageProps> = ({ uri, onPress }) => {
+const Thumbnail: React.FC<ThumbnailImageProps> = ({ uri, onPress }) => {
   return (
     <TouchableOpacity onPress={onPress}>
       <FastImage
@@ -28,4 +28,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ThumbnailImage;
+export default Thumbnail;

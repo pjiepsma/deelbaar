@@ -6,7 +6,6 @@ import MapView from 'react-native-maps';
 import { Region } from 'react-native-maps/lib/sharedTypes';
 
 import Loader from '~/components/Loader';
-import LocateButton from '~/components/map/atom/Button';
 import MapWithMarkers from '~/components/map/molecules/MapWithMarkers';
 import Colors from '~/constants/Colors';
 import { useAuth } from '~/lib/AuthProvider';
@@ -81,7 +80,6 @@ const ListingsMap: React.FC<Props> = ({
         user_id,
       });
       // TODO Also fix disappearing actionRow
-      console.log(data);
 
       if (error) {
         console.error('Error calling function:', error);
@@ -152,9 +150,8 @@ const ListingsMap: React.FC<Props> = ({
       latitudeDelta,
       longitudeDelta
     );
-    setRegionBounds({ minLat, maxLat, minLong, maxLong }); // Call setRegionBounds with updated bounds
+    setRegionBounds({ minLat, maxLat, minLong, maxLong });
 
-    // Check if the current region is outside the fetched bounds
     if (fetchedBoundsRef.current) {
       const {
         minLat: fetchedMinLat,
@@ -173,12 +170,12 @@ const ListingsMap: React.FC<Props> = ({
         return;
       }
     }
-
-    // Refetch listings if outside the bounds
     setLoading(true);
+
+    const { coords } = await Location.getCurrentPositionAsync({});
     const stores = await getListingsInView(
-      latitude,
-      longitude,
+      coords.latitude,
+      coords.longitude,
       minLat,
       minLong,
       maxLat,
@@ -186,7 +183,8 @@ const ListingsMap: React.FC<Props> = ({
       user?.id
     );
     setListings(stores);
-    fetchedBoundsRef.current = { minLat, maxLat, minLong, maxLong }; // Update fetched bounds
+    fetchedBoundsRef.current = { minLat, maxLat, minLong, maxLong };
+
     setLoading(false);
   };
 
@@ -205,7 +203,6 @@ const ListingsMap: React.FC<Props> = ({
           onRegionChangeComplete={debounce(handleRegionChangeComplete, 500)}
         />
       )}
-      <LocateButton onPress={onLocateMe} />
     </View>
   );
 };
@@ -213,6 +210,8 @@ const ListingsMap: React.FC<Props> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 40,
+    paddingBottom: 30,
     backgroundColor: Colors.light,
   },
   loaderContainer: {

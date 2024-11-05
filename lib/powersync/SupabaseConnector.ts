@@ -4,12 +4,11 @@ import {
   PowerSyncBackendConnector,
   UpdateType,
 } from '@powersync/react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 import 'react-native-url-polyfill/auto';
 import { SupabaseStorageAdapter } from '~/lib/powersync/storage/SupabaseStorageAdapter';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL as string;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string;
@@ -75,7 +74,7 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
       throw new Error(`Could not fetch Supabase credentials: ${error}`);
     }
 
-    console.debug('session expires at', new Date(session.expires_at! * 1000));
+    // console.debug('session expires at', new Date(session.expires_at! * 1000));
 
     return {
       client: this.client,

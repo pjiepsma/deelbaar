@@ -35,19 +35,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const system = useSystem();
 
   useEffect(() => {
-    const initSystem = async () => {
-      await system.init();
+    const fetchSession = async () => {
+      const { data, error } = await connector.client.auth.getSession();
+      if (error) {
+        console.error('Error fetching session:', error.message);
+      } else {
+        setSession(data.session);
+      }
     };
 
-    initSystem().then(() => setIsLoading(false));
-  }, [system]);
+    fetchSession();
 
-  useEffect(() => {
-    const { data } = connector.client.auth.onAuthStateChange((event, session) => {
-      setInitialized(true);
-      setIsLoading(false);
+    const { data: authListener } = connector.client.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-
       if (session && session.user && !session.user.is_anonymous) {
         setUser(session.user);
       } else {
@@ -56,9 +56,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => {
-      data.subscription.unsubscribe();
+      authListener.subscription.unsubscribe();
     };
   }, [connector]);
+
+  useEffect(() => {
+    const initSystem = async () => {
+      await system.init();
+      setIsLoading(false);
+    };
+
+    initSystem();
+  }, [system]);
 
   useEffect(() => {
     if (!initialized || isLoading || isSigningOut) return;
@@ -76,9 +85,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signInAnonymously();
     }
     if (inAuthGroup && !user) {
-      router.replace('/(modals)/login');
+      router.replace('/(modals)/login' as const);
     }
-  }, [session, initialized, isLoading, isSigningOut]);
+  }, [session, initialized, isLoading, isSigningOut, segments, router, user, connector]);
 
   async function signIn({ session, user }: { session: Session | null; user: User | null }) {
     console.log('Signing in with session and user', session, user);
@@ -87,7 +96,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signOut() {
-    // setIsLoading(true);
     setIsSigningOut(true);
 
     try {

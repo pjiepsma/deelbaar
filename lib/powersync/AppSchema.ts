@@ -5,6 +5,7 @@ export const PICTURE_TABLE = 'pictures';
 export const REVIEW_TABLE = 'reviews';
 export const LISTING_TABLE = 'listings';
 export const FAVORITES_TABLE = 'favorites';
+export const PROFILES_TABLE = 'profiles';
 
 export interface ListingRecord {
   id: string;
@@ -14,6 +15,7 @@ export interface ListingRecord {
   long: number;
   distance: string;
   rating?: string;
+  picture: PictureRecord | null;
 }
 
 export interface PictureRecord {
@@ -45,6 +47,17 @@ export const AppSchema = new Schema([
       new Column({ name: 'location', type: ColumnType.TEXT }),
       new Column({ name: 'category', type: ColumnType.TEXT }),
       new Column({ name: 'tags', type: ColumnType.TEXT }),
+    ],
+  }),
+  new Table({
+    name: 'profiles',
+    columns: [
+      new Column({ name: 'updated_at', type: ColumnType.TEXT }),
+      new Column({ name: 'username', type: ColumnType.TEXT }),
+      new Column({ name: 'name', type: ColumnType.TEXT }),
+      new Column({ name: 'avatar', type: ColumnType.TEXT }),
+      new Column({ name: 'surname', type: ColumnType.TEXT }),
+      new Column({ name: 'email', type: ColumnType.TEXT }),
     ],
   }),
   new Table({

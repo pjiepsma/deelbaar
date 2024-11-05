@@ -24,7 +24,6 @@ export default function Loader({
 }) {
   const opacity = useSharedValue(0);
 
-  // Animated style for the loader's opacity
   const animatedLoaderStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,

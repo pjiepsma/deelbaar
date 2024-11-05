@@ -1,6 +1,11 @@
 import { ATTACHMENT_TABLE } from '@powersync/attachments';
 
-import { LISTING_TABLE, PICTURE_TABLE, REVIEW_TABLE } from '~/lib/powersync/AppSchema';
+import {
+  LISTING_TABLE,
+  PICTURE_TABLE,
+  PROFILES_TABLE,
+  REVIEW_TABLE,
+} from '~/lib/powersync/AppSchema';
 
 export const SelectListings = `
     SELECT ${LISTING_TABLE}.*
@@ -32,10 +37,19 @@ export const SelectFavoriteListings = `
     WHERE id = ?
 `;
 
+// export const SelectReviews = `
+//     SELECT ${REVIEW_TABLE}.*, P.name, P.avatar
+//     FROM ${REVIEW_TABLE}
+//              LEFT JOIN ${PROFILES_TABLE} as P ON ${REVIEW_TABLE}.created_by = P.id
+//     WHERE ${REVIEW_TABLE}.listing_id = ?
+// `;
+
 export const SelectReviews = `
-    SELECT *
+    SELECT ${REVIEW_TABLE}.*, P.name, A.id AS attachment_id, A.*
     FROM ${REVIEW_TABLE}
-    WHERE listing_id = ?
+             LEFT JOIN ${PROFILES_TABLE} AS P ON ${REVIEW_TABLE}.created_by = P.id
+             LEFT JOIN ${ATTACHMENT_TABLE} AS A ON P.avatar = A.id
+    WHERE ${REVIEW_TABLE}.listing_id = ?
 `;
 
 export const UpdatePicture = `UPDATE ${PICTURE_TABLE}

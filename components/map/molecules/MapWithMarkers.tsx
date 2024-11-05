@@ -24,7 +24,7 @@ const MapWithMarkers = forwardRef<MapView, MapWithMarkersProps>(
       initialRegion={region}
       provider={PROVIDER_GOOGLE}
       showsUserLocation
-      showsMyLocationButton={false}>
+      showsMyLocationButton>
       {listings.map((listing) => (
         <MarkerComponent
           key={listing.id}

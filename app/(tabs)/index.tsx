@@ -1,8 +1,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSharedValue } from 'react-native-reanimated';
 
 import ActionRow from '~/components/ActionRow';
 import ListingCarousel from '~/components/map/organisms/ListingCarousel';
@@ -13,18 +12,13 @@ import { SelectLatestImages } from '~/lib/powersync/Queries';
 import { PictureEntry } from '~/lib/types/types';
 
 const Index = () => {
+  const { connector, powersync } = useSystem();
+
   const [category, setCategory] = useState('Books');
-  const [modalState, setModalState] = useState(false);
-  const [listingModal, setListingModal] = useState(false);
-  const { connector, powersync, attachmentQueue } = useSystem();
-
-  const animatedPosition = useSharedValue(0);
+  const [filterState, setFilterState] = useState(false);
   const [listing, setListing] = useState<ListingRecord | null>(null);
-
-  const [listings, setListings] = useState<ListingRecord[]>([]); // Full listings
-  const [listingsPictures, setListingsPictures] = useState<ListingRecord[]>([]); // Full listings
-
-  const [filteredListings, setFilteredListings] = useState<ListingRecord[]>([]); // Filtered listings
+  const [listings, setListings] = useState<ListingRecord[]>([]);
+  const [listingsPictures, setListingsPictures] = useState<ListingRecord[]>([]);
   const [regionBounds, setRegionBounds] = useState<{
     minLat: number;
     maxLat: number;
@@ -32,51 +26,46 @@ const Index = () => {
     maxLong: number;
   } | null>(null);
 
-  useEffect(() => {
-    const fetchPictures = async () => {
-      await connector.fetchCredentials();
+  const fetchPictures = useCallback(async () => {
+    await connector.fetchCredentials();
 
-      if (listings.length > 0) {
-        const listing_ids = listings.map((location) => location.id);
-        // setLoading(true);
-        try {
-          const sql = SelectLatestImages(listing_ids);
-          const pictures: PictureEntry[] = await powersync.getAll(sql, listing_ids);
-          const locationsDataWithPictures = listings.map((location) => {
-            const picture = pictures.find((pic) => pic.listing_id === location.id) || null; // Get the picture or null if not found
-            return {
-              ...location,
-              picture,
-            };
-          });
+    if (listings.length > 0) {
+      const listing_ids = listings.map((location) => location.id);
+      try {
+        const sql = SelectLatestImages(listing_ids);
+        const pictures: PictureEntry[] = await powersync.getAll(sql, listing_ids);
+        const locationsDataWithPictures = listings.map((location) => {
+          const picture = pictures.find((pic) => pic.listing_id === location.id) || null;
+          return {
+            ...location,
+            picture,
+          };
+        });
 
-          setListingsPictures(locationsDataWithPictures);
-        } catch (err) {
-          // setError(err);
-        } finally {
-          // setLoading(false);
-        }
+        setListingsPictures(locationsDataWithPictures);
+      } catch (err) {
+        console.error(err);
       }
-    };
+    }
+  }, [listings, connector, powersync]);
 
-    fetchPictures();
-  }, [listings, powersync]);
-
-  // Whenever regionBounds change, filter listings
   useEffect(() => {
-    if (!regionBounds || listings.length === 0) return;
+    fetchPictures();
+  }, [fetchPictures]);
+
+  const filteredListings = useMemo(() => {
+    if (!regionBounds || listings.length === 0) return [];
 
     const { minLat, maxLat, minLong, maxLong } = regionBounds;
-    const filtered = listingsPictures.filter(
+    return listingsPictures.filter(
       (store) =>
         store.lat >= minLat && store.lat <= maxLat && store.long >= minLong && store.long <= maxLong
     );
-    setFilteredListings(filtered);
   }, [regionBounds, listingsPictures]);
 
   return (
     <View style={styles.container}>
-      <StatusBar style="dark" />
+      <StatusBar style="dark" backgroundColor="white" />
       <Stack.Screen
         options={{
           headerShown: false,
@@ -84,8 +73,7 @@ const Index = () => {
       />
       <ActionRow
         onCategoryChanged={setCategory}
-        setModalState={setModalState}
-        animatedPosition={animatedPosition}
+        setFilterState={setFilterState}
         listing={listing}
       />
       <ListingsMap
@@ -105,6 +93,7 @@ const Index = () => {
     </View>
   );
 };
+
 export default Index;
 
 const styles = StyleSheet.create({

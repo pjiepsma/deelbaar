@@ -166,30 +166,6 @@ const DetailsPage = () => {
     });
   }, []);
 
-  // const scrollOffset = useScrollViewOffset(scrollRef);
-  // const imageAnimatedStyle = useAnimatedStyle(() => {
-  //   return {
-  //     transform: [
-  //       {
-  //         translateY: interpolate(
-  //           scrollOffset.value,
-  //           [-IMG_HEIGHT, 0, IMG_HEIGHT, IMG_HEIGHT],
-  //           [-IMG_HEIGHT / 2, 0, IMG_HEIGHT * 0.75]
-  //         ),
-  //       },
-  //       {
-  //         scale: interpolate(scrollOffset.value, [-IMG_HEIGHT, 0, IMG_HEIGHT], [2, 1, 1]),
-  //       },
-  //     ],
-  //   };
-  // });
-  //
-  // const headerAnimatedStyle = useAnimatedStyle(() => {
-  //   return {
-  //     opacity: interpolate(scrollOffset.value, [0, IMG_HEIGHT / 1.5], [0, 1]),
-  //   };
-  // }, []);
-
   const { width: screenWidth } = Dimensions.get('window');
   const baseOptions = {
     vertical: false,
@@ -235,12 +211,9 @@ const DetailsPage = () => {
               />
               <View style={styles.infoContainer}>
                 <Text style={styles.name}>{listing.name}</Text>
-                <Text style={styles.name}>{listing.description}</Text>
-                <Text style={styles.name}>{listing.name}</Text>
-                <Text style={styles.location}>
-                  {listing.name} in {listing.name}
-                </Text>
-                <Text style={styles.description}>{listing.description}</Text>
+                {listing.description && (
+                  <Text style={styles.description}>{listing.description}</Text>
+                )}
                 <View style={styles.divider} />
               </View>
               <View style={styles.reviewContainer}>
@@ -248,9 +221,11 @@ const DetailsPage = () => {
                 <View style={styles.divider} />
                 {user ? (
                   <View>
-                    <Text>Rate and review</Text>
-                    <Avatar profile="A" />
-                    <RatingScreen setRating={setRating} rating={rating} />
+                    <Text style={styles.title}>Rate and review</Text>
+                    <View style={styles.row}>
+                      <Avatar name="A" />
+                      <RatingScreen setRating={setRating} rating={rating} />
+                    </View>
                   </View>
                 ) : (
                   <View>
@@ -284,10 +259,10 @@ const styles = StyleSheet.create({
     width,
   },
   infoContainer: {
-    padding: 24,
+    paddingHorizontal: 24,
   },
   reviewContainer: {
-    padding: 24,
+    paddingHorizontal: 24,
   },
   name: {
     fontSize: 26,
@@ -299,12 +274,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontFamily: 'mon-sb',
   },
-  rooms: {
-    fontSize: 16,
-    color: Colors.grey,
-    marginVertical: 4,
-    fontFamily: 'mon',
-  },
   ratings: {
     fontSize: 16,
     fontFamily: 'mon-sb',
@@ -314,17 +283,15 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.grey,
     marginVertical: 16,
   },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   host: {
     width: 50,
     height: 50,
     borderRadius: 50,
     backgroundColor: Colors.grey,
-  },
-  hostView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    backgroundColor: 'red',
   },
   footerText: {
     height: '100%',
@@ -357,6 +324,11 @@ const styles = StyleSheet.create({
     height: 100,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: Colors.grey,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
   },
   description: {
     fontSize: 16,
