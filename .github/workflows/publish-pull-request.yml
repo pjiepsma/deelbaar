@@ -12,24 +12,30 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: 18.x
-          cache: yarn
-          cache-dependency-path: yarn.lock
-          
+          node-version: '18.x'
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock' # Cache dependencies to speed up install
+
+      - name: Setup Expo and EAS CLI
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: 'latest'
+          token: ${{ secrets.EXPO_TOKEN }}
+
       - name: Install Dependencies
-        run: yarn
+        run: yarn install --frozen-lockfile
 
       - name: Publish to Expo Go
         env:
           NODE_ENV: dev
         run: npx expo publish --non-interactive --release-channel pr-${{ github.event.number }}
-        continue-on-error: true  # Allows the workflow to continue even if this step fails
+        continue-on-error: true  # Allow workflow continuation if publish fails
 
       - name: Handle Publish Failure
         if: failure()
@@ -39,7 +45,7 @@ jobs:
         with:
           message: |
             🚨 **Expo Publish Failed**
-            Please check the workflow logs for more details on why the publish step failed.
+            Check [workflow logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for more details.
 
       - name: Add Expo Link to PR
         if: success()
@@ -50,4 +56,4 @@ jobs:
           message: |
             ## Test this PR with Expo Go
             ![Expo QR](https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=exp://exp.host/@iepsma/deelbaar?release-channel=pr-${{ github.event.number }})
-            **------ Build published to [Expo](https://exp.host/@iepsma/deelbaar?release-channel=pr-${{ github.event.number }}) ------**
+            **[Build published to Expo](https://exp.host/@iepsma/deelbaar?release-channel=pr-${{ github.event.number }})**
