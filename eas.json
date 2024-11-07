@@ -18,16 +18,26 @@
       "distribution": "internal"
     },
     "production": {
+      "releaseChannel": "production",
+      "distribution": "store",
       "env": {
         "EXPO_PUBLIC_SUPABASE_BUCKET": "EXPO_PUBLIC_SUPABASE_BUCKET",
         "EXPO_PUBLIC_POWERSYNC_URL": "EXPO_PUBLIC_POWERSYNC_URL",
         "EXPO_PUBLIC_SUPABASE_URL": "EXPO_PUBLIC_SUPABASE_URL",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "EXPO_PUBLIC_SUPABASE_ANON_KEY"
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "EXPO_PUBLIC_SUPABASE_ANON_KEY",
+        "NODE_ENV": "prod",
+        "VERSION": "1.0.0",
+        "BUILD_NUMBER": "1"
       },
       "autoIncrement": true
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "android": {
+        "track": "production",
+        "changesNotSentForReview": true
+      }
+    }
   }
 }

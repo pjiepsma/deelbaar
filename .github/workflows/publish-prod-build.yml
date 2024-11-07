@@ -24,3 +24,5 @@ jobs:
         run: yarn install
       - name: Build on EAS
         run: eas build --platform all --non-interactive --no-wait
+      - name: Publish to Play Store
+        run: npx eas submit --platform android --latest --non-interactive
