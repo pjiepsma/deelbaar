@@ -48,13 +48,19 @@ jobs:
           path: ${{ github.workspace }}/app-release.apk
 
       - name: Generate QR code
+        id: generate_qr
         run: |
           APK_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/app-release.apk"
           QR_CODE_URL="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${APK_URL}"
-          echo "![QR Code](${QR_CODE_URL})" > qr-code.md
+          echo "QR_CODE_URL=${QR_CODE_URL}" >> $GITHUB_ENV
 
-      - name: Upload QR code
-        uses: actions/upload-artifact@v4
+      - name: Add QR code to PR
+        if: success()
+        uses: mshick/add-pr-comment@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: qr-code
-          path: qr-code.md
+          message: |
+            ## Test this PR with Expo Go
+            ![QR Code](${QR_CODE_URL})
+            **[Download APK](${APK_URL})**
