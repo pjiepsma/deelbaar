@@ -52,6 +52,7 @@ jobs:
         run: |
           APK_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/app-release.apk"
           QR_CODE_URL="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${APK_URL}"
+          echo "APK_URL=${APK_URL}" >> $GITHUB_ENV
           echo "QR_CODE_URL=${QR_CODE_URL}" >> $GITHUB_ENV
 
       - name: Add QR code to PR
@@ -62,5 +63,5 @@ jobs:
         with:
           message: |
             ## Test this PR with Expo Go
-            ![QR Code](${QR_CODE_URL})
-            **[Download APK](${APK_URL})**
+            ![QR Code](${{ env.QR_CODE_URL }})
+            **[Download APK](${{ env.APK_URL }})**
