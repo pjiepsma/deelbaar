@@ -47,7 +47,11 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.deelbaar.app"
+      "package": "com.deelbaar.app",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "extra": {
       "router": {
@@ -57,6 +61,12 @@
         "projectId": "de8a44a5-2432-4b69-8dcb-22b1ef299d63"
       }
     },
-    "owner": "iepsma"
+    "owner": "iepsma",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/de8a44a5-2432-4b69-8dcb-22b1ef299d63"
+    }
   }
 }

@@ -6,7 +6,8 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "channel": "development"
     },
     "preview": {
       "env": {
@@ -19,7 +20,8 @@
       "android": {
         "channel": "preview",
         "buildType": "apk"
-      }
+      },
+      "channel": "preview"
     },
     "production": {
       "releaseChannel": "production",
@@ -33,7 +35,8 @@
         "VERSION": "1.0.0",
         "BUILD_NUMBER": "1"
       },
-      "autoIncrement": true
+      "autoIncrement": true,
+      "channel": "production"
     }
   },
   "submit": {
