@@ -6,39 +6,52 @@ on:
       - develop
 
 jobs:
-  update:
-    name: EAS Update
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
     steps:
-      - name: Check for EXPO_TOKEN
-        run: |
-          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
-            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
-            exit 1
-          fi
-
-      - name: Checkout repository
+      - name: Setup repo
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Setup node
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: 18.x
-          cache: yarn
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
 
-      - name: Setup EAS
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
+          expo-version: latest
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
-      - name: Create preview
-        uses: expo/expo-github-action/preview@v8
+      - name: Build Android app
+        run: eas build --platform android --profile development --local --output ${{ github.workspace }}/app-release.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
         with:
-          command: eas update --auto
+          name: app-release
+          path: ${{ github.workspace }}/app-release.apk
+
+      - name: Generating QR code
+        id: generating_qr_code
+        uses: kentaro-m/qr-code-commenter-action@v0.1.2
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          content: https://github.com/${{ github.repository_owner }}/${{ github.repository }}/releases/download/${{ github.run_number }}/app-release.apk
+          comment: |
+            :lock: This is a QR code for access to the preview website.:iphone: Scan a code with your device.{qrcode}
