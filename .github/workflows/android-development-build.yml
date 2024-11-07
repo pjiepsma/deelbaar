@@ -46,3 +46,15 @@ jobs:
         with:
           name: app-release
           path: ${{ github.workspace }}/app-release.apk
+
+      - name: Generate QR code
+        run: |
+          APK_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/app-release.apk"
+          QR_CODE_URL="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${APK_URL}"
+          echo "![QR Code](${QR_CODE_URL})" > qr-code.md
+
+      - name: Upload QR code
+        uses: actions/upload-artifact@v4
+        with:
+          name: qr-code
+          path: qr-code.md

@@ -1,7 +1,10 @@
 name: Android App APK Build
 
 on:
-# Specify when you want the build to run here
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
 
 jobs:
   build:
@@ -11,10 +14,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup node
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
-          cache: 'npm'
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -33,7 +37,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
       - name: Build Android app
         run: eas build --platform android --profile preview --local --output ${{ github.workspace }}/app-release.apk
@@ -43,3 +47,15 @@ jobs:
         with:
           name: app-release
           path: ${{ github.workspace }}/app-release.apk
+
+      - name: Generate QR code
+        run: |
+          APK_URL="https://github.com/${{ github.repository }}/releases/download/${{ github.run_id }}/app-release.apk"
+          QR_CODE_URL="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${APK_URL}"
+          echo "![QR Code](${QR_CODE_URL})" > qr-code.md
+
+      - name: Upload QR code
+        uses: actions/upload-artifact@v4
+        with:
+          name: qr-code
+          path: qr-code.md

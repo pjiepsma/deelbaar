@@ -1,7 +1,10 @@
 name: Android App Release Build
 
 on:
-# Specify when you want the build to run here
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -43,3 +46,9 @@ jobs:
         with:
           name: app-release
           path: ${{ github.workspace }}/app-release.aab
+
+      - name: Submit to Play Store
+        run: npx eas submit --platform android --latest --non-interactive
+        env:
+          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+          EAS_ACCESS_TOKEN: ${{ secrets.EXPO_TOKEN }}
