@@ -1,136 +1,145 @@
-import {
-  FlatList,
-  StyleSheet,
-  View,
-  Text,
-  Button,
-  TouchableWithoutFeedback,
-  Modal,
-} from "react-native";
-import React, { useEffect, useRef, useState } from "react";
-import { useUserContext } from "@/app/auth/auth";
-import { useGetUserById, useGetUsers } from "@/lib/query/user";
-import Colors from "@/constants/Colors";
-import { Link, Stack } from "expo-router";
-import { defaultStyles } from "@/constants/Styles";
-import Loader from "@/components/general/loader";
-import Explore from "@/components/Explore";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import { ListingItem } from "@/components/listing/ListingItem";
-import ActionRow from "@/components/ActionRow";
-import { useSharedValue } from "react-native-reanimated";
-import Dropdown from "@/components/deprecated/Dropdown";
-import { OptionItem } from "@/constants/Types";
-import { useGetRecentPosts } from "@/lib/query/posts";
+import { useFocusEffect } from '@react-navigation/core';
+import { Stack, useRouter } from 'expo-router';
+import * as React from 'react';
+import { useCallback, useState } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
-const DATA: OptionItem[] = [
-  {
-    value: "Books",
-    icon: "library-outline",
-  },
-  {
-    value: "Water",
-    icon: "water-outline",
-  },
-];
+import Loader from '~/components/Loader';
+import ListingCard from '~/components/map/molecules/ListingCard';
+import { useAuth } from '~/lib/AuthProvider';
+import { useSystem } from '~/lib/powersync/PowerSync';
+import { GetFavoriteListings, RemoveFavorite, SelectLatestImages } from '~/lib/powersync/Queries';
+import { PictureEntry } from '~/lib/types/types';
 
-const Page = () => {
-  const { user } = useUserContext();
-  const {
-    data: creator,
-    isLoading,
-    isError: isErrorCreators,
-  } = useGetUserById(user.id); // Fetch farovites of User instead of whole user. Filter data by category and use
-  const listRef = useRef<FlatList>(null);
-  const [category, setCategory] = useState<OptionItem>(DATA[0]);
-  const [list, setList] = useState<any | null>(null);
+interface Listing {
+  id: string;
+  name: string;
+  description: string;
+  location: string;
+  // Add other listing properties as needed
+}
 
-  useEffect(() => {
-    // filter creator.favorite by category
-    const filtered = creator?.favorite
-      .filter((item: any) => item.listing.category === category.value)
-      .map((item: any) => item.listing);
-    setList(filtered);
-    console.log("Category", category);
-    console.log("list", creator?.favorite);
-    console.log("filtered", filtered);
-  }, [category, creator]);
+const Favorites = () => {
+  const { powersync, connector } = useSystem();
+  const { user } = useAuth();
+  const router = useRouter();
+  const [favorites, setFavorites] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchFavorites = async () => {
+    if (user?.id) {
+      setLoading(true);
+      const result = await getFavoriteListings(user.id);
+      if (Array.isArray(result)) {
+        setFavorites(result);
+      } else {
+        setFavorites([]);
+      }
+
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchFavorites();
+    }, [user])
+  );
+
+  const getFavoriteListings = async (userId: string) => {
+    const result = await powersync.execute(GetFavoriteListings, [userId]);
+    const listings = result.rows?._array || [];
+    if (listings.length > 0) {
+      const listing_ids = listings.map((location) => location.id);
+      try {
+        const sql = SelectLatestImages(listing_ids);
+        const pictures: PictureEntry[] = await powersync.getAll(sql, listing_ids);
+        return listings.map((location) => {
+          const picture = pictures.find((pic) => pic.listing_id === location.id) || null;
+          return {
+            ...location,
+            favorite: true,
+            picture,
+          };
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    return [];
+  };
+
+  const removeFavorite = async (userId: string, listingId: string) => {
+    const result = await powersync.execute(RemoveFavorite, [userId, listingId]);
+    return result;
+  };
+
+  const handleRemoveFavorite = async (listingId: string) => {
+    if (user?.id) {
+      await removeFavorite(user.id, listingId);
+      const result = await getFavoriteListings(user.id);
+      if (Array.isArray(result)) {
+        setFavorites(result);
+      } else {
+        setFavorites([]);
+      }
+    }
+  };
+
+  const handleNavigate = (item) => {
+    router.push({
+      pathname: '/(modals)/listing/[id]', // Adjust this to your actual detail page path
+      params: {
+        id: item.id,
+        dist_meters: item.dist_meters,
+        lat: item.lat,
+        long: item.long,
+      },
+    });
+  };
 
   return (
-    <View style={defaultStyles.container}>
+    <View style={{ flex: 1, flexGrow: 1 }}>
       <Stack.Screen
         options={{
-          header: () => <SafeAreaView style={styles.safeArea}></SafeAreaView>,
+          headerShown: true,
+          title: 'Favorite',
         }}
       />
-      {isLoading || !creator ? (
-        <Loader delay={200} amount={3} />
-      ) : (
-        <View style={styles.box}>
-          <Dropdown label="Select Item" data={DATA} onSelect={setCategory} />
-          {list && (
-            <FlatList renderItem={ListingItem} data={list} ref={listRef} />
+      {loading ? (
+        <Loader delay={200} amount={3} visible={loading} />
+      ) : user ? (
+        <FlatList
+          data={favorites}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <ListingCard
+              item={item}
+              onRemoveFavorite={handleRemoveFavorite}
+              category="Books"
+              onPress={() => handleNavigate(item)}
+            />
           )}
+        />
+      ) : (
+        <View style={styles.messageContainer}>
+          <Text style={styles.message}>Log in om je favorieten te zien.</Text>
         </View>
       )}
     </View>
   );
 };
-export default Page;
 
 const styles = StyleSheet.create({
-  box: {
-    left: 10,
-  },
-  contentContainer: {
+  messageContainer: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  safeArea: {
-    backgroundColor: "#fff",
-    paddingTop: 10,
-  },
-  absoluteView: {
-    position: "absolute",
-    bottom: 30,
-    width: "100%",
-    alignItems: "center",
-  },
-  btn: {
-    backgroundColor: Colors.dark,
-    padding: 14,
-    height: 50,
-    borderRadius: 30,
-    flexDirection: "row",
-    marginHorizontal: "auto",
-    alignItems: "center",
-  },
-  sheetContainer: {
-    backgroundColor: "#fff",
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    shadowOffset: {
-      width: 1,
-      height: 1,
-    },
-  },
-  listing: {
-    padding: 16,
-    gap: 10,
-    marginVertical: 0,
-  },
-  image: {
-    width: "100%",
-    height: 300,
-    borderRadius: 10,
-  },
-  info: {
-    textAlign: "center",
-    fontFamily: "mon-sb",
+  message: {
     fontSize: 16,
-    marginTop: 4,
-    color: Colors.dark,
+    color: '#777',
   },
 });
+
+export default Favorites;

@@ -1,81 +1,62 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Dropdown from "@/components/deprecated/Dropdown";
-import { Ionicons } from "@expo/vector-icons";
-import Colors from "@/constants/Colors";
-import React, { useEffect, useState } from "react";
-import { defaultStyles } from "@/constants/Styles";
-import { OptionItem } from "@/constants/Types";
-import { interpolateColor, useAnimatedStyle } from "react-native-reanimated";
-import Animated from "react-native-reanimated";
+import React, { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import Dropdown from '~/components/Dropdown';
+import Colors from '~/constants/Colors';
+import { OptionItem } from '~/constants/Types';
+import { ListingRecord } from '~/lib/powersync/AppSchema';
 
 interface Props {
   onCategoryChanged: (category: string) => void;
-  setModalState: (state: boolean) => void;
-  animatedPosition: any;
+  setFilterState: (state: boolean) => void;
+  listing: ListingRecord | null;
 }
 
-const ActionRow = ({
-  onCategoryChanged,
-  setModalState,
-  animatedPosition,
-}: Props) => {
+const ActionRow = ({ onCategoryChanged, setFilterState, listing }: Props) => {
   const DATA: OptionItem[] = [
     {
-      value: "Books",
-      icon: "library-outline",
-    },
-    {
-      value: "Water",
-      icon: "water-outline",
+      value: 'Books',
+      icon: 'library-outline',
     },
   ];
 
-  const backdropStyle = useAnimatedStyle(() => ({
-    // move this from index to here, included animationPosition
-    backgroundColor: interpolateColor(
-      animatedPosition.value,
-      [0.9, 1],
-      ["transparent", "white"],
-    ),
-  }));
-  const [selected, setSelected] = useState(undefined);
-  const onDataChanged = (item: OptionItem) => {
-    // setCategory(category);
+  const insets = useSafeAreaInsets();
+  const safeAreaPadding = {
+    paddingTop: insets.top,
+    paddingBottom: insets.bottom,
+    paddingLeft: insets.left,
+    paddingRight: insets.right,
   };
+
+  const [selected, setSelected] = useState<{ label: string; value: string }>();
+
   return (
-    <Animated.View style={[styles.actions, backdropStyle]}>
+    <View style={[styles.actions, safeAreaPadding]}>
       <View style={styles.container}>
         <Dropdown label="Select Item" data={DATA} onSelect={setSelected} />
-
-        <TouchableOpacity
-          style={styles.filterButton}
-          onPress={() => setModalState(true)}
-        >
-          <Ionicons name="options-outline" size={24} color={Colors.dark} />
-          <Text>Filter</Text>
-          <View style={styles.round}>
-            <Text style={styles.filterText}>3</Text>
-          </View>
-        </TouchableOpacity>
+        {/*<TouchableOpacity style={styles.filterButton} onPress={() => setFilterState(true)}>*/}
+        {/*  <Ionicons name="options-outline" size={24} color={Colors.dark} />*/}
+        {/*  <Text>Filter</Text>*/}
+        {/*  <View style={styles.round}>*/}
+        {/*    <Text style={styles.filterText}>3</Text>*/}
+        {/*  </View>*/}
+        {/*</TouchableOpacity>*/}
       </View>
-    </Animated.View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 5,
     padding: 10,
   },
-  filter: {
-    display: "flex",
-  },
   actions: {
-    width: "100%",
-    position: "absolute",
+    width: '100%',
+    position: 'absolute',
     zIndex: 3,
   },
   round: {
@@ -85,25 +66,29 @@ const styles = StyleSheet.create({
     height: 16,
     width: 16,
     borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   filterText: {
     fontSize: 10,
-    color: "white",
+    color: 'white',
   },
   filterButton: {
-    height: 40,
-    justifyContent: "center",
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    width: 100,
-    paddingHorizontal: 10,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: Colors.grey,
-    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 10,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: {
+      width: 1,
+      height: 10,
+    },
   },
 });
+
 export default ActionRow;

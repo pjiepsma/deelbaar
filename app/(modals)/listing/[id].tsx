@@ -1,227 +1,245 @@
-import { useLocalSearchParams, useNavigation } from "expo-router";
-import React, { useLayoutEffect } from "react";
+import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/core';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
   Dimensions,
-  TouchableOpacity,
+  ScrollView,
   Share,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import FastImage from 'react-native-fast-image';
+import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
-import Colors from "@/constants/Colors";
-import Animated, {
-  SlideInDown,
-  interpolate,
-  useAnimatedRef,
-  useAnimatedStyle,
-  useScrollViewOffset,
-} from "react-native-reanimated";
-import { defaultStyles } from "@/constants/Styles";
-import {
-  useGetPostById,
-  useGetRecentPosts,
-  useSavePost,
-} from "@/lib/query/posts";
-import Loader from "@/components/general/loader";
-import { useUserContext } from "@/app/auth/auth";
-import Slider from "@/components/carousel/Slider";
+import Loader from '~/components/Loader';
+import Avatar from '~/components/review/atom/Avatar';
+import RatingScreen from '~/components/review/organisms/RatingScreen';
+import RatingSummary from '~/components/review/organisms/RatingSummary';
+import ReviewsScreen from '~/components/review/organisms/ReviewsScreen';
+import Colors from '~/constants/Colors';
+import { useAuth } from '~/lib/AuthProvider';
+import { system, useSystem } from '~/lib/powersync/PowerSync';
+import { SelectListing, SelectPictures, SelectReviews } from '~/lib/powersync/Queries';
+import { toAttachmentRecord } from '~/lib/util/util';
 
-const { width } = Dimensions.get("window");
+const { width } = Dimensions.get('window');
 const IMG_HEIGHT = 300;
 
 const DetailsPage = () => {
-  // details page should differentiate between type of listing
-  const { user, isAdmin } = useUserContext();
+  const { id, dist_meters, lat, long } = useLocalSearchParams<{
+    id: string;
+    dist_meters: string;
+    lat: string;
+    long: string;
+  }>();
 
-  const { id } = useLocalSearchParams<{ id: string }>();
-  let { data, isLoading } = useGetPostById(id);
-  const defaultImage = require("@/assets/images/default-placeholder.png");
+  const { powersync } = useSystem();
+  const defaultImage = require('~/assets/images/default-placeholder.png');
   const navigation = useNavigation();
-  const scrollRef = useAnimatedRef<Animated.ScrollView>();
-  const { mutate: savePost, isError: isErrorSave } = useSavePost();
+  // const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  const { user } = useAuth();
+  const [listing, setListing] = useState<any>(); // improve type
+  const [rating, setRating] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (id) {
+      getListing(id);
+    }
+  }, [id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setRating(null);
+    }, [])
+  );
+
+  // const averageRating = useMemo(() => {
+  //   if (reviews) {
+  //     const totalRating = reviews.reduce((sum, { rating }) => sum + rating, 0);
+  //     return (totalRating / reviews.length).toFixed(2);
+  //   }
+  // }, [reviews]);
+  //
+  // useEffect(() => {
+  //   if (listing && averageRating) {
+  //     const newListing: ListingRecord = {
+  //       ...listing,
+  //       rating: averageRating,
+  //     };
+  //     setListing(newListing);
+  //   }
+  // }, [averageRating]);
+
+  useEffect(() => {
+    if (rating !== null) {
+      router.push({
+        pathname: '/(modals)/review',
+        params: {
+          id,
+          rating,
+        },
+      });
+    }
+  }, [rating]);
+
+  const getListing = async (id: string): Promise<void> => {
+    try {
+      const [listingResult, imagesResult, reviewsResult] = await Promise.all([
+        powersync.execute(SelectListing, [id]),
+        powersync.execute(SelectPictures, [id]),
+        powersync.execute(SelectReviews, [id]),
+      ]);
+
+      const newListing = listingResult.rows?._array[0] || null;
+      const newImages = imagesResult.rows?._array || [];
+      const newReviews = reviewsResult.rows?._array || [];
+
+      const distance = (Number(dist_meters) / 1000).toFixed(1); // Convert to kilometers
+      setListing({
+        ...newListing,
+        distance,
+        lat: Number(lat),
+        long: Number(long),
+        images: newImages,
+        reviews: newReviews,
+      });
+      console.log(listing);
+    } catch (error) {
+      console.error('Error fetching listing data:', error);
+    }
+  };
 
   const shareListing = async () => {
     try {
       await Share.share({
-        title: data?.name,
-        url: data?.listing_url,
+        message: '',
+        // title: data?.name,
+        // url: data?.listing_url,
       });
     } catch (err) {
       console.log(err);
     }
   };
 
-  const saveListing = async () => {
-    try {
-      savePost({ userId: user.id, postId: id });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const editListing = async () => {
-    try {
-      savePost({ userId: user.id, postId: id });
-    } catch (err) {
-      console.log(err);
+    if (listing) {
+      // const location = await Location.getCurrentPositionAsync({});
+      // const todoId = uuid();
+      // const point = `POINT(${location.coords.longitude}, ${location.coords.latitude})`;
+      // const data = await db
+      //   .insertInto(STORES_TABLE)
+      //   .values({ id: todoId, name: '', description: '', location: point })
+      //   .execute();
     }
   };
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: "",
+      headerTitle: '',
       headerTransparent: true,
 
-      headerBackground: () => (
-        <Animated.View
-          style={[headerAnimatedStyle, styles.header]}
-        ></Animated.View>
-      ),
+      // headerBackground: () => <Animated.View style={[headerAnimatedStyle, styles.header]} />,
       headerRight: () => (
         <View style={styles.bar}>
-          {isAdmin && (
+          {user && (
             <TouchableOpacity style={styles.roundButton} onPress={editListing}>
-              <Ionicons name="create-outline" size={22} color={"#000"} />
+              <Ionicons name="create-outline" size={22} color="#000" />
             </TouchableOpacity>
           )}
           <TouchableOpacity style={styles.roundButton} onPress={shareListing}>
-            <Ionicons name="share-outline" size={22} color={"#000"} />
+            <Ionicons name="share-outline" size={22} color="#000" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.roundButton} onPress={saveListing}>
-            <Ionicons name="heart-outline" size={22} color={"#000"} />
-          </TouchableOpacity>
+          {/*<TouchableOpacity style={styles.roundButton} onPress={saveListing}>*/}
+          {/*  <Ionicons name="heart-outline" size={22} color="#000" />*/}
+          {/*</TouchableOpacity>*/}
         </View>
       ),
       headerLeft: () => (
-        <TouchableOpacity
-          style={styles.roundButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="chevron-back" size={24} color={"#000"} />
+        <TouchableOpacity style={styles.roundButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back" size={24} color="#000" />
         </TouchableOpacity>
       ),
     });
   }, []);
 
-  const scrollOffset = useScrollViewOffset(scrollRef);
+  const { width: screenWidth } = Dimensions.get('window');
+  const baseOptions = {
+    vertical: false,
+    width: screenWidth,
+    height: 300,
+  };
+  const carouselRef = useRef<ICarouselInstance>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
-  const imageAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateY: interpolate(
-            scrollOffset.value,
-            [-IMG_HEIGHT, 0, IMG_HEIGHT, IMG_HEIGHT],
-            [-IMG_HEIGHT / 2, 0, IMG_HEIGHT * 0.75],
-          ),
-        },
-        {
-          scale: interpolate(
-            scrollOffset.value,
-            [-IMG_HEIGHT, 0, IMG_HEIGHT],
-            [2, 1, 1],
-          ),
-        },
-      ],
-    };
+  const CarouselItem = React.memo(({ picture }: { picture: any }) => {
+    const photoAttachment = toAttachmentRecord(picture);
+    const uri = system.attachmentQueue?.getLocalUri(photoAttachment?.local_uri!);
+    return (
+      <View>
+        <FastImage
+          key={photoAttachment?.id}
+          source={photoAttachment ? { uri, priority: FastImage.priority.normal } : defaultImage}
+          style={styles.image}
+          resizeMode={FastImage.resizeMode.cover}
+        />
+      </View>
+    );
   });
-
-  const headerAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: interpolate(scrollOffset.value, [0, IMG_HEIGHT / 1.5], [0, 1]),
-    };
-  }, []);
-
   return (
     <View style={styles.container}>
       <View>
-        <Animated.ScrollView
-          contentContainerStyle={{ paddingBottom: 100 }}
-          ref={scrollRef}
-          scrollEventThrottle={16}
-        >
-          {isLoading || !data ? (
-            <Loader delay={200} amount={3} />
+        <View>
+          {!listing ? (
+            <Loader delay={200} amount={3} visible />
           ) : (
-            <View>
-              <Slider
-                images={data.images.lenght ? data.images : [defaultImage]}
-                deleteImage={() => {}}
-                mode="show"
+            <ScrollView style={styles.listingContainer}>
+              <Carousel
+                {...baseOptions}
+                loop={false}
+                ref={carouselRef}
+                style={{
+                  justifyContent: 'center',
+                }}
+                data={listing.images}
+                pagingEnabled
+                onSnapToItem={(index: number) => setSelectedIndex(index)}
+                renderItem={({ item }) => <CarouselItem picture={item} />}
               />
               <View style={styles.infoContainer}>
-                {/*<Text style={styles.name}>{listing.name}</Text>*/}
-                <Text style={styles.name}>{data.caption}</Text>
-                <Text style={styles.name}>{data.coordinates}</Text>
-                {/* Show map based on coordinates */}
-                <Text style={styles.location}>
-                  {data.room_type} in {data.smart_location}
-                </Text>
-                <Text style={styles.rooms}>
-                  {data.guests_included} guests · {data.bedrooms} bedrooms ·{" "}
-                  {data.beds} bed · {data.bathrooms} bathrooms
-                </Text>
-                <View style={{ flexDirection: "row", gap: 4 }}>
-                  <Ionicons name="star" size={16} />
-                  {/*<Text style={styles.ratings}>*/}
-                  {/*  {listing.review_scores_rating / 20} ·{" "}*/}
-                  {/*  {listing.number_of_reviews} reviews*/}
-                  {/*</Text>*/}
-                </View>
+                <Text style={styles.name}>{listing.name}</Text>
+                {listing.description && (
+                  <Text style={styles.description}>{listing.description}</Text>
+                )}
                 <View style={styles.divider} />
-
-                <View style={styles.hostView}>
-                  <Image
-                    source={{ uri: data.host_picture_url }}
-                    style={styles.host}
-                  />
-
-                  <View>
-                    {/*<Text style={{ fontWeight: "500", fontSize: 16 }}>*/}
-                    {/*  Hosted by {listing.host_name}*/}
-                    {/*</Text>*/}
-                    <Text style={{ fontWeight: "500", fontSize: 16 }}>
-                      Hosted by {data.creator.name}
-                    </Text>
-                    <Text>Host since {data.host_since}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.divider} />
-
-                {/*<Text style={styles.description}>{listing.description}</Text>*/}
               </View>
-            </View>
+              <View style={styles.reviewContainer}>
+                <RatingSummary reviews={listing.reviews} />
+                <View style={styles.divider} />
+                {user ? (
+                  <View>
+                    <Text style={styles.title}>Rate and review</Text>
+                    <View style={styles.row}>
+                      <Avatar name="A" />
+                      <RatingScreen setRating={setRating} rating={rating} />
+                    </View>
+                  </View>
+                ) : (
+                  <View>
+                    <Text>Sign in to rate and review</Text>
+                  </View>
+                )}
+                <View style={styles.divider} />
+                <ReviewsScreen reviews={listing.reviews} images={listing.images} />
+              </View>
+            </ScrollView>
           )}
-        </Animated.ScrollView>
-        {/*
-         <Animated.View
-          style={defaultStyles.footer}
-          entering={SlideInDown.delay(200)}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <TouchableOpacity style={styles.footerText}>
-              <Text style={styles.footerPrice}>€{listing.price}</Text>
-              <Text>night</Text>
-            </TouchableOpacity>
+        </View>
 
-            <TouchableOpacity
-              style={[defaultStyles.btn, { paddingRight: 20, paddingLeft: 20 }]}
-            >
-              <Text style={defaultStyles.btnText}>Reserve</Text>
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
-        */}
+        {/*<Animated.View style={defaultStyles.footer} entering={SlideInDown.delay(200)} />*/}
       </View>
     </View>
   );
@@ -230,40 +248,44 @@ const DetailsPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: 'white',
+  },
+  listingContainer: {
+    // backgroundColor: 'red',
+    // flex: 1,
   },
   image: {
     height: IMG_HEIGHT,
-    width: width,
+    width,
   },
   infoContainer: {
-    padding: 24,
-    backgroundColor: "#fff",
+    paddingHorizontal: 24,
+  },
+  reviewContainer: {
+    paddingHorizontal: 24,
   },
   name: {
     fontSize: 26,
-    fontWeight: "bold",
-    fontFamily: "mon-sb",
+    fontWeight: 'bold',
+    fontFamily: 'mon-sb',
   },
   location: {
     fontSize: 18,
     marginTop: 10,
-    fontFamily: "mon-sb",
-  },
-  rooms: {
-    fontSize: 16,
-    color: Colors.grey,
-    marginVertical: 4,
-    fontFamily: "mon",
+    fontFamily: 'mon-sb',
   },
   ratings: {
     fontSize: 16,
-    fontFamily: "mon-sb",
+    fontFamily: 'mon-sb',
   },
   divider: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: Colors.grey,
     marginVertical: 16,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   host: {
     width: 50,
@@ -271,48 +293,47 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: Colors.grey,
   },
-  hostView: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
   footerText: {
-    height: "100%",
-    justifyContent: "center",
-    flexDirection: "row",
-    alignItems: "center",
+    height: '100%',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 4,
   },
   footerPrice: {
     fontSize: 18,
-    fontFamily: "mon-sb",
+    fontFamily: 'mon-sb',
   },
   roundButton: {
     width: 40,
     height: 40,
     borderRadius: 50,
-    backgroundColor: "white",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
     color: Colors.primary,
   },
   bar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 10,
   },
   header: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     height: 100,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: Colors.grey,
   },
-
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
   description: {
     fontSize: 16,
     marginTop: 10,
-    fontFamily: "mon",
+    fontFamily: 'mon',
   },
 });
 

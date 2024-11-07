@@ -1,5 +1,6 @@
-import Colors from "@/constants/Colors";
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
+
+import Colors from '~/constants/Colors';
 
 export const defaultStyles = StyleSheet.create({
   container: {
@@ -8,40 +9,40 @@ export const defaultStyles = StyleSheet.create({
   inputField: {
     height: 44,
     borderWidth: 1,
-    borderColor: "#ABABAB",
+    borderColor: '#ABABAB',
     borderRadius: 8,
     padding: 10,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   btn: {
     backgroundColor: Colors.primary,
     height: 50,
     borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   btnText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontFamily: "mon-b",
+    fontFamily: 'mon-b',
   },
   btnIcon: {
-    position: "absolute",
+    position: 'absolute',
     left: 16,
   },
   row: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 10,
   },
   footer: {
-    position: "absolute",
+    position: 'absolute',
     height: 100,
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderTopColor: Colors.grey,
@@ -52,10 +53,10 @@ export const defaultStyles = StyleSheet.create({
     height: 40,
     borderRadius: 10,
     backgroundColor: Colors.secondary,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   link: {
-    color: "#0000EE",
+    color: '#0000EE',
   },
 });
