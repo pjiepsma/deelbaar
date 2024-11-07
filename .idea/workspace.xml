@@ -8,30 +8,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81ed2e15-f48e-4376-a224-23fc8ae7ace9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/components/map/molecules/DefaultCard.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/publish-pull-request.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(auth)/account.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/account.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/auth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/auth.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/profile.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/ActionRow.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ActionRow.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Loader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Loader.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/map/atom/Marker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/atom/Marker.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/map/molecules/ListingCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/molecules/ListingCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/map/molecules/MapWithMarkers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/molecules/MapWithMarkers.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingCarousel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingCarousel.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/review/atom/Avatar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/review/atom/Avatar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/review/atom/ThumbnailImage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/review/atom/Thumbnail.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/review/atom/UserInfo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/review/atom/UserInfo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/review/organisms/ReviewsScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/review/organisms/ReviewsScreen.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/AuthProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/AuthProvider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/Queries.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/Queries.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eas.json" beforeDir="false" afterPath="$PROJECT_DIR$/eas.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,11 +73,11 @@
       <recent name="D:\Git\deelbaar\components" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Git\deelbaar\.github\workflows" />
       <recent name="D:\Git\deelbaar\app\(auth)" />
       <recent name="D:\Git\deelbaar\components\map\organisms" />
       <recent name="D:\Git\deelbaar\hidden" />
       <recent name="D:\Git\deelbaar\components\review\organisms" />
-      <recent name="D:\Git\deelbaar\app\(modals)\review" />
     </key>
   </component>
   <component name="RunManager" selected="npm.android">
@@ -193,7 +174,9 @@
       <workItem from="1730536729892" duration="21391000" />
       <workItem from="1730654400638" duration="651000" />
       <workItem from="1730790532419" duration="15219000" />
-      <workItem from="1730815724197" duration="10789000" />
+      <workItem from="1730815724197" duration="12045000" />
+      <workItem from="1730877335670" duration="993000" />
+      <workItem from="1730958327678" duration="2920000" />
     </task>
     <servers />
   </component>

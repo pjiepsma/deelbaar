@@ -9,9 +9,21 @@
       "distribution": "internal"
     },
     "preview": {
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_BUCKET": "EXPO_PUBLIC_SUPABASE_BUCKET",
+        "EXPO_PUBLIC_POWERSYNC_URL": "EXPO_PUBLIC_POWERSYNC_URL",
+        "EXPO_PUBLIC_SUPABASE_URL": "EXPO_PUBLIC_SUPABASE_URL",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "EXPO_PUBLIC_SUPABASE_ANON_KEY"
+      },
       "distribution": "internal"
     },
     "production": {
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_BUCKET": "EXPO_PUBLIC_SUPABASE_BUCKET",
+        "EXPO_PUBLIC_POWERSYNC_URL": "EXPO_PUBLIC_POWERSYNC_URL",
+        "EXPO_PUBLIC_SUPABASE_URL": "EXPO_PUBLIC_SUPABASE_URL",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "EXPO_PUBLIC_SUPABASE_ANON_KEY"
+      },
       "autoIncrement": true
     }
   },
