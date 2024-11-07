@@ -1,8 +1,12 @@
 name: Android App APK Build
 
+#on:
+#  workflow_dispatch:
+#  push:
+#    branches:
+#      - develop
 on:
-  workflow_dispatch:
-  push:
+  pull_request:
     branches:
       - develop
 
