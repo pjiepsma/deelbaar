@@ -8,8 +8,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81ed2e15-f48e-4376-a224-23fc8ae7ace9" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/android-internal-build.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/android-internal-build.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -179,7 +178,7 @@
       <workItem from="1730815724197" duration="12045000" />
       <workItem from="1730877335670" duration="993000" />
       <workItem from="1730958327678" duration="21476000" />
-      <workItem from="1731179941637" duration="147000" />
+      <workItem from="1731179941637" duration="450000" />
     </task>
     <servers />
   </component>
