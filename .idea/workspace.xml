@@ -4,32 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8cc25b81-8b88-4801-8bc3-e345db1ccbe0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.easignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/powersync/Config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/%ProgramData%/Microsoft/Windows/UUS/State/_active.uusver" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/android-internal-build.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/android-internal-build.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/auth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/auth.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/favicon.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/favicon.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/icon.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/splash.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/widget/TodoItemWidget.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/widget/TodoItemWidget.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eas.json" beforeDir="false" afterPath="$PROJECT_DIR$/eas.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/AuthProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/AuthProvider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/AppConfig.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/PhotoAttachmentQueue.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/PhotoAttachmentQueue.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/PowerSync.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/PowerSync.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/storage/SupabaseStorageAdapter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/storage/SupabaseStorageAdapter.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
-    </list>
+    <list default="true" id="8cc25b81-8b88-4801-8bc3-e345db1ccbe0" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -83,7 +58,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1731356864998</updated>
-      <workItem from="1731356866386" duration="26656000" />
+      <workItem from="1731356866386" duration="26789000" />
     </task>
     <servers />
   </component>
