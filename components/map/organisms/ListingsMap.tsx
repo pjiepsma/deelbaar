@@ -79,7 +79,6 @@ const ListingsMap: React.FC<Props> = ({
         input_lat: lat,
         user_id,
       });
-      // TODO Also fix disappearing actionRow
 
       if (error) {
         console.error('Error calling function:', error);

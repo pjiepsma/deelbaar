@@ -1,19 +1,22 @@
+import Constants from 'expo-constants';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 
 import ActionRow from '~/components/ActionRow';
 import ListingCarousel from '~/components/map/organisms/ListingCarousel';
 import ListingsMap from '~/components/map/organisms/ListingsMap';
+import { useAuth } from '~/lib/AuthProvider';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
 import { SelectLatestImages } from '~/lib/powersync/Queries';
+import { Config } from '~/lib/powersync/config';
 import { PictureEntry } from '~/lib/types/types';
 
 const Index = () => {
   const { connector, powersync } = useSystem();
-
+  const { session } = useAuth();
   const [category, setCategory] = useState('Books');
   const [filterState, setFilterState] = useState(false);
   const [listing, setListing] = useState<ListingRecord | null>(null);
@@ -25,33 +28,32 @@ const Index = () => {
     minLong: number;
     maxLong: number;
   } | null>(null);
-
-  const fetchPictures = useCallback(async () => {
-    await connector.fetchCredentials();
-
-    if (listings.length > 0) {
-      const listing_ids = listings.map((location) => location.id);
-      try {
-        const sql = SelectLatestImages(listing_ids);
-        const pictures: PictureEntry[] = await powersync.getAll(sql, listing_ids);
-        const locationsDataWithPictures = listings.map((location) => {
-          const picture = pictures.find((pic) => pic.listing_id === location.id) || null;
-          return {
-            ...location,
-            picture,
-          };
-        });
-
-        setListingsPictures(locationsDataWithPictures);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  }, [listings, connector, powersync]);
-
   useEffect(() => {
+    const fetchPictures = async () => {
+      if (listings.length > 0) {
+        await connector.fetchCredentials();
+
+        const listing_ids = listings.map((location) => location.id);
+        try {
+          const sql = SelectLatestImages(listing_ids);
+          const pictures: PictureEntry[] = await powersync.getAll(sql, listing_ids);
+          const locationsDataWithPictures = listings.map((location) => {
+            const picture = pictures.find((pic) => pic.listing_id === location.id) || null;
+            return {
+              ...location,
+              picture,
+            };
+          });
+
+          setListingsPictures(locationsDataWithPictures);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    };
+
     fetchPictures();
-  }, [fetchPictures]);
+  }, [listings]);
 
   const filteredListings = useMemo(() => {
     if (!regionBounds || listings.length === 0) return [];
@@ -76,14 +78,20 @@ const Index = () => {
         setFilterState={setFilterState}
         listing={listing}
       />
-      <ListingsMap
-        setListings={setListings}
-        listing={listing}
-        listings={listings}
-        setListing={setListing}
-        setRegionBounds={setRegionBounds}
-        category={category}
-      />
+      <View>
+        <Text>{Config.SUPABASE_ANON_KEY}</Text>
+        <Text>{Config.SUPABASE_URL}</Text>
+        <Text>{Config.SUPABASE_BUCKET}</Text>
+        <Text>{Config.POWERSYNC_URL}</Text>
+      </View>
+      {/*<ListingsMap*/}
+      {/*  setListings={setListings}*/}
+      {/*  listing={listing}*/}
+      {/*  listings={listings}*/}
+      {/*  setListing={setListing}*/}
+      {/*  setRegionBounds={setRegionBounds}*/}
+      {/*  category={category}*/}
+      {/*/>*/}
       <ListingCarousel
         category={category}
         listing={listing}
