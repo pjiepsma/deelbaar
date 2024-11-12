@@ -6,9 +6,9 @@ import { createContext, useContext } from 'react';
 
 import { AppSchema } from './AppSchema';
 
+import { AppConfig } from '~/lib/powersync/AppConfig';
 import { PhotoAttachmentQueue } from '~/lib/powersync/PhotoAttachmentQueue';
 import { SupabaseConnector } from '~/lib/powersync/SupabaseConnector';
-import { Config } from '~/lib/powersync/config';
 import { SupabaseStorageAdapter } from '~/lib/powersync/storage/SupabaseStorageAdapter';
 
 export class System {
@@ -31,7 +31,7 @@ export class System {
     this.storage = this.connector.storage;
     this.powersync = powerSyncDb;
     // this.db = wrapPowerSyncWithKysely(this.powersync);
-    if (Config.SUPABASE_BUCKET) {
+    if (AppConfig.SUPABASE_BUCKET) {
       this.attachmentQueue = new PhotoAttachmentQueue({
         powersync: this.powersync,
         storage: this.storage,

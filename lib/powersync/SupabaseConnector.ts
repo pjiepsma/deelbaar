@@ -8,10 +8,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 import 'react-native-url-polyfill/auto';
-import { Config } from '~/lib/powersync/config';
+import { AppConfig } from '~/lib/powersync/AppConfig';
 import { SupabaseStorageAdapter } from '~/lib/powersync/storage/SupabaseStorageAdapter';
 
-export const supabase = createClient(Config.SUPABASE_URL, Config.SUPABASE_ANON_KEY, {
+export const supabase = createClient(AppConfig.SUPABASE_URL, AppConfig.SUPABASE_ANON_KEY, {
   auth: {
     storage: AsyncStorage,
     autoRefreshToken: true,
@@ -75,7 +75,7 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
 
     return {
       client: this.client,
-      endpoint: POWERSYNC_URL,
+      endpoint: AppConfig.POWERSYNC_URL,
       token: session.access_token ?? '',
       expiresAt: session.expires_at ? new Date(session.expires_at * 1000) : undefined,
       userID: session.user.id,

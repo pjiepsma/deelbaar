@@ -8,10 +8,10 @@ import ActionRow from '~/components/ActionRow';
 import ListingCarousel from '~/components/map/organisms/ListingCarousel';
 import ListingsMap from '~/components/map/organisms/ListingsMap';
 import { useAuth } from '~/lib/AuthProvider';
+import { AppConfig } from '~/lib/powersync/AppConfig';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
 import { SelectLatestImages } from '~/lib/powersync/Queries';
-import { Config } from '~/lib/powersync/config';
 import { PictureEntry } from '~/lib/types/types';
 
 const Index = () => {
@@ -79,10 +79,10 @@ const Index = () => {
         listing={listing}
       />
       <View>
-        <Text>{Config.SUPABASE_ANON_KEY}</Text>
-        <Text>{Config.SUPABASE_URL}</Text>
-        <Text>{Config.SUPABASE_BUCKET}</Text>
-        <Text>{Config.POWERSYNC_URL}</Text>
+        <Text>{AppConfig.SUPABASE_ANON_KEY}</Text>
+        <Text>{AppConfig.SUPABASE_URL}</Text>
+        <Text>{AppConfig.SUPABASE_BUCKET}</Text>
+        <Text>{AppConfig.POWERSYNC_URL}</Text>
       </View>
       {/*<ListingsMap*/}
       {/*  setListings={setListings}*/}
