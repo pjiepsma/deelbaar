@@ -13,9 +13,9 @@ import {
 } from 'react-native';
 import { Button, Image, ListItem } from 'react-native-elements';
 
+import { AppConfig } from '~/lib/powersync/AppConfig';
 import { PictureRecord } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
-import { Config } from '~/lib/powersync/config';
 
 export interface TodoItemWidgetProps {
   record: PictureRecord;
@@ -83,7 +83,7 @@ export const TodoItemWidget: React.FC<TodoItemWidgetProps> = (props) => {
         <ListItem.Content style={{ minHeight: 80 }}>
           <ListItem.Title>{record.created_at}</ListItem.Title>
         </ListItem.Content>
-        {Config.SUPABASE_BUCKET &&
+        {AppConfig.SUPABASE_BUCKET &&
           (record.photo_id == null ? (
             <TouchableOpacity onPress={captureImageAsync}>
               <Text>Flip Camera</Text>

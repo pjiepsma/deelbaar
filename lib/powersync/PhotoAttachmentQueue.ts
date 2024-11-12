@@ -2,12 +2,12 @@ import { AbstractAttachmentQueue, AttachmentRecord, AttachmentState } from '@pow
 import { randomUUID } from 'expo-crypto';
 import * as FileSystem from 'expo-file-system';
 
+import { AppConfig } from '~/lib/powersync/AppConfig';
 import { PICTURE_TABLE } from '~/lib/powersync/AppSchema';
-import { Config } from '~/lib/powersync/config';
 
 export class PhotoAttachmentQueue extends AbstractAttachmentQueue {
   async init() {
-    if (!Config.SUPABASE_BUCKET) {
+    if (!AppConfig.SUPABASE_BUCKET) {
       console.debug('No Supabase bucket configured, skip setting up PhotoAttachmentQueue watches');
       // Disable sync interval to prevent errors from trying to sync to a non-existent bucket
       this.options.syncInterval = 0;
