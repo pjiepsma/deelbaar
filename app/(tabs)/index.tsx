@@ -28,9 +28,10 @@ const Index = () => {
     minLong: number;
     maxLong: number;
   } | null>(null);
+
   useEffect(() => {
     const fetchPictures = async () => {
-      if (listings.length > 0) {
+      if (session && listings.length > 0) {
         await connector.fetchCredentials();
 
         const listing_ids = listings.map((location) => location.id);
@@ -53,7 +54,7 @@ const Index = () => {
     };
 
     fetchPictures();
-  }, [listings]);
+  }, [listings, session]);
 
   const filteredListings = useMemo(() => {
     if (!regionBounds || listings.length === 0) return [];
@@ -78,20 +79,14 @@ const Index = () => {
         setFilterState={setFilterState}
         listing={listing}
       />
-      <View>
-        <Text>{AppConfig.SUPABASE_ANON_KEY}</Text>
-        <Text>{AppConfig.SUPABASE_URL}</Text>
-        <Text>{AppConfig.SUPABASE_BUCKET}</Text>
-        <Text>{AppConfig.POWERSYNC_URL}</Text>
-      </View>
-      {/*<ListingsMap*/}
-      {/*  setListings={setListings}*/}
-      {/*  listing={listing}*/}
-      {/*  listings={listings}*/}
-      {/*  setListing={setListing}*/}
-      {/*  setRegionBounds={setRegionBounds}*/}
-      {/*  category={category}*/}
-      {/*/>*/}
+      <ListingsMap
+        setListings={setListings}
+        listing={listing}
+        listings={listings}
+        setListing={setListing}
+        setRegionBounds={setRegionBounds}
+        category={category}
+      />
       <ListingCarousel
         category={category}
         listing={listing}
