@@ -50,7 +50,8 @@
       "package": "com.deelbaar.app",
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA"
       ]
     },
     "extra": {
@@ -59,12 +60,11 @@
       },
       "eas": {
         "projectId": "de8a44a5-2432-4b69-8dcb-22b1ef299d63"
-      }
+      },
+      "privacyPolicyUrl": "https://www.example.com/privacy-policy"
     },
     "owner": "iepsma",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "51.0.0",
     "updates": {
       "url": "https://u.expo.dev/de8a44a5-2432-4b69-8dcb-22b1ef299d63"
     }
