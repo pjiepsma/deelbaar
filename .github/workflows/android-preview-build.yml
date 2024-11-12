@@ -1,10 +1,5 @@
 name: Android App APK Build
 
-#on:
-#  workflow_dispatch:
-#  push:
-#    branches:
-#      - develop
 on:
   pull_request:
     branches:
@@ -44,10 +39,10 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Build Android app
-        run: eas build --platform android --profile preview --local --output ${{ github.workspace }}/app-release.apk
+        run: eas build --platform android --profile development --local --output ${{ github.workspace }}/app-development.apk
         
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: ${{ github.workspace }}/app-release.apk
+          name: app-development
+          path: ${{ github.workspace }}/app-development.apk

@@ -1,5 +1,3 @@
-import '@azure/core-asynciterator-polyfill';
-import 'react-native-polyfill-globals/auto';
 import { AttachmentRecord } from '@powersync/attachments';
 import { AbstractPowerSyncDatabase, PowerSyncDatabase } from '@powersync/react-native';
 import { createContext, useContext } from 'react';

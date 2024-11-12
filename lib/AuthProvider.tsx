@@ -1,7 +1,6 @@
 import { Session, User } from '@supabase/supabase-js';
 import { useRouter, useSegments } from 'expo-router';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator } from 'react-native';
 
 import { useSystem } from '~/lib/powersync/PowerSync';
 
@@ -36,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isLoading || isSigningOut) return;
 
-    const inAuthGroup = segments[0] === '(auth)';
+    // const inAuthGroup = segments[0] === '(auth)';
 
     if (!session) {
       const signInAnonymously = async () => {

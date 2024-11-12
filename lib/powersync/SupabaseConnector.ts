@@ -6,8 +6,9 @@ import {
 } from '@powersync/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-
 import 'react-native-url-polyfill/auto';
+import { AppState } from 'react-native';
+
 import { AppConfig } from '~/lib/powersync/AppConfig';
 import { SupabaseStorageAdapter } from '~/lib/powersync/storage/SupabaseStorageAdapter';
 
@@ -18,6 +19,19 @@ export const supabase = createClient(AppConfig.SUPABASE_URL, AppConfig.SUPABASE_
     persistSession: true,
     detectSessionInUrl: false,
   },
+});
+
+// Tells Supabase Auth to continuously refresh the session automatically
+// if the app is in the foreground. When this is added, you will continue
+// to receive `onAuthStateChange` events with the `TOKEN_REFRESHED` or
+// `SIGNED_OUT` event if the user's session is terminated. This should
+// only be registered once.
+AppState.addEventListener('change', (state) => {
+  if (state === 'active') {
+    supabase.auth.startAutoRefresh();
+  } else {
+    supabase.auth.stopAutoRefresh();
+  }
 });
 
 /// Postgres Response codes that we cannot recover from by retrying.
