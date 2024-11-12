@@ -78,20 +78,14 @@ const Index = () => {
         setFilterState={setFilterState}
         listing={listing}
       />
-      <View>
-        <Text>{AppConfig.SUPABASE_ANON_KEY}</Text>
-        <Text>{AppConfig.SUPABASE_URL}</Text>
-        <Text>{AppConfig.SUPABASE_BUCKET}</Text>
-        <Text>{AppConfig.POWERSYNC_URL}</Text>
-      </View>
-      {/*<ListingsMap*/}
-      {/*  setListings={setListings}*/}
-      {/*  listing={listing}*/}
-      {/*  listings={listings}*/}
-      {/*  setListing={setListing}*/}
-      {/*  setRegionBounds={setRegionBounds}*/}
-      {/*  category={category}*/}
-      {/*/>*/}
+      <ListingsMap
+        setListings={setListings}
+        listing={listing}
+        listings={listings}
+        setListing={setListing}
+        setRegionBounds={setRegionBounds}
+        category={category}
+      />
       <ListingCarousel
         category={category}
         listing={listing}
