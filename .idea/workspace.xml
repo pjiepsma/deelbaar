@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="8cc25b81-8b88-4801-8bc3-e345db1ccbe0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/storage/SupabaseStorageAdapter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/storage/SupabaseStorageAdapter.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,7 +60,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1731356864998</updated>
-      <workItem from="1731356866386" duration="27596000" />
+      <workItem from="1731356866386" duration="28141000" />
     </task>
     <servers />
   </component>
