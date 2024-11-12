@@ -2,9 +2,9 @@ import { StorageAdapter } from '@powersync/attachments';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { decode as decodeBase64 } from 'base64-arraybuffer';
 import * as FileSystem from 'expo-file-system';
+import {Config} from "~/lib/powersync/config";
 
-import { AppConfig } from '~/lib/powersync/AppConfig';
-
+\
 export interface SupabaseStorageAdapterOptions {
   client: SupabaseClient;
 }
@@ -19,14 +19,14 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       mediaType?: string;
     }
   ): Promise<void> {
-    if (!AppConfig.supabaseBucket) {
+    if (!Config.SUPABASE_BUCKET) {
       throw new Error('Supabase bucket not configured in AppConfig.ts');
     }
 
     const { mediaType = 'text/plain' } = options ?? {};
 
     const res = await this.options.client.storage
-      .from(AppConfig.supabaseBucket)
+      .from(Config.SUPABASE_BUCKET)
       .upload(filename, data, { contentType: mediaType });
 
     if (res.error) {
@@ -35,11 +35,11 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   }
 
   async downloadFile(filePath: string) {
-    if (!AppConfig.supabaseBucket) {
+    if (!Config.SUPABASE_BUCKET) {
       throw new Error('Supabase bucket not configured in AppConfig.ts');
     }
     const { data, error } = await this.options.client.storage
-      .from(AppConfig.supabaseBucket)
+      .from(Config.SUPABASE_BUCKET)
       .download(filePath);
     if (error) {
       throw error;
@@ -85,12 +85,12 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       return;
     }
 
-    if (!AppConfig.supabaseBucket) {
+    if (!Config.SUPABASE_BUCKET) {
       throw new Error('Supabase bucket not configured in AppConfig.ts');
     }
 
     const { data, error } = await this.options.client.storage
-      .from(AppConfig.supabaseBucket)
+      .from(Config.SUPABASE_BUCKET)
       .remove([filename]);
     if (error) {
       console.debug('Failed to delete file from Cloud Storage', error);

@@ -13,6 +13,11 @@ export default function Auth() {
   const { user, signIn, signOut } = useAuth();
 
   async function signInWithEmail() {
+    if (!email || !password) {
+      Alert.alert('Email and password must be provided: ' + email + ' ' + password);
+      return;
+    }
+
     setLoading(true);
     const {
       data: { session, user },
@@ -47,6 +52,8 @@ export default function Auth() {
 
   return (
     <View style={styles.container}>
+      <Text>{email}</Text>
+      <Text>{password}</Text>
       <Text style={styles.title}>Login</Text>
       <View style={styles.verticallySpaced}>
         <TextInput

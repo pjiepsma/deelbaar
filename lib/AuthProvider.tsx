@@ -25,7 +25,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [initialized, setInitialized] = useState<boolean>(false);
   const [isSigningOut, setIsSigningOut] = useState<boolean>(false);
 
   const segments = useSegments();
@@ -33,6 +32,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const { connector } = useSystem();
   const system = useSystem();
+
+  useEffect(() => {
+    if (isLoading || isSigningOut) return;
+
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (!session) {
+      const signInAnonymously = async () => {
+        const { error } = await connector.client.auth.signInAnonymously();
+        if (error) {
+          console.error('Anonymous sign-in error:', error.message);
+        }
+      };
+
+      signInAnonymously();
+    }
+    // if (inAuthGroup && !user) {
+    //   router.replace('/(modals)/login' as const);
+    // } TODO
+  }, [session, isLoading, segments, router, user, connector]);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -69,28 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initSystem();
   }, [system]);
 
-  useEffect(() => {
-    if (!initialized || isLoading || isSigningOut) return;
-
-    const inAuthGroup = segments[0] === '(auth)';
-
-    if (!session && initialized) {
-      const signInAnonymously = async () => {
-        const { error } = await connector.client.auth.signInAnonymously();
-        if (error) {
-          console.error('Anonymous sign-in error:', error.message);
-        }
-      };
-
-      signInAnonymously();
-    }
-    if (inAuthGroup && !user) {
-      router.replace('/(modals)/login' as const);
-    }
-  }, [session, initialized, isLoading, isSigningOut, segments, router, user, connector]);
-
   async function signIn({ session, user }: { session: Session | null; user: User | null }) {
-    console.log('Signing in with session and user', session, user);
     setSession(session);
     setUser(user);
   }
@@ -114,9 +112,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  if (isLoading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
+  // if (isLoading) { TODO
+  //   return <ActivityIndicator size="large" color="#0000ff" />;
+  // }
 
   return (
     <AuthContext.Provider

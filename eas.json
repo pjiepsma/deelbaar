@@ -9,34 +9,16 @@
       "distribution": "internal",
       "channel": "development"
     },
-    "preview": {
-      "env": {
-        "EXPO_PUBLIC_SUPABASE_BUCKET": "EXPO_PUBLIC_SUPABASE_BUCKET",
-        "EXPO_PUBLIC_POWERSYNC_URL": "EXPO_PUBLIC_POWERSYNC_URL",
-        "EXPO_PUBLIC_SUPABASE_URL": "EXPO_PUBLIC_SUPABASE_URL",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "EXPO_PUBLIC_SUPABASE_ANON_KEY"
-      },
-      "distribution": "internal",
-      "android": {
-        "channel": "preview",
-        "buildType": "apk"
-      },
-      "channel": "preview"
-    },
     "production": {
-      "releaseChannel": "production",
+      "autoIncrement": true,
+      "channel": "production",
       "distribution": "store",
       "env": {
-        "EXPO_PUBLIC_SUPABASE_BUCKET": "EXPO_PUBLIC_SUPABASE_BUCKET",
-        "EXPO_PUBLIC_POWERSYNC_URL": "EXPO_PUBLIC_POWERSYNC_URL",
-        "EXPO_PUBLIC_SUPABASE_URL": "EXPO_PUBLIC_SUPABASE_URL",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "EXPO_PUBLIC_SUPABASE_ANON_KEY",
-        "NODE_ENV": "prod",
-        "VERSION": "1.0.0",
-        "BUILD_NUMBER": "1"
-      },
-      "autoIncrement": true,
-      "channel": "production"
+        "EXPO_PUBLIC_SUPABASE_BUCKET": "media",
+        "EXPO_PUBLIC_POWERSYNC_URL": "https://66e071ff619fa3cbfada767f.powersync.journeyapps.com",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://wrstkljbwfixsngzonnm.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indyc3RrbGpid2ZpeHNuZ3pvbm5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU2MjI4NDcsImV4cCI6MjA0MTE5ODg0N30.wTUa6M_MHSSKbVBnOXBoc6Wz0vSfq-wOp5YZABrYf9k"
+      }
     }
   },
   "submit": {
