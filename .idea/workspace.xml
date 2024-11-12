@@ -5,11 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8cc25b81-8b88-4801-8bc3-e345db1ccbe0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/auth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/auth.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/review.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/review.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/adaptive-icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/adaptive-icon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/favicon.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/favicon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/icon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eas.json" beforeDir="false" afterPath="$PROJECT_DIR$/eas.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/AuthProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/AuthProvider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/PowerSync.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/PowerSync.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/SupabaseConnector.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/Queries.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/Queries.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,25 +39,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "feature/fix-release",
-    "kotlin-language-version-configured": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "yarn",
-    "prettierjs.PrettierConfiguration.Package": "D:\\Git\\deelbaar\\node_modules\\prettier",
-    "ts.external.directory.path": "D:\\Git\\deelbaar\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/fix-release&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;D:\\Git\\deelbaar\\node_modules\\prettier&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;D:\\Git\\deelbaar\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Git\deelbaar\hidden" />
       <recent name="D:\Git\deelbaar\assets" />
+      <recent name="D:\Git\deelbaar\hidden" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -70,6 +77,7 @@
       <option name="presentableId" value="Default" />
       <updated>1731356864998</updated>
       <workItem from="1731356866386" duration="29889000" />
+      <workItem from="1731434943302" duration="6944000" />
     </task>
     <servers />
   </component>

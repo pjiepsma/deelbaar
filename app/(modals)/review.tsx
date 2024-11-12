@@ -14,6 +14,8 @@ import {
   View,
 } from 'react-native';
 
+import { useAuth } from '../../lib/AuthProvider';
+
 import RatingScreen from '~/components/review/organisms/RatingScreen';
 import { useSystem } from '~/lib/powersync/PowerSync';
 import { InsertPicture, InsertReview } from '~/lib/powersync/Queries';
@@ -22,15 +24,21 @@ const isAndroid = Platform.OS === 'android';
 
 const ReviewComponent: React.FC = () => {
   const [description, setDescription] = useState<string>('');
-  const { id, rating: localRating } = useLocalSearchParams<{
+  const {
+    id,
+    rating: localRating,
+    title,
+    name,
+  } = useLocalSearchParams<{
     id: string;
     rating: string;
+    title: string;
+    name: string;
   }>();
   const [rating, setRating] = useState(localRating);
   const { connector, powersync, attachmentQueue } = useSystem();
   const [image, setImage] = useState<ImagePickerSuccessResult | null>(null);
   const router = useRouter();
-
   const submitReview = async (): Promise<void> => {
     const { userID } = await connector.fetchCredentials();
     const res = await powersync.execute(InsertReview, [rating, description, userID, id]);
@@ -77,7 +85,7 @@ const ReviewComponent: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>HAPS Dorp</Text>
+      <Text style={styles.title}>{title}</Text>
       <View style={styles.profileWrapper}>
         {image && (
           <Image
@@ -85,7 +93,7 @@ const ReviewComponent: React.FC = () => {
             style={styles.profileImage}
           />
         )}
-        <Text style={styles.profileText}>Pieter Iepsma</Text>
+        <Text style={styles.profileText}>{name}</Text>
       </View>
       <RatingScreen setRating={setRating} rating={rating} />
       <TextInput

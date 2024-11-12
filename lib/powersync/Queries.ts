@@ -37,12 +37,12 @@ export const SelectFavoriteListings = `
     WHERE id = ?
 `;
 
-// export const SelectReviews = `
-//     SELECT ${REVIEW_TABLE}.*, P.name, P.avatar
-//     FROM ${REVIEW_TABLE}
-//              LEFT JOIN ${PROFILES_TABLE} as P ON ${REVIEW_TABLE}.created_by = P.id
-//     WHERE ${REVIEW_TABLE}.listing_id = ?
-// `;
+export const SelectProfile = `
+    SELECT P.*, A.id AS attachment_id, A.*
+    FROM ${PROFILES_TABLE} AS P
+             LEFT JOIN ${ATTACHMENT_TABLE} AS A ON P.avatar = A.id
+    WHERE P.id = ?
+`;
 
 export const SelectReviews = `
     SELECT ${REVIEW_TABLE}.*, P.name, A.id AS attachment_id, A.*
@@ -94,7 +94,8 @@ export const SelectPictures = `
          ${LISTING_TABLE} ON ${PICTURE_TABLE}.listing_id = ${LISTING_TABLE}.id
              LEFT JOIN
          ${ATTACHMENT_TABLE} ON ${PICTURE_TABLE}.photo_id = ${ATTACHMENT_TABLE}.id
-    WHERE ${PICTURE_TABLE}.listing_id = ?`;
+    WHERE ${PICTURE_TABLE}.listing_id = ?
+    ORDER BY ${PICTURE_TABLE}.created_at DESC`;
 
 export const AddFavorite = `
     INSERT INTO favorites (id, created_by, listing_id)
