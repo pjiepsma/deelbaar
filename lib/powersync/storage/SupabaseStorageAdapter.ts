@@ -2,9 +2,9 @@ import { StorageAdapter } from '@powersync/attachments';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { decode as decodeBase64 } from 'base64-arraybuffer';
 import * as FileSystem from 'expo-file-system';
-import {Config} from "~/lib/powersync/config";
 
-\
+import { Config } from '~/lib/powersync/config';
+
 export interface SupabaseStorageAdapterOptions {
   client: SupabaseClient;
 }
