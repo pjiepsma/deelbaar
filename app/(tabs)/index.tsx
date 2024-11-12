@@ -28,9 +28,10 @@ const Index = () => {
     minLong: number;
     maxLong: number;
   } | null>(null);
+
   useEffect(() => {
     const fetchPictures = async () => {
-      if (listings.length > 0) {
+      if (session && listings.length > 0) {
         await connector.fetchCredentials();
 
         const listing_ids = listings.map((location) => location.id);
@@ -53,7 +54,7 @@ const Index = () => {
     };
 
     fetchPictures();
-  }, [listings]);
+  }, [listings, session]);
 
   const filteredListings = useMemo(() => {
     if (!regionBounds || listings.length === 0) return [];
