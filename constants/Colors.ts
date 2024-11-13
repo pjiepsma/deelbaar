@@ -5,6 +5,7 @@ export default {
   border: '#a3a3a3',
   grey: '#5E5D5E',
   dark: '#1A1A1A',
+  white: '#fff',
 };
 
 /*

@@ -38,10 +38,7 @@ export default function Auth() {
 
   async function signUpWithEmail() {
     setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await connector.client.auth.signUp({
+    const { error } = await connector.client.auth.signUp({
       email,
       password,
     });
@@ -52,8 +49,6 @@ export default function Auth() {
 
   return (
     <View style={styles.container}>
-      <Text>{email}</Text>
-      <Text>{password}</Text>
       <Text style={styles.title}>Login</Text>
       <View style={styles.verticallySpaced}>
         <TextInput

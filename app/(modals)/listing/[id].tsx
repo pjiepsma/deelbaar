@@ -36,11 +36,10 @@ const DetailsPage = () => {
     long: string;
   }>();
 
-  const { powersync } = useSystem();
+  const { powersync, attachmentQueue } = useSystem();
   const defaultImage = require('~/assets/images/default-placeholder.png');
   const navigation = useNavigation();
-  // const scrollRef = useAnimatedRef<Animated.ScrollView>();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [listing, setListing] = useState<any>(); // improve type
   const [rating, setRating] = useState(null);
   const router = useRouter();
@@ -57,34 +56,20 @@ const DetailsPage = () => {
     }, [])
   );
 
-  // const averageRating = useMemo(() => {
-  //   if (reviews) {
-  //     const totalRating = reviews.reduce((sum, { rating }) => sum + rating, 0);
-  //     return (totalRating / reviews.length).toFixed(2);
-  //   }
-  // }, [reviews]);
-  //
-  // useEffect(() => {
-  //   if (listing && averageRating) {
-  //     const newListing: ListingRecord = {
-  //       ...listing,
-  //       rating: averageRating,
-  //     };
-  //     setListing(newListing);
-  //   }
-  // }, [averageRating]);
-
   useEffect(() => {
     if (rating !== null) {
       router.push({
         pathname: '/(modals)/review',
         params: {
           id,
+          title: listing.name,
+          name: profile.name,
           rating,
+          profile,
         },
       });
     }
-  }, [rating]);
+  }, [rating, listing]);
 
   const getListing = async (id: string): Promise<void> => {
     try {
@@ -117,8 +102,6 @@ const DetailsPage = () => {
     try {
       await Share.share({
         message: '',
-        // title: data?.name,
-        // url: data?.listing_url,
       });
     } catch (err) {
       console.log(err);
@@ -127,13 +110,6 @@ const DetailsPage = () => {
 
   const editListing = async () => {
     if (listing) {
-      // const location = await Location.getCurrentPositionAsync({});
-      // const todoId = uuid();
-      // const point = `POINT(${location.coords.longitude}, ${location.coords.latitude})`;
-      // const data = await db
-      //   .insertInto(STORES_TABLE)
-      //   .values({ id: todoId, name: '', description: '', location: point })
-      //   .execute();
     }
   };
 
@@ -141,8 +117,6 @@ const DetailsPage = () => {
     navigation.setOptions({
       headerTitle: '',
       headerTransparent: true,
-
-      // headerBackground: () => <Animated.View style={[headerAnimatedStyle, styles.header]} />,
       headerRight: () => (
         <View style={styles.bar}>
           {user && (
@@ -153,9 +127,6 @@ const DetailsPage = () => {
           <TouchableOpacity style={styles.roundButton} onPress={shareListing}>
             <Ionicons name="share-outline" size={22} color="#000" />
           </TouchableOpacity>
-          {/*<TouchableOpacity style={styles.roundButton} onPress={saveListing}>*/}
-          {/*  <Ionicons name="heart-outline" size={22} color="#000" />*/}
-          {/*</TouchableOpacity>*/}
         </View>
       ),
       headerLeft: () => (
@@ -179,7 +150,7 @@ const DetailsPage = () => {
     const photoAttachment = toAttachmentRecord(picture);
     const uri = system.attachmentQueue?.getLocalUri(photoAttachment?.local_uri!);
     return (
-      <View>
+      <View style={styles.carouselItemContainer}>
         <FastImage
           key={photoAttachment?.id}
           source={photoAttachment ? { uri, priority: FastImage.priority.normal } : defaultImage}
@@ -189,6 +160,7 @@ const DetailsPage = () => {
       </View>
     );
   });
+
   return (
     <View style={styles.container}>
       <View>
@@ -197,18 +169,25 @@ const DetailsPage = () => {
             <Loader delay={200} amount={3} visible />
           ) : (
             <ScrollView style={styles.listingContainer}>
-              <Carousel
-                {...baseOptions}
-                loop={false}
-                ref={carouselRef}
-                style={{
-                  justifyContent: 'center',
-                }}
-                data={listing.images}
-                pagingEnabled
-                onSnapToItem={(index: number) => setSelectedIndex(index)}
-                renderItem={({ item }) => <CarouselItem picture={item} />}
-              />
+              <View>
+                <Carousel
+                  {...baseOptions}
+                  loop={false}
+                  ref={carouselRef}
+                  style={{
+                    justifyContent: 'center',
+                  }}
+                  data={listing.images}
+                  pagingEnabled
+                  onSnapToItem={(index: number) => setSelectedIndex(index)}
+                  renderItem={({ item }) => <CarouselItem picture={item} />}
+                />
+                <View style={styles.indicatorContainer}>
+                  <Text style={styles.indicatorText}>
+                    {selectedIndex + 1} / {listing.images.length}
+                  </Text>
+                </View>
+              </View>
               <View style={styles.infoContainer}>
                 <Text style={styles.name}>{listing.name}</Text>
                 {listing.description && (
@@ -223,7 +202,7 @@ const DetailsPage = () => {
                   <View>
                     <Text style={styles.title}>Rate and review</Text>
                     <View style={styles.row}>
-                      <Avatar name="A" />
+                      <Avatar name="A" uri={profile.local_uri} />
                       <RatingScreen setRating={setRating} rating={rating} />
                     </View>
                   </View>
@@ -238,8 +217,6 @@ const DetailsPage = () => {
             </ScrollView>
           )}
         </View>
-
-        {/*<Animated.View style={defaultStyles.footer} entering={SlideInDown.delay(200)} />*/}
       </View>
     </View>
   );
@@ -250,9 +227,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  listingContainer: {
-    // backgroundColor: 'red',
-    // flex: 1,
+  listingContainer: {},
+  carouselItemContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   image: {
     height: IMG_HEIGHT,
@@ -334,6 +312,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 10,
     fontFamily: 'mon',
+  },
+  indicatorContainer: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  indicatorText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
 
