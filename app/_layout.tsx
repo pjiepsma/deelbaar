@@ -1,12 +1,15 @@
 import Entypo from '@expo/vector-icons/Entypo';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import * as Font from 'expo-font';
+import * as NavigationBar from 'expo-navigation-bar';
 import { SplashScreen, Stack } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import AnimatedSplash from '~/components/AnimatedSplash';
+import Colors from '~/constants/Colors';
 import { AuthProvider } from '~/lib/AuthProvider';
 import { PowerSyncProvider } from '~/lib/powersync/PowerSyncProvider';
 
@@ -22,49 +25,44 @@ const InitialLayout = () => {
 };
 
 const RootLayout = () => {
-  const [appIsReady, setAppIsReady] = useState(false);
+  const [isReady, setReady] = useState(true);
+  const [isVisible, setVisible] = useState(true);
 
   useEffect(() => {
+    NavigationBar.setBackgroundColorAsync(Colors.light);
+  }, []);
+
+  useEffect(() => {
+    SplashScreen.hideAsync();
+
     async function prepare() {
       try {
         await Font.loadAsync(Entypo.font);
-        // const [loaded, error] = useFonts({
-        //   mon: require('../assets/fonts/Montserrat-Regular.ttf'),
-        //   'mon-b': require('../assets/fonts/Montserrat-Bold.ttf'),
-        //   'mon-sb': require('../assets/fonts/Montserrat-SemiBold.ttf'),
-        // });
       } catch (e) {
         console.warn(e);
-      } finally {
-        setAppIsReady(true);
       }
     }
 
     prepare();
   }, []);
 
-  const onLayoutRootView = useCallback(async () => {
-    if (appIsReady) {
-      // This tells the splash screen to hide immediately! If we call this after
-      // `setAppIsReady`, then we may see a blank screen while the app is
-      // loading its initial state and rendering its first pixels. So instead,
-      // we hide the splash screen once we know the root view has already
-      // performed layout.
-      await SplashScreen.hideAsync();
-    }
-  }, [appIsReady]);
-
-  if (!appIsReady) {
-    return null;
-  }
+  const handleSplash = useCallback(() => {
+    setVisible(false);
+    NavigationBar.setBackgroundColorAsync(Colors.white);
+  }, []);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <PowerSyncProvider>
         <SafeAreaProvider>
           <BottomSheetModalProvider>
             <AuthProvider>
               <InitialLayout />
+              {isVisible && (
+                <View style={StyleSheet.absoluteFillObject}>
+                  <AnimatedSplash onReady={isReady} onFinish={handleSplash} />
+                </View>
+              )}
             </AuthProvider>
           </BottomSheetModalProvider>
         </SafeAreaProvider>

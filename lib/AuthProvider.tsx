@@ -2,16 +2,20 @@ import { Session, User } from '@supabase/supabase-js';
 import { useRouter, useSegments } from 'expo-router';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
+import { GetFavoriteListings, SelectProfile } from './powersync/Queries';
+
 import { useSystem } from '~/lib/powersync/PowerSync';
 
 export const AuthContext = createContext<{
   session: Session | null;
   user: User | null;
+  profile: any | null;
   signIn: ({ session, user }: { session: Session | null; user: User | null }) => void;
   signOut: () => void;
 }>({
   session: null,
   user: null,
+  profile: null,
   signIn: () => {},
   signOut: () => {},
 });
@@ -23,13 +27,14 @@ export function useAuth() {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSigningOut, setIsSigningOut] = useState<boolean>(false);
-
+  const [error, setError] = useState([]);
   const segments = useSegments();
   const router = useRouter();
 
-  const { connector } = useSystem();
+  const { connector, powersync, attachmentQueue } = useSystem();
   const system = useSystem();
 
   useEffect(() => {
@@ -79,6 +84,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [connector]);
 
   useEffect(() => {
+    if (user) {
+      powersync
+        .get(SelectProfile, [user.id])
+        .then((profile: any) => {
+          const uri = attachmentQueue?.getLocalUri(profile.local_uri);
+          setProfile({ ...profile, local_uri: uri });
+        })
+        .catch((error) => setError(error.message));
+    }
+  }, [user]);
+
+  useEffect(() => {
     const initSystem = async () => {
       await system.init();
       setIsLoading(false);
@@ -120,6 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         session,
         user,
+        profile,
         signIn,
         signOut,
       }}>
