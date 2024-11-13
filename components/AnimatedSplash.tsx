@@ -6,7 +6,6 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   withSequence,
-  withRepeat,
   runOnJS,
   withDelay,
 } from 'react-native-reanimated';
@@ -19,40 +18,42 @@ interface AnimatedSplashProps {
 }
 
 const AnimatedSplash: React.FC<AnimatedSplashProps> = ({ onFinish, onReady }) => {
-  const rotation = useSharedValue(0); // Controls rotation
-  const opacity = useSharedValue(1); // Controls fade-out
+  const rotation = useSharedValue(0);
+  const opacity = useSharedValue(1);
   const splash = require('../assets/splash-logo.png');
 
   useEffect(() => {
-    // Step 1: Charge up to the left, then spin right with fade out
     rotation.value = withSequence(
-      withTiming(-25, { duration: 800, easing: Easing.ease }), // Rotate left (charging)
-      withTiming(3600, { duration: 8000, easing: Easing.ease }) // Spin right
+      withTiming(-10, { duration: 600, easing: Easing.ease }),
+      withTiming(3600, { duration: 8000, easing: Easing.ease })
     );
   }, []);
 
   useEffect(() => {
     if (onReady) {
       opacity.value = withDelay(
-        1600,
-        withTiming(0, { duration: 800, easing: Easing.ease }, () => {
-          runOnJS(onFinish)(); // Signal to hide the splash screen after animation
+        3000,
+        withTiming(0, { duration: 100, easing: Easing.ease }, () => {
+          runOnJS(onFinish)();
         })
       );
     }
   }, [onReady]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
+  const animatedRotateStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${rotation.value}deg` }],
+  }));
+
+  const animatedOpacityStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
 
   return (
-    <View style={styles.container}>
-      <Animated.View style={[styles.logoContainer, animatedStyle]}>
+    <Animated.View style={[styles.container, animatedOpacityStyle]}>
+      <Animated.View style={[styles.logoContainer, animatedRotateStyle]}>
         <Image source={splash} style={styles.logo} />
       </Animated.View>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -64,8 +65,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light,
   },
   logoContainer: {
-    width: 150,
-    height: 150,
+    width: 100,
+    height: 100,
   },
   logo: {
     width: '100%',
