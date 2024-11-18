@@ -8,6 +8,7 @@ import { View, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import '@azure/core-asynciterator-polyfill';
 import AnimatedSplash from '~/components/AnimatedSplash';
 import Colors from '~/constants/Colors';
 import { AuthProvider } from '~/lib/AuthProvider';

@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 import Colors from '~/constants/Colors';
 
@@ -31,11 +30,7 @@ const Avatar: React.FC<UserInfoProps> = ({ name, uri }) => {
     <View style={styles.container}>
       <View style={[styles.avatar, { backgroundColor: '#D9D9A0' }]}>
         {uri ? (
-          <FastImage
-            source={{ uri, priority: FastImage.priority.normal }}
-            resizeMode={FastImage.resizeMode.cover}
-            style={styles.image}
-          />
+          <Image source={{ uri }} resizeMode="cover" style={styles.image} />
         ) : (
           <Text style={styles.avatarText}>{name}</Text>
         )}

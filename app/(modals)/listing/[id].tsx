@@ -4,6 +4,7 @@ import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   Dimensions,
+  Image,
   ScrollView,
   Share,
   StyleSheet,
@@ -11,7 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 import Loader from '~/components/Loader';
@@ -151,11 +151,11 @@ const DetailsPage = () => {
     const uri = system.attachmentQueue?.getLocalUri(photoAttachment?.local_uri!);
     return (
       <View style={styles.carouselItemContainer}>
-        <FastImage
+        <Image
           key={photoAttachment?.id}
-          source={photoAttachment ? { uri, priority: FastImage.priority.normal } : defaultImage}
+          source={photoAttachment ? { uri } : defaultImage}
           style={styles.image}
-          resizeMode={FastImage.resizeMode.cover}
+          resizeMode="cover"
         />
       </View>
     );
