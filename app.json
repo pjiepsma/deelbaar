@@ -64,7 +64,7 @@
       "privacyPolicyUrl": "https://www.example.com/privacy-policy"
     },
     "owner": "iepsma",
-    "runtimeVersion": "51.0.0",
+    "runtimeVersion": "52.0.0",
     "updates": {
       "url": "https://u.expo.dev/de8a44a5-2432-4b69-8dcb-22b1ef299d63"
     }
