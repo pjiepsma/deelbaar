@@ -1355,11 +1355,6 @@
     "@types/yargs" "^17.0.8"
     chalk "^4.0.0"
 
-"@journeyapps/react-native-quick-sqlite@^2.1.2":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@journeyapps/react-native-quick-sqlite/-/react-native-quick-sqlite-2.1.2.tgz#1a7a946b6e3b6427e1417fdae740122035d98555"
-  integrity sha512-pID4cnAmLPvhzHt0fWsvpjr1y0X8Y2mKpuSV6/7rzJ0FB0MYxYJXYMYln1dkLyU60kfDFLFT2E422CkqDpLpbA==
-
 "@jridgewell/gen-mapping@^0.3.2", "@jridgewell/gen-mapping@^0.3.5":
   version "0.3.5"
   resolved "https://registry.yarnpkg.com/@jridgewell/gen-mapping/-/gen-mapping-0.3.5.tgz#dcce6aff74bdf6dad1a95802b69b04a2fcb1fb36"
@@ -1428,6 +1423,11 @@
   dependencies:
     semver "^7.3.5"
 
+"@op-engineering/op-sqlite@^10.1.0":
+  version "10.1.0"
+  resolved "https://registry.yarnpkg.com/@op-engineering/op-sqlite/-/op-sqlite-10.1.0.tgz#50d79e42d5b90149505c8d9fbb555ea5b9a0d710"
+  integrity sha512-h72JQ8zK3ULiEp3Tngnl2LNsfMuxpxddhRrt3XYyeoQGeh7vj5B6nQwkpKXR02Hl/EKPmbRsmxue8V7bhXr7ug==
+
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
@@ -1449,6 +1449,14 @@
   integrity sha512-G77WGytQb3JwqE9vlxcQZwf8w/tBYGJfU99RqJMrD5Tyb4VrCeOrEcmulmL/M7Q+ZYOjpIhpVwQZB+pNocY0jg==
   dependencies:
     js-logger "^1.6.1"
+
+"@powersync/op-sqlite@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@powersync/op-sqlite/-/op-sqlite-0.1.1.tgz#f1290d0ad67917f029789855de9ef82e183a20c5"
+  integrity sha512-xn8zo+W3NXpd1ICyD14E1wdPnhvojT+LOqvPcNvKN9HALZ3LZhmbLWQvDrYMBUq3x8IzHH/5b+M1MzBjyyV9Zg==
+  dependencies:
+    "@powersync/common" "1.21.0"
+    async-lock "^1.4.0"
 
 "@powersync/react-native@1.15.1":
   version "1.15.1"
@@ -2574,6 +2582,11 @@ async-limiter@~1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.1.tgz#dd379e94f0db8310b08291f9d64c3209766617fd"
   integrity sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==
+
+async-lock@^1.4.0:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/async-lock/-/async-lock-1.4.1.tgz#56b8718915a9b68b10fce2f2a9a3dddf765ef53f"
+  integrity sha512-Az2ZTpuytrtqENulXwO3GGv1Bztugx6TT37NIo7imr/Qo0gsYiGtSdBa2B6fsXhTpVZDNfu1Qn3pk531e3q+nQ==
 
 asynckit@^0.4.0:
   version "0.4.0"
