@@ -21,7 +21,7 @@ interface AnimatedSplashProps {
 const AnimatedSplash: React.FC<AnimatedSplashProps> = ({ onFinish, onReady }) => {
   const rotation = useSharedValue(0);
   const opacity = useSharedValue(1);
-  const splash = require('../assets/splash-logo.png');
+  const splash = require('../assets/splash-icon.png');
 
   useEffect(() => {
     rotation.value = withSequence(

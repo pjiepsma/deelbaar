@@ -2,12 +2,12 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import * as Font from 'expo-font';
 import * as NavigationBar from 'expo-navigation-bar';
-import { SplashScreen, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
+import * as SplashScreen from 'expo-splash-screen';
 import '../reanimated.config';
 import '@azure/core-asynciterator-polyfill';
 import AnimatedSplash from '~/components/AnimatedSplash';
@@ -17,6 +17,12 @@ import { PowerSyncProvider } from '~/lib/powersync/PowerSyncProvider';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
+
+// Set the animation options. This is optional.
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
 
 const InitialLayout = () => {
   return (
@@ -35,13 +41,13 @@ const RootLayout = () => {
   }, []);
 
   useEffect(() => {
-    SplashScreen.hideAsync();
-
     async function prepare() {
       try {
         await Font.loadAsync(Entypo.font);
       } catch (e) {
         console.warn(e);
+      } finally {
+        SplashScreen.hideAsync();
       }
     }
 
