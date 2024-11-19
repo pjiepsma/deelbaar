@@ -8,6 +8,7 @@ import Animated, {
   withSequence,
   runOnJS,
   withDelay,
+  useDerivedValue,
 } from 'react-native-reanimated';
 
 import Colors from '~/constants/Colors';
@@ -40,12 +41,15 @@ const AnimatedSplash: React.FC<AnimatedSplashProps> = ({ onFinish, onReady }) =>
     }
   }, [onReady]);
 
+  const derivedRotation = useDerivedValue(() => rotation.value);
+  const derivedOpacity = useDerivedValue(() => opacity.value);
+
   const animatedRotateStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotation.value}deg` }],
+    transform: [{ rotate: `${derivedRotation.value}deg` }],
   }));
 
   const animatedOpacityStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
+    opacity: derivedOpacity.value,
   }));
 
   return (

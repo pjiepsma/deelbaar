@@ -7,6 +7,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  useDerivedValue,
 } from 'react-native-reanimated';
 
 import Colors from '~/constants/Colors';
@@ -14,7 +15,12 @@ import Colors from '~/constants/Colors';
 const MAX_STARS = 5;
 const STAR_SIZE = 36;
 
-const Starstars = ({ rating, setRating }) => {
+interface StarstarsProps {
+  rating: number;
+  setRating: (rating: number) => void;
+}
+
+const Starstars: React.FC<StarstarsProps> = ({ rating, setRating }) => {
   const [stars, setStars] = useState(0);
   const panX = useSharedValue(0);
 
@@ -32,7 +38,7 @@ const Starstars = ({ rating, setRating }) => {
   }, [rating]);
 
   // Function to handle clicks on stars
-  const handleStarPress = (index) => {
+  const handleStarPress = (index: number) => {
     const newRating = index + 1;
     if (newRating === rating) {
       setRating(rating - 1); // Deselect the current star
@@ -58,10 +64,12 @@ const Starstars = ({ rating, setRating }) => {
       runOnJS(handleNavigate)(); // Call navigation after swipe ends
     });
 
+  const derivedPanX = useDerivedValue(() => panX.value);
+
   // Animated style for the highlight area
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      width: panX.value,
+      width: derivedPanX.value,
     };
   });
 

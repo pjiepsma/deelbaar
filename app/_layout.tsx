@@ -8,6 +8,7 @@ import { View, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import '../reanimated.config';
 import '@azure/core-asynciterator-polyfill';
 import AnimatedSplash from '~/components/AnimatedSplash';
 import Colors from '~/constants/Colors';
@@ -59,11 +60,11 @@ const RootLayout = () => {
           <BottomSheetModalProvider>
             <AuthProvider>
               <InitialLayout />
-              {isVisible && (
-                <View style={StyleSheet.absoluteFillObject}>
-                  <AnimatedSplash onReady={isReady} onFinish={handleSplash} />
-                </View>
-              )}
+              {/*{isVisible && (*/}
+              {/*  <View style={StyleSheet.absoluteFillObject}>*/}
+              {/*    <AnimatedSplash onReady={isReady} onFinish={handleSplash} />*/}
+              {/*  </View>*/}
+              {/*)}*/}
             </AuthProvider>
           </BottomSheetModalProvider>
         </SafeAreaProvider>

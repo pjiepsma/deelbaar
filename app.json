@@ -1,5 +1,6 @@
 {
   "expo": {
+    "newArchEnabled": true,
     "name": "Deelbaar",
     "slug": "deelbaar",
     "version": "1.0.0",
