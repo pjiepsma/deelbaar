@@ -8,11 +8,6 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#fafaf2"
-    },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
@@ -45,17 +40,12 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#232323",
-          "image": "./assets/splash-icon.png",
-          "imageWidth": 200
+          "backgroundColor": "#ffffff",
+          "image": "./assets/splash.png",
+          "resizeMode": "cover"
         }
       ]
     ],
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/favicon.png"
-    },
     "extra": {
       "eas": {
         "projectId": "de8a44a5-2432-4b69-8dcb-22b1ef299d63"

@@ -9,6 +9,7 @@ import ListingCard from '~/components/map/molecules/ListingCard';
 import { useAuth } from '~/lib/AuthProvider';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
+import { StatusBar } from 'expo-status-bar';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -102,9 +103,11 @@ const ListingCarousel = ({ category, listing, listings, setListing }: Props) => 
 
   return (
     <BottomSheet
+      enableDynamicSizing={false} // todo
       ref={bottomSheetRef}
       snapPoints={SNAPPOINTS}
       backgroundStyle={{ backgroundColor: '#f4f4e8' }}>
+      <StatusBar hidden />
       <View style={styles.container}>
         <View style={styles.handleContainer}>
           <Text style={styles.handleText}>

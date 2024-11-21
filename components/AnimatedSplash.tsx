@@ -14,11 +14,10 @@ import Animated, {
 import Colors from '~/constants/Colors';
 
 interface AnimatedSplashProps {
-  onFinish: () => void;
   onReady: boolean;
 }
 
-const AnimatedSplash: React.FC<AnimatedSplashProps> = ({ onFinish, onReady }) => {
+const AnimatedSplash: React.FC<AnimatedSplashProps> = ({ onReady }) => {
   const rotation = useSharedValue(0);
   const opacity = useSharedValue(1);
   const splash = require('../assets/splash-icon.png');
@@ -35,7 +34,7 @@ const AnimatedSplash: React.FC<AnimatedSplashProps> = ({ onFinish, onReady }) =>
       opacity.value = withDelay(
         3000,
         withTiming(0, { duration: 100, easing: Easing.ease }, () => {
-          runOnJS(onFinish)();
+          // runOnJS(onFinish)();
         })
       );
     }

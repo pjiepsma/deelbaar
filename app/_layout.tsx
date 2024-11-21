@@ -32,12 +32,11 @@ const InitialLayout = () => {
   );
 };
 
-const RootLayout = () => {
-  const [isReady, setReady] = useState(true);
-  const [isVisible, setVisible] = useState(true);
+const App = () => {
+  const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
-    NavigationBar.setBackgroundColorAsync(Colors.light);
+    NavigationBar.setBackgroundColorAsync(Colors.white);
   }, []);
 
   useEffect(() => {
@@ -54,23 +53,20 @@ const RootLayout = () => {
     prepare();
   }, []);
 
-  const handleSplash = useCallback(() => {
-    setVisible(false);
-    NavigationBar.setBackgroundColorAsync(Colors.white);
-  }, []);
+  const onLayoutRootView = useCallback(() => {
+    if (appIsReady) {
+      NavigationBar.setBackgroundColorAsync(Colors.white);
+      SplashScreen.hide();
+    }
+  }, [appIsReady]);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <PowerSyncProvider>
         <SafeAreaProvider>
           <BottomSheetModalProvider>
             <AuthProvider>
               <InitialLayout />
-              {/*{isVisible && (*/}
-              {/*  <View style={StyleSheet.absoluteFillObject}>*/}
-              {/*    <AnimatedSplash onReady={isReady} onFinish={handleSplash} />*/}
-              {/*  </View>*/}
-              {/*)}*/}
             </AuthProvider>
           </BottomSheetModalProvider>
         </SafeAreaProvider>
@@ -79,4 +75,4 @@ const RootLayout = () => {
   );
 };
 
-export default RootLayout;
+export default App;
