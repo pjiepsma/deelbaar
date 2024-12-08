@@ -9,6 +9,7 @@ import Animated, {
   withRepeat,
   withSequence,
   withTiming,
+  useDerivedValue,
 } from 'react-native-reanimated';
 
 import Colors from '~/constants/Colors';
@@ -24,9 +25,11 @@ export default function Loader({
 }) {
   const opacity = useSharedValue(0);
 
+  const derivedOpacity = useDerivedValue(() => opacity.value);
+
   const animatedLoaderStyle = useAnimatedStyle(() => {
     return {
-      opacity: opacity.value,
+      opacity: derivedOpacity.value,
     };
   });
 
@@ -68,9 +71,11 @@ function Dot({
 }) {
   const offset = useSharedValue<number>(0.75);
 
+  const derivedOffset = useDerivedValue(() => offset.value);
+
   const animatedStyles = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: offset.value }],
+      transform: [{ scale: derivedOffset.value }],
     };
   });
 

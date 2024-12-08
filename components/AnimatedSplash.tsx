@@ -8,19 +8,19 @@ import Animated, {
   withSequence,
   runOnJS,
   withDelay,
+  useDerivedValue,
 } from 'react-native-reanimated';
 
 import Colors from '~/constants/Colors';
 
 interface AnimatedSplashProps {
-  onFinish: () => void;
   onReady: boolean;
 }
 
-const AnimatedSplash: React.FC<AnimatedSplashProps> = ({ onFinish, onReady }) => {
+const AnimatedSplash: React.FC<AnimatedSplashProps> = ({ onReady }) => {
   const rotation = useSharedValue(0);
   const opacity = useSharedValue(1);
-  const splash = require('../assets/splash-logo.png');
+  const splash = require('../assets/splash-icon.png');
 
   useEffect(() => {
     rotation.value = withSequence(
@@ -34,18 +34,21 @@ const AnimatedSplash: React.FC<AnimatedSplashProps> = ({ onFinish, onReady }) =>
       opacity.value = withDelay(
         3000,
         withTiming(0, { duration: 100, easing: Easing.ease }, () => {
-          runOnJS(onFinish)();
+          // runOnJS(onFinish)();
         })
       );
     }
   }, [onReady]);
 
+  const derivedRotation = useDerivedValue(() => rotation.value);
+  const derivedOpacity = useDerivedValue(() => opacity.value);
+
   const animatedRotateStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotation.value}deg` }],
+    transform: [{ rotate: `${derivedRotation.value}deg` }],
   }));
 
   const animatedOpacityStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
+    opacity: derivedOpacity.value,
   }));
 
   return (

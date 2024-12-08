@@ -6,7 +6,6 @@ import { StatusBar } from 'expo-status-bar';
 import * as React from 'react'; // @ts-ignore
 import { Omit, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { FAB } from 'react-native-elements';
-import prompt from 'react-native-prompt-android';
 
 import { TodoItemWidget } from '~/components/widget/TodoItemWidget';
 import { LISTING_TABLE, PICTURE_TABLE } from '~/lib/powersync/AppSchema';
@@ -94,26 +93,26 @@ const TodoView: React.FC = () => {
           title: listRecord.name,
         }}
       />
-      <FAB
-        style={{ zIndex: 99, bottom: 0 }}
-        icon={{ name: 'add', color: 'white' }}
-        size="small"
-        placement="right"
-        onPress={() => {
-          prompt(
-            'Add a new Image',
-            '',
-            (text) => {
-              if (!text) {
-                return;
-              }
+      {/*<FAB*/}
+      {/*  style={{ zIndex: 99, bottom: 0 }}*/}
+      {/*  icon={{ name: 'add', color: 'white' }}*/}
+      {/*  size="small"*/}
+      {/*  placement="right"*/}
+      {/*  onPress={() => {*/}
+      {/*    prompt(*/}
+      {/*      'Add a new Image',*/}
+      {/*      '',*/}
+      {/*      (text) => {*/}
+      {/*        if (!text) {*/}
+      {/*          return;*/}
+      {/*        }*/}
 
-              return createNewImage(text);
-            },
-            { placeholder: 'Todo description', style: 'shimo' }
-          );
-        }}
-      />
+      {/*        return createNewImage(text);*/}
+      {/*      },*/}
+      {/*      { placeholder: 'Todo description', style: 'shimo' }*/}
+      {/*    );*/}
+      {/*  }}*/}
+      {/*/>*/}
       <ScrollView style={{ maxHeight: '90%' }}>
         {todos.map((r) => {
           const record = { ...r, id: r.picture_id };

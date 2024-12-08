@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 
 import { useAuth } from '~/lib/AuthProvider';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
@@ -41,18 +40,17 @@ const ListingCard: React.FC<HikeItemProps> = ({
   return (
     <TouchableOpacity onPress={onPress} style={styles.card} activeOpacity={0.9}>
       <View style={styles.firstRow}>
-        <FastImage
+        <Image
           key={photoAttachment?.id}
           source={
             photoAttachment
               ? {
                   uri,
-                  priority: FastImage.priority.normal,
                 }
               : require('assets/images/default-placeholder.png')
           }
           style={styles.image}
-          resizeMode={FastImage.resizeMode.cover}
+          resizeMode="cover"
         />
         <View style={styles.textContainer}>
           <Text style={styles.title}>{item.name}</Text>

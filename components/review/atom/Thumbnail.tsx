@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 interface ThumbnailImageProps {
   uri: string;
@@ -10,11 +9,7 @@ interface ThumbnailImageProps {
 const Thumbnail: React.FC<ThumbnailImageProps> = ({ uri, onPress }) => {
   return (
     <TouchableOpacity onPress={onPress}>
-      <FastImage
-        source={{ uri, priority: FastImage.priority.normal }}
-        resizeMode={FastImage.resizeMode.cover}
-        style={styles.thumbnail}
-      />
+      <Image source={{ uri }} resizeMode="cover" style={styles.thumbnail} />
     </TouchableOpacity>
   );
 };

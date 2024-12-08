@@ -2,12 +2,14 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import * as Font from 'expo-font';
 import * as NavigationBar from 'expo-navigation-bar';
-import { SplashScreen, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
+import * as SplashScreen from 'expo-splash-screen';
+import '../reanimated.config';
+import '@azure/core-asynciterator-polyfill';
 import AnimatedSplash from '~/components/AnimatedSplash';
 import Colors from '~/constants/Colors';
 import { AuthProvider } from '~/lib/AuthProvider';
@@ -15,6 +17,12 @@ import { PowerSyncProvider } from '~/lib/powersync/PowerSyncProvider';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
+
+// Set the animation options. This is optional.
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
 
 const InitialLayout = () => {
   return (
@@ -24,45 +32,41 @@ const InitialLayout = () => {
   );
 };
 
-const RootLayout = () => {
-  const [isReady, setReady] = useState(true);
-  const [isVisible, setVisible] = useState(true);
+const App = () => {
+  const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
-    NavigationBar.setBackgroundColorAsync(Colors.light);
+    NavigationBar.setBackgroundColorAsync(Colors.white);
   }, []);
 
   useEffect(() => {
-    SplashScreen.hideAsync();
-
     async function prepare() {
       try {
         await Font.loadAsync(Entypo.font);
       } catch (e) {
         console.warn(e);
+      } finally {
+        SplashScreen.hideAsync();
       }
     }
 
     prepare();
   }, []);
 
-  const handleSplash = useCallback(() => {
-    setVisible(false);
-    NavigationBar.setBackgroundColorAsync(Colors.white);
-  }, []);
+  const onLayoutRootView = useCallback(() => {
+    if (appIsReady) {
+      NavigationBar.setBackgroundColorAsync(Colors.white);
+      SplashScreen.hide();
+    }
+  }, [appIsReady]);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <PowerSyncProvider>
         <SafeAreaProvider>
           <BottomSheetModalProvider>
             <AuthProvider>
               <InitialLayout />
-              {isVisible && (
-                <View style={StyleSheet.absoluteFillObject}>
-                  <AnimatedSplash onReady={isReady} onFinish={handleSplash} />
-                </View>
-              )}
             </AuthProvider>
           </BottomSheetModalProvider>
         </SafeAreaProvider>
@@ -71,4 +75,4 @@ const RootLayout = () => {
   );
 };
 
-export default RootLayout;
+export default App;

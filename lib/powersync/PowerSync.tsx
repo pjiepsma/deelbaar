@@ -1,4 +1,5 @@
 import { AttachmentRecord } from '@powersync/attachments';
+import { OPSqliteOpenFactory } from '@powersync/op-sqlite';
 import { AbstractPowerSyncDatabase, PowerSyncDatabase } from '@powersync/react-native';
 import { createContext, useContext } from 'react';
 
@@ -18,12 +19,11 @@ export class System {
   // db: Kysely<Database>;
 
   constructor() {
-    const powerSyncDb = new PowerSyncDatabase({
-      database: {
-        dbFilename: 'app.sqlite',
-      },
-      schema: AppSchema,
+    const factory = new OPSqliteOpenFactory({
+      dbFilename: 'sqlite.db',
     });
+
+    const powerSyncDb = new PowerSyncDatabase({ database: factory, schema: AppSchema });
 
     this.connector = new SupabaseConnector();
     this.storage = this.connector.storage;

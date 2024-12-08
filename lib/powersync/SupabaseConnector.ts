@@ -21,11 +21,6 @@ export const supabase = createClient(AppConfig.SUPABASE_URL, AppConfig.SUPABASE_
   },
 });
 
-// Tells Supabase Auth to continuously refresh the session automatically
-// if the app is in the foreground. When this is added, you will continue
-// to receive `onAuthStateChange` events with the `TOKEN_REFRESHED` or
-// `SIGNED_OUT` event if the user's session is terminated. This should
-// only be registered once.
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {
     supabase.auth.startAutoRefresh();
@@ -34,17 +29,7 @@ AppState.addEventListener('change', (state) => {
   }
 });
 
-/// Postgres Response codes that we cannot recover from by retrying.
-const FATAL_RESPONSE_CODES = [
-  // Class 22 — Data Exception
-  // Examples include data type mismatch.
-  new RegExp('^22...$'),
-  // Class 23 — Integrity Constraint Violation.
-  // Examples include NOT NULL, FOREIGN KEY and UNIQUE violations.
-  new RegExp('^23...$'),
-  // INSUFFICIENT PRIVILEGE - typically a row-level security violation
-  new RegExp('^42501$'),
-];
+const FATAL_RESPONSE_CODES = [new RegExp('^22...$'), new RegExp('^23...$'), new RegExp('^42501$')];
 
 export class SupabaseConnector implements PowerSyncBackendConnector {
   client: SupabaseClient;
@@ -84,8 +69,6 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
     if (!session || error) {
       throw new Error(`Could not fetch Supabase credentials: ${error}`);
     }
-
-    // console.debug('session expires at', new Date(session.expires_at! * 1000));
 
     return {
       client: this.client,
