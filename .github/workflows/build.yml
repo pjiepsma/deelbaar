@@ -44,7 +44,7 @@ jobs:
           cache: yarn
 
       - name: 🏗 Setup Expo and EAS
-        uses: expo/expo-github-action@v7
+        uses: expo/expo-github-action@v8
         with:
           token: ${{ secrets.EXPO_TOKEN }}
           expo-version: latest
