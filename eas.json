@@ -13,6 +13,11 @@
       "autoIncrement": true,
       "channel": "production",
       "distribution": "store"
+    },
+    "simulator": {
+      "ios": {
+        "simulator": true
+      }
     }
   },
   "submit": {
