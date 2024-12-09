@@ -59,7 +59,6 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'  # Ensure Java 17 is used for Android builds
-          distribution: 'adoptopenjdk'  # You can also use 'openjdk'
 
       # Step 5: Clear Yarn cache (optional)
       - name: Clear Yarn cache
