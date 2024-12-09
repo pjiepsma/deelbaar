@@ -21,6 +21,7 @@ on:
           - development
           - preview
           - production
+          - simulator
       should_submit:
         type: boolean
         description: Whether to perform the submit step
@@ -73,7 +74,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-ios-${{ github.event.inputs.profile }}
-          path: ./app-build/output/*.ipa
+          path: ./app-build/output/*.app
 
       - name: 🚢 Submit
         if: ${{ github.event.inputs.should_submit }}
