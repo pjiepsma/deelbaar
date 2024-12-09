@@ -54,11 +54,13 @@ jobs:
           eas-version: latest
 
       # Step 4: Install Java 17 for Android builds
-      - name: Set up Java 17
+      - name: Set up JDK 17
         if: ${{ github.event.inputs.platform == 'android' }}
         uses: actions/setup-java@v4
         with:
-          java-version: '17'  # Ensure Java 17 is used for Android builds
+          java-version: '17'
+          distribution: 'temurin'
+
 
       # Step 5: Clear Yarn cache (optional)
       - name: Clear Yarn cache
