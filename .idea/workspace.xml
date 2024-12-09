@@ -7,7 +7,6 @@
     <list default="true" id="8cc25b81-8b88-4801-8bc3-e345db1ccbe0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.github/workflows/build.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/build.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Podfile" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Podfile" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -132,7 +131,7 @@
       <workItem from="1733690441033" duration="5627000" />
       <workItem from="1733725800350" duration="3053000" />
       <workItem from="1733759524979" duration="5795000" />
-      <workItem from="1733774998061" duration="559000" />
+      <workItem from="1733774998061" duration="1591000" />
     </task>
     <servers />
   </component>

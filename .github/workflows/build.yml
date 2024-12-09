@@ -53,15 +53,23 @@ jobs:
           expo-version: latest
           eas-version: latest
 
-      # Step 4: Clear Yarn cache (optional)
+      # Step 4: Install Java 17 for Android builds
+      - name: Set up Java 17
+        if: ${{ github.event.inputs.platform == 'android' }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'  # Ensure Java 17 is used for Android builds
+          distribution: 'adoptopenjdk'  # You can also use 'openjdk'
+
+      # Step 5: Clear Yarn cache (optional)
       - name: Clear Yarn cache
         run: yarn cache clean
 
-      # Step 5: Install dependencies
+      # Step 6: Install dependencies
       - name: 📦 Install dependencies
         run: yarn install
 
-      # Step 6: Prebuild the app (generates native projects)
+      # Step 7: Prebuild the app (generates native projects)
       - name: 🏗 Prebuild the project
         run: |
           expo prebuild --platform=${{ github.event.inputs.platform }}
