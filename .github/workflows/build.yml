@@ -57,12 +57,11 @@ jobs:
       - name: 👷 Build app
         run: |
           eas build --local \
-            --non-interactive
+            --non-interactive \
             --output=./app-build/output \
             --platform=${{ github.event.inputs.platform }} \
             --profile=${{ github.event.inputs.profile }}
-            simulator
-
+            
       - name: Upload Android APK
         if: ${{ github.event.inputs.platform == 'android' }}
         uses: actions/upload-artifact@v4
