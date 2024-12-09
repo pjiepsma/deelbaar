@@ -1,4 +1,3 @@
-
 name: Build App
 on:
   workflow_dispatch:
@@ -13,8 +12,8 @@ on:
         type: choice
         description: Platform to build for
         options:
-          - android
           - ios
+          - android
       profile:
         type: choice
         description: Build profile to use
@@ -30,6 +29,7 @@ on:
 jobs:
   build:
     runs-on: ${{ github.event.inputs.os }}
+    timeout-minutes: 60
     strategy:
       matrix:
         node: [18.x]
@@ -41,7 +41,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-          cache: yarn
+          cache: npm
 
       - name: 🏗 Setup Expo and EAS
         uses: expo/expo-github-action@v8
@@ -51,28 +51,36 @@ jobs:
           eas-version: latest
 
       - name: 📦 Install dependencies
-        run: yarn
+        run: npm install
 
       - name: 📋 Test project
-        run: yarn test
+        run: npm test
 
       - name: 👷 Build app
         run: |
           eas build --local \
             --non-interactive \
-            --output=./app-build \
+            --output=./app-build/output \
             --platform=${{ github.event.inputs.platform }} \
             --profile=${{ github.event.inputs.profile }}
 
-      - name: Upload artifact
+      - name: Upload Android APK
+        if: ${{ github.event.inputs.platform == 'android' }}
         uses: actions/upload-artifact@v4
         with:
-          name: app-${{ github.event.inputs.platform }}-${{ github.event.inputs.profile }}
-          path: |
-            ./app-build/*.apk
-            ./app-build/*.ipa
+          name: app-android-${{ github.event.inputs.profile }}
+          path: ./app-build/output/*.apk
+
+      - name: Upload iOS IPA
+        if: ${{ github.event.inputs.platform == 'ios' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-ios-${{ github.event.inputs.profile }}
+          path: ./app-build/output/*.ipa
 
       - name: 🚢 Submit
         if: ${{ github.event.inputs.should_submit }}
-        run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path app-build
-
+        run: |
+          eas submit -p ${{ github.event.inputs.platform }} \
+            --profile ${{ github.event.inputs.profile }} \
+            --path ./app-build/output
