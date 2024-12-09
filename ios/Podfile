@@ -44,6 +44,9 @@ target 'Deelbaar' do
     :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] != 'false',
   )
 
+  # Explicitly include react-native-quick-sqlite
+  pod 'react-native-quick-sqlite', :path => '../node_modules/@journeyapps/react-native-quick-sqlite'
+
   post_install do |installer|
     react_native_post_install(
       installer,
