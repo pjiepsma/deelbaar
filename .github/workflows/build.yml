@@ -56,7 +56,8 @@ jobs:
       - name: 👷 Build app
         run: |
           eas build --local \
-            --non-interactive \
+            --non-interactive
+            simulator
             --output=./app-build/output \
             --platform=${{ github.event.inputs.platform }} \
             --profile=${{ github.event.inputs.profile }}
