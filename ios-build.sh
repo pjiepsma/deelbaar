@@ -1,1 +1,0 @@
-eas build --platform ios --profile development --local --output ./app-development.ipa
