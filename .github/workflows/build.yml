@@ -21,7 +21,6 @@ on:
           - development
           - preview
           - production
-          - simulator
       should_submit:
         type: boolean
         description: Whether to perform the submit step
@@ -50,6 +49,9 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
           expo-version: latest
           eas-version: latest
+
+      - name: Clear Yarn cache
+        run: yarn cache clean
 
       - name: 📦 Install dependencies
         run: yarn install

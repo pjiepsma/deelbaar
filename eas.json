@@ -4,7 +4,8 @@
     "appVersionSource": "remote"
   },
   "build": {
-    "simulator": {
+    "preview": {
+      "distribution": "internal",
       "ios": {
         "simulator": true
       }
