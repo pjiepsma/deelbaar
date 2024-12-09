@@ -16,14 +16,14 @@ export class System {
   attachmentQueue: PhotoAttachmentQueue | undefined = undefined;
   storage: SupabaseStorageAdapter;
 
-  // db: Kysely<Database>;
-
   constructor() {
-    const factory = new OPSqliteOpenFactory({
-      dbFilename: 'sqlite.db',
-    });
 
-    const powerSyncDb = new PowerSyncDatabase({ database: factory, schema: AppSchema });
+    const powerSyncDb = new PowerSyncDatabase({ database: {
+        // Filename for the SQLite database — it's important to only instantiate one instance per file.
+        dbFilename: 'powersync.db'
+        // Optional. Directory where the database file is located.'
+        // dbLocation: 'path/to/directory'
+      }, schema: AppSchema });
 
     this.connector = new SupabaseConnector();
     this.storage = this.connector.storage;
