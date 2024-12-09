@@ -57,10 +57,10 @@ jobs:
         run: |
           eas build --local \
             --non-interactive
-            simulator
             --output=./app-build/output \
             --platform=${{ github.event.inputs.platform }} \
             --profile=${{ github.event.inputs.profile }}
+            simulator
 
       - name: Upload Android APK
         if: ${{ github.event.inputs.platform == 'android' }}
