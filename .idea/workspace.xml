@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="8cc25b81-8b88-4801-8bc3-e345db1ccbe0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.github/workflows/android-preview-build.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/android-preview-build.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,7 +128,7 @@
       <workItem from="1733686639309" duration="1046000" />
       <workItem from="1733688038582" duration="1299000" />
       <workItem from="1733690441033" duration="5627000" />
-      <workItem from="1733725800350" duration="2109000" />
+      <workItem from="1733725800350" duration="2407000" />
     </task>
     <servers />
   </component>

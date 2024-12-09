@@ -36,7 +36,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: Build Android app
         run: eas build --platform android --profile development --local --output ${{ github.workspace }}/app-development.apk
