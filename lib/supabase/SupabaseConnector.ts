@@ -5,12 +5,10 @@ import {
   UpdateType,
 } from "@powersync/react-native";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import "react-native-url-polyfill/auto";
 import { AppState } from "react-native";
 
 import { AppConfig } from "~/lib/supabase/AppConfig";
 import { SupabaseStorageAdapter } from "~/lib/storage/SupabaseStorageAdapter";
-import { System } from "~/lib/powersync/System";
 import { KVStorage } from "~/lib/storage/KVStorage";
 
 export const supabase = createClient(
