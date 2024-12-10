@@ -4719,6 +4719,7 @@ __metadata:
     react-native-prompt-android: "npm:^1.1.0"
     react-native-ratings: "npm:^8.1.0"
     react-native-reanimated: "npm:~3.10.1"
+    react-native-reanimated-carousel: "npm:^3.5.1"
     react-native-reanimated-table: "npm:^0.0.2"
     react-native-safe-area-context: "npm:4.10.5"
     react-native-screens: "npm:~3.31.1"
@@ -8854,6 +8855,18 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/e1b3d20a92025705cc5a3cc47e04e74c71ba0ab1621398b87334a9d6fa4714a051f0d05f7358e1dab81c3a0c6501f255ac345af17df952c458238e7e6b5de233
+  languageName: node
+  linkType: hard
+
+"react-native-reanimated-carousel@npm:^3.5.1":
+  version: 3.5.1
+  resolution: "react-native-reanimated-carousel@npm:3.5.1"
+  peerDependencies:
+    react: ">=16.8.0"
+    react-native: ">=0.6.0"
+    react-native-gesture-handler: ">=2.0.0"
+    react-native-reanimated: ">=3.0.0"
+  checksum: 10c0/b59a1d41b9138ba04198590319698a4a9f3be467abda1c63df42e043c643e5c8bbe94121c5cca2cf830c9b84d7c45f0712db79ecaafbca07158d73c61db6a4ff
   languageName: node
   linkType: hard
 
