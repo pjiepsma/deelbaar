@@ -17,8 +17,8 @@ import {
 import { useAuth } from '../../lib/AuthProvider';
 
 import RatingScreen from '~/components/review/organisms/RatingScreen';
-import { useSystem } from '~/lib/powersync/PowerSync';
-import { InsertPicture, InsertReview } from '~/lib/powersync/Queries';
+import { useSystem } from '~/lib/powersync/System';
+import { InsertPicture, InsertReview } from '~/lib/supabase/Queries';
 
 const isAndroid = Platform.OS === 'android';
 

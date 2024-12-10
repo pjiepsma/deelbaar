@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 import { useAuth } from '~/lib/AuthProvider';
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { useSystem } from '~/lib/powersync/System';
 
 const Login = () => {
   const [email, setEmail] = useState('');

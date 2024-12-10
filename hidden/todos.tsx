@@ -12,7 +12,7 @@ import {
 
 import AppleStyleSwipeableRow from '~/components/SwipeableRow';
 import { Todo, TODO_TABLE } from '~/lib/powersync/AppSchema';
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { useSystem } from '~/lib/powersync/System';
 import { uuid } from '~/lib/util/uuid';
 
 const Page = () => {

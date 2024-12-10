@@ -13,9 +13,9 @@ import {
 } from 'react-native';
 import { Button, Image, ListItem } from 'react-native-elements';
 
-import { AppConfig } from '~/lib/powersync/AppConfig';
+import { AppConfig } from '~/lib/supabase/AppConfig';
 import { PictureRecord } from '~/lib/powersync/AppSchema';
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { useSystem } from '~/lib/powersync/System';
 
 export interface TodoItemWidgetProps {
   record: PictureRecord;

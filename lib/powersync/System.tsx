@@ -7,15 +7,16 @@ import { createContext, useContext } from "react";
 
 import { AppSchema } from "./AppSchema";
 
-import { AppConfig } from "~/lib/powersync/AppConfig";
+import { AppConfig } from "~/lib/supabase/AppConfig";
 import { PhotoAttachmentQueue } from "~/lib/powersync/PhotoAttachmentQueue";
-import { SupabaseConnector } from "~/lib/powersync/SupabaseConnector";
-import { SupabaseStorageAdapter } from "~/lib/powersync/storage/SupabaseStorageAdapter";
+import { SupabaseConnector } from "~/lib/supabase/SupabaseConnector";
+import { SupabaseStorageAdapter } from "~/lib/storage/SupabaseStorageAdapter";
+import { KVStorage } from "~/lib/storage/KVStorage";
 
 export class System {
   kvStorage: KVStorage;
   connector: SupabaseConnector;
-  powersync: AbstractPowerSyncDatabase;
+  powersync: any;
   attachmentQueue: PhotoAttachmentQueue | undefined = undefined;
   storage: SupabaseStorageAdapter;
 
@@ -25,7 +26,7 @@ export class System {
       schema: AppSchema,
       database: {
         // Filename for the SQLite database — it's important to only instantiate one instance per file.
-        dbFilename: "powersync.db",
+        dbFilename: "sqlite.db",
         // Optional. Directory where the database file is located.'
         // dbLocation: 'path/to/directory'
       },
@@ -34,8 +35,13 @@ export class System {
 
     this.connector = new SupabaseConnector(this);
     this.storage = this.connector.storage;
-    this.powersync = powerSyncDb;
-    // this.db = wrapPowerSyncWithKysely(this.powersync);
+    this.powersync = new PowerSyncDatabase({
+      schema: AppSchema,
+      database: {
+        dbFilename: "sqlite.db",
+      },
+    });
+
     if (AppConfig.SUPABASE_BUCKET) {
       this.attachmentQueue = new PhotoAttachmentQueue({
         powersync: this.powersync,

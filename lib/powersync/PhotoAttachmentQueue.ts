@@ -2,7 +2,7 @@ import { AbstractAttachmentQueue, AttachmentRecord, AttachmentState } from '@pow
 import { randomUUID } from 'expo-crypto';
 import * as FileSystem from 'expo-file-system';
 
-import { AppConfig } from '~/lib/powersync/AppConfig';
+import { AppConfig } from '~/lib/supabase/AppConfig';
 import { PICTURE_TABLE } from '~/lib/powersync/AppSchema';
 
 export class PhotoAttachmentQueue extends AbstractAttachmentQueue {

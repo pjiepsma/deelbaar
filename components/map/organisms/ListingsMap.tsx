@@ -10,7 +10,7 @@ import MapWithMarkers from '~/components/map/molecules/MapWithMarkers';
 import Colors from '~/constants/Colors';
 import { useAuth } from '~/lib/AuthProvider';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { useSystem } from '~/lib/powersync/System';
 
 interface Props {
   setListings: (state: ListingRecord[]) => void;

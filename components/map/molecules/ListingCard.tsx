@@ -4,7 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 
 import { useAuth } from '~/lib/AuthProvider';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
-import { system } from '~/lib/powersync/PowerSync';
+import { system } from '~/lib/powersync/System';
 import { toAttachmentRecord } from '~/lib/util/util';
 
 interface HikeItemProps {

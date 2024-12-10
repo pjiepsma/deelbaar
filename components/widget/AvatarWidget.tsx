@@ -2,7 +2,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import { Alert, Button, Image, StyleSheet, View } from 'react-native';
 
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { useSystem } from '~/lib/powersync/System';
 
 interface Props {
   size: number;

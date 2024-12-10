@@ -8,8 +8,8 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import 'react-native-url-polyfill/auto';
 import { AppState } from 'react-native';
 
-import { AppConfig } from '~/lib/powersync/AppConfig';
-import { SupabaseStorageAdapter } from '~/lib/powersync/storage/SupabaseStorageAdapter';
+import { AppConfig } from '~/lib/supabase/AppConfig';
+import { SupabaseStorageAdapter } from '~/lib/storage/SupabaseStorageAdapter';
 
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {

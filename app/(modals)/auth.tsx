@@ -3,7 +3,7 @@ import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'reac
 
 import Colors from '~/constants/Colors';
 import { useAuth } from '~/lib/AuthProvider';
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { useSystem } from '~/lib/powersync/System';
 
 export default function Auth() {
   const [email, setEmail] = useState('');

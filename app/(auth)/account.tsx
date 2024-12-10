@@ -10,7 +10,7 @@ import {
 import { Session } from "@supabase/supabase-js";
 import Avatar from "~/components/widget/AvatarWidget";
 import { useAuth } from "~/lib/AuthProvider";
-import { useSystem } from "~/lib/powersync/PowerSync";
+import { useSystem } from "~/lib/powersync/System";
 import BirthdateInput from "~/components/BirthDateInput";
 
 export default function Account({ session }: { session: Session }) {

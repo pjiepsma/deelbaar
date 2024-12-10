@@ -17,8 +17,8 @@ import geo from '~/assets/data/minibieb-gelderland-points.json';
 import Gelderland from '~/assets/data/minibieb-gelderland.json';
 import Colors from '~/constants/Colors';
 import { useAuth } from '~/lib/AuthProvider';
-import { useSystem } from '~/lib/powersync/PowerSync';
-import { supabase } from '~/lib/powersync/SupabaseConnector';
+import { useSystem } from '~/lib/powersync/System';
+import { supabase } from '~/lib/supabase/SupabaseConnector';
 
 const BATCH_SIZE = 10; // Set your batch size
 const RETRY_LIMIT = 3; // Maximum number of retries

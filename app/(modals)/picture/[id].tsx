@@ -9,8 +9,8 @@ import { FAB } from 'react-native-elements';
 
 import { TodoItemWidget } from '~/components/widget/TodoItemWidget';
 import { LISTING_TABLE, PICTURE_TABLE } from '~/lib/powersync/AppSchema';
-import { useSystem } from '~/lib/powersync/PowerSync';
-import { DeletePicture, InsertPicture, UpdatePicture } from '~/lib/powersync/Queries';
+import { useSystem } from '~/lib/powersync/System';
+import { DeletePicture, InsertPicture, UpdatePicture } from '~/lib/supabase/Queries';
 import { PictureEntry } from '~/lib/types/types';
 import { toAttachmentRecord } from '~/lib/util/util';
 

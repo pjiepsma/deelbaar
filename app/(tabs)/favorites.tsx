@@ -7,8 +7,8 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 import Loader from '~/components/Loader';
 import ListingCard from '~/components/map/molecules/ListingCard';
 import { useAuth } from '~/lib/AuthProvider';
-import { useSystem } from '~/lib/powersync/PowerSync';
-import { GetFavoriteListings, RemoveFavorite, SelectLatestImages } from '~/lib/powersync/Queries';
+import { useSystem } from '~/lib/powersync/System';
+import { GetFavoriteListings, RemoveFavorite, SelectLatestImages } from '~/lib/supabase/Queries';
 import { PictureEntry } from '~/lib/types/types';
 
 interface Listing {

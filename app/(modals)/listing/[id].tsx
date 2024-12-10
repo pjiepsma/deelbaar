@@ -21,8 +21,8 @@ import RatingSummary from '~/components/review/organisms/RatingSummary';
 import ReviewsScreen from '~/components/review/organisms/ReviewsScreen';
 import Colors from '~/constants/Colors';
 import { useAuth } from '~/lib/AuthProvider';
-import { system, useSystem } from '~/lib/powersync/PowerSync';
-import { SelectListing, SelectPictures, SelectReviews } from '~/lib/powersync/Queries';
+import { system, useSystem } from '~/lib/powersync/System';
+import { SelectListing, SelectPictures, SelectReviews } from '~/lib/supabase/Queries';
 import { toAttachmentRecord } from '~/lib/util/util';
 
 const { width } = Dimensions.get('window');

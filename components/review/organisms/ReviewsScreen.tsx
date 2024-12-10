@@ -8,7 +8,7 @@ import SortOptions from '../atom/SortOptions';
 import Thumbnail from '../atom/Thumbnail';
 import UserInfo from '../atom/UserInfo';
 
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { useSystem } from '~/lib/powersync/System';
 
 interface Review {
   id: string;

@@ -2,9 +2,9 @@ import { Session, User } from '@supabase/supabase-js';
 import { useRouter, useSegments } from 'expo-router';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
-import { GetFavoriteListings, SelectProfile } from './powersync/Queries';
+import { GetFavoriteListings, SelectProfile } from './supabase/Queries';
 
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { useSystem } from '~/lib/powersync/System';
 
 export const AuthContext = createContext<{
   session: Session | null;

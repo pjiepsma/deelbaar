@@ -8,10 +8,10 @@ import ActionRow from '~/components/ActionRow';
 import ListingCarousel from '~/components/map/organisms/ListingCarousel';
 import ListingsMap from '~/components/map/organisms/ListingsMap';
 import { useAuth } from '~/lib/AuthProvider';
-import { AppConfig } from '~/lib/powersync/AppConfig';
+import { AppConfig } from '~/lib/supabase/AppConfig';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
-import { useSystem } from '~/lib/powersync/PowerSync';
-import { SelectLatestImages } from '~/lib/powersync/Queries';
+import { useSystem } from '~/lib/powersync/System';
+import { SelectLatestImages } from '~/lib/supabase/Queries';
 import { PictureEntry } from '~/lib/types/types';
 
 const Index = () => {

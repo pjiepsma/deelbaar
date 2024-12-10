@@ -3,7 +3,7 @@ import { Stack } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { useSystem } from '~/lib/powersync/System';
 
 const Layout = () => {
   const { connector, powersync } = useSystem();

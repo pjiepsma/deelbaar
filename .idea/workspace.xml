@@ -6,6 +6,29 @@
   <component name="ChangeListManager">
     <list default="true" id="8cc25b81-8b88-4801-8bc3-e345db1ccbe0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(auth)/account.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/account.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(auth)/admin.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/admin.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/auth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/auth.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/picture/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/picture/[id].tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/review.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/review.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/map/molecules/ListingCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/molecules/ListingCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingCarousel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingCarousel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/review/organisms/ReviewsScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/review/organisms/ReviewsScreen.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/widget/AvatarWidget.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/widget/AvatarWidget.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/widget/TodoItemWidget.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/widget/TodoItemWidget.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hidden/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/hidden/_layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hidden/login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/hidden/login.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hidden/todos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/hidden/todos.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/AuthProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/AuthProvider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/PhotoAttachmentQueue.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/PhotoAttachmentQueue.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/PowerSyncProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/PowerSyncProvider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/System.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/System.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/storage/SupabaseStorageAdapter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/storage/SupabaseStorageAdapter.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/supabase/SupabaseConnector.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/supabase/SupabaseConnector.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
@@ -38,7 +61,7 @@
     "git-widget-placeholder": "develop",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/Git/deelbaar",
+    "last_opened_file_path": "D:/Git/deelbaar/lib/powersync",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.standard": "true",
     "node.js.detected.package.tslint": "true",
@@ -50,18 +73,21 @@
     "npm.start.executor": "Run",
     "prettierjs.PrettierConfiguration.Package": "D:\\Git\\deelbaar\\node_modules\\prettier",
     "settings.editor.selected.configurable": "settings.nodejs",
-    "ts.external.directory.path": "C:\\Users\\Pieter\\AppData\\Local\\Programs\\WebStorm\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "ts.external.directory.path": "D:\\Git\\deelbaar\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Git\deelbaar\lib\powersync" />
       <recent name="D:\Git\deelbaar\assets" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Git\deelbaar\lib\supabase" />
+      <recent name="D:\Git\deelbaar\lib" />
+      <recent name="D:\Git\deelbaar\lib\powersync\storage" />
       <recent name="D:\Git\deelbaar" />
       <recent name="D:\Git\deelbaar\assets" />
-      <recent name="D:\Git\deelbaar\hidden" />
     </key>
   </component>
   <component name="RunManager" selected="npm.start">
@@ -133,7 +159,8 @@
       <workItem from="1733725800350" duration="3053000" />
       <workItem from="1733759524979" duration="5795000" />
       <workItem from="1733774998061" duration="5629000" />
-      <workItem from="1733820399678" duration="8044000" />
+      <workItem from="1733820399678" duration="11469000" />
+      <workItem from="1733840404359" duration="429000" />
     </task>
     <servers />
   </component>
