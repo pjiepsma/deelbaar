@@ -1,14 +1,17 @@
-import { AttachmentRecord } from '@powersync/attachments';
-import { OPSqliteOpenFactory } from '@powersync/op-sqlite';
-import { AbstractPowerSyncDatabase, PowerSyncDatabase } from '@powersync/react-native';
-import { createContext, useContext } from 'react';
+import { AttachmentRecord } from "@powersync/attachments";
+import {
+  AbstractPowerSyncDatabase,
+  PowerSyncDatabase,
+} from "@powersync/react-native";
+import { createContext, useContext } from "react";
 
-import { AppSchema } from './AppSchema';
+import { AppSchema } from "./AppSchema";
 
-import { AppConfig } from '~/lib/powersync/AppConfig';
-import { PhotoAttachmentQueue } from '~/lib/powersync/PhotoAttachmentQueue';
-import { SupabaseConnector } from '~/lib/powersync/SupabaseConnector';
-import { SupabaseStorageAdapter } from '~/lib/powersync/storage/SupabaseStorageAdapter';
+import { AppConfig } from "~/lib/powersync/AppConfig";
+import { PhotoAttachmentQueue } from "~/lib/powersync/PhotoAttachmentQueue";
+import { SupabaseConnector } from "~/lib/powersync/SupabaseConnector";
+import { SupabaseStorageAdapter } from "~/lib/powersync/storage/SupabaseStorageAdapter";
+import { OPSqliteOpenFactory } from "@powersync/op-sqlite";
 
 export class System {
   connector: SupabaseConnector;
@@ -17,13 +20,14 @@ export class System {
   storage: SupabaseStorageAdapter;
 
   constructor() {
+    const factory = new OPSqliteOpenFactory({
+      dbFilename: "sqlite.db",
+    });
 
-    const powerSyncDb = new PowerSyncDatabase({ database: {
-        // Filename for the SQLite database — it's important to only instantiate one instance per file.
-        dbFilename: 'powersync.db'
-        // Optional. Directory where the database file is located.'
-        // dbLocation: 'path/to/directory'
-      }, schema: AppSchema });
+    const powerSyncDb = new PowerSyncDatabase({
+      database: factory,
+      schema: AppSchema,
+    });
 
     this.connector = new SupabaseConnector();
     this.storage = this.connector.storage;
@@ -35,8 +39,11 @@ export class System {
         storage: this.storage,
         // Use this to handle download errors where you can use the attachment
         // and/or the exception to decide if you want to retry the download
-        onDownloadError: async (attachment: AttachmentRecord, exception: any) => {
-          if (exception.toString() === 'StorageApiError: Object not found') {
+        onDownloadError: async (
+          attachment: AttachmentRecord,
+          exception: any,
+        ) => {
+          if (exception.toString() === "StorageApiError: Object not found") {
             return { retry: false };
           }
 
