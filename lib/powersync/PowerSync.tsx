@@ -11,7 +11,6 @@ import { AppConfig } from "~/lib/powersync/AppConfig";
 import { PhotoAttachmentQueue } from "~/lib/powersync/PhotoAttachmentQueue";
 import { SupabaseConnector } from "~/lib/powersync/SupabaseConnector";
 import { SupabaseStorageAdapter } from "~/lib/powersync/storage/SupabaseStorageAdapter";
-import { OPSqliteOpenFactory } from "@powersync/op-sqlite";
 
 export class System {
   connector: SupabaseConnector;
@@ -20,13 +19,15 @@ export class System {
   storage: SupabaseStorageAdapter;
 
   constructor() {
-    const factory = new OPSqliteOpenFactory({
-      dbFilename: "sqlite.db",
-    });
-
     const powerSyncDb = new PowerSyncDatabase({
-      database: factory,
+      // The schema you defined in the previous step
       schema: AppSchema,
+      database: {
+        // Filename for the SQLite database — it's important to only instantiate one instance per file.
+        dbFilename: "powersync.db",
+        // Optional. Directory where the database file is located.'
+        // dbLocation: 'path/to/directory'
+      },
     });
 
     this.connector = new SupabaseConnector();
