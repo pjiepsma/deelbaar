@@ -1,24 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Session } from '@supabase/supabase-js';
-import dayjs from 'dayjs';
-import Avatar from '~/components/widget/AvatarWidget';
-import { useAuth } from '~/lib/AuthProvider';
-import { useSystem } from '~/lib/powersync/PowerSync';
-import BirthdateInput from '~/components/BirthDateInput';
-import { Picker } from '@react-native-picker/picker';
+import React, { useEffect, useState } from "react";
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Session } from "@supabase/supabase-js";
+import Avatar from "~/components/widget/AvatarWidget";
+import { useAuth } from "~/lib/AuthProvider";
+import { useSystem } from "~/lib/powersync/PowerSync";
+import BirthdateInput from "~/components/BirthDateInput";
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState(session?.user?.email || '');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState(session?.user?.email || "");
   const [birthdate, setBirthdate] = useState<Date>(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [gender, setGender] = useState("I'd prefer not to say");
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState("");
   const { connector } = useSystem();
   const { signOut } = useAuth();
-  const [date, setDate] = useState(dayjs());
   useEffect(() => {
     if (session) getProfile();
   }, [session]);
@@ -26,12 +30,12 @@ export default function Account({ session }: { session: Session }) {
   async function getProfile() {
     try {
       setLoading(true);
-      if (!session?.user) throw new Error('No user on the session!');
+      if (!session?.user) throw new Error("No user on the session!");
 
       const { data, error, status } = await connector.client
-        .from('profiles')
+        .from("profiles")
         .select(`name, birthdate, gender, avatar_url`)
-        .eq('id', session?.user.id)
+        .eq("id", session?.user.id)
         .single();
       if (error && status !== 406) {
         throw error;
@@ -65,7 +69,7 @@ export default function Account({ session }: { session: Session }) {
   }) {
     try {
       setLoading(true);
-      if (!session?.user) throw new Error('No user on the session!');
+      if (!session?.user) throw new Error("No user on the session!");
 
       const updates = {
         id: session?.user.id,
@@ -76,7 +80,7 @@ export default function Account({ session }: { session: Session }) {
         updated_at: new Date(),
       };
 
-      const { error } = await connector.client.from('profiles').upsert(updates);
+      const { error } = await connector.client.from("profiles").upsert(updates);
 
       if (error) {
         throw error;
@@ -127,7 +131,11 @@ export default function Account({ session }: { session: Session }) {
       {/*  </Picker>*/}
       {/*</View>*/}
       <View style={styles.verticallySpaced}>
-        <TouchableOpacity disabled={loading} onPress={() => signOut()} style={styles.link}>
+        <TouchableOpacity
+          disabled={loading}
+          onPress={() => signOut()}
+          style={styles.link}
+        >
           <Text style={styles.linkText}>Sign Out</Text>
         </TouchableOpacity>
       </View>
@@ -137,12 +145,12 @@ export default function Account({ session }: { session: Session }) {
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   avatarContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   verticallySpaced: {
@@ -150,36 +158,36 @@ const styles = StyleSheet.create({
   },
   inputField: {
     height: 40,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#f9f9f9",
   },
   datePicker: {
     height: 40,
-    justifyContent: 'center',
-    borderColor: '#ccc',
+    justifyContent: "center",
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#f9f9f9",
   },
   datePickerText: {
-    color: '#000',
+    color: "#000",
   },
   picker: {
     height: 40,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#f9f9f9",
   },
   link: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   linkText: {
-    color: '#007BFF',
-    textDecorationLine: 'underline',
+    color: "#007BFF",
+    textDecorationLine: "underline",
   },
 });
