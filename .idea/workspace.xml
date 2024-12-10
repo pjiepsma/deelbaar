@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8cc25b81-8b88-4801-8bc3-e345db1ccbe0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/android-preview-build.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/android-preview-build.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.yarnrc.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.yarnrc.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,7 +135,7 @@
       <workItem from="1733759524979" duration="5795000" />
       <workItem from="1733774998061" duration="5629000" />
       <workItem from="1733820399678" duration="11469000" />
-      <workItem from="1733840404359" duration="10313000" />
+      <workItem from="1733840404359" duration="10546000" />
     </task>
     <servers />
   </component>
