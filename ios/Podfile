@@ -43,9 +43,6 @@ target 'Deelbaar' do
     :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] != 'false',
   )
 
-  # Explicitly prevent expo-sqlite or sqlite3 dependencies from being added
-  # pod 'expo-sqlite', :path => '../node_modules/expo-sqlite', :inhibit_warnings => true
-
   # Pre-install hook to set build type for react-native-quick-sqlite
   pre_install do |installer|
     installer.pod_targets.each do |pod|
