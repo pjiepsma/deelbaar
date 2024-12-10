@@ -13,6 +13,7 @@ import { SupabaseConnector } from "~/lib/powersync/SupabaseConnector";
 import { SupabaseStorageAdapter } from "~/lib/powersync/storage/SupabaseStorageAdapter";
 
 export class System {
+  kvStorage: KVStorage;
   connector: SupabaseConnector;
   powersync: AbstractPowerSyncDatabase;
   attachmentQueue: PhotoAttachmentQueue | undefined = undefined;
@@ -29,8 +30,9 @@ export class System {
         // dbLocation: 'path/to/directory'
       },
     });
+    this.kvStorage = new KVStorage();
 
-    this.connector = new SupabaseConnector();
+    this.connector = new SupabaseConnector(this);
     this.storage = this.connector.storage;
     this.powersync = powerSyncDb;
     // this.db = wrapPowerSyncWithKysely(this.powersync);

@@ -4,22 +4,12 @@ import {
   PowerSyncBackendConnector,
   UpdateType,
 } from '@powersync/react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import 'react-native-url-polyfill/auto';
 import { AppState } from 'react-native';
 
 import { AppConfig } from '~/lib/powersync/AppConfig';
 import { SupabaseStorageAdapter } from '~/lib/powersync/storage/SupabaseStorageAdapter';
-
-export const supabase = createClient(AppConfig.SUPABASE_URL, AppConfig.SUPABASE_ANON_KEY, {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-});
 
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {
@@ -29,14 +19,32 @@ AppState.addEventListener('change', (state) => {
   }
 });
 
-const FATAL_RESPONSE_CODES = [new RegExp('^22...$'), new RegExp('^23...$'), new RegExp('^42501$')];
+/// Postgres Response codes that we cannot recover from by retrying.
+const FATAL_RESPONSE_CODES = [
+  // Class 22 — Data Exception
+  // Examples include data type mismatch.
+  new RegExp('^22...$'),
+  // Class 23 — Integrity Constraint Violation.
+  // Examples include NOT NULL, FOREIGN KEY and UNIQUE violations.
+  new RegExp('^23...$'),
+  // INSUFFICIENT PRIVILEGE - typically a row-level security violation
+  new RegExp('^42501$')
+];
 
 export class SupabaseConnector implements PowerSyncBackendConnector {
   client: SupabaseClient;
   storage: SupabaseStorageAdapter;
 
-  constructor() {
-    this.client = supabase;
+  constructor(protected system: System) {
+    this.client = createClient(AppConfig.SUPABASE_URL, AppConfig.SUPABASE_ANON_KEY, {
+      auth: {
+        storage: this.system.kvStorage,
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: false,
+      },
+    });
+    ;
     this.storage = new SupabaseStorageAdapter({ client: this.client });
   }
 
