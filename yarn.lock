@@ -4701,6 +4701,7 @@ __metadata:
     expo-crypto: "npm:~13.0.2"
     expo-file-system: "npm:^17.0.1"
     expo-linking: "npm:~6.3.1"
+    expo-location: "npm:~18.0.1"
     expo-router: "npm:3.5.23"
     expo-secure-store: "npm:~13.0.1"
     expo-splash-screen: "npm:~0.27.6"
@@ -5315,6 +5316,15 @@ __metadata:
     expo-constants: "npm:~16.0.0"
     invariant: "npm:^2.2.4"
   checksum: 10c0/a6550cacc3117dde92fe9758c3b97089dae8ce2d90a2d6dd4441571991c4c7e139beb9d5648f04eef2fccc52f00f1631f36717bcd070c62413c013a30ae7aa97
+  languageName: node
+  linkType: hard
+
+"expo-location@npm:~18.0.1":
+  version: 18.0.3
+  resolution: "expo-location@npm:18.0.3"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/ef15243f381469005773d7adc3eb0bc95b7f124ea8c4215258f77ada899fad9741381a729767f16983c084f7c362d0ab88ef1c1ecdfcdaaf560f0aa33c442bae
   languageName: node
   linkType: hard
 

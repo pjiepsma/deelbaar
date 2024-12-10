@@ -3,16 +3,31 @@ import {
   CrudEntry,
   PowerSyncBackendConnector,
   UpdateType,
-} from '@powersync/react-native';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import 'react-native-url-polyfill/auto';
-import { AppState } from 'react-native';
+} from "@powersync/react-native";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import "react-native-url-polyfill/auto";
+import { AppState } from "react-native";
 
-import { AppConfig } from '~/lib/supabase/AppConfig';
-import { SupabaseStorageAdapter } from '~/lib/storage/SupabaseStorageAdapter';
+import { AppConfig } from "~/lib/supabase/AppConfig";
+import { SupabaseStorageAdapter } from "~/lib/storage/SupabaseStorageAdapter";
+import { System } from "~/lib/powersync/System";
+import { KVStorage } from "~/lib/storage/KVStorage";
 
-AppState.addEventListener('change', (state) => {
-  if (state === 'active') {
+export const supabase = createClient(
+  AppConfig.SUPABASE_URL,
+  AppConfig.SUPABASE_ANON_KEY,
+  {
+    auth: {
+      storage: new KVStorage(),
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: false,
+    },
+  },
+);
+
+AppState.addEventListener("change", (state) => {
+  if (state === "active") {
     supabase.auth.startAutoRefresh();
   } else {
     supabase.auth.stopAutoRefresh();
@@ -23,28 +38,20 @@ AppState.addEventListener('change', (state) => {
 const FATAL_RESPONSE_CODES = [
   // Class 22 — Data Exception
   // Examples include data type mismatch.
-  new RegExp('^22...$'),
+  new RegExp("^22...$"),
   // Class 23 — Integrity Constraint Violation.
   // Examples include NOT NULL, FOREIGN KEY and UNIQUE violations.
-  new RegExp('^23...$'),
+  new RegExp("^23...$"),
   // INSUFFICIENT PRIVILEGE - typically a row-level security violation
-  new RegExp('^42501$')
+  new RegExp("^42501$"),
 ];
 
 export class SupabaseConnector implements PowerSyncBackendConnector {
   client: SupabaseClient;
   storage: SupabaseStorageAdapter;
 
-  constructor(protected system: System) {
-    this.client = createClient(AppConfig.SUPABASE_URL, AppConfig.SUPABASE_ANON_KEY, {
-      auth: {
-        storage: this.system.kvStorage,
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: false,
-      },
-    });
-    ;
+  constructor() {
+    this.client = supabase;
     this.storage = new SupabaseStorageAdapter({ client: this.client });
   }
 
@@ -81,8 +88,10 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
     return {
       client: this.client,
       endpoint: AppConfig.POWERSYNC_URL,
-      token: session.access_token ?? '',
-      expiresAt: session.expires_at ? new Date(session.expires_at * 1000) : undefined,
+      token: session.access_token ?? "",
+      expiresAt: session.expires_at
+        ? new Date(session.expires_at * 1000)
+        : undefined,
       userID: session.user.id,
     };
   }
@@ -109,22 +118,27 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
             result = await table.upsert(record);
             break;
           case UpdateType.PATCH:
-            result = await table.update(op.opData).eq('id', op.id);
+            result = await table.update(op.opData).eq("id", op.id);
             break;
           case UpdateType.DELETE:
-            result = await table.delete().eq('id', op.id);
+            result = await table.delete().eq("id", op.id);
             break;
         }
 
         if (result.error) {
-          throw new Error(`Could not ${op.op} data to Supabase error: ${JSON.stringify(result)}`);
+          throw new Error(
+            `Could not ${op.op} data to Supabase error: ${JSON.stringify(result)}`,
+          );
         }
       }
 
       await transaction.complete();
     } catch (ex: any) {
       console.debug(ex);
-      if (typeof ex.code == 'string' && FATAL_RESPONSE_CODES.some((regex) => regex.test(ex.code))) {
+      if (
+        typeof ex.code == "string" &&
+        FATAL_RESPONSE_CODES.some((regex) => regex.test(ex.code))
+      ) {
         /**
          * Instead of blocking the queue with these errors,
          * discard the (rest of the) transaction.

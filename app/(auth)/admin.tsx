@@ -1,6 +1,6 @@
-import * as Location from 'expo-location';
-import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import * as Location from "expo-location";
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Button,
@@ -10,15 +10,15 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
+} from "react-native";
+import { v4 as uuidv4 } from "uuid";
 
-import geo from '~/assets/data/minibieb-gelderland-points.json';
-import Gelderland from '~/assets/data/minibieb-gelderland.json';
-import Colors from '~/constants/Colors';
-import { useAuth } from '~/lib/AuthProvider';
-import { useSystem } from '~/lib/powersync/System';
-import { supabase } from '~/lib/supabase/SupabaseConnector';
+import geo from "~/assets/data/minibieb-gelderland-points.json";
+import Gelderland from "~/assets/data/minibieb-gelderland.json";
+import Colors from "~/constants/Colors";
+import { useAuth } from "~/lib/AuthProvider";
+import { useSystem } from "~/lib/powersync/System";
+import { supabase } from "~/lib/supabase/SupabaseConnector";
 
 const BATCH_SIZE = 10; // Set your batch size
 const RETRY_LIMIT = 3; // Maximum number of retries
@@ -38,13 +38,15 @@ export default function Admin() {
   const [listings, setListings] = useState<TransformedListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentBatch, setCurrentBatch] = useState(10);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [load, setLoad] = useState(false); // Loading state
 
-  const getAllLocations = async (): Promise<{ latitude: number; longitude: number }[]> => {
-    const { data, error } = await supabase.rpc('get_all_locations');
+  const getAllLocations = async (): Promise<
+    { latitude: number; longitude: number }[]
+  > => {
+    const { data, error } = await supabase.rpc("get_all_locations");
     if (error) {
-      console.error('Error fetching locations:', error);
+      console.error("Error fetching locations:", error);
       return [];
     }
     return data;
@@ -53,8 +55,8 @@ export default function Admin() {
   // Function to convert geometry to location
   const convertGeometryToLocation = async (address: string, city: string) => {
     const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      console.log('Location permission not granted');
+    if (status !== "granted") {
+      console.log("Location permission not granted");
       return null;
     }
 
@@ -63,7 +65,7 @@ export default function Admin() {
       const { latitude, longitude } = geocoded[0];
       return { latitude, longitude };
     } else {
-      console.log('No geocoding results found.');
+      console.log("No geocoding results found.");
       return null;
     }
   };
@@ -71,7 +73,10 @@ export default function Admin() {
   const convertCoordinatesToAddress = async (coords) => {
     const results = await Promise.all(
       coords.map(async ({ latitude, longitude }) => {
-        const [result] = await Location.reverseGeocodeAsync({ latitude, longitude });
+        const [result] = await Location.reverseGeocodeAsync({
+          latitude,
+          longitude,
+        });
         if (result) {
           return {
             address: result.street || null,
@@ -79,7 +84,7 @@ export default function Admin() {
           };
         }
         return null;
-      })
+      }),
     );
 
     return results.filter((item) => item !== null);
@@ -88,13 +93,15 @@ export default function Admin() {
   // Fetch and transform geometries to listings
   const fetchListings = async () => {
     const geometries = [
-      ...new Map(Gelderland.geometries.map((item) => [item.properties.Adres, item])).values(),
+      ...new Map(
+        Gelderland.geometries.map((item) => [item.properties.Adres, item]),
+      ).values(),
     ];
 
     const transformedListings: TransformedListing[] = geometries.map((item) => {
       const { Name, Adres, Bijzonderheid, Plaatsnaam } = item.properties;
       const match = Plaatsnaam?.match(/^\d{4} [A-Z]{2} (.+)$/);
-      const city = match ? match[1] : '';
+      const city = match ? match[1] : "";
 
       return {
         name: Name || null,
@@ -120,12 +127,12 @@ export default function Admin() {
     address: string,
     description: string | null,
     city: string,
-    category: string
+    category: string,
   ) => {
     if (user) {
       const coordinates = await convertGeometryToLocation(address, city); // Convert geometry to location
       if (!coordinates) {
-        console.error('Could not get coordinates from address and city');
+        console.error("Could not get coordinates from address and city");
         return;
       }
 
@@ -151,7 +158,7 @@ export default function Admin() {
       //   throw new Error('Could not create list');
       // }
     } else {
-      router.replace('/(modals)/login');
+      router.replace("/(modals)/login");
     }
   };
 
@@ -166,8 +173,12 @@ export default function Admin() {
 
     while (attempt < RETRY_LIMIT && !success) {
       try {
-        console.log(`Inserting batch ${batchNumber + 1}, attempt ${attempt + 1}`);
-        const { data, error: insertError } = await supabase.from('listings').insert(listings);
+        console.log(
+          `Inserting batch ${batchNumber + 1}, attempt ${attempt + 1}`,
+        );
+        const { data, error: insertError } = await supabase
+          .from("listings")
+          .insert(listings);
 
         if (insertError) {
           throw insertError; // Throw to catch and retry
@@ -180,7 +191,7 @@ export default function Admin() {
         error = err;
         console.error(
           `Error inserting batch ${batchNumber + 1} on attempt ${attempt + 1}:`,
-          err.message
+          err.message,
         );
         setMessage(`Error inserting batch ${batchNumber + 1}: ${err.message}`);
         attempt += 1;
@@ -193,10 +204,10 @@ export default function Admin() {
     if (!success) {
       console.error(
         `Failed to insert batch ${batchNumber + 1} after ${RETRY_LIMIT} attempts`,
-        error.message
+        error.message,
       );
       setMessage(
-        `Failed to insert batch ${batchNumber + 1} after ${RETRY_LIMIT} attempts: ${error.message}`
+        `Failed to insert batch ${batchNumber + 1} after ${RETRY_LIMIT} attempts: ${error.message}`,
       );
     }
 
@@ -227,12 +238,14 @@ export default function Admin() {
       const success = await insertBatchWithRetries(listings, i);
 
       if (!success) {
-        console.error(`Stopping insertion process due to repeated failure in batch ${i + 1}`);
+        console.error(
+          `Stopping insertion process due to repeated failure in batch ${i + 1}`,
+        );
         break; // Stop if a batch fails after retries
       }
     }
 
-    setMessage('Batch insertion process completed.');
+    setMessage("Batch insertion process completed.");
     setLoading(false); // Stop loading after all batches are inserted
   };
 
@@ -247,7 +260,8 @@ export default function Admin() {
         onPress={onPress}
         style={styles.addButton}
         accessible
-        accessibilityLabel={`Add ${properties.name}`}>
+        accessibilityLabel={`Add ${properties.name}`}
+      >
         <Text>Add</Text>
       </TouchableOpacity>
     </View>
@@ -293,17 +307,17 @@ const styles = StyleSheet.create({
   },
   item: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     borderBottomWidth: 1,
     borderColor: Colors.grey,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   addButton: {
     width: 30,
     backgroundColor: Colors.primary,
     paddingVertical: 12,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 8,
   },
 });

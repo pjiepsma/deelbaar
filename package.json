@@ -30,6 +30,7 @@
     "expo-crypto": "~13.0.2",
     "expo-file-system": "^17.0.1",
     "expo-linking": "~6.3.1",
+    "expo-location": "~18.0.1",
     "expo-router": "3.5.23",
     "expo-secure-store": "~13.0.1",
     "expo-splash-screen": "~0.27.6",
@@ -60,5 +61,6 @@
     "babel-preset-expo": "^11.0.5",
     "prettier": "^3.2.5",
     "typescript": "^5.3.3"
-  }
+  },
+  "packageManager": "yarn@4.5.3+sha512.3003a14012e2987072d244c720506549c1aab73ee728208f1b2580a9fd67b92d61ba6b08fe93f6dce68fd771e3af1e59a0afa28dd242dd0940d73b95fedd4e90"
 }
