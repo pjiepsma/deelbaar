@@ -21,18 +21,7 @@ export class System {
   storage: SupabaseStorageAdapter;
 
   constructor() {
-    const powerSyncDb = new PowerSyncDatabase({
-      // The schema you defined in the previous step
-      schema: AppSchema,
-      database: {
-        // Filename for the SQLite database — it's important to only instantiate one instance per file.
-        dbFilename: "sqlite.db",
-        // Optional. Directory where the database file is located.'
-        // dbLocation: 'path/to/directory'
-      },
-    });
     this.kvStorage = new KVStorage();
-
     this.connector = new SupabaseConnector(this);
     this.storage = this.connector.storage;
     this.powersync = new PowerSyncDatabase({
