@@ -69,17 +69,6 @@ jobs:
       - name: 📦 Install dependencies
         run: yarn install
 
-      # Step 7: Prebuild the app (generates native projects)
-      - name: 🏗 Prebuild the project
-        run: |
-          expo prebuild --platform=${{ github.event.inputs.platform }}
-
-      # Step 8: Install pods (only for iOS)
-      - name: Install CocoaPods
-        if: ${{ github.event.inputs.platform == 'ios' }}
-        run: |
-          cd ios && pod install
-
       # Step 9: Build the app
       - name: 👷 Build app
         run: |
