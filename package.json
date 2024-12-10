@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@azure/core-asynciterator-polyfill": "^1.0.2",
-    "@expo/fingerprint": "^0.11.3",
     "@expo/vector-icons": "^14.0.3",
     "@gorhom/bottom-sheet": "5.0.6",
     "@journeyapps/react-native-quick-sqlite": "^2.2.0",
@@ -68,5 +67,5 @@
     "babel-preset-expo": "^11.0.5",
     "prettier": "^3.2.5",
     "typescript": "^5.3.3"
-  }}
-
+  }
+}

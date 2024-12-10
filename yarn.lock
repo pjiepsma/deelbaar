@@ -1874,26 +1874,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/fingerprint@npm:^0.11.3":
-  version: 0.11.3
-  resolution: "@expo/fingerprint@npm:0.11.3"
-  dependencies:
-    "@expo/spawn-async": "npm:^1.7.2"
-    arg: "npm:^5.0.2"
-    chalk: "npm:^4.1.2"
-    debug: "npm:^4.3.4"
-    find-up: "npm:^5.0.0"
-    getenv: "npm:^1.0.0"
-    minimatch: "npm:^3.0.4"
-    p-limit: "npm:^3.1.0"
-    resolve-from: "npm:^5.0.0"
-    semver: "npm:^7.6.0"
-  bin:
-    fingerprint: bin/cli.js
-  checksum: 10c0/a628f8f70ff654f18a2519c2c160f02f566f22682832f847609d192d2fa941116c123dd47f342a0c5fe5462b5446f0e199ea35606546b1b5ba01877e9804ea86
-  languageName: node
-  linkType: hard
-
 "@expo/image-utils@npm:^0.5.0":
   version: 0.5.1
   resolution: "@expo/image-utils@npm:0.5.1"
@@ -3756,7 +3736,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"arg@npm:5.0.2, arg@npm:^5.0.2":
+"arg@npm:5.0.2":
   version: 5.0.2
   resolution: "arg@npm:5.0.2"
   checksum: 10c0/ccaf86f4e05d342af6666c569f844bec426595c567d32a8289715087825c2ca7edd8a3d204e4d2fb2aa4602e09a57d0c13ea8c9eea75aac3dbb4af5514e6800e
@@ -4827,7 +4807,6 @@ __metadata:
     "@babel/core": "npm:^7.24.5"
     "@babel/plugin-transform-async-generator-functions": "npm:^7.23.9"
     "@babel/preset-env": "npm:^7.23.9"
-    "@expo/fingerprint": "npm:^0.11.3"
     "@expo/vector-icons": "npm:^14.0.3"
     "@gorhom/bottom-sheet": "npm:5.0.6"
     "@journeyapps/react-native-quick-sqlite": "npm:^2.2.0"
@@ -8584,7 +8563,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-limit@npm:^3.0.2, p-limit@npm:^3.1.0":
+"p-limit@npm:^3.0.2":
   version: 3.1.0
   resolution: "p-limit@npm:3.1.0"
   dependencies:
