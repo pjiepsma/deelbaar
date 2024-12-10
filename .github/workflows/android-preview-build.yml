@@ -2,19 +2,6 @@ name: Android App APK Build
 
 on:
   workflow_dispatch:
-    inputs:
-      profile:
-        description: 'Build profile to use'
-        required: true
-        default: 'development'
-      should_submit:
-        description: 'Whether to submit the build'
-        required: true
-        default: 'false'
-      os:
-        description: 'OS to run on'
-        required: true
-        default: 'ubuntu-latest'
 
 jobs:
   build:
