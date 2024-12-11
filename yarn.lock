@@ -2193,13 +2193,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@journeyapps/react-native-quick-sqlite@npm:^2.0.0":
-  version: 2.2.0
-  resolution: "@journeyapps/react-native-quick-sqlite@npm:2.2.0"
+"@journeyapps/react-native-quick-sqlite@npm:2.1.2":
+  version: 2.1.2
+  resolution: "@journeyapps/react-native-quick-sqlite@npm:2.1.2"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/569a9abde3202dbbd3c69f6e5163866d251884a367875ac71a3ab2a88050308de74755a5c697e47b1f5a096ab0099afb72764cad285f64cd8eb6354afcae9097
+  checksum: 10c0/930ea17398478dc67f0580f3668041a70e37749ff9e628a424a85cb7f0d60267f67e3f4f4cadfd122d681f4d70ef01ce866473e3eea10a247733a067366b7862
   languageName: node
   linkType: hard
 
@@ -2329,20 +2329,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@powersync/common@npm:1.13.1":
-  version: 1.13.1
-  resolution: "@powersync/common@npm:1.13.1"
+"@powersync/common@npm:1.21.0":
+  version: 1.21.0
+  resolution: "@powersync/common@npm:1.21.0"
   dependencies:
-    async-mutex: "npm:^0.4.0"
-    buffer: "npm:^6.0.3"
-    can-ndjson-stream: "npm:^1.0.2"
-    cross-fetch: "npm:^4.0.0"
-    event-iterator: "npm:^2.0.0"
     js-logger: "npm:^1.6.1"
-    lodash: "npm:^4.17.21"
-    rsocket-core: "npm:1.0.0-alpha.3"
-    rsocket-websocket-client: "npm:1.0.0-alpha.3"
-  checksum: 10c0/de34f4e27a0f059bb31174850fe38a96956ba38bb39898f7bb68c96ec36982e11aefb46cbb4ef8d285f209395be6a743a57004e6a825a83baebf429b0514bd85
+  checksum: 10c0/1da57347ae4289f934c822e5d86e7672e0a33554e7457c2558eaf6059e6243eb75e5ab79b58946b8f46162bd3e1d5778bf45dafef262157d65b2bc70f1699fa3
   languageName: node
   linkType: hard
 
@@ -2355,31 +2347,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@powersync/react-native@npm:1.16.1":
-  version: 1.16.1
-  resolution: "@powersync/react-native@npm:1.16.1"
+"@powersync/react-native@npm:1.15.1":
+  version: 1.15.1
+  resolution: "@powersync/react-native@npm:1.15.1"
   dependencies:
-    "@powersync/common": "npm:1.22.0"
+    "@powersync/common": "npm:1.21.0"
     "@powersync/react": "npm:1.5.1"
   peerDependencies:
-    "@journeyapps/react-native-quick-sqlite": ^2.2.0
-    "@powersync/common": ^1.22.0
+    "@journeyapps/react-native-quick-sqlite": ^2.1.2
+    "@powersync/common": ^1.21.0
     react: "*"
     react-native: "*"
   peerDependenciesMeta:
     "@journeyapps/react-native-quick-sqlite":
       optional: true
-  checksum: 10c0/671be97266a2bbfec15715350865f1e872397ee1cb51a712fbf576e4683ceccb11d525920c61bbb334b73c1a32b11441c1f4d440edc4e5c087d6ec0ea4f2110b
-  languageName: node
-  linkType: hard
-
-"@powersync/react@npm:1.3.7":
-  version: 1.3.7
-  resolution: "@powersync/react@npm:1.3.7"
-  peerDependencies:
-    "@powersync/common": ^1.13.1
-    react: "*"
-  checksum: 10c0/109f9bc44d89c84d0c9e03173263618ee7ff68af43c462ff594b3f46fab79d9e5b491e24e215c93db83588e8b601372b4c34f9dadc1ad8dc6cd2cef158306ecf
+  checksum: 10c0/e421f3d377b28a59b3f02416c8383eebb5127b27af5d46baeb931ea220b772e0edf748446d116d955cd5a5fe0db379f9785bc81534d6991a29a5677ac32d57dc
   languageName: node
   linkType: hard
 
@@ -3226,20 +3208,20 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 22.10.1
-  resolution: "@types/node@npm:22.10.1"
+  version: 22.10.2
+  resolution: "@types/node@npm:22.10.2"
   dependencies:
     undici-types: "npm:~6.20.0"
-  checksum: 10c0/0fbb6d29fa35d807f0223a4db709c598ac08d66820240a2cd6a8a69b8f0bc921d65b339d850a666b43b4e779f967e6ed6cf6f0fca3575e08241e6b900364c234
+  checksum: 10c0/2c7b71a040f1ef5320938eca8ebc946e6905caa9bbf3d5665d9b3774a8d15ea9fab1582b849a6d28c7fc80756a62c5666bc66b69f42f4d5dafd1ccb193cdb4ac
   languageName: node
   linkType: hard
 
 "@types/node@npm:^18.0.0":
-  version: 18.19.67
-  resolution: "@types/node@npm:18.19.67"
+  version: 18.19.68
+  resolution: "@types/node@npm:18.19.68"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10c0/72b06802ac291c2e710bcf527b040f5490e1f85f26fdedad417e13ce3ed3aeb67e1bf3eef0ba5f581986bf361dcdc5f2d1229a9e284bf3dbd85db5c595e67bc6
+  checksum: 10c0/8c7f01be218c6e3c1e643173662af27e9a2b568f36c0fe83e4295cf7674fe2a0abb4a1c5d7c7abd3345b9114581387dfd3f14b6d0338daebdce9273cd7ba59ab
   languageName: node
   linkType: hard
 
@@ -3721,15 +3703,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async-mutex@npm:^0.4.0":
-  version: 0.4.1
-  resolution: "async-mutex@npm:0.4.1"
-  dependencies:
-    tslib: "npm:^2.4.0"
-  checksum: 10c0/3c412736c0bc4a9a2cfd948276a8caab8686aa615866a5bd20986e616f8945320acb310058a17afa1b31b8de6f634a78b7ec2217a33d7559b38f68bb85a95854
-  languageName: node
-  linkType: hard
-
 "asynckit@npm:^0.4.0":
   version: 0.4.0
   resolution: "asynckit@npm:0.4.0"
@@ -4014,16 +3987,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buffer@npm:^6.0.3":
-  version: 6.0.3
-  resolution: "buffer@npm:6.0.3"
-  dependencies:
-    base64-js: "npm:^1.3.1"
-    ieee754: "npm:^1.2.1"
-  checksum: 10c0/2a905fbbcde73cc5d8bd18d1caa23715d5f83a5935867c2329f0ac06104204ba7947be098fe1317fbd8830e26090ff8e764f08cd14fefc977bb248c3487bcbd0
-  languageName: node
-  linkType: hard
-
 "builtins@npm:^1.0.3":
   version: 1.0.3
   resolution: "builtins@npm:1.0.3"
@@ -4136,22 +4099,6 @@ __metadata:
   version: 6.3.0
   resolution: "camelcase@npm:6.3.0"
   checksum: 10c0/0d701658219bd3116d12da3eab31acddb3f9440790c0792e0d398f0a520a6a4058018e546862b6fba89d7ae990efaeb97da71e1913e9ebf5a8b5621a3d55c710
-  languageName: node
-  linkType: hard
-
-"can-namespace@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "can-namespace@npm:1.0.0"
-  checksum: 10c0/416dd09332a66df495c5b1bde132beab9fd76adab872edaa97605542012817d5b28586ed30d729822cc89da5adfa614adb65471abd96dad1ebb34fea88e6c72f
-  languageName: node
-  linkType: hard
-
-"can-ndjson-stream@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "can-ndjson-stream@npm:1.0.2"
-  dependencies:
-    can-namespace: "npm:^1.0.0"
-  checksum: 10c0/adb036ab5f82ba2b1faa246d1800a4f7405afcd36f1a1df70fb6534973308e9d1f50da265664cbf2874a065b26aaf17ed8f4b65656dd9c5a16ae2a614fdd4575
   languageName: node
   linkType: hard
 
@@ -4550,15 +4497,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "cross-fetch@npm:4.0.0"
-  dependencies:
-    node-fetch: "npm:^2.6.12"
-  checksum: 10c0/386727dc4c6b044746086aced959ff21101abb85c43df5e1d151547ccb6f338f86dec3f28b9dbddfa8ff5b9ec8662ed2263ad4607a93b2dc354fb7fe3bbb898a
-  languageName: node
-  linkType: hard
-
 "cross-spawn@npm:^6.0.0":
   version: 6.0.6
   resolution: "cross-spawn@npm:6.0.6"
@@ -4719,11 +4657,11 @@ __metadata:
     "@babel/preset-env": "npm:^7.23.9"
     "@expo/vector-icons": "npm:^14.0.3"
     "@gorhom/bottom-sheet": "npm:5.0.6"
-    "@journeyapps/react-native-quick-sqlite": "npm:^2.0.0"
+    "@journeyapps/react-native-quick-sqlite": "npm:2.1.2"
     "@powersync/attachments": "npm:2.0.12"
-    "@powersync/common": "npm:1.13.1"
-    "@powersync/react": "npm:1.3.7"
-    "@powersync/react-native": "npm:1.16.1"
+    "@powersync/common": "npm:1.22.0"
+    "@powersync/react": "npm:1.5.1"
+    "@powersync/react-native": "npm:1.15.1"
     "@supabase/supabase-js": "npm:~2.33.1"
     "@types/lodash": "npm:^4.14.202"
     "@types/react": "npm:~18.2.79"
@@ -5205,13 +5143,6 @@ __metadata:
   version: 1.8.1
   resolution: "etag@npm:1.8.1"
   checksum: 10c0/12be11ef62fb9817314d790089a0a49fae4e1b50594135dcb8076312b7d7e470884b5100d249b28c18581b7fd52f8b485689ffae22a11ed9ec17377a33a08f84
-  languageName: node
-  linkType: hard
-
-"event-iterator@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "event-iterator@npm:2.0.0"
-  checksum: 10c0/fc1ca17a003cc7c2489ab1448f6b7cb2c34924a82de6f8b2faf189af4bc66cd3469ecd9ccdac493233a74dee63df2a753238d60d80a8936b1756bd78863bfe74
   languageName: node
   linkType: hard
 
@@ -6355,7 +6286,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ieee754@npm:^1.1.13, ieee754@npm:^1.2.1":
+"ieee754@npm:^1.1.13":
   version: 1.2.1
   resolution: "ieee754@npm:1.2.1"
   checksum: 10c0/b0782ef5e0935b9f12883a2e2aa37baa75da6e66ce6515c168697b42160807d9330de9a32ec1ed73149aea02e0d822e572bca6f1e22bdcbd2149e13b050b17bb
@@ -9564,29 +9495,6 @@ __metadata:
   bin:
     rimraf: ./bin.js
   checksum: 10c0/f1e646f8c567795f2916aef7aadf685b543da6b9a53e482bb04b07472c7eef2b476045ba1e29f401c301c66b630b22b815ab31fdd60c5e1ae6566ff523debf45
-  languageName: node
-  linkType: hard
-
-"rsocket-core@npm:1.0.0-alpha.3":
-  version: 1.0.0-alpha.3
-  resolution: "rsocket-core@npm:1.0.0-alpha.3"
-  checksum: 10c0/c1fda4a34ed645c354d8ee67d6ab1721ed1a3761e05d02b805f09b51fb78dfe9e101018fac69beed6e0c81153a494e7714c22028b6f4b2e4bb3e675db28a51de
-  languageName: node
-  linkType: hard
-
-"rsocket-core@npm:^1.0.0-alpha.3":
-  version: 1.0.0-alpha-rxjs-adapter-optional-metadata.0
-  resolution: "rsocket-core@npm:1.0.0-alpha-rxjs-adapter-optional-metadata.0"
-  checksum: 10c0/956d88b0daf967f441bac9b652a4c369b318c67e3cd8960ba7f814bcb2aa51d9581d6f883e9ea6090f5e5e4d9b693be3856af722efcebd794f5964c8254622e5
-  languageName: node
-  linkType: hard
-
-"rsocket-websocket-client@npm:1.0.0-alpha.3":
-  version: 1.0.0-alpha.3
-  resolution: "rsocket-websocket-client@npm:1.0.0-alpha.3"
-  dependencies:
-    rsocket-core: "npm:^1.0.0-alpha.3"
-  checksum: 10c0/6de01c55fb01b9cdbc76764591aa6273b354e3239b0ad1d39418f3c2e54fc937e7be0c4511ef2f7fbcd8ff437e5b37d60abd74f549a0e397b06a0090cde8505d
   languageName: node
   linkType: hard
 
