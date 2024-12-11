@@ -2320,12 +2320,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@powersync/attachments@npm:2.0.12":
-  version: 2.0.12
-  resolution: "@powersync/attachments@npm:2.0.12"
+"@powersync/attachments@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "@powersync/attachments@npm:2.1.2"
   peerDependencies:
-    "@powersync/common": ^1.13.1
-  checksum: 10c0/1dafce5b0dba1b24878d726baa78d8c7df3f4f1404d779024688fbd3492042bb6690707caa6e2e113f284512cd5356cd93fe047ba666c4fc82367a791c4d78d1
+    "@powersync/common": ^1.18.1
+  checksum: 10c0/7a78fc330595f257490dff2083af0a2538982f64e4caf1c42a9ae6e378a3c55e41f26ddaeab735899ab0be75d1d03ea721398ee934b117982a3a28b27c62955e
   languageName: node
   linkType: hard
 
@@ -2335,15 +2335,6 @@ __metadata:
   dependencies:
     js-logger: "npm:^1.6.1"
   checksum: 10c0/1da57347ae4289f934c822e5d86e7672e0a33554e7457c2558eaf6059e6243eb75e5ab79b58946b8f46162bd3e1d5778bf45dafef262157d65b2bc70f1699fa3
-  languageName: node
-  linkType: hard
-
-"@powersync/common@npm:1.22.0":
-  version: 1.22.0
-  resolution: "@powersync/common@npm:1.22.0"
-  dependencies:
-    js-logger: "npm:^1.6.1"
-  checksum: 10c0/08bb4c7cc377dfe51d69029e9d9db93975974c2606bf34f11942c34c05af826b1c0f7664d594321be5ea06405afe447ae81492384b575e8716f209251b89bfc0
   languageName: node
   linkType: hard
 
@@ -4658,9 +4649,8 @@ __metadata:
     "@expo/vector-icons": "npm:^14.0.3"
     "@gorhom/bottom-sheet": "npm:5.0.6"
     "@journeyapps/react-native-quick-sqlite": "npm:2.1.2"
-    "@powersync/attachments": "npm:2.0.12"
-    "@powersync/common": "npm:1.22.0"
-    "@powersync/react": "npm:1.5.1"
+    "@powersync/attachments": "npm:^2.1.2"
+    "@powersync/common": "npm:1.21.0"
     "@powersync/react-native": "npm:1.15.1"
     "@supabase/supabase-js": "npm:~2.33.1"
     "@types/lodash": "npm:^4.14.202"
