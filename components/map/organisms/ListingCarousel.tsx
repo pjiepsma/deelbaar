@@ -10,6 +10,7 @@ import { useAuth } from '~/lib/AuthProvider';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
 import { StatusBar } from 'expo-status-bar';
+import { AddFavorite } from '~/lib/powersync/Queries';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -67,12 +68,12 @@ const ListingCarousel = ({ category, listing, listings, setListing }: Props) => 
   };
 
   const addFavorite = async (userId: string, listingId: string) => {
-    return await powersync.execute('AddFavorite', [userId, listingId]);
+    return await powersync.execute(AddFavorite, [userId, listingId]);
   };
 
   const handleAddFavorite = async (listingId: string) => {
     if (user?.id) {
-      await addFavorite(user.id, listingId);
+      const favorite = await addFavorite(user.id, listingId);
     }
   };
 
@@ -107,7 +108,6 @@ const ListingCarousel = ({ category, listing, listings, setListing }: Props) => 
       ref={bottomSheetRef}
       snapPoints={SNAPPOINTS}
       backgroundStyle={{ backgroundColor: '#f4f4e8' }}>
-      <StatusBar hidden />
       <View style={styles.container}>
         <View style={styles.handleContainer}>
           <Text style={styles.handleText}>

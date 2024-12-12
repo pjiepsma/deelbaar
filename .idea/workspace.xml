@@ -5,7 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8cc25b81-8b88-4801-8bc3-e345db1ccbe0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/android-preview-build.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/android-preview-build.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/picture/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/picture/[id].tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/review.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/review.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/map/molecules/ListingCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/molecules/ListingCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingCarousel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingCarousel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/review/organisms/ReviewsScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/review/organisms/ReviewsScreen.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/Queries.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/Queries.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,6 +49,7 @@
     "node.js.selected.package.standard": "",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "yarn",
+    "npm.start.executor": "Run",
     "prettierjs.PrettierConfiguration.Package": "D:\\Git\\deelbaar\\node_modules\\prettier",
     "ts.external.directory.path": "D:\\Git\\deelbaar\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
@@ -58,6 +66,23 @@
       <recent name="D:\Git\deelbaar\assets" />
       <recent name="D:\Git\deelbaar\hidden" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="start" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.start" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>

@@ -117,7 +117,6 @@ const TodoView: React.FC = () => {
         {todos.map((r) => {
           const record = { ...r, id: r.picture_id };
           const photoRecord = toAttachmentRecord(r);
-          console.log(photoRecord);
           return (
             <TodoItemWidget
               key={r.picture_id}

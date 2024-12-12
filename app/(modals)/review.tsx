@@ -73,7 +73,6 @@ const ReviewComponent: React.FC = () => {
     result: ImagePickerResult
   ) => {
     const { id: photoID } = await attachmentQueue!.savePhoto(result.assets![0].base64!);
-    console.log('Insert picture: ', userID, listingID, photoID, reviewID);
     const res = await powersync.execute(InsertPicture, [userID, listingID, photoID, reviewID]);
     const resultRecord = res.rows?.item(0);
 

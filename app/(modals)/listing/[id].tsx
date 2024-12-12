@@ -22,7 +22,12 @@ import ReviewsScreen from '~/components/review/organisms/ReviewsScreen';
 import Colors from '~/constants/Colors';
 import { useAuth } from '~/lib/AuthProvider';
 import { system, useSystem } from '~/lib/powersync/PowerSync';
-import { SelectListing, SelectPictures, SelectReviews } from '~/lib/powersync/Queries';
+import {
+  SelectCompleteReviews,
+  SelectListing,
+  SelectPictures,
+  SelectReviews,
+} from '~/lib/powersync/Queries';
 import { toAttachmentRecord } from '~/lib/util/util';
 
 const { width } = Dimensions.get('window');
@@ -76,7 +81,7 @@ const DetailsPage = () => {
       const [listingResult, imagesResult, reviewsResult] = await Promise.all([
         powersync.execute(SelectListing, [id]),
         powersync.execute(SelectPictures, [id]),
-        powersync.execute(SelectReviews, [id]),
+        powersync.execute(SelectCompleteReviews, [id]),
       ]);
 
       const newListing = listingResult.rows?._array[0] || null;
@@ -92,7 +97,6 @@ const DetailsPage = () => {
         images: newImages,
         reviews: newReviews,
       });
-      console.log(listing);
     } catch (error) {
       console.error('Error fetching listing data:', error);
     }
@@ -146,7 +150,7 @@ const DetailsPage = () => {
   const carouselRef = useRef<ICarouselInstance>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
-  const CarouselItem = React.memo(({ picture }: { picture: any }) => {
+  const CarouselItem = ({ picture }: { picture: any }) => {
     const photoAttachment = toAttachmentRecord(picture);
     const uri = system.attachmentQueue?.getLocalUri(photoAttachment?.local_uri!);
     return (
@@ -159,7 +163,7 @@ const DetailsPage = () => {
         />
       </View>
     );
-  });
+  };
 
   return (
     <View style={styles.container}>

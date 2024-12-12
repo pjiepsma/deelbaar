@@ -1,6 +1,7 @@
 import { ATTACHMENT_TABLE } from '@powersync/attachments';
 
 import {
+  FAVORITES_TABLE,
   LISTING_TABLE,
   PICTURE_TABLE,
   PROFILES_TABLE,
@@ -31,12 +32,6 @@ export const SelectListing = `
     WHERE id = ?
 `;
 
-export const SelectFavoriteListings = `
-    SELECT *
-    FROM ${LISTING_TABLE}
-    WHERE id = ?
-`;
-
 export const SelectProfile = `
     SELECT P.*, A.id AS attachment_id, A.*
     FROM ${PROFILES_TABLE} AS P
@@ -50,6 +45,20 @@ export const SelectReviews = `
              LEFT JOIN ${PROFILES_TABLE} AS P ON ${REVIEW_TABLE}.created_by = P.id
              LEFT JOIN ${ATTACHMENT_TABLE} AS A ON P.avatar = A.id
     WHERE ${REVIEW_TABLE}.listing_id = ?
+`;
+
+export const SelectCompleteReviews = `
+    SELECT
+        ${REVIEW_TABLE}.*,
+        P1.name,
+        A1.local_uri AS profile_uri,
+        A2.local_uri AS attachment_uri
+    FROM ${REVIEW_TABLE}
+             LEFT JOIN ${PROFILES_TABLE} AS P1 ON ${REVIEW_TABLE}.created_by = P1.id
+             LEFT JOIN ${PICTURE_TABLE} AS P2 ON  P2.review_id = ${REVIEW_TABLE}.id
+             LEFT JOIN ${ATTACHMENT_TABLE} AS A1 ON P1.avatar = A1.id
+             LEFT JOIN ${ATTACHMENT_TABLE} AS A2 ON P2.photo_id = A2.id
+    WHERE ${REVIEW_TABLE}.listing_id = ?;
 `;
 
 export const UpdatePicture = `UPDATE ${PICTURE_TABLE}
@@ -98,20 +107,20 @@ export const SelectPictures = `
     ORDER BY ${PICTURE_TABLE}.created_at DESC`;
 
 export const AddFavorite = `
-    INSERT INTO favorites (id, created_by, listing_id)
+    INSERT INTO ${FAVORITES_TABLE} (id, created_by, listing_id)
     VALUES (uuid(), ?, ?) RETURNING *;
 `;
 
 export const RemoveFavorite = `
     DELETE
-    FROM favorites
+    FROM ${FAVORITES_TABLE}
     WHERE created_by = ?
       AND listing_id = ? RETURNING *;
 `;
 
 export const GetFavoriteListings = `
     SELECT l.*
-    FROM listings l
-             JOIN favorites f ON l.id = f.listing_id
+    FROM ${LISTING_TABLE} l
+             JOIN ${FAVORITES_TABLE} f ON l.id = f.listing_id
     WHERE f.created_by = ?;
 `;

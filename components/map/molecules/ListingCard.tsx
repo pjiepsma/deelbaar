@@ -29,6 +29,7 @@ const ListingCard: React.FC<HikeItemProps> = ({
   const numericRating = item?.rating ? Number(item.rating) : 0;
   const isFavorite = item?.favorite; // Assuming `isFavorite` is a property of `item`
   const { user } = useAuth();
+
   const handleFavoritePress = () => {
     if (isFavorite) {
       onRemoveFavorite(item.id);

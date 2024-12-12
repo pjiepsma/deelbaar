@@ -28,7 +28,7 @@ interface ReviewsScreenProps {
   images: Image[];
 }
 
-const ReviewsScreen: React.FC<ReviewsScreenProps> = ({ reviews, images }) => {
+const ReviewsScreen: React.FC<ReviewsScreenProps> = ({ reviews }) => {
   const [selectedSort, setSelectedSort] = useState('Most relevant');
   const [sortedReviews, setSortedReviews] = useState(reviews);
   const [modalVisible, setModalVisible] = useState(false);
@@ -41,9 +41,10 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({ reviews, images }) => {
   };
 
   const renderReview = (item: Review) => {
-    const image = images.find((img) => img.review_id === item.id);
-    const photoUri = image ? attachmentQueue?.getLocalUri(image.local_uri) : null;
-    const avatarUri = item.local_uri ? attachmentQueue!.getLocalUri(item.local_uri) : null;
+    // const image = images.find((img) => img.review_id === item.id);
+    const photoUri = item.attachment_uri ? attachmentQueue?.getLocalUri(item.attachment_uri) : null;
+    const avatarUri = item.profile_uri ? attachmentQueue!.getLocalUri(item.profile_uri) : null;
+
     return (
       <View key={item.id} style={styles.reviewContainer}>
         <View style={styles.userDetails}>
