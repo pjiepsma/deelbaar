@@ -40,8 +40,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isLoading || isSigningOut) return;
 
-    // const inAuthGroup = segments[0] === '(auth)';
-
     if (!session) {
       const signInAnonymously = async () => {
         const { error } = await connector.client.auth.signInAnonymously();
@@ -52,9 +50,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       signInAnonymously();
     }
-    // if (inAuthGroup && !user) {
-    //   router.replace('/(modals)/login' as const);
-    // } TODO
   }, [session, isLoading, segments, router, user, connector]);
 
   useEffect(() => {

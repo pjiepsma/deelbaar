@@ -6,6 +6,7 @@ import Colors from '~/constants/Colors';
 interface UserInfoProps {
   name: string;
   uri?: string | null;
+  size?: number;
 }
 
 const Color = {
@@ -24,11 +25,14 @@ function getRandomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-const Avatar: React.FC<UserInfoProps> = ({ name, uri }) => {
-  const randomColor = getRandomColor(); // Get a random pastel color
+const Avatar: React.FC<UserInfoProps> = ({ name, uri, size = 40 }) => {
   return (
     <View style={styles.container}>
-      <View style={[styles.avatar, { backgroundColor: '#D9D9A0' }]}>
+      <View
+        style={[
+          styles.avatar,
+          { backgroundColor: '#D9D9A0', width: size, height: size, borderRadius: size / 2 },
+        ]}>
         {uri ? (
           <Image source={{ uri }} resizeMode="cover" style={styles.image} />
         ) : (

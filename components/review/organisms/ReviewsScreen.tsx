@@ -29,7 +29,7 @@ interface ReviewsScreenProps {
 }
 
 const ReviewsScreen: React.FC<ReviewsScreenProps> = ({ reviews }) => {
-  const [selectedSort, setSelectedSort] = useState('Most relevant');
+  const [selectedSort, setSelectedSort] = useState('Newest');
   const [sortedReviews, setSortedReviews] = useState(reviews);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);

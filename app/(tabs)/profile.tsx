@@ -17,7 +17,7 @@ export default function Profile() {
           title: 'Profile',
         }}
       />
-      {user && session ? <Account key={session.user.id} session={session} /> : <Auth />}
+      {user && session ? <Account /> : <Auth />}
     </View>
   );
 }

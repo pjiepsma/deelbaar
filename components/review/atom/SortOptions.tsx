@@ -8,7 +8,7 @@ interface SortOptionsProps {
   onSortChange: (option: string) => void;
 }
 
-const SORT_OPTIONS = ['Most relevant', 'Newest', 'Highest', 'Lowest'];
+const SORT_OPTIONS = ['Newest', 'Oldest', 'Highest', 'Lowest'];
 
 const SortOptions: React.FC<SortOptionsProps> = ({ selectedSort, onSortChange }) => {
   return (
@@ -32,7 +32,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sortButton: {
-    padding: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
   },
