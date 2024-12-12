@@ -3,6 +3,7 @@ import { Stack, useRouter } from 'expo-router';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import Loader from '~/components/Loader';
 import ListingCard from '~/components/map/molecules/ListingCard';
@@ -109,7 +110,7 @@ const Favorites = () => {
       {loading ? (
         <Loader delay={200} amount={3} visible={loading} />
       ) : user ? (
-        <FlatList
+        <Animated.FlatList
           data={favorites}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
@@ -120,6 +121,7 @@ const Favorites = () => {
               onPress={() => handleNavigate(item)}
             />
           )}
+          itemLayoutAnimation={LinearTransition}
         />
       ) : (
         <View style={styles.messageContainer}>
