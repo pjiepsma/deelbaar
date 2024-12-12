@@ -5,18 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8cc25b81-8b88-4801-8bc3-e345db1ccbe0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.github/workflows/ios-preview-build.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.yarn/releases/yarn-4.5.3.cjs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.yarnrc.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/adaptive-icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/adaptive-icon.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/favicon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/icon.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/splash-icon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/splash.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/AnimatedSplash.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/AnimatedSplash.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingCarousel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingCarousel.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +36,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "feature/update-expo-sdk-52",
+    "git-widget-placeholder": "64f6b161",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/Git/deelbaar/assets",
@@ -63,6 +57,9 @@
       <recent name="D:\Git\deelbaar\assets" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Git\deelbaar" />
+      <recent name="D:\Git\deelbaar\.yarn\releases" />
+      <recent name="D:\Git\deelbaar\.github\workflows" />
       <recent name="D:\Git\deelbaar\assets" />
       <recent name="D:\Git\deelbaar\hidden" />
     </key>
