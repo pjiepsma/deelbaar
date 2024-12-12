@@ -1,9 +1,8 @@
 name: Android App APK Build
 
 on:
-  pull_request:
-    branches:
-      - develop
+  workflow_dispatch:
+  # Trigger for manual build
 
 jobs:
   build:
