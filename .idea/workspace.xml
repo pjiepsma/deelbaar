@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="8cc25b81-8b88-4801-8bc3-e345db1ccbe0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(auth)/account.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/account.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(auth)/admin.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/admin.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +33,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "restore-develop-back-to-pre-ios",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
@@ -81,8 +83,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.21829.142" />
-        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-IU-242.21829.142" />
+        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-WS-243.22562.112" />
       </set>
     </attachedChunks>
   </component>
@@ -100,6 +101,7 @@
       <workItem from="1732007489481" duration="692000" />
       <workItem from="1732010626093" duration="8327000" />
       <workItem from="1732166427637" duration="4947000" />
+      <workItem from="1734078377690" duration="2353000" />
     </task>
     <servers />
   </component>

@@ -24,31 +24,7 @@ export default function Account() {
         <TextInput value={session?.user?.email} editable={false} style={styles.inputField} />
       </View>
       <View style={styles.verticallySpaced}>
-        <TextInput
-          value={username || ''}
-          onChangeText={(text) => setUsername(text)}
-          style={styles.inputField}
-        />
-      </View>
-      <View style={styles.verticallySpaced}>
-        <TextInput
-          value={website || ''}
-          onChangeText={(text) => setWebsite(text)}
-          style={styles.inputField}
-        />
-      </View>
-
-      <View style={styles.verticallySpaced}>
-        {/*<TouchableOpacity*/}
-        {/*  disabled={loading}*/}
-        {/*  onPress={() => updateProfile({ username, website, avatar_url: avatarUrl })}*/}
-        {/*  style={styles.button}>*/}
-        {/*  <Text style={styles.buttonText}>{loading ? 'Loading ...' : 'Update'}</Text>*/}
-        {/*</TouchableOpacity>*/}
-      </View>
-
-      <View style={styles.verticallySpaced}>
-        <TouchableOpacity disabled={loading} onPress={() => signOut()} style={styles.button}>
+        <TouchableOpacity disabled={!session} onPress={() => signOut()} style={styles.button}>
           <Text style={styles.buttonText}>Sign Out</Text>
         </TouchableOpacity>
       </View>

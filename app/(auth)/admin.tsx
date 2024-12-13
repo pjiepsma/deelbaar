@@ -19,6 +19,7 @@ import Colors from '~/constants/Colors';
 import { useAuth } from '~/lib/AuthProvider';
 import { useSystem } from '~/lib/powersync/PowerSync';
 import { supabase } from '~/lib/powersync/SupabaseConnector';
+import { InsertListing } from '~/lib/powersync/Queries';
 
 const BATCH_SIZE = 10; // Set your batch size
 const RETRY_LIMIT = 3; // Maximum number of retries
@@ -130,26 +131,19 @@ export default function Admin() {
       }
 
       const point = `POINT(${coordinates.longitude} ${coordinates.latitude})`;
-      return {
+
+      const res = await powersync.execute(InsertListing, [
         name,
         description,
-        location: point,
-        owner_id: user.id,
+        point,
+        user.id,
         category,
-      };
+      ]);
 
-      // const res = await powersync.execute(InsertListing, [
-      //   name,
-      //   description,
-      //   point,
-      //   user.id,
-      //   category,
-      // ]);
-      //
-      // const resultRecord = res.rows?.item(0);
-      // if (!resultRecord) {
-      //   throw new Error('Could not create list');
-      // }
+      const resultRecord = res.rows?.item(0);
+      if (!resultRecord) {
+        throw new Error('Could not create list');
+      }
     } else {
       router.replace('/(modals)/login');
     }
