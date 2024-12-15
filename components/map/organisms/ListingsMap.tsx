@@ -209,7 +209,7 @@ const ListingsMap: React.FC<Props> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 40,
+    // paddingTop: 40,
     paddingBottom: 30,
     backgroundColor: Colors.light,
   },

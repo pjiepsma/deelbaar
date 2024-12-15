@@ -13,11 +13,12 @@ interface MapWithMarkersProps {
   selectedListingId: string | null; // Add this prop
 }
 
-const MapWithMarkers = forwardRef<MapView, MapWithMarkersProps>(
+const MapWithMarkers = forwardRef<MapView, MapWithMarkersProprs>(
   ({ region, listings, onMarkerPress, onRegionChangeComplete, selectedListingId }, ref) => (
     <MapView
       ref={ref}
       moveOnMarkerPress={false}
+      mapPadding={{ top: 20, right: 0, bottom: 20, left: 0 }}
       minZoomLevel={12}
       style={{ flex: 1 }}
       onRegionChangeComplete={onRegionChangeComplete}
