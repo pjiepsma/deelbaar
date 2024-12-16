@@ -1,27 +1,18 @@
-import Constants from 'expo-constants';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import ActionRow from '~/components/ActionRow';
 import ListingCarousel from '~/components/map/organisms/ListingCarousel';
 import ListingsMap from '~/components/map/organisms/ListingsMap';
-import { useAuth } from '~/lib/AuthProvider';
-import { AppConfig } from '~/lib/powersync/AppConfig';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
-import { useSystem } from '~/lib/powersync/PowerSync';
-import { SelectLatestImages } from '~/lib/powersync/Queries';
-import { PictureEntry } from '~/lib/types/types';
 
 const Index = () => {
-  const { connector, powersync } = useSystem();
-  const { session } = useAuth();
   const [category, setCategory] = useState('Books');
   const [filterState, setFilterState] = useState(false);
   const [listing, setListing] = useState<ListingRecord | null>(null);
   const [listings, setListings] = useState<ListingRecord[]>([]);
-  const [listingsPictures, setListingsPictures] = useState<ListingRecord[]>([]);
   const [regionBounds, setRegionBounds] = useState<{
     minLat: number;
     maxLat: number;
@@ -29,42 +20,18 @@ const Index = () => {
     maxLong: number;
   } | null>(null);
 
-  useEffect(() => {
-    const fetchPictures = async () => {
-      if (session && listings.length > 0) {
-        await connector.fetchCredentials();
-
-        const listing_ids = listings.map((location) => location.id);
-        try {
-          const sql = SelectLatestImages(listing_ids);
-          const pictures: PictureEntry[] = await powersync.getAll(sql, listing_ids);
-          const locationsDataWithPictures = listings.map((location) => {
-            const picture = pictures.find((pic) => pic.listing_id === location.id) || null;
-            return {
-              ...location,
-              picture,
-            };
-          });
-
-          setListingsPictures(locationsDataWithPictures);
-        } catch (err) {
-          console.error(err);
-        }
-      }
-    };
-
-    fetchPictures();
-  }, [listings, session]);
-
   const filteredListings = useMemo(() => {
     if (!regionBounds || listings.length === 0) return [];
 
     const { minLat, maxLat, minLong, maxLong } = regionBounds;
-    return listingsPictures.filter(
-      (store) =>
-        store.lat >= minLat && store.lat <= maxLat && store.long >= minLong && store.long <= maxLong
+    return listings.filter(
+      (listing) =>
+        listing.lat >= minLat &&
+        listing.lat <= maxLat &&
+        listing.long >= minLong &&
+        listing.long <= maxLong
     );
-  }, [regionBounds, listingsPictures]);
+  }, [regionBounds, listings]);
 
   return (
     <View style={styles.container}>

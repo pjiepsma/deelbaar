@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { Pressable } from 'react-native';
 
 import Colors from '~/constants/Colors';
 
@@ -10,6 +11,15 @@ const Layout = () => {
       screenOptions={{
         tabBarActiveTintColor: Colors.primary,
         tabBarLabelStyle: { fontFamily: 'mon-sb', fontSize: 12 },
+        tabBarButton: (props) => (
+          <Pressable
+            {...props}
+            android_ripple={{ color: 'transparent' }}
+            onPress={(e) => {
+              props.onPress?.(e);
+            }}
+          />
+        ),
       }}>
       <Tabs.Screen
         name="index"

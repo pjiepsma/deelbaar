@@ -4648,7 +4648,7 @@ __metadata:
     react-native-polyfill-globals: "npm:^3.1.0"
     react-native-ratings: "npm:^8.1.0"
     react-native-reanimated: "npm:~3.16.1"
-    react-native-reanimated-carousel: "npm:^3.5.1"
+    react-native-reanimated-carousel: "npm:4.0.0-canary.22"
     react-native-safe-area-context: "npm:4.14.0"
     react-native-screens: "npm:^4.0.0"
     react-native-url-polyfill: "npm:^2.0.0"
@@ -9655,15 +9655,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated-carousel@npm:^3.5.1":
-  version: 3.5.1
-  resolution: "react-native-reanimated-carousel@npm:3.5.1"
+"react-native-reanimated-carousel@npm:4.0.0-canary.22":
+  version: 4.0.0-canary.22
+  resolution: "react-native-reanimated-carousel@npm:4.0.0-canary.22"
   peerDependencies:
-    react: ">=16.8.0"
-    react-native: ">=0.6.0"
-    react-native-gesture-handler: ">=2.0.0"
+    react: ">=18.0.0"
+    react-native: ">=0.70.3"
+    react-native-gesture-handler: ">=2.9.0"
     react-native-reanimated: ">=3.0.0"
-  checksum: 10c0/b59a1d41b9138ba04198590319698a4a9f3be467abda1c63df42e043c643e5c8bbe94121c5cca2cf830c9b84d7c45f0712db79ecaafbca07158d73c61db6a4ff
+  checksum: 10c0/f86840dc08f995a49392e4eb94b0a8508b9db7a73f1e06a47688853c27778ad93af5dd2b74d04634ccef40d7a3d098239840d6b968828c57ad753e4a8712d63a
   languageName: node
   linkType: hard
 

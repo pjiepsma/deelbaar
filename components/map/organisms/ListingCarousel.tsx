@@ -9,7 +9,6 @@ import ListingCard from '~/components/map/molecules/ListingCard';
 import { useAuth } from '~/lib/AuthProvider';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
-import { StatusBar } from 'expo-status-bar';
 import { AddFavorite } from '~/lib/powersync/Queries';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -44,12 +43,6 @@ const ListingCarousel = ({ category, listing, listings, setListing }: Props) => 
     }
   }, [listing]);
 
-  useEffect(() => {
-    if (listings) {
-      scrollToIndex(0);
-    }
-  }, [listings]);
-
   const scrollToIndex = (index: number) => {
     if (carouselRef.current) {
       carouselRef.current.scrollTo({ index, animated: true });
@@ -57,8 +50,7 @@ const ListingCarousel = ({ category, listing, listings, setListing }: Props) => 
   };
 
   const removeFavorite = async (userId: string, listingId: string) => {
-    const result = await powersync.execute('RemoveFavorite', [userId, listingId]);
-    return result;
+    return await powersync.execute('RemoveFavorite', [userId, listingId]);
   };
 
   const handleRemoveFavorite = async (listingId: string) => {
@@ -116,10 +108,10 @@ const ListingCarousel = ({ category, listing, listings, setListing }: Props) => 
         </View>
         {listings.length > 0 ? (
           <Carousel
-            key={listings.length}
             {...baseOptions}
             loop={false}
             ref={carouselRef}
+            windowSize={2}
             style={styles.carousel}
             data={listings}
             onSnapToItem={(index: number) => setListing(listings[index])}
