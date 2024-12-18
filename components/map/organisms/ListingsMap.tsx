@@ -72,7 +72,7 @@ const ListingsMap: React.FC<Props> = ({
           ...params,
         });
 
-        if (error || !listings?.length) {
+        if (error) {
           console.error('Error fetching listings:', error);
           return [];
         }

@@ -5,15 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8cc25b81-8b88-4801-8bc3-e345db1ccbe0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/(modals)/listing/add.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/(modals)/listing/picker.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.yarn/install-state.gz" beforeDir="false" afterPath="$PROJECT_DIR$/.yarn/install-state.gz" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/example.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingCarousel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingCarousel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(auth)/account.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/account.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(auth)/admin.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/admin.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(tabs)/profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/profile.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/map/molecules/MapWithMarkers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/molecules/MapWithMarkers.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/AuthProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/AuthProvider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/powersync/AppSchema.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,11 +63,11 @@
       <recent name="D:\Git\deelbaar\assets" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Git\deelbaar\app\(modals)\listing" />
+      <recent name="D:\Git\deelbaar\app\(modals)" />
+      <recent name="D:\Git\deelbaar\components\listing" />
       <recent name="D:\Git\deelbaar" />
       <recent name="D:\Git\deelbaar\.yarn\releases" />
-      <recent name="D:\Git\deelbaar\.github\workflows" />
-      <recent name="D:\Git\deelbaar\assets" />
-      <recent name="D:\Git\deelbaar\hidden" />
     </key>
   </component>
   <component name="RunManager">
@@ -108,6 +109,10 @@
       <workItem from="1732010626093" duration="8327000" />
       <workItem from="1732166427637" duration="4947000" />
       <workItem from="1734078377690" duration="2353000" />
+      <workItem from="1734421869393" duration="5032000" />
+      <workItem from="1734428741082" duration="1000" />
+      <workItem from="1734434146186" duration="10104000" />
+      <workItem from="1734508976379" duration="7388000" />
     </task>
     <servers />
   </component>

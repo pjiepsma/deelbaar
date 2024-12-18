@@ -20,6 +20,7 @@ import { useAuth } from '~/lib/AuthProvider';
 import { useSystem } from '~/lib/powersync/PowerSync';
 import { supabase } from '~/lib/powersync/SupabaseConnector';
 import { InsertListing } from '~/lib/powersync/Queries';
+import { Ionicons } from '@expo/vector-icons';
 
 const BATCH_SIZE = 10; // Set your batch size
 const RETRY_LIMIT = 3; // Maximum number of retries
@@ -37,7 +38,7 @@ export default function Admin() {
   const { powersync } = useSystem();
   const { user } = useAuth();
   const [listings, setListings] = useState<TransformedListing[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [currentBatch, setCurrentBatch] = useState(10);
   const [message, setMessage] = useState('');
   const [load, setLoad] = useState(false); // Loading state
@@ -106,15 +107,16 @@ export default function Admin() {
     });
     setListings(transformedListings); // Set the state with transformed listings
   };
-  useEffect(() => {
-    const loadListings = async () => {
-      setLoading(true);
-      await fetchListings();
-      setLoading(false);
-    };
 
-    loadListings();
-  }, []);
+  // useEffect(() => {
+  //   const loadListings = async () => {
+  //     setLoading(true);
+  //     await fetchListings();
+  //     setLoading(false);
+  //   };
+  //
+  //   // loadListings(); TODO
+  // }, []);
 
   const createListing = async (
     name: string,
@@ -144,8 +146,6 @@ export default function Admin() {
       if (!resultRecord) {
         throw new Error('Could not create list');
       }
-    } else {
-      router.replace('/(modals)/login');
     }
   };
 
@@ -253,28 +253,12 @@ export default function Admin() {
         <ActivityIndicator size="large" color={Colors.primary} />
       ) : (
         <ScrollView style={styles.container}>
-          {/*<TouchableOpacity onPress={() => createAllListings(geo)} style={styles.addButton}>*/}
-          {/*  <Text>Add all</Text>*/}
-          {/*</TouchableOpacity>*/}
-          <View style={{ padding: 20 }}>
-            <Text>{message}</Text>
-            <Button
-              title="Insert Next Batch"
-              onPress={() => insertBatches(0, geo)}
-              disabled={load} // Disable button when loading
-            />
-            {load && <ActivityIndicator size="small" color="#0000ff" />}
-          </View>
-          {/*{listings.map((item, index) => (*/}
-          {/*  <ListItem*/}
-          {/*    key={index}*/}
-          {/*    properties={item}*/}
-          {/*    onPress={*/}
-          {/*      () => createListing(item.name, item.address, item.description, item.city, 'Books') // Pass raw geometry*/}
-          {/*    }*/}
-          {/*    index={index}*/}
-          {/*  />*/}
-          {/*))}*/}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push('/(modals)/listing/add')}>
+            <Ionicons name="navigate-circle" size={24} color="white" />
+            <Text style={styles.buttonText}>Use my current location</Text>
+          </TouchableOpacity>
         </ScrollView>
       )}
     </View>
@@ -285,19 +269,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  item: {
-    flex: 1,
+  // item: {
+  //   flex: 1,
+  //   flexDirection: 'row',
+  //   borderBottomWidth: 1,
+  //   borderColor: Colors.grey,
+  //   justifyContent: 'space-between',
+  // },
+  // addButton: {
+  //   width: 30,
+  //   backgroundColor: Colors.primary,
+  //   paddingVertical: 12,
+  //   borderRadius: 8,
+  //   alignItems: 'center',
+  //   marginBottom: 8,
+  // },
+  button: {
     flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderColor: Colors.grey,
-    justifyContent: 'space-between',
-  },
-  addButton: {
-    width: 30,
-    backgroundColor: Colors.primary,
-    paddingVertical: 12,
-    borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 8,
+    justifyContent: 'center',
+    backgroundColor: '#3CA47F',
+    padding: 12,
+    borderRadius: 8,
   },
+  buttonText: { color: 'white', marginLeft: 8, fontWeight: 'bold' },
 });

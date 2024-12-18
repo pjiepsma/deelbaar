@@ -36,6 +36,16 @@ export interface ReviewRecord {
   listing_id: string;
 }
 
+export interface ProfileRecord {
+  id: string;
+  updated_at: string;
+  username: string;
+  name: string;
+  avatar: string;
+  surname: string;
+  role: string;
+}
+
 export const AppSchema = new Schema([
   new Table({
     name: 'listings',
@@ -57,7 +67,7 @@ export const AppSchema = new Schema([
       new Column({ name: 'name', type: ColumnType.TEXT }),
       new Column({ name: 'avatar', type: ColumnType.TEXT }),
       new Column({ name: 'surname', type: ColumnType.TEXT }),
-      new Column({ name: 'email', type: ColumnType.TEXT }),
+      new Column({ name: 'role', type: ColumnType.TEXT }),
     ],
   }),
   new Table({

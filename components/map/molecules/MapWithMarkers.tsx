@@ -13,7 +13,7 @@ interface MapWithMarkersProps {
   selectedListingId: string | null; // Add this prop
 }
 
-const MapWithMarkers = forwardRef<MapView, MapWithMarkersProprs>(
+const MapWithMarkers = forwardRef<MapView, MapWithMarkersProps>(
   ({ region, listings, onMarkerPress, onRegionChangeComplete, selectedListingId }, ref) => (
     <MapView
       ref={ref}
@@ -22,10 +22,9 @@ const MapWithMarkers = forwardRef<MapView, MapWithMarkersProprs>(
       minZoomLevel={12}
       style={{ flex: 1 }}
       onRegionChangeComplete={onRegionChangeComplete}
-      initialRegion={region}
+      region={region}
       provider={PROVIDER_GOOGLE}
-      showsUserLocation
-      showsMyLocationButton>
+      showsUserLocation>
       {listings.map((listing) => (
         <MarkerComponent
           key={listing.id}

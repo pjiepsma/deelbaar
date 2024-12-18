@@ -10,7 +10,6 @@ import Avatar from '~/components/review/atom/Avatar';
 export default function Account() {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState('');
-  const [website, setWebsite] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   const { connector } = useSystem();
   const { signOut, session, profile } = useAuth();
@@ -18,7 +17,7 @@ export default function Account() {
   return (
     <View style={styles.container}>
       <View style={styles.avatarContainer}>
-        <Avatar name={'Admin'} uri={profile.local_uri} size={250} />
+        {profile && <Avatar name={'Admin'} uri={profile.local_uri} size={250} />}
       </View>
       <View style={styles.verticallySpaced}>
         <TextInput value={session?.user?.email} editable={false} style={styles.inputField} />
