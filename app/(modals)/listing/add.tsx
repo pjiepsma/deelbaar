@@ -50,6 +50,7 @@ const AddPage = () => {
           latitudeDelta: 0.003,
           longitudeDelta: 0.003,
         };
+        console.log(newRegion);
         setRegion(newRegion);
 
         const geocode = await Location.reverseGeocodeAsync({ latitude, longitude });
