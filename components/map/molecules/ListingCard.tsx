@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 
-import { useAuth } from '~/lib/AuthProvider';
+import { useAuth } from '~/lib/providers/AuthProvider';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
 import { system } from '~/lib/powersync/PowerSync';
 import { toAttachmentRecord } from '~/lib/util/util';

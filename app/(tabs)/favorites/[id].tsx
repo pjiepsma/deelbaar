@@ -20,7 +20,7 @@ import RatingScreen from '~/components/review/organisms/RatingScreen';
 import RatingSummary from '~/components/review/organisms/RatingSummary';
 import ReviewsScreen from '~/components/review/organisms/ReviewsScreen';
 import Colors from '~/constants/Colors';
-import { useAuth } from '~/lib/AuthProvider';
+import { useAuth } from '~/lib/providers/AuthProvider';
 import { system, useSystem } from '~/lib/powersync/PowerSync';
 import {
   SelectCompleteReviews,

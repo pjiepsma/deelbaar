@@ -33,6 +33,7 @@ const Layout = () => {
       <Tabs.Screen
         name="favorites"
         options={{
+          headerShown: false,
           tabBarLabel: 'Favorites',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? 'heart' : 'heart-outline'} size={size} color={color} />
@@ -42,6 +43,7 @@ const Layout = () => {
       <Tabs.Screen
         name="profile"
         options={{
+          headerShown: false,
           tabBarLabel: 'Profile',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={color} />

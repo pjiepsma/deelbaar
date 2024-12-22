@@ -39,7 +39,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Build Android app
-        run: eas build --platform android --profile production --local --output ${{ github.workspace }}/app-release.aab
+        run: eas build --platform android --user production --local --output ${{ github.workspace }}/app-release.aab
 
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
@@ -54,7 +54,7 @@ jobs:
           path: ${{ github.workspace }}/android/app/build/outputs/mapping/release/mapping.txt
 
 #      - name: Submit to Play Store
-#        run: npx eas --profile internal --platform android --latest --non-interactive
+#        run: npx eas --user internal --platform android --latest --non-interactive
 #        env:
 #          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
 #          EAS_ACCESS_TOKEN: ${{ secrets.EXPO_TOKEN }}

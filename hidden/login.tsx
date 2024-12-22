@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 
-import { useAuth } from '~/lib/AuthProvider';
+import { useAuth } from '~/lib/providers/AuthProvider';
 import { useSystem } from '~/lib/powersync/PowerSync';
 
 const Login = () => {

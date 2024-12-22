@@ -16,7 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 import geo from '~/assets/data/minibieb-gelderland-points.json';
 import Gelderland from '~/assets/data/minibieb-gelderland.json';
 import Colors from '~/constants/Colors';
-import { useAuth } from '~/lib/AuthProvider';
+import { useAuth } from '~/lib/providers/AuthProvider';
 import { useSystem } from '~/lib/powersync/PowerSync';
 import { supabase } from '~/lib/powersync/SupabaseConnector';
 import { InsertListing } from '~/lib/powersync/Queries';
@@ -255,7 +255,7 @@ export default function Admin() {
         <ScrollView style={styles.container}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.push('/(modals)/listing/add')}>
+            onPress={() => router.push('/(tabs)/profile/edit')}>
             <Ionicons name="navigate-circle" size={24} color="white" />
             <Text style={styles.buttonText}>Use my current location</Text>
           </TouchableOpacity>

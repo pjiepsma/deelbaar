@@ -6,7 +6,7 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 import DefaultCard from '~/components/map/molecules/DefaultCard';
 import ListingCard from '~/components/map/molecules/ListingCard';
-import { useAuth } from '~/lib/AuthProvider';
+import { useAuth } from '~/lib/providers/AuthProvider';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
 import { AddFavorite } from '~/lib/powersync/Queries';

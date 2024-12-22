@@ -14,7 +14,7 @@ import {
   View,
 } from 'react-native';
 
-import { useAuth } from '../../lib/AuthProvider';
+import { useAuth } from '../../../lib/providers/AuthProvider';
 
 import RatingScreen from '~/components/review/organisms/RatingScreen';
 import { useSystem } from '~/lib/powersync/PowerSync';
@@ -88,7 +88,7 @@ const ReviewComponent: React.FC = () => {
       <View style={styles.profileWrapper}>
         {image && (
           <Image
-            source={{ uri: 'https://via.placeholder.com/50' }} // User profile image placeholder
+            source={{ uri: 'https://via.placeholder.com/50' }} // User user image placeholder
             style={styles.profileImage}
           />
         )}

@@ -8,11 +8,12 @@ import { Region } from 'react-native-maps/lib/sharedTypes';
 import Loader from '~/components/Loader';
 import MapWithMarkers from '~/components/map/molecules/MapWithMarkers';
 import Colors from '~/constants/Colors';
-import { useAuth } from '~/lib/AuthProvider';
+import { useAuth } from '~/lib/providers/AuthProvider';
 import { ListingRecord } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';
 import { SelectLatestImages } from '~/lib/powersync/Queries';
 import { PictureEntry } from '~/lib/types/types';
+import { useUser } from '~/lib/providers/UserProvider';
 
 interface Props {
   setListings: (state: ListingRecord[]) => void;
@@ -36,6 +37,7 @@ const ListingsMap: React.FC<Props> = ({
   setRegionBounds,
 }) => {
   const { connector, powersync } = useSystem();
+  const { setLocation } = useUser();
   const { user } = useAuth();
   const [region, setRegion] = useState<Region | null>(null);
   const [loading, setLoading] = useState(false);
@@ -99,7 +101,25 @@ const ListingsMap: React.FC<Props> = ({
       alert('Permission to access location was denied');
       return null;
     }
+
     return await Location.getCurrentPositionAsync({});
+  }, []);
+
+  const onForegroundUpdate = useCallback(async () => {
+    await Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.High,
+        timeInterval: 10000,
+        distanceInterval: 1,
+      },
+      (location) => {
+        setLocation(location);
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    onForegroundUpdate();
   }, []);
 
   const locateUser = useCallback(async () => {

@@ -7,7 +7,7 @@ import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import Loader from '~/components/Loader';
 import ListingCard from '~/components/map/molecules/ListingCard';
-import { useAuth } from '~/lib/AuthProvider';
+import { useAuth } from '~/lib/providers/AuthProvider';
 import { useSystem } from '~/lib/powersync/PowerSync';
 import { GetFavoriteListings, RemoveFavorite, SelectLatestImages } from '~/lib/powersync/Queries';
 import { PictureEntry } from '~/lib/types/types';
@@ -20,7 +20,7 @@ interface Listing {
   // Add other listing properties as needed
 }
 
-const Favorites = () => {
+const Index = () => {
   const { powersync, connector } = useSystem();
   const { user } = useAuth();
   const router = useRouter();
@@ -89,7 +89,7 @@ const Favorites = () => {
 
   const handleNavigate = (item) => {
     router.push({
-      pathname: '/(modals)/listing/[id]', // Adjust this to your actual detail page path
+      pathname: '/(tabs)/favorites/[id]', // Adjust this to your actual detail page path
       params: {
         id: item.id,
         dist_meters: item.dist_meters,
@@ -144,4 +144,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Favorites;
+export default Index;

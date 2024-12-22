@@ -1,19 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  Alert,
-  TouchableOpacity,
-  Pressable,
-} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator, Alert, Pressable } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useUser } from '~/lib/providers/UserProvider';
 
-// Define types for location and address
 interface Address {
   number: string;
   city: string;
@@ -28,20 +19,19 @@ const AddPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const mapRef = useRef<MapView>(null);
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const { location } = useUser();
+
+  useEffect(() => {
+    // console.log(params);
+  }, [params]);
 
   useEffect(() => {
     const fetchLocationAndAddress = async () => {
-      setLoading(true);
-
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Location access is needed.');
-        setLoading(false);
+      if (!location) {
         return;
       }
-
       try {
-        const location = await Location.getCurrentPositionAsync({});
         const { latitude, longitude } = location.coords;
 
         const newRegion = {
@@ -50,7 +40,6 @@ const AddPage = () => {
           latitudeDelta: 0.003,
           longitudeDelta: 0.003,
         };
-        console.log(newRegion);
         setRegion(newRegion);
 
         const geocode = await Location.reverseGeocodeAsync({ latitude, longitude });
@@ -65,7 +54,19 @@ const AddPage = () => {
       }
     };
 
+    if (params) {
+      // setRegion({
+      //   latitude: Number(params.latitude),
+      //   longitude: Number(params.longitude),
+      //   latitudeDelta: 0.003,
+      //   longitudeDelta: 0.003,
+      // });
+    }
+    //   setAddress(params.address);
+    //   setLoading(false);
+    // } else {
     fetchLocationAndAddress();
+    // }
   }, []);
 
   if (loading) {
@@ -89,7 +90,7 @@ const AddPage = () => {
         <Pressable
           onPress={() =>
             router.push({
-              pathname: '/(modals)/listing/picker',
+              pathname: '/(tabs)/profile/picker',
               params: { latitude: region.latitude, longitude: region.longitude },
             })
           }>

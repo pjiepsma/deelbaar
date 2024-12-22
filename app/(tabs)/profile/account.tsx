@@ -3,16 +3,18 @@ import React, { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import Colors from '~/constants/Colors';
-import { useAuth } from '~/lib/AuthProvider';
+import { useAuth } from '~/lib/providers/AuthProvider';
 import { useSystem } from '~/lib/powersync/PowerSync';
 import Avatar from '~/components/review/atom/Avatar';
+import { useUser } from '~/lib/providers/UserProvider';
 
 export default function Account() {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   const { connector } = useSystem();
-  const { signOut, session, profile } = useAuth();
+  const { signOut, session } = useAuth();
+  const { profile } = useUser();
 
   return (
     <View style={styles.container}>
