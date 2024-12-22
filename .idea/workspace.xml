@@ -5,33 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8cc25b81-8b88-4801-8bc3-e345db1ccbe0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/(tabs)/favorites/_layout.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/(tabs)/profile/_layout.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/(tabs)/profile/picker.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/providers/UserProvider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/android-internal-build.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/android-internal-build.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/android-preview-build.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/android-preview-build.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/ios-preview-build.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/ios-preview-build.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(auth)/account.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/profile/account.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(auth)/admin.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/profile/admin.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/auth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/profile/auth.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/filter.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(drawers)/filter.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/listing/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/favorites/[id].tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/listing/add.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/profile/edit.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/listing/adds.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/listing/picker.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(modals)/review.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/favorites/review.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/favorites.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/favorites/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/profile/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/map/molecules/ListingCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/molecules/ListingCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingCarousel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingCarousel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/map/molecules/MapWithMarkers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/molecules/MapWithMarkers.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hidden/android-development-build.yml" beforeDir="false" afterPath="$PROJECT_DIR$/hidden/android-development-build.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hidden/login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/hidden/login.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/AuthProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/lib/providers/AuthProvider.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,7 +112,7 @@
       <workItem from="1734508976379" duration="20237000" />
       <workItem from="1734809342763" duration="13982000" />
       <workItem from="1734860903481" duration="1620000" />
-      <workItem from="1734874041956" duration="4782000" />
+      <workItem from="1734874041956" duration="12142000" />
     </task>
     <servers />
   </component>

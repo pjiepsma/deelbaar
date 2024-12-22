@@ -24,6 +24,7 @@ const Index = () => {
     if (!regionBounds || listings.length === 0) return [];
 
     const { minLat, maxLat, minLong, maxLong } = regionBounds;
+    console.log('region bounds is ', regionBounds);
     return listings.filter(
       (listing) =>
         listing.lat >= minLat &&

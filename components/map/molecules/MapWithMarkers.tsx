@@ -22,7 +22,7 @@ const MapWithMarkers = forwardRef<MapView, MapWithMarkersProps>(
       minZoomLevel={12}
       style={{ flex: 1 }}
       onRegionChangeComplete={onRegionChangeComplete}
-      region={region}
+      initialRegion={region}
       provider={PROVIDER_GOOGLE}
       showsUserLocation>
       {listings.map((listing) => (

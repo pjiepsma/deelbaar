@@ -140,7 +140,12 @@ const ListingsMap: React.FC<Props> = ({
 
     setRegion(newRegion);
 
-    const bounds = calculateBounds(latitude, longitude, 0.05, 0.05);
+    const bounds = calculateBounds(
+      latitude,
+      longitude,
+      newRegion.latitudeDelta,
+      newRegion.longitudeDelta
+    );
     const listings = await fetchListingsWithPictures({
       min_lat: bounds.minLat,
       max_lat: bounds.maxLat,
@@ -164,40 +169,52 @@ const ListingsMap: React.FC<Props> = ({
     user?.id,
   ]);
 
-  const handleRegionChangeComplete = useCallback(
-    async (region: Region) => {
-      if (!region) return;
+  const handleRegionChangeComplete = async (region: Region) => {
+    if (!region) return;
 
-      const { latitude, longitude, latitudeDelta, longitudeDelta } = region;
-      const bounds = calculateBounds(latitude, longitude, latitudeDelta, longitudeDelta);
+    const { latitude, longitude, latitudeDelta, longitudeDelta } = region;
+    const { minLat, maxLat, minLong, maxLong } = calculateBounds(
+      latitude,
+      longitude,
+      latitudeDelta,
+      longitudeDelta
+    );
+    setRegionBounds({ minLat, maxLat, minLong, maxLong });
 
-      if (fetchedBoundsRef.current) {
-        const { minLat, maxLat, minLong, maxLong } = fetchedBoundsRef.current;
-        const isWithinBounds =
-          bounds.minLat >= minLat &&
-          bounds.maxLat <= maxLat &&
-          bounds.minLong >= minLong &&
-          bounds.maxLong <= maxLong;
-        if (isWithinBounds) return;
+    if (fetchedBoundsRef.current) {
+      const {
+        minLat: fetchedMinLat,
+        maxLat: fetchedMaxLat,
+        minLong: fetchedMinLong,
+        maxLong: fetchedMaxLong,
+      } = fetchedBoundsRef.current;
+
+      const isWithinFetchedBounds =
+        minLat >= fetchedMinLat &&
+        maxLat <= fetchedMaxLat &&
+        minLong >= fetchedMinLong &&
+        maxLong <= fetchedMaxLong;
+
+      if (isWithinFetchedBounds) {
+        return;
       }
+    }
+    setLoading(true);
 
-      setLoading(true);
-      const listings = await fetchListingsWithPictures({
-        min_lat: bounds.minLat,
-        max_lat: bounds.maxLat,
-        min_long: bounds.minLong,
-        max_long: bounds.maxLong,
-        input_lat: latitude,
-        input_long: longitude,
-        user_id: user?.id ?? null,
-      });
-      setListings(listings);
-      fetchedBoundsRef.current = bounds;
-      setRegionBounds(bounds);
-      setLoading(false);
-    },
-    [calculateBounds, fetchListingsWithPictures, setListings, setRegionBounds, user?.id]
-  );
+    const listings = await fetchListingsWithPictures({
+      min_lat: minLat,
+      max_lat: maxLat,
+      min_long: minLong,
+      max_long: maxLong,
+      input_lat: latitude,
+      input_long: longitude,
+      user_id: user?.id ?? null,
+    });
+    setListings(listings);
+    fetchedBoundsRef.current = { minLat, maxLat, minLong, maxLong };
+    setRegionBounds({ minLat, maxLat, minLong, maxLong });
+    setLoading(false);
+  };
 
   useEffect(() => {
     locateUser();
