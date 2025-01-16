@@ -14,6 +14,7 @@ import { useSystem } from '~/lib/powersync/PowerSync';
 import { SelectLatestImages } from '~/lib/powersync/Queries';
 import { PictureEntry } from '~/lib/types/types';
 import { useUser } from '~/lib/providers/UserProvider';
+import { useQuery } from '@powersync/tanstack-react-query';
 
 interface Props {
   setListings: (state: ListingRecord[]) => void;
@@ -42,6 +43,7 @@ const ListingsMap: React.FC<Props> = ({
   const [region, setRegion] = useState<Region | null>(null);
   const [loading, setLoading] = useState(false);
   const mapRef = useRef<MapView>(null);
+
   const fetchedBoundsRef = useRef<{
     minLat: number;
     maxLat: number;
@@ -83,9 +85,20 @@ const ListingsMap: React.FC<Props> = ({
         const sql = SelectLatestImages(listingIds);
         const pictures: PictureEntry[] = await powersync.getAll(sql, listingIds);
 
+        // const {
+        //   data: pictures,
+        //   isLoading,
+        //   isFetching,
+        //   error: picturesError,
+        // } = useQuery<PictureEntry>({
+        //   queryKey: ['todoLists'],
+        //   query: SelectLatestImages(listingIds), // use `query` instead of `queryFn` to define a SQL query - this allows watching underlying tables for changes
+        //   parameters: listingIds, // supply query parameters for the SQL query
+        // });
+
         return listings.map((listing: ListingRecord) => ({
           ...listing,
-          picture: pictures.find((pic) => pic.listing_id === listing.id) || null,
+          picture: pictures?.find((pic) => pic.listing_id === listing.id) || null,
         }));
       } catch (err) {
         console.error('Error in fetchListingsWithPictures:', err);

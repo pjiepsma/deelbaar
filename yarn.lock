@@ -2055,6 +2055,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@powersync/tanstack-react-query@npm:^0.0.10":
+  version: 0.0.10
+  resolution: "@powersync/tanstack-react-query@npm:0.0.10"
+  dependencies:
+    "@powersync/common": "npm:1.22.0"
+    "@powersync/react": "npm:1.5.1"
+    "@tanstack/react-query": "npm:^5.55.4"
+  peerDependencies:
+    "@powersync/common": ^1.22.0
+    react: "*"
+  checksum: 10c0/faa65b594c22cda7b9eff2e6886544ae04d9dfec2ffecd84b4ac8998440d0f2d7e2da48664a51d17f529b521cc03b4dab486164a3da38637a0158f1242e717fa
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-compose-refs@npm:1.0.0":
   version: 1.0.0
   resolution: "@radix-ui/react-compose-refs@npm:1.0.0"
@@ -2704,6 +2718,24 @@ __metadata:
     "@supabase/realtime-js": "npm:2.11.2"
     "@supabase/storage-js": "npm:2.7.1"
   checksum: 10c0/791eafd08add06b1c0ddf5757620938b95328edc06c50d710eabaf5fb4f290c23257f34f7a842be3b51e9b3a4e0d703f92d87ded94024efc64901fc2625d4ec9
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-core@npm:5.62.9":
+  version: 5.62.9
+  resolution: "@tanstack/query-core@npm:5.62.9"
+  checksum: 10c0/3d0708ec761563bbb5c5efa97160d10ed891b63a61cc24ebc04c24d8196e7fa5cde89ea220e70546fc94066fa1034c1a368138dab3f353c82846cc5f9595a7fc
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.55.4, @tanstack/react-query@npm:^5.62.11":
+  version: 5.62.11
+  resolution: "@tanstack/react-query@npm:5.62.11"
+  dependencies:
+    "@tanstack/query-core": "npm:5.62.9"
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 10c0/358ffb3d80aba9e1dec51205b318ff9d162c5ba54a79e44ddcf3986fcf6529a4b2cb9504dbabd39cdfc164f6215e3fcd59e5e174f8b4c670e164d13ad9ba3034
   languageName: node
   linkType: hard
 
@@ -4609,8 +4641,10 @@ __metadata:
     "@powersync/attachments": "npm:^2.1.2"
     "@powersync/op-sqlite": "npm:^0.1.1"
     "@powersync/react-native": "npm:1.15.1"
+    "@powersync/tanstack-react-query": "npm:^0.0.10"
     "@react-native-async-storage/async-storage": "npm:2.1.0"
     "@supabase/supabase-js": "npm:^2.38.4"
+    "@tanstack/react-query": "npm:^5.62.11"
     "@types/lodash": "npm:^4.17.7"
     "@types/react": "npm:~18.3.12"
     "@typescript-eslint/eslint-plugin": "npm:^8.15.0"

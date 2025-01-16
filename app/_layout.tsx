@@ -13,7 +13,9 @@ import Colors from '~/constants/Colors';
 import { PowerSyncProvider } from '~/lib/powersync/PowerSyncProvider';
 import { AuthProvider } from '~/lib/providers/AuthProvider';
 import { UserProvider } from '~/lib/providers/UserProvider';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
+const client = new QueryClient();
 SplashScreen.preventAutoHideAsync();
 
 SplashScreen.setOptions({
@@ -59,17 +61,19 @@ const App = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <PowerSyncProvider>
-        <SafeAreaProvider>
-          <BottomSheetModalProvider>
-            <AuthProvider>
-              <UserProvider>
-                <InitialLayout />
-              </UserProvider>
-            </AuthProvider>
-          </BottomSheetModalProvider>
-        </SafeAreaProvider>
-      </PowerSyncProvider>
+      <QueryClientProvider client={client}>
+        <PowerSyncProvider>
+          <SafeAreaProvider>
+            <BottomSheetModalProvider>
+              <AuthProvider>
+                <UserProvider>
+                  <InitialLayout />
+                </UserProvider>
+              </AuthProvider>
+            </BottomSheetModalProvider>
+          </SafeAreaProvider>
+        </PowerSyncProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 };
