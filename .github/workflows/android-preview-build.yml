@@ -2,23 +2,11 @@ name: Android App APK Build
 
 on:
   workflow_dispatch:
-    inputs:
-      profile:
-        description: 'Build profile to use'
-        required: true
-        default: 'development'
-      should_submit:
-        description: 'Whether to submit the build'
-        required: true
-        default: 'false'
-      os:
-        description: 'OS to run on'
-        required: true
-        default: 'ubuntu-latest'
+  # Trigger for manual build
 
 jobs:
   build:
-    runs-on: ${{ github.event.inputs.os }}
+    runs-on: ubuntu-latest
     steps:
       - name: Setup repo
         uses: actions/checkout@v4
@@ -47,13 +35,13 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - name: Build Android app
-        run: eas build --platform android --profile ${{ github.event.inputs.profile }} --local --output ${{ github.workspace }}/app-${{ github.event.inputs.profile }}.apk
-
+        run: eas build --platform android --user development --local --output ${{ github.workspace }}/app-development.apk
+        
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-${{ github.event.inputs.profile }}
-          path: ${{ github.workspace }}/app-${{ github.event.inputs.profile }}.apk
+          name: app-development
+          path: ${{ github.workspace }}/app-development.apk
