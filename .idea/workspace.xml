@@ -7,8 +7,12 @@
     <list default="true" id="8cc25b81-8b88-4801-8bc3-e345db1ccbe0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.yarn/install-state.gz" beforeDir="false" afterPath="$PROJECT_DIR$/.yarn/install-state.gz" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/map/organisms/ListingsMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(modals)/picture/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(modals)/picture/[id].tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/review/atom/UserInfo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/review/atom/UserInfo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/review/organisms/RatingSummary.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/review/organisms/RatingSummary.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/widget/CameraWidget.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/widget/CameraWidget.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/widget/ListItemWidget.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/widget/ListItemWidget.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/widget/TodoItemWidget.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/widget/TodoItemWidget.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>

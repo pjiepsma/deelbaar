@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Rating } from 'react-native-elements';
+import { Rating } from '@rneui/themed';
 
 interface UserInfoProps {
   userName: string;

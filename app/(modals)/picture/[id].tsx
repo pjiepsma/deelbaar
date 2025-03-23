@@ -5,8 +5,6 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react'; // @ts-ignore
 import { Omit, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { FAB } from 'react-native-elements';
-
 import { TodoItemWidget } from '~/components/widget/TodoItemWidget';
 import { LISTING_TABLE, PICTURE_TABLE } from '~/lib/powersync/AppSchema';
 import { useSystem } from '~/lib/powersync/PowerSync';

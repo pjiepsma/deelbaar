@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Button, Image, ListItem } from 'react-native-elements';
+import { Button, Image, ListItem } from '@rneui/themed';
 
 import { AppConfig } from '~/lib/powersync/AppConfig';
 import { PictureRecord } from '~/lib/powersync/AppSchema';
