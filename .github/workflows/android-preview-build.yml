@@ -38,8 +38,8 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Build Android app
-        run: eas build --platform android --user development --local --output ${{ github.workspace }}/app-development.apk
-        
+        run: eas build --platform android --local --profile development --output ${{ github.workspace }}/app-development.apk
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
