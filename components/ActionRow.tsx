@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Dropdown from '~/components/Dropdown';
 import Colors from '~/constants/Colors';
 import { OptionItem } from '~/constants/Types';
-import { ListingRecord } from '~/lib/powersync/AppSchema';
+import { ListingRecord } from '~/lib/types/models';
 
 interface Props {
   onCategoryChanged: (category: string) => void;

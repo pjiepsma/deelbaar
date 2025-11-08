@@ -11,13 +11,13 @@ import {
 } from 'react-native';
 
 import AppleStyleSwipeableRow from '~/components/SwipeableRow';
-import { Todo, TODO_TABLE } from '~/lib/powersync/AppSchema';
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { Todo, TODO_TABLE } from '~/lib/types/models';
+import { useAuth } from '~/lib/providers/AuthProvider';
 import { uuid } from '~/lib/util/uuid';
 
 const Page = () => {
   const [task, setTask] = useState('');
-  const { connector, db } = useSystem();
+  const { user } = useAuth();
   const [todos, setTodos] = useState<Todo[]>([]);
 
   useEffect(() => {

@@ -7,7 +7,7 @@ import { Marker } from 'react-native-maps';
 import Colors from '~/constants/Colors';
 
 interface MarkerComponentProps {
-  store: { lat: number; long: number; id: string };
+  store: any; // ListingRecord or old format
   onPress: () => void;
   selected: boolean;
 }
@@ -25,9 +25,17 @@ const MarkerComponent: React.FC<MarkerComponentProps> = memo(({ store, onPress, 
     return () => clearTimeout(timeout);
   }, [selected]);
 
+  // Support both old format (lat, long) and new Payload format (location.coordinates)
+  const latitude = store.lat ?? store.location?.coordinates?.[1];
+  const longitude = store.long ?? store.location?.coordinates?.[0];
+
+  if (!latitude || !longitude) {
+    return null;
+  }
+
   return (
     <Marker
-      coordinate={{ latitude: store.lat, longitude: store.long }}
+      coordinate={{ latitude, longitude }}
       onPress={onPress}
       tracksViewChanges={trackChanges}>
       <View style={[styles.marker, { backgroundColor: selected ? Colors.light : Colors.primary }]}>

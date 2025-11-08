@@ -1,50 +1,48 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import React from 'react';
-import { Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-import Colors from '~/constants/Colors';
-
-const Layout = () => {
+export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors.primary,
-        tabBarLabelStyle: { fontFamily: 'mon-sb', fontSize: 12 },
-        tabBarButton: (props) => (
-          <Pressable
-            {...props}
-            android_ripple={{ color: 'transparent' }}
-            onPress={(e) => {
-              props.onPress?.(e);
-            }}
-          />
+        headerShown: false,
+        tabBarLabelStyle: { fontSize: 12 },
+        tabBarActiveTintColor: '#0a84ff',
+        tabBarIcon: ({ color, size, focused }) => (
+          <Ionicons name={focused ? 'ellipse' : 'ellipse-outline'} size={size} color={color} />
         ),
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          tabBarLabel: 'Home',
+          title: 'Zoeken',
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />
+            <Ionicons name={focused ? 'search' : 'search-outline'} size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="favorites"
+        name="favorites/index"
         options={{
-          headerShown: false,
-          tabBarLabel: 'Favorites',
+          title: 'Favorieten',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? 'heart' : 'heart-outline'} size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
+        name="my-home/index"
+        options={{
+          title: 'Mijn huis',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
-          headerShown: false,
-          tabBarLabel: 'Profile',
+          title: 'Account',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={color} />
           ),
@@ -52,5 +50,6 @@ const Layout = () => {
       />
     </Tabs>
   );
-};
-export default Layout;
+}
+
+

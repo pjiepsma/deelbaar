@@ -1,3 +1,4 @@
+// PowerSync removed - using custom offline-first solution
 import * as Location from 'expo-location';
 import { debounce } from 'lodash';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
@@ -8,13 +9,11 @@ import { Region } from 'react-native-maps/lib/sharedTypes';
 import Loader from '~/components/Loader';
 import MapWithMarkers from '~/components/map/molecules/MapWithMarkers';
 import Colors from '~/constants/Colors';
+import { ListingRecord } from '~/lib/types/models';
+import { useListings } from '~/lib/hooks/usePayloadQuery';
 import { useAuth } from '~/lib/providers/AuthProvider';
-import { ListingRecord } from '~/lib/powersync/AppSchema';
-import { useSystem } from '~/lib/powersync/PowerSync';
-import { SelectLatestImages } from '~/lib/powersync/Queries';
-import { PictureEntry } from '~/lib/types/types';
 import { useUser } from '~/lib/providers/UserProvider';
-import { useQuery } from '@powersync/tanstack-react-query';
+import { PictureEntry } from '~/lib/types/types';
 
 interface Props {
   setListings: (state: ListingRecord[]) => void;
@@ -37,7 +36,6 @@ const ListingsMap: React.FC<Props> = ({
   listing,
   setRegionBounds,
 }) => {
-  const { connector, powersync } = useSystem();
   const { setLocation } = useUser();
   const { user } = useAuth();
   const [region, setRegion] = useState<Region | null>(null);
@@ -61,6 +59,9 @@ const ListingsMap: React.FC<Props> = ({
     []
   );
 
+  // Fetch listings with pictures from Payload API
+  const { data: allListings, isLoading: listingsLoading } = useListings();
+
   const fetchListingsWithPictures = useCallback(
     async (params: {
       input_lat: number;
@@ -72,40 +73,25 @@ const ListingsMap: React.FC<Props> = ({
       user_id: string | null;
     }) => {
       try {
-        const { data: listings, error } = await connector.client.rpc('listings_in_view', {
-          ...params,
-        });
+        // Filter listings to those in view
+        const filtered = allListings?.filter((listing: any) => {
+          if (!listing.location?.coordinates) return false;
+          const [lon, lat] = listing.location.coordinates;
+          return (
+            lat >= params.min_lat &&
+            lat <= params.max_lat &&
+            lon >= params.min_long &&
+            lon <= params.max_long
+          );
+        }) || [];
 
-        if (error) {
-          console.error('Error fetching listings:', error);
-          return [];
-        }
-
-        const listingIds = listings.map((l: ListingRecord) => l.id);
-        const sql = SelectLatestImages(listingIds);
-        const pictures: PictureEntry[] = await powersync.getAll(sql, listingIds);
-
-        // const {
-        //   data: pictures,
-        //   isLoading,
-        //   isFetching,
-        //   error: picturesError,
-        // } = useQuery<PictureEntry>({
-        //   queryKey: ['todoLists'],
-        //   query: SelectLatestImages(listingIds), // use `query` instead of `queryFn` to define a SQL query - this allows watching underlying tables for changes
-        //   parameters: listingIds, // supply query parameters for the SQL query
-        // });
-
-        return listings.map((listing: ListingRecord) => ({
-          ...listing,
-          picture: pictures?.find((pic) => pic.listing_id === listing.id) || null,
-        }));
+        return filtered;
       } catch (err) {
         console.error('Error in fetchListingsWithPictures:', err);
         return [];
       }
     },
-    [connector, powersync]
+    [allListings]
   );
 
   const handleLocationPermission = useCallback(async () => {

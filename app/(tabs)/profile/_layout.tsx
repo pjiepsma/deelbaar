@@ -1,11 +1,6 @@
-import { router, Stack } from 'expo-router';
-import { Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Text } from 'react-native';
-import { useUser } from '~/lib/providers/UserProvider';
+import { Stack } from 'expo-router';
 
-const ProfileLayout = () => {
-  const { profile } = useUser();
+export default function ProfileLayout() {
   return (
     <Stack
       screenOptions={{
@@ -15,31 +10,20 @@ const ProfileLayout = () => {
       <Stack.Screen
         name="index"
         options={{
-          headerShown: true,
-          title: 'Profile',
-          headerRight: () =>
-            profile?.role === 'Admin' ? (
-              <Pressable
-                onPress={() => router.push('(tabs)/profile/admin')}
-                style={{ marginRight: 15 }}>
-                <Ionicons name="briefcase-outline" size={24} color="#000" />
-              </Pressable>
-            ) : null,
+          title: 'Account',
         }}
       />
-      <Stack.Screen
-        name="picker"
-        options={{
-          title: 'Choose a location on the map',
-          headerRight: () => (
-            <Pressable onPress={() => router.back()} style={{ marginRight: 15 }}>
-              <Text>OK</Text>
-            </Pressable>
-          ),
-        }}
-      />
+      <Stack.Screen name="manage-listings" options={{ title: 'Beheer mijn listings' }} />
+      <Stack.Screen name="personal-details" options={{ title: 'Persoonlijke gegevens' }} />
+      <Stack.Screen name="login-settings" options={{ title: 'Inloginstellingen' }} />
+      <Stack.Screen name="email-settings" options={{ title: 'E-mail instellingen' }} />
+      <Stack.Screen name="push-settings" options={{ title: 'Pushmeldingen' }} />
+      <Stack.Screen name="faq" options={{ title: 'Veelgestelde vragen' }} />
+      <Stack.Screen name="terms" options={{ title: 'Voorwaarden & beleid' }} />
+      <Stack.Screen name="stats" options={{ title: 'Statistieken' }} />
+      <Stack.Screen name="admin" options={{ title: 'Admin tools' }} />
     </Stack>
   );
-};
+}
 
-export default ProfileLayout;
+

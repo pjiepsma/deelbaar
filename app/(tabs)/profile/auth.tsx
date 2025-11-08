@@ -1,130 +1,154 @@
-import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-
+import { useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Colors from '~/constants/Colors';
 import { useAuth } from '~/lib/providers/AuthProvider';
-import { useSystem } from '~/lib/powersync/PowerSync';
 
-export default function Auth() {
+export default function AuthScreen() {
+  const { signIn, signInAnonymously } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { connector } = useSystem();
-  const { user, signIn, signOut } = useAuth();
 
-  async function signInWithEmail() {
-    if (!email || !password) {
-      Alert.alert('Email and password must be provided: ' + email + ' ' + password);
-      return;
-    }
-
+  const withStatus = async (action: () => Promise<{ error?: { message: string } }>) => {
     setLoading(true);
-    const {
-      data: { session, user },
-      error,
-    } = await connector.client.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      Alert.alert(error.message);
+    setStatus(null);
+    const result = await action();
+    if (result.error) {
+      setStatus(result.error.message);
     } else {
-      signIn({ session, user });
+      setStatus('Ingelogd!');
+      setEmail('');
+      setPassword('');
     }
-
     setLoading(false);
-  }
-
-  async function signUpWithEmail() {
-    setLoading(true);
-    const { error } = await connector.client.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) Alert.alert(error.message);
-    setLoading(false);
-  }
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <View style={styles.verticallySpaced}>
-        <TextInput
-          onChangeText={(text) => setEmail(text)}
-          value={email}
-          placeholder="email@address.com"
-          autoCapitalize="none"
-          style={styles.input}
-        />
-      </View>
-      <View style={styles.verticallySpaced}>
-        <TextInput
-          onChangeText={(text) => setPassword(text)}
-          value={password}
-          secureTextEntry
-          placeholder="Password"
-          autoCapitalize="none"
-          style={styles.input}
-        />
-      </View>
-      <TouchableOpacity disabled={loading} onPress={signInWithEmail} style={styles.button}>
-        <Text style={styles.buttonText}>Sign in</Text>
+      <Text style={styles.title}>Log in om verder te gaan</Text>
+      <TextInput
+        placeholder="email@adres.com"
+        placeholderTextColor="#999"
+        autoCapitalize="none"
+        keyboardType="email-address"
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+        editable={!loading}
+      />
+      <TextInput
+        placeholder="Wachtwoord (optioneel)"
+        placeholderTextColor="#999"
+        secureTextEntry
+        autoCapitalize="none"
+        value={password}
+        onChangeText={setPassword}
+        style={styles.input}
+        editable={!loading}
+      />
+
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
+        disabled={loading}
+        onPress={() => withStatus(() => signIn(email, password))}>
+        <Text style={styles.buttonText}>{loading ? 'Bezig...' : 'Inloggen'}</Text>
       </TouchableOpacity>
-      <View style={styles.footerText}>
-        <Text>Don't have an account? </Text>
-        <TouchableOpacity onPress={signUpWithEmail}>
-          <Text style={styles.link}>Sign Up</Text>
-        </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.secondaryButton, loading && styles.buttonDisabled]}
+        disabled={loading}
+        onPress={() => withStatus(() => signInAnonymously())}>
+        <Text style={styles.secondaryButtonText}>Ga verder als gast</Text>
+      </TouchableOpacity>
+
+      <View style={styles.helperBox}>
+        <Text style={styles.helperTitle}>Hoe werkt dit?</Text>
+        <Text style={styles.helperParagraph}>
+          In deze pure Expo setup gebruiken we een eenvoudige lokale login. Bij het overzetten van de legacy-app kun je
+          deze flow vervangen door de echte Payload-authenticatie.
+        </Text>
       </View>
+
+      {status && <Text style={styles.statusMessage}>{status}</Text>}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#fff',
+    flex: 1,
+    backgroundColor: Colors.white,
+    paddingHorizontal: 24,
+    paddingVertical: 32,
+    gap: 16,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: Colors.primary,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  verticallySpaced: {
-    marginVertical: 10,
   },
   input: {
-    height: 40,
-    borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
+    borderColor: '#d1d5db',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 16,
+    backgroundColor: '#fafafa',
   },
   button: {
-    alignItems: 'center',
+    marginTop: 12,
     backgroundColor: Colors.primary,
-    padding: 12,
-    borderRadius: 5,
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  buttonDisabled: {
+    opacity: 0.5,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: Colors.white,
+    fontWeight: '600',
+    fontSize: 16,
   },
-  footerText: {
-    marginTop: 20,
-    textAlign: 'center',
-    color: '#666',
-    flexDirection: 'row',
+  secondaryButton: {
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.primary,
   },
-  link: {
+  secondaryButtonText: {
     color: Colors.primary,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  helperBox: {
+    marginTop: 12,
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    gap: 6,
+  },
+  helperTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2933',
+  },
+  helperParagraph: {
+    fontSize: 14,
+    color: '#4a5568',
+    lineHeight: 20,
+  },
+  statusMessage: {
+    marginTop: 12,
+    textAlign: 'center',
+    color: '#2563eb',
+    fontWeight: '500',
   },
 });
+
+

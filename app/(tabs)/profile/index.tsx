@@ -1,15 +1,27 @@
-import { Stack, useRouter } from 'expo-router';
-import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-
-import Account from '~/app/(tabs)/profile/account';
-import Auth from '~/app/(tabs)/profile/auth';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useAuth } from '~/lib/providers/AuthProvider';
-import { Ionicons } from '@expo/vector-icons';
+import AccountScreen from './account';
+import AuthScreen from './auth';
 
-export default function Index() {
-  const { session, user, profile } = useAuth();
-  const router = useRouter();
-  return <View>{user && session ? <Account /> : <Auth />}</View>;
+export default function ProfileTab() {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0a84ff" />
+      </View>
+    );
+  }
+
+  return user ? <AccountScreen /> : <AuthScreen />;
 }
-const styles = StyleSheet.create({});
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
+});

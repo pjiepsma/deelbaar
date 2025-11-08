@@ -1,147 +1,161 @@
-import { useFocusEffect } from '@react-navigation/core';
-import { Stack, useRouter } from 'expo-router';
-import * as React from 'react';
-import { useCallback, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import Colors from '~/constants/Colors';
+import { useFavorites } from '~/lib/hooks/usePayloadQuery';
+import { useToggleFavorite } from '~/lib/hooks/usePayloadQuery';
 
-import Loader from '~/components/Loader';
-import ListingCard from '~/components/map/molecules/ListingCard';
-import { useAuth } from '~/lib/providers/AuthProvider';
-import { useSystem } from '~/lib/powersync/PowerSync';
-import { GetFavoriteListings, RemoveFavorite, SelectLatestImages } from '~/lib/powersync/Queries';
-import { PictureEntry } from '~/lib/types/types';
+export default function FavoritesTab() {
+  const { data: favorites = [], isLoading, isError } = useFavorites();
+  const toggleFavorite = useToggleFavorite();
 
-interface Listing {
-  id: string;
-  name: string;
-  description: string;
-  location: string;
-  // Add other listing properties as needed
-}
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
 
-const Index = () => {
-  const { powersync, connector } = useSystem();
-  const { user } = useAuth();
-  const router = useRouter();
-  const [favorites, setFavorites] = useState<Listing[]>([]);
-  const [loading, setLoading] = useState(false);
+  if (isError) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorTitle}>Favorieten ophalen mislukt</Text>
+        <Text style={styles.errorText}>Controleer je verbinding met de Payload API.</Text>
+      </View>
+    );
+  }
 
-  const fetchFavorites = async () => {
-    if (user?.id) {
-      setLoading(true);
-      const result = await getFavoriteListings(user.id);
-      if (Array.isArray(result)) {
-        setFavorites(result);
-      } else {
-        setFavorites([]);
-      }
-
-      setLoading(false);
-    }
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchFavorites();
-    }, [user])
-  );
-
-  const getFavoriteListings = async (userId: string) => {
-    const result = await powersync.execute(GetFavoriteListings, [userId]);
-    const listings = result.rows?._array || [];
-    if (listings.length > 0) {
-      const listing_ids = listings.map((location) => location.id);
-      try {
-        const sql = SelectLatestImages(listing_ids);
-        const pictures: PictureEntry[] = await powersync.getAll(sql, listing_ids);
-        return listings.map((location) => {
-          const picture = pictures.find((pic) => pic.listing_id === location.id) || null;
-          return {
-            ...location,
-            favorite: true,
-            picture,
-          };
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    return [];
-  };
-
-  const removeFavorite = async (userId: string, listingId: string) => {
-    const result = await powersync.execute(RemoveFavorite, [userId, listingId]);
-    return result;
-  };
-
-  const handleRemoveFavorite = async (listingId: string) => {
-    if (user?.id) {
-      await removeFavorite(user.id, listingId);
-      const result = await getFavoriteListings(user.id);
-      if (Array.isArray(result)) {
-        setFavorites(result);
-      } else {
-        setFavorites([]);
-      }
-    }
-  };
-
-  const handleNavigate = (item) => {
-    router.push({
-      pathname: '/(tabs)/favorites/[id]', // Adjust this to your actual detail page path
-      params: {
-        id: item.id,
-        dist_meters: item.dist_meters,
-        lat: item.lat,
-        long: item.long,
-      },
-    });
-  };
+  if (!favorites.length) {
+    return (
+      <View style={styles.centered}>
+        <Ionicons name="heart-outline" size={48} color="#94a3b8" />
+        <Text style={styles.emptyTitle}>Nog geen favorieten</Text>
+        <Text style={styles.emptySubtitle}>Markeer een listing als favoriet vanuit de zoekpagina.</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={{ flex: 1, flexGrow: 1 }}>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: 'Favorite',
-        }}
-      />
-      {loading ? (
-        <Loader delay={200} amount={3} visible={loading} />
-      ) : user ? (
-        <Animated.FlatList
-          data={favorites}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <ListingCard
-              item={item}
-              onRemoveFavorite={handleRemoveFavorite}
-              category="Books"
-              onPress={() => handleNavigate(item)}
-            />
-          )}
-          itemLayoutAnimation={LinearTransition}
-        />
-      ) : (
-        <View style={styles.messageContainer}>
-          <Text style={styles.message}>Log in om je favorieten te zien.</Text>
-        </View>
-      )}
-    </View>
+    <FlatList
+      contentContainerStyle={styles.listContent}
+      data={favorites}
+      keyExtractor={(item) => item.id ?? `${item.listing}-${item.user}`}
+      renderItem={({ item }) => {
+        const listing = item.listing?.id ? item.listing : item.listingData;
+        if (!listing) {
+          return null;
+        }
+
+        const handleToggle = () =>
+          toggleFavorite.mutate({
+            listingId: listing.id,
+            isFavorite: true,
+          });
+
+        return (
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>{listing.title ?? 'Onbekende listing'}</Text>
+              <TouchableOpacity onPress={handleToggle} style={styles.favoriteButton}>
+                <Ionicons name="heart" size={22} color="#ef4444" />
+              </TouchableOpacity>
+            </View>
+            {listing.address && <Text style={styles.cardAddress}>{listing.address}</Text>}
+            {listing.description && <Text style={styles.cardDescription}>{listing.description}</Text>}
+            <View style={styles.cardFooter}>
+              {listing.price && (
+                <Text style={styles.cardPrice}>€ {Number(listing.price).toLocaleString('nl-NL')}</Text>
+              )}
+              <Text style={styles.cardMeta}>Listing ID: {listing.id}</Text>
+            </View>
+          </View>
+        );
+      }}
+    />
   );
-};
+}
 
 const styles = StyleSheet.create({
-  messageContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  listContent: {
+    padding: 20,
+    gap: 16,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    gap: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
-  message: {
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1f2937',
+  },
+  cardAddress: {
+    fontSize: 14,
+    color: '#4b5563',
+  },
+  cardDescription: {
+    fontSize: 14,
+    color: '#475569',
+    lineHeight: 20,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  cardPrice: {
     fontSize: 16,
-    color: '#777',
+    fontWeight: '600',
+    color: Colors.primary,
+  },
+  cardMeta: {
+    fontSize: 13,
+    color: '#64748b',
+  },
+  favoriteButton: {
+    padding: 6,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  centered: {
+    flex: 1,
+    padding: 32,
+    gap: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  emptySubtitle: {
+    color: '#4b5563',
+    textAlign: 'center',
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#991b1b',
+  },
+  errorText: {
+    color: '#ef4444',
   },
 });
 
-export default Index;

@@ -6,10 +6,9 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 import DefaultCard from '~/components/map/molecules/DefaultCard';
 import ListingCard from '~/components/map/molecules/ListingCard';
+import { ListingRecord } from '~/lib/types/models';
+import { useToggleFavorite } from '~/lib/hooks/usePayloadQuery';
 import { useAuth } from '~/lib/providers/AuthProvider';
-import { ListingRecord } from '~/lib/powersync/AppSchema';
-import { useSystem } from '~/lib/powersync/PowerSync';
-import { AddFavorite } from '~/lib/powersync/Queries';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -24,13 +23,12 @@ const ListingCarousel = ({ category, listing, listings, setListing }: Props) => 
   const carouselRef = useRef<ICarouselInstance>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const SNAPPOINTS = ['7%', '30%'];
-  const { powersync } = useSystem();
   const { user } = useAuth();
   const router = useRouter();
   const baseOptions = {
     vertical: false,
     width: screenWidth * 0.9,
-    height: 260,
+    height: 160, // Reduced from 260 to give more map space
   };
 
   useEffect(() => {
@@ -49,24 +47,14 @@ const ListingCarousel = ({ category, listing, listings, setListing }: Props) => 
     }
   };
 
-  const removeFavorite = async (userId: string, listingId: string) => {
-    return await powersync.execute('RemoveFavorite', [userId, listingId]);
-  };
-
   const handleRemoveFavorite = async (listingId: string) => {
-    if (user?.id) {
-      await removeFavorite(user.id, listingId);
-    }
-  };
-
-  const addFavorite = async (userId: string, listingId: string) => {
-    return await powersync.execute(AddFavorite, [userId, listingId]);
+    // Favorites functionality - to be implemented with useToggleFavorite hook
+    console.log('Remove favorite:', listingId);
   };
 
   const handleAddFavorite = async (listingId: string) => {
-    if (user?.id) {
-      const favorite = await addFavorite(user.id, listingId);
-    }
+    // Favorites functionality - to be implemented with useToggleFavorite hook
+    console.log('Add favorite:', listingId);
   };
 
   const handleNavigate = (item) => {
@@ -96,16 +84,17 @@ const ListingCarousel = ({ category, listing, listings, setListing }: Props) => 
 
   return (
     <BottomSheet
-      enableDynamicSizing={false} // todo
+      enableDynamicSizing={false}
       ref={bottomSheetRef}
       snapPoints={SNAPPOINTS}
       backgroundStyle={{ backgroundColor: '#f4f4e8' }}>
       <View style={styles.container}>
-        <View style={styles.handleContainer}>
-          <Text style={styles.handleText}>
-            {listings.length > 0 ? `${listings.length} Minibiebs` : 'Geen resultaten'}
-          </Text>
-        </View>
+        {/* Small count badge only - BottomSheet has its own drag handle */}
+        {listings.length > 0 && (
+          <View style={styles.countBadge}>
+            <Text style={styles.countText}>{listings.length}</Text>
+          </View>
+        )}
         {listings.length > 0 ? (
           <Carousel
             {...baseOptions}
@@ -130,16 +119,23 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 0,
   },
-  handleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  countBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 16,
+    backgroundColor: '#6B8E23',
+    borderRadius: 12,
+    minWidth: 24,
+    height: 24,
     justifyContent: 'center',
-    backgroundColor: '#f4f4e8',
-    paddingBottom: 10,
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    zIndex: 10,
   },
-  handleText: {
-    fontWeight: 'bold',
-    fontSize: 16,
+  countText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
   },
   carousel: {
     width: '100%',

@@ -2,7 +2,7 @@ import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Image, StyleSheet, View } from 'react-native';
 
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { useAuth } from '~/lib/providers/AuthProvider';
 
 interface Props {
   size: number;
@@ -14,7 +14,7 @@ export default function Avatar({ url }: Props) {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const avatarSize = { height: 150, width: 150 };
-  const { connector } = useSystem();
+  const { user } = useAuth();
 
   async function uploadAvatar() {}
 

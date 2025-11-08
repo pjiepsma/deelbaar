@@ -1,11 +1,19 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { Image, Pressable } from 'react-native';
+import {
+  Box,
+  VStack,
+  HStack,
+  Text,
+  Heading,
+  Badge,
+  BadgeText,
+  Pressable as GluestackPressable,
+} from '@gluestack-ui/themed';
 
 import { useAuth } from '~/lib/providers/AuthProvider';
-import { ListingRecord } from '~/lib/powersync/AppSchema';
-import { system } from '~/lib/powersync/PowerSync';
-import { toAttachmentRecord } from '~/lib/util/util';
+import { ListingRecord } from '~/lib/types/models';
 
 interface HikeItemProps {
   item: ListingRecord;
@@ -22,15 +30,25 @@ const ListingCard: React.FC<HikeItemProps> = ({
   onAddFavorite,
   onRemoveFavorite,
 }) => {
-  const latestPicture = item?.picture ? item.picture : null;
-  const photoAttachment = latestPicture ? toAttachmentRecord(latestPicture) : null;
-  const uri = system.attachmentQueue?.getLocalUri(photoAttachment?.local_uri!);
-  const distanceInKm = item?.dist_meters ? (item.dist_meters / 1000).toFixed(1) : '0';
-  const numericRating = item?.rating ? Number(item.rating) : 0;
-  const isFavorite = item?.favorite; // Assuming `isFavorite` is a property of `item`
   const { user } = useAuth();
+  
+  console.log('🎴 Rendering card for:', item?.name);
+  
+  // Handle Payload media structure
+  const latestPicture = item?.picture;
+  const uri = latestPicture?.photo?.url || latestPicture?.url || null;
+  
+  const distanceInKm = item?.distance ? (item.distance / 1000).toFixed(1) : '0';
+  const numericRating = item?.rating ? Number(item.rating) : 0;
+  const isFavorite = item?.favorite;
+  
+  if (!item) {
+    console.log('🎴 No item data!');
+    return null;
+  }
 
-  const handleFavoritePress = () => {
+  const handleFavoritePress = (e: any) => {
+    e.stopPropagation();
     if (isFavorite) {
       onRemoveFavorite(item.id);
     } else {
@@ -39,128 +57,95 @@ const ListingCard: React.FC<HikeItemProps> = ({
   };
 
   return (
-    <TouchableOpacity onPress={onPress} style={styles.card} activeOpacity={0.9}>
-      <View style={styles.firstRow}>
-        <Image
-          key={photoAttachment?.id}
-          source={
-            photoAttachment
-              ? {
-                  uri,
-                }
-              : require('assets/images/default-placeholder.png')
-          }
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <View style={styles.textContainer}>
-          <Text style={styles.title}>{item.name}</Text>
-          <Text style={styles.subtitle}>{item.description}</Text>
-        </View>
-        {user && (
-          <TouchableOpacity onPress={handleFavoritePress} style={styles.favoriteIcon}>
-            <Ionicons
-              name={isFavorite ? 'heart' : 'heart-outline'}
-              size={24}
-              color={isFavorite ? 'red' : 'gray'}
+    <GluestackPressable onPress={onPress}>
+      <Box
+        bg="$white"
+        borderRadius="$lg"
+        mx="$2"
+        h={140}
+        overflow="hidden"
+        shadowColor="$black"
+        shadowOpacity={0.08}
+        shadowRadius={6}
+        shadowOffset={{ width: 0, height: 1 }}
+        $android-elevation={2}>
+        <HStack h="$full">
+          {/* Image Section - Left side - Smaller */}
+          <Box position="relative" w={110} h="$full">
+            <Image
+              key={item.id}
+              source={
+                uri
+                  ? { uri }
+                  : require('assets/images/default-placeholder.png')
+              }
+              style={{ width: 110, height: 140 }}
+              resizeMode="cover"
             />
-          </TouchableOpacity>
-        )}
-      </View>
+            
+            {/* Favorite Button - Smaller */}
+            {user && (
+              <Pressable 
+                onPress={handleFavoritePress}
+                style={{
+                  position: 'absolute',
+                  top: 6,
+                  right: 6,
+                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                  borderRadius: 16,
+                  width: 28,
+                  height: 28,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  shadowColor: '#000',
+                  shadowOpacity: 0.15,
+                  shadowRadius: 3,
+                  elevation: 2,
+                }}>
+                <Ionicons
+                  name={isFavorite ? 'heart' : 'heart-outline'}
+                  size={16}
+                  color={isFavorite ? '#FF385C' : '#222'}
+                />
+              </Pressable>
+            )}
+          </Box>
 
-      <View style={styles.secondRow}>
-        <Text style={styles.subtitle}>{distanceInKm}km</Text>
-      </View>
+          {/* Content Section - Right side - Compact */}
+          <VStack flex={1} p="$2.5" justifyContent="space-between">
+            {/* Title & Location */}
+            <VStack space="2xs">
+              <Heading size="xs" numberOfLines={2} lineHeight="$sm">
+                {item.name}
+              </Heading>
+              
+              <Text size="2xs" color="$coolGray500" numberOfLines={1}>
+                {item.location?.address || 'Apeldoorn'}
+              </Text>
+            </VStack>
 
-      <View style={styles.separator} />
-
-      <View style={styles.bottomContainer}>
-        <View style={styles.labelContainer}>
-          <Text style={styles.label}>{category}</Text>
-        </View>
-
-        {numericRating !== 0 && (
-          <View style={styles.ratingContainer}>
-            <Text style={styles.rating}>⭐ {numericRating.toFixed(1)}</Text>
-          </View>
-        )}
-      </View>
-    </TouchableOpacity>
+            {/* Bottom Info */}
+            <VStack space="2xs">
+              <HStack space="xs" alignItems="center" flexWrap="wrap">
+                <Badge variant="solid" bg="#6B8E23" size="sm">
+                  <BadgeText fontSize={10}>📚 {category}</BadgeText>
+                </Badge>
+                
+                {numericRating > 0 && (
+                  <Text size="2xs" fontWeight="$semibold" color="#6B8E23">
+                    {numericRating.toFixed(1)} ⭐
+                  </Text>
+                )}
+                <Text size="2xs" color="$coolGray500">
+                  • {distanceInKm}km
+                </Text>
+              </HStack>
+            </VStack>
+          </VStack>
+        </HStack>
+      </Box>
+    </GluestackPressable>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 10,
-    marginVertical: 4,
-    marginHorizontal: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  firstRow: {
-    flexDirection: 'row',
-  },
-  image: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
-    marginRight: 10,
-  },
-  textContainer: {
-    flex: 1,
-  },
-  favoriteIcon: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  secondRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-  },
-  subtitle: {
-    color: '#777',
-    fontSize: 14,
-  },
-  separator: {
-    borderBottomColor: '#ddd',
-    borderBottomWidth: 1,
-    marginVertical: 8,
-  },
-  bottomContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  labelContainer: {
-    backgroundColor: '#E0F7FA',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 5,
-  },
-  label: {
-    color: '#00796B',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  rating: {
-    fontSize: 14,
-    marginRight: 5,
-  },
-});
 
 export default ListingCard;

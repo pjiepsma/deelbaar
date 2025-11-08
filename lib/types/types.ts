@@ -1,7 +1,16 @@
-import { AttachmentRecord } from '@powersync/attachments';
 import { Omit } from 'react-native';
+import { PictureRecord } from './models';
 
-import { PictureRecord } from '~/lib/powersync/AppSchema';
+// Custom attachment record (replaces PowerSync)
+export interface AttachmentRecord {
+  id: string;
+  filename: string;
+  media_type?: string;
+  state?: number;
+  timestamp?: number;
+  local_uri?: string;
+  size?: number;
+}
 
 export interface StoreEntry {
   lat: number;

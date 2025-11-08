@@ -10,23 +10,24 @@ import {
 } from 'react-native';
 
 import { useAuth } from '~/lib/providers/AuthProvider';
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { payloadClient } from '~/lib/api/PayloadClient';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { connector, powersync } = useSystem();
-  const { signIn } = useAuth();
+  const { signIn, signInAnonymously, signOut } = useAuth();
+
   // Sign in with email and password
   const onSignInPress = async () => {
     setLoading(true);
     try {
-      // Use the PowerSync specific login method
-      const data = await connector.login(email, password);
-      signIn(data);
+      const { error } = await signIn(email, password);
+      if (error) {
+        Alert.alert('Login Failed', error.message);
+      }
     } catch (error: any) {
-      Alert.alert(error.message);
+      Alert.alert('Error', error.message);
     } finally {
       setLoading(false);
     }
@@ -35,11 +36,12 @@ const Login = () => {
   const onAnonymouslyPress = async () => {
     setLoading(true);
     try {
-      // Use the PowerSync specific login method
-      const data = await connector.anonymously();
-      signIn(data);
+      const { error } = await signInAnonymously();
+      if (error) {
+        Alert.alert('Anonymous Login Failed', error.message);
+      }
     } catch (error: any) {
-      Alert.alert(error.message);
+      Alert.alert('Error', error.message);
     } finally {
       setLoading(false);
     }
@@ -48,10 +50,9 @@ const Login = () => {
   const onSignOutPress = async () => {
     setLoading(true);
     try {
-      await powersync.disconnectAndClear();
-      await connector.client.auth.signOut();
+      await signOut();
     } catch (error: any) {
-      Alert.alert(error.message);
+      Alert.alert('Error', error.message);
     } finally {
       setLoading(false);
     }
@@ -59,20 +60,28 @@ const Login = () => {
 
   // Create a new user
   const onSignUpPress = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Email and password are required');
+      return;
+    }
+
     setLoading(true);
 
-    const {
-      data: { session },
-      error,
-    } = await connector.client.auth.signUp({
-      email,
-      password,
-    });
+    try {
+      const { error } = await payloadClient.create('users', {
+        email,
+        password,
+        role: 'user',
+        isAnonymous: false,
+      });
 
-    if (error) {
-      Alert.alert(error.message);
-    } else if (!session) {
-      Alert.alert('Please check your inbox for email verification!');
+      if (error) {
+        Alert.alert('Sign Up Failed', error.message);
+      } else {
+        Alert.alert('Success', 'Account created! Please sign in.');
+      }
+    } catch (error: any) {
+      Alert.alert('Error', error.message);
     }
 
     setLoading(false);

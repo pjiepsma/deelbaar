@@ -1,18 +1,22 @@
-import { Session, User } from '@supabase/supabase-js';
-import { useRouter, useSegments } from 'expo-router';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { payloadClient, PayloadUser } from '../api/PayloadClient';
+import { syncManager } from '../storage/SyncManager';
+import { AppConfig } from '../config/AppConfig';
 
 export const AuthContext = createContext<{
-  session: Session | null;
-  user: User | null;
-  signIn: ({ session, user }: { session: Session | null; user: User | null }) => void;
-  signOut: () => void;
+  user: PayloadUser | null;
+  token: string | null;
+  isLoading: boolean;
+  signIn: (email: string, password: string) => Promise<{ error?: any }>;
+  signInAnonymously: () => Promise<{ error?: any }>;
+  signOut: () => Promise<void>;
 }>({
-  session: null,
   user: null,
-  signIn: () => {},
-  signOut: () => {},
+  token: null,
+  isLoading: true,
+  signIn: async () => ({}),
+  signInAnonymously: async () => ({}),
+  signOut: async () => {},
 });
 
 export function useAuth() {
@@ -20,94 +24,112 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<PayloadUser | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSigningOut, setIsSigningOut] = useState<boolean>(false);
-  const segments = useSegments();
-  const router = useRouter();
-  const { connector, init } = useSystem();
-
   useEffect(() => {
-    if (isLoading || isSigningOut) return;
+    initAuth();
+  }, []);
 
-    if (!session) {
-      const signInAnonymously = async () => {
-        const { error } = await connector.client.auth.signInAnonymously();
-        if (error) {
-          console.error('Anonymous sign-in error:', error.message);
-        }
-      };
-
-      signInAnonymously();
-    }
-  }, [session, isLoading, segments, router, user, connector]);
-
-  useEffect(() => {
-    const fetchSession = async () => {
-      const { data, error } = await connector.client.auth.getSession();
-      if (error) {
-        console.error('Error fetching session:', error.message);
-      } else {
-        setSession(data.session);
-      }
-    };
-
-    fetchSession();
-
-    const { data: authListener } = connector.client.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session && session.user && !session.user.is_anonymous) {
-        setUser(session.user);
-      } else {
-        setUser(null);
-      }
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [connector]);
-
-  useEffect(() => {
-    const initSystem = async () => {
-      await init();
-      setIsLoading(false);
-    };
-
-    initSystem();
-  }, [init]);
-
-  async function signIn({ session, user }: { session: Session | null; user: User | null }) {
-    setSession(session);
-    setUser(user);
-  }
-
-  async function signOut() {
-    setIsSigningOut(true);
-
+  const initAuth = async () => {
     try {
-      const { error } = await connector.client.auth.signOut();
-      setSession(null);
-      setUser(null);
+      // Initialize Payload client
+      await payloadClient.init(AppConfig.PAYLOAD_URL);
 
-      if (error) {
-        console.error('Error during sign-out:', error.message);
+      const currentToken = payloadClient.getToken();
+      const currentUser = payloadClient.getUser();
+
+      if (currentToken && currentUser) {
+        setToken(currentToken);
+        setUser(currentUser);
+
+        await syncManager.init();
       }
-    } catch (e) {
-      console.error('Sign-out error:', e);
+      // No automatic anonymous login - users must sign in explicitly
+    } catch (error) {
+      console.error('Auth initialization error:', error);
     } finally {
       setIsLoading(false);
-      setIsSigningOut(false);
     }
-  }
+  };
+
+  const signIn = async (email: string, password: string) => {
+    console.log('⭐⭐⭐ [AuthProvider v5.0] signIn CALLED - email:', email);
+    try {
+      console.log('⭐ [AuthProvider] Calling payloadClient.login');
+      const { data, error } = await payloadClient.login(email, password);
+      console.log('⭐ [AuthProvider] Login response - data:', data, 'error:', error);
+
+      if (error) {
+        console.error('[AuthProvider] Login error:', error);
+        return { error };
+      }
+
+      if (!data) {
+        console.error('[AuthProvider] No data returned from login');
+        return { error: { message: 'Login failed - no data returned' } };
+      }
+
+      console.log('[AuthProvider] Login successful, setting user and token');
+      setToken(data.token);
+      setUser(data.user);
+
+      await syncManager.init();
+
+      return {};
+    } catch (error: any) {
+      console.error('[AuthProvider] Login exception:', error);
+      return { error: { message: error.message || 'Login failed' } };
+    }
+  };
+
+  const signInAnonymously = async () => {
+    try {
+      const { data, error } = await payloadClient.loginAnonymously();
+
+      if (error) {
+        console.error('Anonymous login error:', error);
+        return { error };
+      }
+
+      if (data) {
+        setToken(data.token);
+        setUser(data.user);
+
+        await syncManager.init();
+      }
+
+      return {};
+    } catch (error: any) {
+      console.error('Anonymous login exception:', error);
+      return { error: { message: error.message || 'Anonymous login failed' } };
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      await syncManager.reset();
+
+      // Logout from Payload
+      await payloadClient.logout();
+
+      setToken(null);
+      setUser(null);
+
+      // Local SQLite cache remains for offline-first functionality
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };
 
   return (
     <AuthContext.Provider
       value={{
-        session,
         user,
+        token,
+        isLoading,
         signIn,
+        signInAnonymously,
         signOut,
       }}>
       {children}

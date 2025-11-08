@@ -1,81 +1,42 @@
-import Entypo from '@expo/vector-icons/Entypo';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import * as Font from 'expo-font';
-import * as NavigationBar from 'expo-navigation-bar';
+import 'react-native-reanimated';
 import { Stack } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { QueryProvider } from '~/lib/providers/QueryProvider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import * as SplashScreen from 'expo-splash-screen';
-import '../reanimated.config';
-import '@azure/core-asynciterator-polyfill';
-import Colors from '~/constants/Colors';
-import { PowerSyncProvider } from '~/lib/powersync/PowerSyncProvider';
 import { AuthProvider } from '~/lib/providers/AuthProvider';
 import { UserProvider } from '~/lib/providers/UserProvider';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { GluestackUIProvider } from '@gluestack-ui/themed';
+import config from '~/gluestack-ui.config';
+import { sqliteManager } from '~/lib/storage/SQLiteManager';
 
-const client = new QueryClient();
-SplashScreen.preventAutoHideAsync();
-
-SplashScreen.setOptions({
-  duration: 1000,
-  fade: true,
-});
-
-const InitialLayout = () => {
-  return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
-  );
-};
-
-const App = () => {
-  const [appIsReady, setAppIsReady] = useState(false);
-
+export default function RootLayout() {
   useEffect(() => {
-    NavigationBar.setBackgroundColorAsync(Colors.white);
+    sqliteManager
+      .init()
+      .catch((error) => console.error('[RootLayout] Failed to initialize SQLite', error));
   }, []);
 
-  useEffect(() => {
-    async function prepare() {
-      try {
-        await Font.loadAsync(Entypo.font);
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        SplashScreen.hideAsync();
-      }
-    }
-
-    prepare();
-  }, []);
-
-  const onLayoutRootView = useCallback(() => {
-    if (appIsReady) {
-      NavigationBar.setBackgroundColorAsync(Colors.white);
-      SplashScreen.hide();
-    }
-  }, [appIsReady]);
-
   return (
-    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <QueryClientProvider client={client}>
-        <PowerSyncProvider>
+    <QueryProvider>
+      <GluestackUIProvider config={config}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
           <SafeAreaProvider>
-            <BottomSheetModalProvider>
-              <AuthProvider>
-                <UserProvider>
-                  <InitialLayout />
-                </UserProvider>
-              </AuthProvider>
-            </BottomSheetModalProvider>
+            <AuthProvider>
+              <UserProvider>
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                  <Stack.Screen
+                    name="(modals)"
+                    options={{ presentation: 'modal', headerShown: false }}
+                  />
+                </Stack>
+              </UserProvider>
+            </AuthProvider>
           </SafeAreaProvider>
-        </PowerSyncProvider>
-      </QueryClientProvider>
-    </GestureHandlerRootView>
+        </GestureHandlerRootView>
+      </GluestackUIProvider>
+    </QueryProvider>
   );
-};
+}
 
-export default App;

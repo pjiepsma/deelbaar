@@ -1,4 +1,4 @@
-import { AttachmentRecord } from '@powersync/attachments';
+import { AttachmentRecord } from '~/lib/types/types';
 import * as ImagePicker from 'expo-image-picker';
 import { ImagePickerResult } from 'expo-image-picker';
 import React from 'react';
@@ -13,9 +13,8 @@ import {
 } from 'react-native';
 import { Button, Image, ListItem } from '@rneui/themed';
 
-import { AppConfig } from '~/lib/powersync/AppConfig';
-import { PictureRecord } from '~/lib/powersync/AppSchema';
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { AppConfig } from '~/lib/config/AppConfig';
+import { PictureRecord } from '~/lib/types/models';
 
 export interface TodoItemWidgetProps {
   record: PictureRecord;
@@ -30,7 +29,6 @@ const isAndroid = Platform.OS === 'android';
 export const TodoItemWidget: React.FC<TodoItemWidgetProps> = (props) => {
   const { record, photoAttachment, onDelete, onSavePhoto } = props;
   const [loading, setLoading] = React.useState(false);
-  const system = useSystem();
 
   const captureImageAsync = async () => {
     const options = {

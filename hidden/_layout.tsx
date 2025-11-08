@@ -3,10 +3,10 @@ import { Stack } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { useSystem } from '~/lib/powersync/PowerSync';
+import { useAuth } from '~/lib/providers/AuthProvider';
 
 const Layout = () => {
-  const { connector, powersync } = useSystem();
+  const { signOut } = useAuth();
 
   const onSignOut = async () => {
     await powersync.disconnectAndClear();

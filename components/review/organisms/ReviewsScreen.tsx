@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  VStack,
+  HStack,
+  Text,
+  Heading,
+  Box,
+  Divider,
+} from '@gluestack-ui/themed';
 
 import Avatar from '../atom/Avatar';
 import FullImageModal from '../atom/FullImageModal';
@@ -8,14 +15,14 @@ import SortOptions from '../atom/SortOptions';
 import Thumbnail from '../atom/Thumbnail';
 import UserInfo from '../atom/UserInfo';
 
-import { useSystem } from '~/lib/powersync/PowerSync';
-
 interface Review {
   id: string;
-  created_by: string;
+  created_by: any;
   rating: number;
-  created_at: string;
+  createdAt?: string;
+  created_at?: string;
   description: string;
+  name?: string;
 }
 
 interface Image {
@@ -33,80 +40,74 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({ reviews }) => {
   const [sortedReviews, setSortedReviews] = useState(reviews);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
-  const { attachmentQueue } = useSystem();
 
   const handleSortChange = (option: string) => {
     setSelectedSort(option);
-    // Sorting logic
+    // TODO: Implement sorting logic
   };
 
   const renderReview = (item: Review) => {
-    // const image = images.find((img) => img.review_id === item.id);
-    const photoUri = item.attachment_uri ? attachmentQueue?.getLocalUri(item.attachment_uri) : null;
-    const avatarUri = item.profile_uri ? attachmentQueue!.getLocalUri(item.profile_uri) : null;
+    const userName = item.name || item.created_by?.name || item.created_by?.email || 'Anonymous';
+    const avatarUri = item.created_by?.avatar?.url || null;
+    const photoUri = null; // TODO: Implement photo loading
 
     return (
-      <View key={item.id} style={styles.reviewContainer}>
-        <View style={styles.userDetails}>
-          <View style={styles.row}>
-            <Avatar name={item.name} uri={avatarUri} />
-            <Text style={styles.username}>{item.name}</Text>
-          </View>
-          <UserInfo userName={item.created_by} rating={item.rating} date={item.created_at} />
-        </View>
-        <ReviewText description={item.description} />
-        {photoUri && (
-          <Thumbnail
-            uri={photoUri}
-            onPress={() => {
-              setSelectedImageUri(photoUri);
-              setModalVisible(true);
-            }}
-          />
-        )}
-      </View>
+      <Box key={item.id} mb="$4" pb="$4">
+        <VStack space="sm">
+          {/* User Info & Rating */}
+          <HStack space="md" alignItems="flex-start">
+            <Avatar name={userName[0]?.toUpperCase() || 'A'} uri={avatarUri} />
+            <VStack flex={1} space="2xs">
+              <Heading size="sm">{userName}</Heading>
+              <UserInfo 
+                userName={item.created_by} 
+                rating={item.rating} 
+                date={item.createdAt || item.created_at} 
+              />
+            </VStack>
+          </HStack>
+
+          {/* Review Text */}
+          <ReviewText description={item.description} />
+
+          {/* Photo if exists */}
+          {photoUri && (
+            <Thumbnail
+              uri={photoUri}
+              onPress={() => {
+                setSelectedImageUri(photoUri);
+                setModalVisible(true);
+              }}
+            />
+          )}
+        </VStack>
+        
+        <Divider mt="$4" />
+      </Box>
     );
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        <SortOptions selectedSort={selectedSort} onSortChange={handleSortChange} />
-        <View>{sortedReviews.map(renderReview)}</View>
-      </ScrollView>
+    <VStack space="md">
+      <SortOptions selectedSort={selectedSort} onSortChange={handleSortChange} />
+      <VStack space="sm">
+        {sortedReviews.length > 0 ? (
+          sortedReviews.map(renderReview)
+        ) : (
+          <Box p="$4" alignItems="center">
+            <Text size="sm" color="$coolGray500">
+              No reviews to display
+            </Text>
+          </Box>
+        )}
+      </VStack>
       <FullImageModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         imageUri={selectedImageUri}
       />
-    </View>
+    </VStack>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  reviewContainer: {
-    marginBottom: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  userDetails: {
-    flexDirection: 'column',
-    marginBottom: 8,
-  },
-  username: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-});
 
 export default ReviewsScreen;

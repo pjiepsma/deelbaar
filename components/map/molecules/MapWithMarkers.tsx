@@ -5,12 +5,14 @@ import { Region } from 'react-native-maps/lib/sharedTypes';
 
 import MarkerComponent from '~/components/map/atom/Marker';
 
+import { ListingRecord } from '~/lib/types/models';
+
 interface MapWithMarkersProps {
   region: Region;
-  listings: { lat: number; long: number; id: string }[];
+  listings: ListingRecord[] | { lat: number; long: number; id: string }[];
   onMarkerPress: (store: any) => void;
   onRegionChangeComplete: (region: Region) => void;
-  selectedListingId: string | null; // Add this prop
+  selectedListingId: string | null;
 }
 
 const MapWithMarkers = forwardRef<MapView, MapWithMarkersProps>(

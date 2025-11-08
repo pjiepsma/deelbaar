@@ -1,7 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-import Colors from '~/constants/Colors';
+import {
+  HStack,
+  Button,
+  ButtonText,
+} from '@gluestack-ui/themed';
 
 interface SortOptionsProps {
   selectedSort: string;
@@ -12,34 +14,22 @@ const SORT_OPTIONS = ['Newest', 'Oldest', 'Highest', 'Lowest'];
 
 const SortOptions: React.FC<SortOptionsProps> = ({ selectedSort, onSortChange }) => {
   return (
-    <View style={styles.sortContainer}>
+    <HStack space="sm" flexWrap="wrap">
       {SORT_OPTIONS.map((option) => (
-        <TouchableOpacity
+        <Button
           key={option}
-          style={[styles.sortButton, selectedSort === option && styles.selectedSortButton]}
+          size="sm"
+          variant={selectedSort === option ? 'solid' : 'outline'}
+          bg={selectedSort === option ? '#6B8E23' : 'transparent'}
+          borderColor="#6B8E23"
           onPress={() => onSortChange(option)}>
-          <Text style={{ color: selectedSort === option ? 'white' : 'black' }}>{option}</Text>
-        </TouchableOpacity>
+          <ButtonText fontSize="$sm" color={selectedSort === option ? '$white' : '#6B8E23'}>
+            {option}
+          </ButtonText>
+        </Button>
       ))}
-    </View>
+    </HStack>
   );
 };
-
-const styles = StyleSheet.create({
-  sortContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 16,
-  },
-  sortButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
-  },
-  selectedSortButton: {
-    backgroundColor: Colors.primary,
-  },
-});
 
 export default SortOptions;

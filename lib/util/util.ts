@@ -1,4 +1,4 @@
-import { AttachmentRecord } from '@powersync/attachments';
+import { AttachmentRecord } from '../types/types';
 import _ from 'lodash';
 
 import { PictureEntry } from '~/lib/types/types';

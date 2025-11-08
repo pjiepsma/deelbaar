@@ -1,6 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -9,8 +9,7 @@ import Animated, {
   withSpring,
   useDerivedValue,
 } from 'react-native-reanimated';
-
-import Colors from '~/constants/Colors';
+import { Box, HStack, Text } from '@gluestack-ui/themed';
 
 const MAX_STARS = 5;
 const STAR_SIZE = 36;
@@ -74,51 +73,46 @@ const Starstars: React.FC<StarstarsProps> = ({ rating, setRating }) => {
   });
 
   return (
-    <View style={styles.container}>
+    <Box>
       {/* GestureDetector for swipe gestures */}
       <GestureDetector gesture={panGesture}>
-        <View style={styles.starsWrapper}>
+        <Box position="relative" w={STAR_SIZE * MAX_STARS} h={STAR_SIZE}>
           {/* Highlight bar behind the stars */}
-          <Animated.View style={[styles.highlight, animatedStyle]} />
+          <Animated.View 
+            style={[
+              {
+                position: 'absolute',
+                height: STAR_SIZE,
+                backgroundColor: 'transparent',
+                zIndex: 0,
+              }, 
+              animatedStyle
+            ]} 
+          />
+          
           {/* Render Stars */}
-          {[...Array(MAX_STARS)].map((_, index) => (
-            <TouchableOpacity key={index} onPress={() => handleStarPress(index)}>
-              <FontAwesome
-                name={index < stars ? 'star' : 'star-o'}
-                size={STAR_SIZE}
-                color={index < stars ? 'gold' : Colors.border}
-                style={styles.star}
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
+          <HStack space="xs">
+            {[...Array(MAX_STARS)].map((_, index) => (
+              <TouchableOpacity key={index} onPress={() => handleStarPress(index)}>
+                <FontAwesome
+                  name={index < stars ? 'star' : 'star-o'}
+                  size={STAR_SIZE}
+                  color={index < stars ? '#6B8E23' : '#D1D5DB'}
+                  style={{ zIndex: 1 }}
+                />
+              </TouchableOpacity>
+            ))}
+          </HStack>
+        </Box>
       </GestureDetector>
-    </View>
+      
+      {stars > 0 && (
+        <Text size="sm" color="#6B8E23" mt="$2" fontWeight="$semibold">
+          {stars} star{stars !== 1 ? 's' : ''}
+        </Text>
+      )}
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {},
-  starsWrapper: {
-    flexDirection: 'row',
-    position: 'relative',
-    width: STAR_SIZE * MAX_STARS,
-    height: STAR_SIZE,
-  },
-  star: {
-    marginHorizontal: 5,
-    zIndex: 1, // Ensure stars are above the highlight
-  },
-  highlight: {
-    position: 'absolute',
-    height: STAR_SIZE,
-    backgroundColor: 'transparent',
-    zIndex: 0, // Highlight behind the stars
-  },
-  starsText: {
-    marginTop: 20,
-    fontSize: 18,
-  },
-});
 
 export default Starstars;
