@@ -76,6 +76,49 @@ const StableMarker = React.memo<{
   );
 });
 
+const ClusterMarker = React.memo<{
+  latitude: number;
+  longitude: number;
+  pointCount: number;
+  onPress: () => void;
+}>(({ latitude, longitude, pointCount, onPress }) => {
+  const [tracksViewChanges, setTracksViewChanges] = useState(true);
+
+  useEffect(() => {
+    // Allow initial render, then disable tracking to prevent blinking
+    const timer = setTimeout(() => {
+      setTracksViewChanges(false);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <Marker
+      coordinate={{ latitude, longitude }}
+      onPress={onPress}
+      tracksViewChanges={tracksViewChanges}>
+      <View style={styles.marker}>
+        <View
+          style={{
+            backgroundColor: '#8B5CF6',
+            borderRadius: 16,
+            paddingHorizontal: 10,
+            paddingVertical: 6,
+            minWidth: 32,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderWidth: 2,
+            borderColor: '#FFFFFF',
+          }}>
+          <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: 'bold' }}>
+            {pointCount}
+          </Text>
+        </View>
+      </View>
+    </Marker>
+  );
+});
+
 export default function SearchTab() {
   const mapRef = useRef<MapView>(null);
   const insets = useSafeAreaInsets();
@@ -700,12 +743,11 @@ export default function SearchTab() {
             const clusterId = properties.cluster_id;
             
             return (
-              <Marker
+              <ClusterMarker
                 key={`cluster-${clusterId}-${index}`}
-                coordinate={{ latitude, longitude }}
-                pinColor="#8B5CF6"
-                title={`${pointCount} locaties`}
-                description="Tik om in te zoomen"
+                latitude={latitude}
+                longitude={longitude}
+                pointCount={pointCount}
                 onPress={() => {
                   if (supercluster && clusterId !== undefined) {
                     const expansionZoom = Math.min(
