@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { syncManager, SyncStatus } from '../storage/SyncManager';
-import { sqliteManager } from '../storage/SQLiteManager';
+
 import { fileQueueManager } from '../storage/FileQueueManager';
+import { sqliteManager } from '../storage/SQLiteManager';
+import { syncManager, SyncStatus } from '../storage/SyncManager';
 
 export function useSyncStatus() {
   const [status, setStatus] = useState<SyncStatus>('idle');
@@ -16,7 +17,7 @@ export function useSyncStatus() {
     const checkQueues = async () => {
       const dataQueue = await sqliteManager.getSyncQueue();
       setDataQueueSize(dataQueue.length);
-      
+
       const fileQueue = fileQueueManager.getQueue();
       setFileQueueSize(fileQueue.length);
     };
@@ -40,6 +41,10 @@ export function useSyncStatus() {
     hasPendingChanges: dataQueueSize > 0 || fileQueueSize > 0,
   };
 }
+
+
+
+
 
 
 

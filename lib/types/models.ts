@@ -1,20 +1,8 @@
-// Type definitions for data models
+import type { Listing } from './payload-generated';
 
-export interface ListingRecord {
-  id: string;
-  name: string;
-  description: string;
-  owner: any; // User or user ID
-  location: {
-    address?: string;
-    coordinates: [number, number]; // [longitude, latitude]
-  };
-  category?: string;
-  tags?: Array<{ tag: string }>;
-  createdAt?: string;
-  updatedAt?: string;
-  distance?: number; // Added by nearby queries
-}
+export type ListingRecord = Listing & {
+  distance?: number;
+};
 
 export interface PictureRecord {
   id: string;
@@ -51,6 +39,19 @@ export interface FavoriteRecord {
   createdAt?: string;
 }
 
+export interface NotificationRecord {
+  id: string;
+  user: string | any;
+  type: 'photo_request' | 'photo_approved' | 'photo_rejected' | 'review' | 'favorite' | 'claim_approved' | 'claim_rejected' | 'system';
+  title: string;
+  message: string;
+  read: boolean;
+  data?: Record<string, any>;
+  actionUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Legacy PowerSync table names (for migration reference)
 export const PICTURE_TABLE = 'pictures';
 export const REVIEW_TABLE = 'reviews';
@@ -67,6 +68,8 @@ export interface Todo {
   user_id: string;
   modified_at?: string;
 }
+
+
 
 
 

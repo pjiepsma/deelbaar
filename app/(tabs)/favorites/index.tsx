@@ -1,4 +1,5 @@
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '~/constants/Colors';
 import { useFavorites } from '~/lib/hooks/usePayloadQuery';
@@ -10,37 +11,44 @@ export default function FavoritesTab() {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+        </View>
+      </SafeAreaView>
     );
   }
 
   if (isError) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorTitle}>Favorieten ophalen mislukt</Text>
-        <Text style={styles.errorText}>Controleer je verbinding met de Payload API.</Text>
-      </View>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <View style={styles.centered}>
+          <Text style={styles.errorTitle}>Favorieten ophalen mislukt</Text>
+          <Text style={styles.errorText}>Controleer je verbinding met de Payload API.</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   if (!favorites.length) {
     return (
-      <View style={styles.centered}>
-        <Ionicons name="heart-outline" size={48} color="#94a3b8" />
-        <Text style={styles.emptyTitle}>Nog geen favorieten</Text>
-        <Text style={styles.emptySubtitle}>Markeer een listing als favoriet vanuit de zoekpagina.</Text>
-      </View>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <View style={styles.centered}>
+          <Ionicons name="heart-outline" size={48} color="#94a3b8" />
+          <Text style={styles.emptyTitle}>Nog geen favorieten</Text>
+          <Text style={styles.emptySubtitle}>Markeer een listing als favoriet vanuit de zoekpagina.</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <FlatList
-      contentContainerStyle={styles.listContent}
-      data={favorites}
-      keyExtractor={(item) => item.id ?? `${item.listing}-${item.user}`}
-      renderItem={({ item }) => {
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <FlatList
+        contentContainerStyle={styles.listContent}
+        data={favorites}
+        keyExtractor={(item) => item.id ?? `${item.listing}-${item.user}`}
+        renderItem={({ item }) => {
         const listing = item.listing?.id ? item.listing : item.listingData;
         if (!listing) {
           return null;
@@ -71,11 +79,16 @@ export default function FavoritesTab() {
           </View>
         );
       }}
-    />
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
   listContent: {
     padding: 20,
     gap: 16,

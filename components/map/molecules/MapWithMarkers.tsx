@@ -4,7 +4,6 @@ import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { Region } from 'react-native-maps/lib/sharedTypes';
 
 import MarkerComponent from '~/components/map/atom/Marker';
-
 import { ListingRecord } from '~/lib/types/models';
 
 interface MapWithMarkersProps {

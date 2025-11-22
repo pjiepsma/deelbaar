@@ -1,4 +1,4 @@
-import { AttachmentRecord } from '~/lib/types/types';
+import { Button, Image, ListItem } from '@rneui/themed';
 import * as ImagePicker from 'expo-image-picker';
 import { ImagePickerResult } from 'expo-image-picker';
 import React from 'react';
@@ -11,10 +11,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Button, Image, ListItem } from '@rneui/themed';
 
 import { AppConfig } from '~/lib/config/AppConfig';
 import { PictureRecord } from '~/lib/types/models';
+import { AttachmentRecord } from '~/lib/types/types';
 
 export interface TodoItemWidgetProps {
   record: PictureRecord;

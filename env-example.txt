@@ -1,0 +1,12 @@
+# Kopieer dit bestand naar .env en vul je API keys in
+
+# AWS Rekognition (Aanbevolen - 5000 gratis requests/maand)
+EXPO_PUBLIC_AWS_REGION=eu-west-1
+EXPO_PUBLIC_AWS_ACCESS_KEY=AKIAIOSFODNN7EXAMPLE
+EXPO_PUBLIC_AWS_SECRET_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+# Stripe (vereist voor embedded onboarding)
+EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_XXXXXXXXXXXXXXXXXXXXXXXX
+
+# Of Google Vision AI (1000 gratis requests/maand)
+# EXPO_PUBLIC_GOOGLE_VISION_API_KEY=AIzaSyDqSk5m03Tz9jpBfy18UMJ3ThjNyTYCEDk

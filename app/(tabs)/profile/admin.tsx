@@ -5,8 +5,8 @@ export default function AdminScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>Admin tools</Text>
       <Text style={styles.body}>
-        Moderatietaken en beheerdersfuncties keren hier terug. Denk aan het keuringspaneel voor foto’s,
-        het beheren van pending listings en het monitoren van community-activiteit.
+        Moderatietaken en beheerdersfuncties keren hier terug. Denk aan het keuringspaneel voor
+        foto’s, het beheren van pending listings en het monitoren van community-activiteit.
       </Text>
     </ScrollView>
   );
@@ -29,5 +29,3 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 });
-
-

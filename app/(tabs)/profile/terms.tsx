@@ -5,8 +5,9 @@ export default function TermsScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>Voorwaarden & beleid</Text>
       <Text style={styles.body}>
-        We werken aan toegankelijke community-richtlijnen en privacydocumentatie. Tot die tijd gelden onze
-        algemene voorwaarden: wees vriendelijk, deel met respect en meld misbruik via support@deelbaar.nl.
+        We werken aan toegankelijke community-richtlijnen en privacydocumentatie. Tot die tijd
+        gelden onze algemene voorwaarden: wees vriendelijk, deel met respect en meld misbruik via
+        support@deelbaar.nl.
       </Text>
     </ScrollView>
   );
@@ -29,5 +30,10 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 });
+
+
+
+
+
 
 

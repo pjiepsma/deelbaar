@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
 import {
   Button,
   ButtonText,
@@ -12,6 +10,8 @@ import {
   Badge,
   BadgeText,
 } from '@gluestack-ui/themed';
+import React, { useState } from 'react';
+import { View, Text, ScrollView } from 'react-native';
 
 /**
  * Example component demonstrating NativeWind and Gluestack UI usage
@@ -23,9 +23,7 @@ export default function ExampleNativeWindGluestack() {
     <ScrollView className="flex-1 bg-gray-50">
       {/* NativeWind Styling */}
       <View className="p-6">
-        <Text className="text-3xl font-bold text-primary mb-2">
-          NativeWind + Gluestack UI
-        </Text>
+        <Text className="text-3xl font-bold text-primary mb-2">NativeWind + Gluestack UI</Text>
         <Text className="text-gray-600 mb-6">
           This example shows both libraries working together
         </Text>
@@ -38,11 +36,7 @@ export default function ExampleNativeWindGluestack() {
 
           <VStack space="md">
             <Input>
-              <InputField
-                placeholder="Enter your name"
-                value={name}
-                onChangeText={setName}
-              />
+              <InputField placeholder="Enter your name" value={name} onChangeText={setName} />
             </Input>
 
             <HStack space="sm">
@@ -66,9 +60,7 @@ export default function ExampleNativeWindGluestack() {
 
         {/* Pure NativeWind Styling */}
         <View className="bg-primary rounded-lg p-4 mb-4">
-          <Text className="text-white text-lg font-semibold mb-2">
-            NativeWind Utilities
-          </Text>
+          <Text className="text-white text-lg font-semibold mb-2">NativeWind Utilities</Text>
           <Text className="text-white opacity-90">
             Using Tailwind classes directly on React Native components
           </Text>
@@ -93,5 +85,10 @@ export default function ExampleNativeWindGluestack() {
     </ScrollView>
   );
 }
+
+
+
+
+
 
 

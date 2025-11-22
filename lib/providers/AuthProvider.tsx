@@ -1,13 +1,15 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+
 import { payloadClient, PayloadUser } from '../api/PayloadClient';
-import { syncManager } from '../storage/SyncManager';
 import { AppConfig } from '../config/AppConfig';
+import { syncManager } from '../storage/SyncManager';
 
 export const AuthContext = createContext<{
   user: PayloadUser | null;
   token: string | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error?: any }>;
+  signUp: (email: string, password: string, additionalData?: any) => Promise<{ error?: any }>;
   signInAnonymously: () => Promise<{ error?: any }>;
   signOut: () => Promise<void>;
 }>({
@@ -15,6 +17,7 @@ export const AuthContext = createContext<{
   token: null,
   isLoading: true,
   signIn: async () => ({}),
+  signUp: async () => ({}),
   signInAnonymously: async () => ({}),
   signOut: async () => {},
 });
@@ -83,6 +86,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const signUp = async (email: string, password: string, additionalData?: any) => {
+    console.log('⭐⭐⭐ [AuthProvider v5.0] signUp CALLED - email:', email);
+    try {
+      console.log('⭐ [AuthProvider] Calling payloadClient.register');
+      const { data, error } = await payloadClient.register(email, password, additionalData);
+      console.log('⭐ [AuthProvider] Register response - data:', data, 'error:', error);
+
+      if (error) {
+        console.error('[AuthProvider] Register error:', error);
+        return { error };
+      }
+
+      if (!data) {
+        console.error('[AuthProvider] No data returned from register');
+        return { error: { message: 'Registration failed - no data returned' } };
+      }
+
+      console.log('[AuthProvider] Registration successful, setting user and token');
+      setToken(data.token);
+      setUser(data.user);
+
+      await syncManager.init();
+
+      return {};
+    } catch (error: any) {
+      console.error('[AuthProvider] Register exception:', error);
+      return { error: { message: error.message || 'Registration failed' } };
+    }
+  };
+
   const signInAnonymously = async () => {
     try {
       const { data, error } = await payloadClient.loginAnonymously();
@@ -129,6 +162,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         token,
         isLoading,
         signIn,
+        signUp,
         signInAnonymously,
         signOut,
       }}>

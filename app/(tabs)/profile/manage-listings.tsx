@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -10,24 +11,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 
+import CreateListingModal from '~/components/CreateListingModal';
 import Colors from '~/constants/Colors';
+import { payloadClient } from '~/lib/api/PayloadClient';
+import { fileQueueManager } from '~/lib/storage/FileQueueManager';
+import { sqliteManager } from '~/lib/storage/SQLiteManager';
 import {
   PictureStatus,
-  useCreateListing,
   useListingPhotos,
   useMyListings,
   useReviewListingPhoto,
 } from '~/lib/hooks/usePayloadQuery';
-import { payloadClient } from '~/lib/api/PayloadClient';
-
-const DEFAULT_CATEGORY_OPTIONS = [
-  { label: 'Minibieb', value: 'minibieb' },
-  { label: 'Watertappunt', value: 'water_point' },
-  { label: 'Boerderijkraam', value: 'farm_stand' },
-  { label: 'Overig', value: 'other' },
-];
 
 type ListingItem = {
   id: string;
@@ -49,176 +44,78 @@ type PictureRecord = {
 };
 
 const ManageListingsScreen = () => {
-  const [formOpen, setFormOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState(DEFAULT_CATEGORY_OPTIONS[0].value);
-  const [address, setAddress] = useState('');
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
 
   const { data: listings = [], isLoading, refetch } = useMyListings();
-  const createListing = useCreateListing();
 
-  const resetForm = () => {
-    setName('');
-    setDescription('');
-    setCategory(DEFAULT_CATEGORY_OPTIONS[0].value);
-    setAddress('');
-    setLatitude('');
-    setLongitude('');
-  };
-
-  const handleCreateListing = async () => {
-    if (!name.trim()) {
-      Alert.alert('Naam verplicht', 'Geef de locatie een naam.');
-      return;
-    }
-
-    const hasCoordinates = latitude && longitude;
-    const location = {
-      address: address || undefined,
-      coordinates: hasCoordinates ? [Number(longitude), Number(latitude)] : undefined,
-    };
-
-    try {
-      await createListing.mutateAsync({
-        name: name.trim(),
-        description: description.trim(),
-        category,
-        location,
-      });
-      resetForm();
-      setFormOpen(false);
-      refetch();
-    } catch (error: any) {
-      Alert.alert('Kon listing niet maken', error.message || 'Onbekende fout');
-    }
+  const handleCreateSuccess = () => {
+    refetch();
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Mijn locaties</Text>
+    <>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.heading}>Mijn locaties</Text>
 
-      <TouchableOpacity
-        style={styles.toggleFormButton}
-        onPress={() => setFormOpen((prev) => !prev)}>
-        <Ionicons name={formOpen ? 'remove-circle-outline' : 'add-circle-outline'} size={20} color="#fff" />
-        <Text style={styles.toggleFormButtonText}>
-          {formOpen ? 'Annuleer' : 'Nieuwe listing toevoegen'}
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.toggleFormButton} onPress={() => setModalVisible(true)}>
+          <Ionicons name="add-circle-outline" size={20} color="#fff" />
+          <Text style={styles.toggleFormButtonText}>Nieuwe locatie toevoegen</Text>
+        </TouchableOpacity>
 
-      {formOpen && (
-        <View style={styles.form}>
-          <Text style={styles.label}>Naam</Text>
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder="Bijv. Minibieb aan de Dorpsstraat"
-          />
+        {isLoading ? (
+          <ActivityIndicator style={{ marginTop: 24 }} />
+        ) : listings.length === 0 ? (
+          <Text style={styles.emptyState}>
+            Je hebt nog geen listings. Voeg er eentje toe om te beginnen.
+          </Text>
+        ) : (
+          listings.map((listing) => (
+            <ListingManagementCard key={listing.id} listing={listing as ListingItem} />
+          ))
+        )}
+      </ScrollView>
 
-          <Text style={styles.label}>Categorie</Text>
-          <View style={styles.categoryRow}>
-            {DEFAULT_CATEGORY_OPTIONS.map((option) => (
-              <TouchableOpacity
-                key={option.value}
-                style={[
-                  styles.categoryChip,
-                  category === option.value && styles.categoryChipActive,
-                ]}
-                onPress={() => setCategory(option.value)}>
-                <Text
-                  style={[
-                    styles.categoryChipText,
-                    category === option.value && styles.categoryChipTextActive,
-                  ]}>
-                  {option.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <Text style={styles.label}>Beschrijving</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            value={description}
-            onChangeText={setDescription}
-            multiline
-            placeholder="Vertel iets over deze locatie"
-          />
-
-          <Text style={styles.label}>Adres</Text>
-          <TextInput
-            style={styles.input}
-            value={address}
-            onChangeText={setAddress}
-            placeholder="Straat, huisnummer, plaats"
-          />
-
-          <View style={styles.coordinatesRow}>
-            <View style={styles.coordinateInputWrapper}>
-              <Text style={styles.label}>Latitude</Text>
-              <TextInput
-                style={styles.input}
-                value={latitude}
-                onChangeText={setLatitude}
-                keyboardType="decimal-pad"
-                placeholder="52.12345"
-              />
-            </View>
-            <View style={styles.coordinateInputWrapper}>
-              <Text style={styles.label}>Longitude</Text>
-              <TextInput
-                style={styles.input}
-                value={longitude}
-                onChangeText={setLongitude}
-                keyboardType="decimal-pad"
-                placeholder="5.67890"
-              />
-            </View>
-          </View>
-
-          <TouchableOpacity
-            style={[styles.primaryButton, createListing.isPending && styles.primaryButtonDisabled]}
-            onPress={handleCreateListing}
-            disabled={createListing.isPending}>
-            {createListing.isPending ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.primaryButtonText}>Opslaan</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {isLoading ? (
-        <ActivityIndicator style={{ marginTop: 24 }} />
-      ) : listings.length === 0 ? (
-        <Text style={styles.emptyState}>Je hebt nog geen listings. Voeg er eentje toe om te beginnen.</Text>
-      ) : (
-        listings.map((listing) => (
-          <ListingManagementCard key={listing.id} listing={listing as ListingItem} />
-        ))
-      )}
-    </ScrollView>
+      <CreateListingModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSuccess={handleCreateSuccess}
+      />
+    </>
   );
 };
 
 const ListingManagementCard = ({ listing }: { listing: ListingItem }) => {
   const [expanded, setExpanded] = useState(false);
-  const { data: pendingPhotos = [], isLoading: pendingLoading, refetch } = useListingPhotos(
-    listing.id,
-    'pending',
-    { enabled: expanded }
-  );
+  const [queuedPhotos, setQueuedPhotos] = useState<any[]>([]);
+  const {
+    data: pendingPhotos = [],
+    isLoading: pendingLoading,
+    refetch,
+  } = useListingPhotos(listing.id, 'pending', { enabled: expanded });
   const reviewPhoto = useReviewListingPhoto();
 
   const locationSummary = useMemo(() => {
     const parts = [listing.location?.address].filter(Boolean);
     return parts.join(' · ');
   }, [listing.location]);
+
+  // Load queued photos when expanded
+  React.useEffect(() => {
+    if (expanded) {
+      const loadQueuedPhotos = async () => {
+        try {
+          const localListing = await sqliteManager.getListingById(listing.id);
+          if (localListing?.pictures) {
+            const queued = localListing.pictures.filter((pic: any) => pic.status === 'queued');
+            setQueuedPhotos(queued);
+          }
+        } catch (error) {
+          console.warn('[ListingManagementCard] Failed to load queued photos', error);
+        }
+      };
+      loadQueuedPhotos();
+    }
+  }, [expanded, listing.id]);
 
   const handleReview = async (
     pictureId: string,
@@ -247,39 +144,78 @@ const ListingManagementCard = ({ listing }: { listing: ListingItem }) => {
   return (
     <View style={styles.card}>
       <TouchableOpacity style={styles.cardHeader} onPress={() => setExpanded((prev) => !prev)}>
-        <View style={{ flex: 1 }}>
+        <View style={styles.cardContent}>
           <Text style={styles.cardTitle}>{listing.name}</Text>
           {locationSummary ? <Text style={styles.cardSubtitle}>{locationSummary}</Text> : null}
-          {listing.category ? <Text style={styles.cardCategory}>{`Type: ${listing.category}`}</Text> : null}
+          {listing.category ? (
+            <Text style={styles.cardCategory}>{`Type: ${listing.category}`}</Text>
+          ) : null}
         </View>
-        <View style={styles.pendingBadge}>
-          <Text style={styles.pendingBadgeText}>{pendingPhotos.length}</Text>
+        <View style={styles.cardActions}>
+          <View style={styles.badgesContainer}>
+            <View style={styles.pendingBadge}>
+              <Text style={styles.pendingBadgeText}>
+                {pendingPhotos.length + queuedPhotos.length}
+              </Text>
+            </View>
+            <View style={[
+              styles.publishStatusBadge,
+              listing.publishStatus === 'live' ? styles.publishStatusBadgeLive : styles.publishStatusBadgeDraft
+            ]}>
+              <Ionicons
+                name={listing.publishStatus === 'live' ? 'globe-outline' : 'create-outline'}
+                size={12}
+                color="#fff"
+              />
+              <Text style={styles.publishStatusBadgeText}>
+                {listing.publishStatus === 'live' ? 'Live' : 'Concept'}
+              </Text>
+            </View>
+          </View>
+          <Ionicons
+            name={expanded ? 'chevron-up' : 'chevron-down'}
+            size={18}
+            color="#333"
+            style={{ marginLeft: 8 }}
+          />
         </View>
-        <Ionicons
-          name={expanded ? 'chevron-up' : 'chevron-down'}
-          size={18}
-          color="#333"
-          style={{ marginLeft: 8 }}
-        />
       </TouchableOpacity>
 
       {expanded && (
-        <View style={styles.cardContent}>
+        <View style={styles.cardExpandedContent}>
           <Text style={styles.pendingHeading}>Openstaande foto-aanvragen</Text>
-          {pendingLoading ? (
-            <ActivityIndicator />
-          ) : pendingPhotos.length === 0 ? (
-            <Text style={styles.emptyStateSmall}>Geen pending foto’s voor deze listing.</Text>
-          ) : (
-            pendingPhotos.map((photo: PictureRecord) => (
-              <PendingPhotoItem
-                key={photo.id}
-                photo={photo}
-                onApprove={() => handleReview(photo.id, 'approved')}
-                onReject={() => handleReview(photo.id, 'rejected')}
-              />
-            ))
+
+          {/* Queued photos (offline uploads) */}
+          {queuedPhotos.length > 0 && (
+            <View style={styles.photoSection}>
+              <Text style={styles.sectionHeading}>📱 Wachtende uploads ({queuedPhotos.length})</Text>
+              <Text style={styles.sectionDescription}>
+                Deze foto's worden automatisch geüpload zodra je weer online bent.
+              </Text>
+              {queuedPhotos.map((photo: any) => (
+                <QueuedPhotoItem key={photo.id} photo={photo} />
+              ))}
+            </View>
           )}
+
+          {/* Server pending photos */}
+          <View style={styles.photoSection}>
+            <Text style={styles.sectionHeading}>⏳ In afwachting van goedkeuring ({pendingPhotos.length})</Text>
+            {pendingLoading ? (
+              <ActivityIndicator />
+            ) : pendingPhotos.length === 0 ? (
+              <Text style={styles.emptyStateSmall}>Geen pending foto’s voor deze listing.</Text>
+            ) : (
+              pendingPhotos.map((photo: PictureRecord) => (
+                <PendingPhotoItem
+                  key={photo.id}
+                  photo={photo}
+                  onApprove={() => handleReview(photo.id, 'approved')}
+                  onReject={() => handleReview(photo.id, 'rejected')}
+                />
+              ))
+            )}
+          </View>
         </View>
       )}
     </View>
@@ -308,7 +244,9 @@ const PendingPhotoItem = ({
           Ingediend door {submittedBy || 'Onbekende gebruiker'}
         </Text>
         {photo.createdAt ? (
-          <Text style={styles.pendingDate}>{new Date(photo.createdAt).toLocaleString('nl-NL')}</Text>
+          <Text style={styles.pendingDate}>
+            {new Date(photo.createdAt).toLocaleString('nl-NL')}
+          </Text>
         ) : null}
         <View style={styles.pendingActions}>
           <TouchableOpacity style={[styles.actionButton, styles.approveButton]} onPress={onApprove}>
@@ -319,6 +257,37 @@ const PendingPhotoItem = ({
             <Ionicons name="close" size={16} color="#fff" />
             <Text style={styles.actionButtonText}>Afwijzen</Text>
           </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const QueuedPhotoItem = ({ photo }: { photo: any }) => {
+  // For queued photos, the photo field contains the file ID, not a media URL
+  // We need to get the local file path from the fileQueueManager
+  const queuedFile = fileQueueManager.getQueue().find(f => f.id === photo.photo);
+  const localImageUri = queuedFile?.uri;
+
+  return (
+    <View style={styles.queuedItem}>
+      {localImageUri ? (
+        <Image source={{ uri: localImageUri }} style={styles.pendingImage} />
+      ) : (
+        <View style={styles.placeholderImage}>
+          <Ionicons name="image" size={24} color="#9ca3af" />
+        </View>
+      )}
+      <View style={styles.pendingMeta}>
+        <Text style={styles.pendingDescription}>Foto wacht op upload</Text>
+        {photo.createdAt ? (
+          <Text style={styles.pendingDate}>
+            Opgeslagen: {new Date(photo.createdAt).toLocaleString('nl-NL')}
+          </Text>
+        ) : null}
+        <View style={styles.queuedStatus}>
+          <Ionicons name="cloud-upload-outline" size={16} color="#f59e0b" />
+          <Text style={styles.queuedStatusText}>Wordt geüpload zodra online</Text>
         </View>
       </View>
     </View>
@@ -351,50 +320,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
   },
-  form: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
-    elevation: 2,
-  },
-  label: {
-    fontWeight: '600',
-    marginBottom: 4,
-    marginTop: 12,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 10,
-    backgroundColor: '#fff',
-  },
-  textArea: {
-    minHeight: 80,
-    textAlignVertical: 'top',
-  },
-  coordinatesRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  coordinateInputWrapper: {
-    flex: 1,
-  },
-  primaryButton: {
-    marginTop: 16,
-    backgroundColor: Colors.primary,
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  primaryButtonDisabled: {
-    opacity: 0.6,
-  },
-  primaryButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
   emptyState: {
     marginTop: 40,
     textAlign: 'center',
@@ -413,7 +338,14 @@ const styles = StyleSheet.create({
   },
   cardHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+  },
+  cardContent: {
+    flex: 1,
+  },
+  cardActions: {
+    alignItems: 'flex-end',
+    gap: 8,
   },
   cardTitle: {
     fontSize: 18,
@@ -440,7 +372,31 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '700',
   },
-  cardContent: {
+  badgesContainer: {
+    flexDirection: 'row',
+    gap: 6,
+    marginBottom: 8,
+  },
+  publishStatusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  publishStatusBadgeLive: {
+    backgroundColor: '#22C55E',
+  },
+  publishStatusBadgeDraft: {
+    backgroundColor: '#F59E0B',
+  },
+  publishStatusBadgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  cardExpandedContent: {
     marginTop: 16,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: '#eee',
@@ -496,28 +452,46 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
   },
-  categoryRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
+  photoSection: {
+    marginBottom: 20,
   },
-  categoryChip: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 20,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-  },
-  categoryChipActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  categoryChipText: {
+  sectionHeading: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
     color: '#333',
   },
-  categoryChipTextActive: {
-    color: '#fff',
-    fontWeight: '600',
+  sectionDescription: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 12,
+  },
+  queuedItem: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+    opacity: 0.8,
+  },
+  placeholderImage: {
+    width: 96,
+    height: 96,
+    borderRadius: 8,
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  queuedStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 8,
+  },
+  queuedStatusText: {
+    fontSize: 12,
+    color: '#f59e0b',
+    fontWeight: '500',
   },
 });
 

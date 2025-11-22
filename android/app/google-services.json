@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "519241694058",
+    "project_id": "deelbaar",
+    "storage_bucket": "deelbaar.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:519241694058:android:c512644a8bb5895d178313",
+        "android_client_info": {
+          "package_name": "com.deelbaar.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "519241694058-vmpikssu122va4brmlvh1gjhv9e98jsc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.deelbaar.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "519241694058-i7fbjdt67f7ata8d6luk8fe6t8a8a9ec.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgu4VnBWkRiuJSziVMNJWfc6gxtZl_mEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "519241694058-i7fbjdt67f7ata8d6luk8fe6t8a8a9ec.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

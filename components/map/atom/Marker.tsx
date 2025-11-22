@@ -34,10 +34,7 @@ const MarkerComponent: React.FC<MarkerComponentProps> = memo(({ store, onPress, 
   }
 
   return (
-    <Marker
-      coordinate={{ latitude, longitude }}
-      onPress={onPress}
-      tracksViewChanges={trackChanges}>
+    <Marker coordinate={{ latitude, longitude }} onPress={onPress} tracksViewChanges={trackChanges}>
       <View style={[styles.marker, { backgroundColor: selected ? Colors.light : Colors.primary }]}>
         <Ionicons
           name="library-outline"

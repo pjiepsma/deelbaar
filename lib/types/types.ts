@@ -1,4 +1,5 @@
 import { Omit } from 'react-native';
+
 import { PictureRecord } from './models';
 
 // Custom attachment record (replaces PowerSync)

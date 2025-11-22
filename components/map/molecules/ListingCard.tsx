@@ -1,6 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { Image, Pressable } from 'react-native';
 import {
   Box,
   VStack,
@@ -11,6 +9,8 @@ import {
   BadgeText,
   Pressable as GluestackPressable,
 } from '@gluestack-ui/themed';
+import React from 'react';
+import { Image, Pressable } from 'react-native';
 
 import { useAuth } from '~/lib/providers/AuthProvider';
 import { ListingRecord } from '~/lib/types/models';
@@ -31,17 +31,17 @@ const ListingCard: React.FC<HikeItemProps> = ({
   onRemoveFavorite,
 }) => {
   const { user } = useAuth();
-  
+
   console.log('🎴 Rendering card for:', item?.name);
-  
+
   // Handle Payload media structure
   const latestPicture = item?.picture;
   const uri = latestPicture?.photo?.url || latestPicture?.url || null;
-  
+
   const distanceInKm = item?.distance ? (item.distance / 1000).toFixed(1) : '0';
   const numericRating = item?.rating ? Number(item.rating) : 0;
   const isFavorite = item?.favorite;
-  
+
   if (!item) {
     console.log('🎴 No item data!');
     return null;
@@ -74,18 +74,14 @@ const ListingCard: React.FC<HikeItemProps> = ({
           <Box position="relative" w={110} h="$full">
             <Image
               key={item.id}
-              source={
-                uri
-                  ? { uri }
-                  : require('assets/images/default-placeholder.png')
-              }
+              source={uri ? { uri } : require('assets/images/default-placeholder.png')}
               style={{ width: 110, height: 140 }}
               resizeMode="cover"
             />
-            
+
             {/* Favorite Button - Smaller */}
             {user && (
-              <Pressable 
+              <Pressable
                 onPress={handleFavoritePress}
                 style={{
                   position: 'absolute',
@@ -118,7 +114,7 @@ const ListingCard: React.FC<HikeItemProps> = ({
               <Heading size="xs" numberOfLines={2} lineHeight="$sm">
                 {item.name}
               </Heading>
-              
+
               <Text size="2xs" color="$coolGray500" numberOfLines={1}>
                 {item.location?.address || 'Apeldoorn'}
               </Text>
@@ -130,7 +126,7 @@ const ListingCard: React.FC<HikeItemProps> = ({
                 <Badge variant="solid" bg="#6B8E23" size="sm">
                   <BadgeText fontSize={10}>📚 {category}</BadgeText>
                 </Badge>
-                
+
                 {numericRating > 0 && (
                   <Text size="2xs" fontWeight="$semibold" color="#6B8E23">
                     {numericRating.toFixed(1)} ⭐

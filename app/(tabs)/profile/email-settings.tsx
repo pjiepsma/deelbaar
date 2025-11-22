@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 import Colors from '~/constants/Colors';
-import { useAuth } from '~/lib/providers/AuthProvider';
 import { payloadClient } from '~/lib/api/PayloadClient';
+import { useAuth } from '~/lib/providers/AuthProvider';
 
 type EmailPreferences = {
   newsletter: boolean;
@@ -83,8 +83,8 @@ export default function EmailSettingsScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>E-mail instellingen</Text>
       <Text style={styles.description}>
-        Kies welke e-mails je van Deelbaar ontvangt. Systeemmeldingen bevatten belangrijke serviceberichten en blijven
-        ingeschakeld.
+        Kies welke e-mails je van Deelbaar ontvangt. Systeemmeldingen bevatten belangrijke
+        serviceberichten en blijven ingeschakeld.
       </Text>
 
       <PreferenceRow
@@ -111,7 +111,7 @@ export default function EmailSettingsScreen() {
       <PreferenceRow
         title="Systeemberichten"
         description="Essentiële meldingen over je account en beveiliging. Altijd aan."
-        value={true}
+        value
         disabled
       />
 
@@ -227,5 +227,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+
+
+
+
 
 

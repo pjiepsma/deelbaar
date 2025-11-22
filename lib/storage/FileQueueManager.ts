@@ -1,5 +1,6 @@
-import * as FileSystem from 'expo-file-system/legacy';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system/legacy';
+
 import { payloadClient } from '../api/PayloadClient';
 
 export interface QueuedFile {
@@ -63,7 +64,7 @@ class FileQueueManager {
     relatedId?: string;
   }): Promise<string> {
     const fileId = `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     // Copy file to local storage to ensure it persists
     const localPath = `${LOCAL_FILES_DIR}${fileId}_${params.name}`;
     await FileSystem.copyAsync({
@@ -111,18 +112,18 @@ class FileQueueManager {
 
         // Upload to Payload
         const uploadResult = await this.uploadFile(file);
-        
-      if (uploadResult.success && uploadResult.mediaId) {
-        file.uploadedMediaId = uploadResult.mediaId;
-        successfulUploads.push(file.id);
 
-        // Delete local copy after successful upload
-        await FileSystem.deleteAsync(file.uri, { idempotent: true });
+        if (uploadResult.success && uploadResult.mediaId) {
+          file.uploadedMediaId = uploadResult.mediaId;
+          successfulUploads.push(file.id);
 
-        console.log(`✅ Uploaded: ${file.name} -> ${uploadResult.mediaId}`);
-      } else {
-        file.retryCount++;
-      }
+          // Delete local copy after successful upload
+          await FileSystem.deleteAsync(file.uri, { idempotent: true });
+
+          console.log(`✅ Uploaded: ${file.name} -> ${uploadResult.mediaId}`);
+        } else {
+          file.retryCount++;
+        }
       } catch (error) {
         console.error(`Error processing file ${file.name}:`, error);
         file.retryCount++;
@@ -137,7 +138,9 @@ class FileQueueManager {
 
       const ageHours = (now - file.createdAt) / (1000 * 60 * 60);
       if (file.retryCount > 5 && ageHours > 12) {
-        console.error(`❌ Giving up on ${file.name} after ${file.retryCount} retries and ${ageHours.toFixed(1)} hours`);
+        console.error(
+          `❌ Giving up on ${file.name} after ${file.retryCount} retries and ${ageHours.toFixed(1)} hours`
+        );
         FileSystem.deleteAsync(file.uri, { idempotent: true }).catch((err) =>
           console.error(`Failed to delete ${file.uri}`, err)
         );
@@ -198,7 +201,7 @@ class FileQueueManager {
    * Get the uploaded media ID for a queued file
    */
   getUploadedMediaId(fileId: string): string | null {
-    const file = this.queue.find(f => f.id === fileId);
+    const file = this.queue.find((f) => f.id === fileId);
     return file?.uploadedMediaId || null;
   }
 
@@ -213,9 +216,7 @@ class FileQueueManager {
    * Get queued files for a specific record
    */
   getQueuedFilesForRecord(collection: string, recordId: string): QueuedFile[] {
-    return this.queue.filter(
-      f => f.relatedCollection === collection && f.relatedId === recordId
-    );
+    return this.queue.filter((f) => f.relatedCollection === collection && f.relatedId === recordId);
   }
 
   /**
@@ -244,6 +245,10 @@ class FileQueueManager {
 }
 
 export const fileQueueManager = new FileQueueManager();
+
+
+
+
 
 
 

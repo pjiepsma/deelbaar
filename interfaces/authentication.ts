@@ -1,7 +1,7 @@
 // ---- (2) ----
 // Define the AuthContextValue interface
-import { Models } from "react-native-appwrite";
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
+import { Models } from 'react-native-appwrite';
 
 export interface SignInResponse {
   data: Models.User<Models.Preferences> | undefined;

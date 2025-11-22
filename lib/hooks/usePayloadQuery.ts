@@ -1,48 +1,59 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import NetInfo from '@react-native-community/netinfo';
+import React from 'react';
+import { Alert } from 'react-native';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import * as Location from 'expo-location';
 
+import { calculateDistance } from './useLocationQueries';
 import { payloadClient } from '../api/PayloadClient';
 import { useAuth } from '../providers/AuthProvider';
 import { fileQueueManager } from '../storage/FileQueueManager';
 import { sqliteManager } from '../storage/SQLiteManager';
 import { syncManager } from '../storage/SyncManager';
+import { ListingRecord } from '../types/models';
 
 // Listings hooks
 export function useListings() {
   return useQuery({
     queryKey: ['listings'],
     queryFn: async () => {
-      try {
-        // Try to get from local DB first
-        const localListings = await sqliteManager.getListings();
-      
-        // If we have local data, return it immediately
-        if (localListings.length > 0) {
-          return localListings;
-        }
+      console.log('[useListings] fetching listings');
+      const { data, error } = await payloadClient.findMany('listings', {
+        limit: 1000,
+        depth: 2,
+      });
 
-        // Otherwise fetch from API
-        const { data, error } = await payloadClient.findMany('listings', {
-          limit: 1000,
-          depth: 1,
-        });
-
-        if (error) throw new Error(error.message);
-
-        // Save to local DB
-        if (data?.docs) {
-          await sqliteManager.saveListings(data.docs);
-          return data.docs;
-        }
-
-        return [];
-      } catch (error) {
-        console.error('Error fetching listings:', error);
-        // Return empty array on error, don't throw
-        return [];
+      if (error) {
+        console.error('[useListings] payload error:', error);
+        throw new Error(error.message);
       }
+
+      const docs = data?.docs ?? [];
+      console.log('[useListings] payload listings count:', docs.length);
+
+      if (docs.length > 0) {
+        console.log(
+          '[useListings] first listing preview:',
+          JSON.stringify(
+            docs.slice(0, 2).map((item) => ({
+              id: item.id,
+              name: item.name,
+              category: item.category,
+              location: item.location,
+            })),
+            null,
+            2
+          )
+        );
+        await sqliteManager.saveListings(docs);
+        return docs;
+      }
+
+      const localListings = await sqliteManager.getListings();
+      console.log('[useListings] falling back to local cache size:', localListings.length);
+      return localListings;
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
 }
 
@@ -133,6 +144,104 @@ export function useDeleteListing() {
   });
 }
 
+type ClaimListingVariables = {
+  listing: ListingRecord;
+};
+
+export function useClaimListing() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async ({ listing }: ClaimListingVariables) => {
+      if (!user) {
+        throw new Error('Log in om een kast te claimen.');
+      }
+
+      if (!listing?.id) {
+        throw new Error('Onbekende kast.');
+      }
+
+      const currentOwner = listing.owner;
+      const currentOwnerId = typeof currentOwner === 'object' ? currentOwner?.id : currentOwner;
+
+      if (currentOwnerId) {
+        throw new Error('Deze kast is al geclaimd.');
+      }
+
+      const userAddress = (user as any)?.address;
+      if (!userAddress) {
+        throw new Error('Vul je adres in via je profiel om een kast te claimen.');
+      }
+
+      const addressParts = [
+        typeof userAddress.street === 'string' ? userAddress.street.trim() : '',
+        typeof userAddress.houseNumber === 'string' ? userAddress.houseNumber.trim() : '',
+        typeof userAddress.postalCode === 'string' ? userAddress.postalCode.trim() : '',
+        typeof userAddress.city === 'string' ? userAddress.city.trim() : '',
+      ].filter(Boolean);
+
+      if (addressParts.length < 3) {
+        throw new Error('Je adres is onvolledig. Vul alle velden in via je profiel.');
+      }
+
+      const listingCoords = listing.location?.coordinates;
+      const addressString = addressParts.join(' ');
+      let distanceMeters: number | null = null;
+      let autoApproved = false;
+
+      if (listingCoords && listingCoords.length >= 2) {
+        try {
+          const geocodeResults = await Location.geocodeAsync(addressString);
+          if (geocodeResults?.length) {
+            const { latitude, longitude } = geocodeResults[0];
+            if (typeof latitude === 'number' && typeof longitude === 'number') {
+              const distanceKm = calculateDistance(
+                { latitude, longitude },
+                { latitude: listingCoords[1], longitude: listingCoords[0] }
+              );
+              distanceMeters = distanceKm * 1000;
+
+              if (distanceMeters <= 50) {
+                await syncManager.queueUpdate('listings', listing.id, { owner: user.id });
+                autoApproved = true;
+              }
+            }
+          }
+        } catch (error) {
+          console.warn('useClaimListing geocode error', error);
+        }
+      }
+
+      if (!autoApproved) {
+        const claimPayload: Record<string, any> = {
+          listing: listing.id,
+          user: user.id,
+          status: 'pending',
+          distanceMeters: distanceMeters !== null ? Math.round(distanceMeters) : null,
+          addressSnapshot: {
+            street: userAddress.street ?? '',
+            houseNumber: userAddress.houseNumber ?? '',
+            postalCode: userAddress.postalCode ?? '',
+            city: userAddress.city ?? '',
+          },
+        };
+
+        await syncManager.queueCreate('listing-claims', claimPayload);
+      }
+
+      return { autoApproved, distanceMeters };
+    },
+    onSuccess: (_result, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+      if (variables?.listing?.id) {
+        queryClient.invalidateQueries({ queryKey: ['listings', variables.listing.id] });
+      }
+      queryClient.invalidateQueries({ queryKey: ['myListings'] });
+    },
+  });
+}
+
 // User/Profile hooks
 export function useProfile() {
   const { user } = useAuth();
@@ -181,7 +290,7 @@ export function useUpdateProfile() {
   });
 }
 
-// Favorites hooks
+// Favorites hooks - now uses user.favorites array
 export function useFavorites() {
   const { user } = useAuth();
 
@@ -190,26 +299,27 @@ export function useFavorites() {
     queryFn: async () => {
       if (!user) return [];
 
-      // Always get local data first (offline-first)
-      const local = await sqliteManager.getFavorites(user.id);
-
-      // Try to sync with API in the background
+      // Try to get user data with favorites from API first
       try {
-        const { data, error } = await payloadClient.findMany('favorites', {
-          where: { user: { equals: user.id } },
-          limit: 1000,
-        });
+        const { data, error } = await payloadClient.findById('users', user.id, 2); // depth 2 to get full listing data
 
-        if (!error && data?.docs) {
-          // API is available, return fresh data
-          return data.docs;
+        if (!error && data?.favorites) {
+          // API is available, return fresh favorites with full listing data
+          const favoritesWithListings = data.favorites.map((fav: any) => ({
+            id: `${user.id}-${fav.listing?.id || fav.listing}`, // Generate ID for compatibility
+            user: user.id,
+            listing: fav.listing, // Full listing object from depth: 2
+            createdAt: fav.createdAt || new Date().toISOString(),
+            updatedAt: fav.updatedAt || new Date().toISOString(),
+          }));
+          return favoritesWithListings;
         }
       } catch (error) {
-        // API is offline, just use local data
-        console.log('Using local favorites (offline or error)');
+        console.log('Using local favorites (offline or error)', error);
       }
 
-      // Return local data (whether API failed or not)
+      // Fallback: get local favorites
+      const local = await sqliteManager.getFavorites(user.id);
       return local;
     },
     enabled: !!user,
@@ -224,39 +334,47 @@ export function useToggleFavorite() {
     mutationFn: async ({ listingId, isFavorite }: { listingId: string; isFavorite: boolean }) => {
       if (!user) throw new Error('Not authenticated');
 
+      // Get current user data to see existing favorites
+      const { data: userData, error: userError } = await payloadClient.findById(
+        'users',
+        user.id,
+        1
+      );
+      if (userError) throw new Error(userError.message);
+
+      const currentFavorites = userData?.favorites || [];
+
       if (isFavorite) {
-        // Remove favorite from SQLite immediately (offline-first)
+        // Remove favorite - filter out the listing from favorites array
+        const updatedFavorites = currentFavorites.filter((fav: any) => {
+          const favListingId = typeof fav.listing === 'string' ? fav.listing : fav.listing?.id;
+          return favListingId !== listingId;
+        });
+
+        // Update local SQLite immediately (offline-first)
         await sqliteManager.removeFavorite(user.id, listingId);
-        
-        // Try to find the favorite ID and queue deletion
-        try {
-          const { data } = await payloadClient.findMany('favorites', {
-            where: {
-              user: { equals: user.id },
-              listing: { equals: listingId },
-            },
-          });
-          const favoriteId = data?.docs?.[0]?.id;
-          if (favoriteId) {
-            await syncManager.queueDelete('favorites', favoriteId);
-          }
-        } catch (error) {
-          // If offline or error, just log it - the local removal already succeeded
-          console.log('Could not queue favorite deletion (offline or error):', error);
-        }
+
+        // Queue user update for sync
+        await syncManager.queueUpdate('users', user.id, {
+          favorites: updatedFavorites,
+        });
       } else {
-        // Add favorite to SQLite immediately (offline-first)
+        // Add favorite - append to favorites array
+        const newFavorite = { listing: listingId };
+        const updatedFavorites = [...currentFavorites, newFavorite];
+
+        // Update local SQLite immediately (offline-first)
         await sqliteManager.addFavorite(user.id, listingId);
-        
-        // Queue for sync when online
-        await syncManager.queueCreate('favorites', {
-          user: user.id,
-          listing: listingId,
+
+        // Queue user update for sync
+        await syncManager.queueUpdate('users', user.id, {
+          favorites: updatedFavorites,
         });
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['profile'] }); // Also invalidate profile since favorites are part of user data
     },
   });
 }
@@ -291,12 +409,12 @@ export function useCreateReview() {
       rating: number;
       description: string;
       listing: string;
-      photos?: Array<{ uri: string; type: string; name: string }>;
+      photos?: { uri: string; type: string; name: string }[];
     }) => {
       if (!user) throw new Error('Not authenticated');
 
       const tempReviewId = `temp_review_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
+
       // Queue photos for upload if any
       const photoIds: string[] = [];
       if (reviewData.photos && reviewData.photos.length > 0) {
@@ -334,20 +452,20 @@ export function useCreateReview() {
 // Upload hooks
 export function useUploadFile() {
   return useMutation({
-    mutationFn: async ({ 
-      file, 
+    mutationFn: async ({
+      file,
       alt,
       relatedCollection,
       relatedId,
-    }: { 
-      file: { uri: string; type: string; name: string }; 
+    }: {
+      file: { uri: string; type: string; name: string };
       alt?: string;
       relatedCollection?: string;
       relatedId?: string;
     }) => {
       // Check if online
       const netInfo = await NetInfo.fetch();
-      
+
       if (!netInfo.isConnected) {
         // Queue for later upload
         const fileId = await fileQueueManager.queueFile({
@@ -358,11 +476,11 @@ export function useUploadFile() {
           relatedCollection,
           relatedId,
         });
-        
-        return { 
-          id: fileId, 
+
+        return {
+          id: fileId,
           url: file.uri, // Use local URI for now
-          _queued: true 
+          _queued: true,
         };
       }
 
@@ -372,6 +490,68 @@ export function useUploadFile() {
       return data;
     },
   });
+}
+
+// Moderation notifications hook
+export function useModerationNotifications() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    if (!user?.id) return;
+
+    // Monitor for photo status changes
+    const checkForModerationUpdates = async () => {
+      try {
+        // Get user's listings to check for photo status changes
+        const listings = await sqliteManager.getListingsByOwner(user.id);
+
+        for (const listing of listings) {
+          if (listing?.pictures) {
+            // Check if any photos transitioned from pending to approved/rejected
+            const pendingPhotos = listing.pictures.filter((pic: any) => pic.status === 'pending');
+            if (pendingPhotos.length > 0) {
+              // Compare with server state
+              const { data: serverListing } = await payloadClient.findById('listings', listing.id, 2);
+              if (serverListing?.pictures) {
+                for (const serverPic of serverListing.pictures) {
+                  const localPic = listing.pictures.find((p: any) => p.id === serverPic.id);
+                  if (localPic && localPic.status === 'pending' && serverPic.status !== 'pending') {
+                    // Status changed! Show notification
+                    const action = serverPic.status === 'approved' ? 'goedgekeurd' : 'afgewezen';
+                    Alert.alert(
+                      `Foto ${action}! 🎉`,
+                      `Je foto voor "${listing.name}" is ${action} door de beheerder en ${serverPic.status === 'approved' ? 'nu zichtbaar' : 'helaas afgewezen'}.`,
+                      [{ text: 'Geweldig!' }]
+                    );
+
+                    // Update local status to match server
+                    const updatedPictures = listing.pictures.map((p: any) =>
+                      p.id === serverPic.id ? { ...p, status: serverPic.status } : p
+                    );
+                    await sqliteManager.saveListings([{
+                      ...listing,
+                      pictures: updatedPictures,
+                    }]);
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('[useModerationNotifications] Error checking for updates:', error);
+      }
+    };
+
+    // Check every 30 seconds when app is active
+    const interval = setInterval(checkForModerationUpdates, 30000);
+
+    // Also check immediately
+    checkForModerationUpdates();
+
+    return () => clearInterval(interval);
+  }, [user?.id, queryClient]);
 }
 
 // Get queued files count
@@ -438,27 +618,18 @@ export function useListingPhotos(
     queryFn: async () => {
       if (!listingId) return [];
 
-      const where: Record<string, any> = {
-        listing: {
-          equals: listingId,
-        },
-      };
-
-      if (status) {
-        where.status = {
-          equals: status,
-        };
-      }
-
-      const { data, error } = await payloadClient.findMany('pictures', {
-        where,
-        depth: 2,
-        limit: 200,
-      });
-
+      // Get listing with pictures array
+      const { data, error } = await payloadClient.findById('listings', listingId, 2); // depth 2 to get full picture data
       if (error) throw new Error(error.message);
 
-      return data?.docs || [];
+      const allPictures = data?.pictures || [];
+
+      // Filter by status if specified
+      if (status) {
+        return allPictures.filter((pic: any) => pic.status === status);
+      }
+
+      return allPictures;
     },
     enabled: options?.enabled ?? !!listingId,
   });
@@ -479,38 +650,101 @@ export function useRequestListingPhoto() {
       if (!user) throw new Error('Not authenticated');
 
       const netInfo = await NetInfo.fetch();
-      if (!netInfo.isConnected) {
-        throw new Error('Internetverbinding is nodig om een foto te uploaden.');
-      }
 
-      const uploadResult = await payloadClient.uploadFile(file, `Listing photo for ${listingId}`);
-      if (uploadResult.error) {
-        throw new Error(uploadResult.error.message || 'Upload mislukt');
-      }
+      if (netInfo.isConnected) {
+        // Online flow: upload immediately
+        const uploadResult = await payloadClient.uploadFile(file, `Listing photo for ${listingId}`);
+        if (uploadResult.error) {
+          throw new Error(uploadResult.error.message || 'Upload mislukt');
+        }
 
-      const mediaId = uploadResult.data?.id;
-      if (!mediaId) {
-        throw new Error('Upload gaf geen media-ID terug');
-      }
+        const mediaId = uploadResult.data?.id;
+        if (!mediaId) {
+          throw new Error('Upload gaf geen media-ID terug');
+        }
 
-      const { error: createError } = await payloadClient.create('pictures', {
-        listing: listingId,
-        photo: mediaId,
-      });
+        // Get current listing to see existing pictures
+        const { data: listingData, error: listingError } = await payloadClient.findById(
+          'listings',
+          listingId,
+          1
+        );
+        if (listingError) throw new Error(listingError.message);
 
-      if (createError) {
-        throw new Error(createError.message || 'Kon fotoverzoek niet opslaan');
+        const currentPictures = listingData?.pictures || [];
+
+        // Add new picture to the array
+        const newPicture = {
+          photo: mediaId,
+          created_by: user.id,
+          status: 'pending' as const,
+        };
+
+        const updatedPictures = [...currentPictures, newPicture];
+
+        // Update the listing with the new pictures array
+        const { error: updateError } = await payloadClient.update('listings', listingId, {
+          pictures: updatedPictures,
+        });
+
+        if (updateError) {
+          throw new Error(updateError.message || 'Kon fotoverzoek niet opslaan');
+        }
+      } else {
+        // Offline flow: queue file and create local placeholder
+        const tempFileId = await fileQueueManager.queueFile({
+          uri: file.uri,
+          type: file.type,
+          name: file.name,
+          alt: `Listing photo for ${listingId}`,
+          relatedCollection: 'listings',
+          relatedId: listingId,
+        });
+
+        // Get current listing from local SQLite for offline updates
+        const localListing = await sqliteManager.getListingById(listingId);
+        const currentPictures = localListing?.pictures || [];
+
+        // Create placeholder picture with temporary ID
+        const tempPictureId = `temp_picture_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const newPicture = {
+          id: tempPictureId,
+          photo: tempFileId, // Reference to queued file
+          created_by: user.id,
+          status: 'queued' as const, // New status for queued photos
+          createdAt: new Date().toISOString(),
+        };
+
+        const updatedPictures = [...currentPictures, newPicture];
+
+        // Queue the listing update with pending photo reference
+        await syncManager.queueUpdate('listings', listingId, {
+          pictures: updatedPictures,
+          _pendingPhotos: [tempFileId], // Track which photos need to be uploaded
+        });
+
+        // Update local SQLite immediately for offline-first experience
+        await sqliteManager.saveListings([{
+          ...localListing,
+          pictures: updatedPictures,
+        }]);
       }
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['listingPhotos', variables.listingId] });
-      queryClient.invalidateQueries({ queryKey: ['listingPhotos', variables.listingId, 'pending'] });
-      queryClient.invalidateQueries({ queryKey: ['listingPhotos', variables.listingId, 'approved'] });
+      queryClient.invalidateQueries({
+        queryKey: ['listingPhotos', variables.listingId, 'pending'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['listingPhotos', variables.listingId, 'approved'],
+      });
+      queryClient.invalidateQueries({ queryKey: ['listings', variables.listingId] }); // Also invalidate the listing itself
     },
   });
 }
 
 export function useReviewListingPhoto() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -525,19 +759,48 @@ export function useReviewListingPhoto() {
       status: Exclude<PictureStatus, 'pending'>;
       rejectionReason?: string;
     }) => {
+      if (!user) throw new Error('Not authenticated');
+
       const netInfo = await NetInfo.fetch();
 
-      const payload = {
+      // Get current listing data
+      const { data: listingData, error: listingError } = await payloadClient.findById(
+        'listings',
+        listingId,
+        1
+      );
+      if (listingError) throw new Error(listingError.message);
+
+      const currentPictures = listingData?.pictures || [];
+
+      // Update the specific picture in the array
+      // For now, use array index as identifier (pictureId should be the index)
+      const pictureIndex = parseInt(pictureId);
+      if (isNaN(pictureIndex) || pictureIndex < 0 || pictureIndex >= currentPictures.length) {
+        throw new Error('Ongeldige foto identifier');
+      }
+
+      const updatedPictures = [...currentPictures];
+      const currentPicture = updatedPictures[pictureIndex];
+
+      updatedPictures[pictureIndex] = {
+        ...currentPicture,
         status,
+        approved_by: status === 'approved' ? user.id : null,
+        approved_at: status === 'approved' ? new Date().toISOString() : null,
         rejection_reason: status === 'rejected' ? rejectionReason || null : null,
       };
 
+      const payload = {
+        pictures: updatedPictures,
+      };
+
       if (!netInfo.isConnected) {
-        await syncManager.queueUpdate('pictures', pictureId, payload);
+        await syncManager.queueUpdate('listings', listingId, payload);
         return { queued: true };
       }
 
-      const { error } = await payloadClient.update('pictures', pictureId, payload);
+      const { error } = await payloadClient.update('listings', listingId, payload);
       if (error) {
         throw new Error(error.message || 'Kon foto-aanvraag niet bijwerken');
       }
@@ -546,9 +809,13 @@ export function useReviewListingPhoto() {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['listingPhotos', variables.listingId] });
-      queryClient.invalidateQueries({ queryKey: ['listingPhotos', variables.listingId, 'pending'] });
-      queryClient.invalidateQueries({ queryKey: ['listingPhotos', variables.listingId, 'approved'] });
+      queryClient.invalidateQueries({
+        queryKey: ['listingPhotos', variables.listingId, 'pending'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['listingPhotos', variables.listingId, 'approved'],
+      });
+      queryClient.invalidateQueries({ queryKey: ['listings', variables.listingId] });
     },
   });
 }
-

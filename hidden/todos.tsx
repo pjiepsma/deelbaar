@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 
 import AppleStyleSwipeableRow from '~/components/SwipeableRow';
-import { Todo, TODO_TABLE } from '~/lib/types/models';
 import { useAuth } from '~/lib/providers/AuthProvider';
+import { Todo, TODO_TABLE } from '~/lib/types/models';
 import { uuid } from '~/lib/util/uuid';
 
 const Page = () => {

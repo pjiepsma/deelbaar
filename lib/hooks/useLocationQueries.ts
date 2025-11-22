@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { payloadClient } from '../api/PayloadClient';
-import { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
+import { useState, useEffect } from 'react';
+
+import { payloadClient } from '../api/PayloadClient';
 
 export interface Bounds {
   northEast: { lat: number; lon: number };
@@ -21,7 +22,7 @@ export function useCurrentLocation() {
     queryKey: ['currentLocation'],
     queryFn: async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      
+
       if (status !== 'granted') {
         throw new Error('Location permission denied');
       }
@@ -119,10 +120,10 @@ export function useListingsInBounds(
  */
 export function useNearbyListingsAuto(radius?: number) {
   const { data: location, isLoading: locationLoading } = useCurrentLocation();
-  const { data: listings, isLoading: listingsLoading } = useNearbyListings(
-    location || null,
-    { radius, enabled: !!location }
-  );
+  const { data: listings, isLoading: listingsLoading } = useNearbyListings(location || null, {
+    radius,
+    enabled: !!location,
+  });
 
   return {
     listings: listings?.docs || [],
@@ -135,10 +136,7 @@ export function useNearbyListingsAuto(radius?: number) {
 /**
  * Calculate distance between two points (in kilometers)
  */
-export function calculateDistance(
-  from: LocationCoordinates,
-  to: LocationCoordinates
-): number {
+export function calculateDistance(from: LocationCoordinates, to: LocationCoordinates): number {
   const R = 6371; // Earth's radius in km
   const dLat = toRadians(to.latitude - from.latitude);
   const dLon = toRadians(to.longitude - from.longitude);
@@ -170,6 +168,8 @@ export function formatDistance(distanceInKm: number): string {
   }
   return `${Math.round(distanceInKm)}km`;
 }
+
+
 
 
 

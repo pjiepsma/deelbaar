@@ -1,11 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export interface PayloadUser {
-  id: string;
-  email?: string;
-  isAnonymous?: boolean;
-  collection: string;
-}
+import type { User } from '~/lib/types/payload-generated';
+import type {
+  CreateStripePaymentParams,
+  StripeAccountStatus,
+  StripeConnectResponse,
+  StripeDisconnectResponse,
+  StripePaymentIntentResponse,
+  StripeStatusResponse,
+} from '~/lib/types/stripe';
+
+export type PayloadUser = User;
 
 export interface PayloadSession {
   token: string;
@@ -20,10 +25,6 @@ class PayloadAPIClient {
 
   constructor() {
     // This will be set during init or can be configured
-  }
-
-  setBaseUrl(url: string) {
-    this.baseUrl = url;
   }
 
   async init(baseUrl?: string) {
@@ -43,6 +44,22 @@ class PayloadAPIClient {
     }
   }
 
+  getBaseUrl() {
+    return this.baseUrl;
+  }
+
+  getAuthHeaders(): Record<string, string> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (this.token) {
+      headers['Authorization'] = `JWT ${this.token}`;
+    }
+
+    return headers;
+  }
+
   private async request<T = any>(
     endpoint: string,
     options: RequestInit = {}
@@ -52,15 +69,11 @@ class PayloadAPIClient {
       console.log('[PayloadClient.request] URL:', url);
       console.log('[PayloadClient.request] Method:', options.method || 'GET');
       console.log('[PayloadClient.request] Body:', options.body);
-      
+
       const headers: HeadersInit = {
-        'Content-Type': 'application/json',
+        ...this.getAuthHeaders(),
         ...options.headers,
       };
-
-      if (this.token) {
-        headers['Authorization'] = `JWT ${this.token}`;
-      }
 
       const response = await fetch(url, {
         ...options,
@@ -108,7 +121,7 @@ class PayloadAPIClient {
   async login(email: string, password: string) {
     console.log('[PayloadClient] Login request to:', `${this.baseUrl}/api/users/login`);
     console.log('[PayloadClient] Login email:', email);
-    
+
     const { data, error } = await this.request<{ token: string; user: PayloadUser }>(
       '/api/users/login',
       {
@@ -135,10 +148,435 @@ class PayloadAPIClient {
     return { data, error: null };
   }
 
+  // Wishlist/Book requests methods
+  async getBookWishes(): Promise<any[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/book-wishes`, {
+        headers: this.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch book wishes');
+      }
+
+      const data = await response.json();
+      return data.docs || [];
+    } catch (error) {
+      console.warn('getBookWishes error:', error);
+      return [];
+    }
+  }
+
+  async createBookWish(wishData: {
+    title: string;
+    author?: string;
+    isbn?: string;
+    description?: string;
+    location?: {
+      latitude: number;
+      longitude: number;
+      radius: number; // km radius for notifications
+    };
+  }): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/book-wishes`, {
+        method: 'POST',
+        headers: {
+          ...this.getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(wishData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create book wish');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.warn('createBookWish error:', error);
+      throw error;
+    }
+  }
+
+  async deleteBookWish(wishId: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/book-wishes/${wishId}`, {
+        method: 'DELETE',
+        headers: this.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete book wish');
+      }
+    } catch (error) {
+      console.warn('deleteBookWish error:', error);
+      throw error;
+    }
+  }
+
+  async getMatchingWishes(bookData: {
+    title: string;
+    author?: string;
+    isbn?: string;
+  }): Promise<any[]> {
+    try {
+      const params = new URLSearchParams({
+        title: bookData.title,
+        ...(bookData.author && { author: bookData.author }),
+        ...(bookData.isbn && { isbn: bookData.isbn }),
+      });
+
+      const response = await fetch(`${this.baseUrl}/api/book-wishes/match?${params}`, {
+        headers: this.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to find matching wishes');
+      }
+
+      const data = await response.json();
+      return data.matches || [];
+    } catch (error) {
+      console.warn('getMatchingWishes error:', error);
+      return [];
+    }
+  }
+
+  // Product offerings methods (for farm stands, repair cafes, etc.)
+  async getProductOfferings(listingId?: string): Promise<any[]> {
+    try {
+      const url = listingId
+        ? `${this.baseUrl}/api/product-offerings?listing=${listingId}`
+        : `${this.baseUrl}/api/product-offerings`;
+
+      const response = await fetch(url, {
+        headers: this.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch product offerings');
+      }
+
+      const data = await response.json();
+      return data.docs || [];
+    } catch (error) {
+      console.warn('getProductOfferings error:', error);
+      return [];
+    }
+  }
+
+  async createProductOffering(offeringData: {
+    listingId: string;
+    productName: string;
+    description?: string;
+    quantity?: number;
+    unit?: string; // kg, stuks, liter, etc.
+    price?: number;
+    availableUntil?: string;
+    category?: string;
+    usageInstructions?: string;
+    photos?: string[];
+  }): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/product-offerings`, {
+        method: 'POST',
+        headers: {
+          ...this.getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(offeringData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create product offering');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.warn('createProductOffering error:', error);
+      throw error;
+    }
+  }
+
+  async updateProductOffering(
+    offeringId: string,
+    updates: {
+      quantity?: number;
+      status?: 'available' | 'out_of_stock' | 'reserved';
+      description?: string;
+    }
+  ): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/product-offerings/${offeringId}`, {
+        method: 'PATCH',
+        headers: {
+          ...this.getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update product offering');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.warn('updateProductOffering error:', error);
+      throw error;
+    }
+  }
+
+  async deleteProductOffering(offeringId: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/product-offerings/${offeringId}`, {
+        method: 'DELETE',
+        headers: this.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete product offering');
+      }
+    } catch (error) {
+      console.warn('deleteProductOffering error:', error);
+      throw error;
+    }
+  }
+
+  // Product favorites/following
+  async getProductFavorites(): Promise<any[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/product-favorites`, {
+        headers: this.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch product favorites');
+      }
+
+      const data = await response.json();
+      return data.docs || [];
+    } catch (error) {
+      console.warn('getProductFavorites error:', error);
+      return [];
+    }
+  }
+
+  async toggleProductFavorite(offeringId: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/product-favorites/toggle`, {
+        method: 'POST',
+        headers: {
+          ...this.getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ offeringId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to toggle product favorite');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.warn('toggleProductFavorite error:', error);
+      throw error;
+    }
+  }
+
+  // Report product as out of stock
+  async reportOutOfStock(offeringId: string, reporterNote?: string): Promise<any> {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/api/product-offerings/${offeringId}/report-out-of-stock`,
+        {
+          method: 'POST',
+          headers: {
+            ...this.getAuthHeaders(),
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ reporterNote }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to report out of stock');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.warn('reportOutOfStock error:', error);
+      throw error;
+    }
+  }
+
+  // Tool reservations for Repair Cafés
+  async createToolReservation(reservationData: {
+    toolId: string;
+    startDate: string; // ISO string
+    duration: number; // in hours
+    notes?: string;
+  }): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/tool-reservations`, {
+        method: 'POST',
+        headers: {
+          ...this.getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reservationData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create tool reservation');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.warn('createToolReservation error:', error);
+      throw error;
+    }
+  }
+
+  async getToolReservations(toolId?: string): Promise<any[]> {
+    try {
+      const url = toolId
+        ? `${this.baseUrl}/api/tool-reservations?tool=${toolId}`
+        : `${this.baseUrl}/api/tool-reservations`;
+
+      const response = await fetch(url, {
+        headers: this.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch tool reservations');
+      }
+
+      const data = await response.json();
+      return data.docs || [];
+    } catch (error) {
+      console.warn('getToolReservations error:', error);
+      return [];
+    }
+  }
+
+  // Product offering approval system
+  async approveProductOffering(
+    offeringId: string,
+    approved: boolean,
+    rejectionReason?: string
+  ): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/product-offerings/${offeringId}/approve`, {
+        method: 'POST',
+        headers: {
+          ...this.getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          approved,
+          rejectionReason,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to approve/reject product offering');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.warn('approveProductOffering error:', error);
+      throw error;
+    }
+  }
+
+  async getPendingProductOfferings(listingId: string): Promise<any[]> {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/api/product-offerings/pending?listing=${listingId}`,
+        {
+          headers: this.getAuthHeaders(),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch pending product offerings');
+      }
+
+      const data = await response.json();
+      return data.docs || [];
+    } catch (error) {
+      console.warn('getPendingProductOfferings error:', error);
+      return [];
+    }
+  }
+
+  // Stripe Connect helpers
+  async createStripeAccountSession() {
+    return this.request<StripeConnectResponse>('/api/stripe/connect', {
+      method: 'POST',
+      body: JSON.stringify({}),
+    });
+  }
+
+  async getStripeAccountStatus() {
+    return this.request<StripeStatusResponse>('/api/stripe/status', {
+      method: 'GET',
+    });
+  }
+
+  async disconnectStripeAccount() {
+    return this.request<StripeDisconnectResponse>('/api/stripe/disconnect', {
+      method: 'POST',
+      body: JSON.stringify({}),
+    });
+  }
+
+  async createStripePaymentIntent(params: CreateStripePaymentParams) {
+    return this.request<StripePaymentIntentResponse>('/api/stripe/payments', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+  }
+
+  async register(email: string, password: string, additionalData?: any) {
+    console.log('[PayloadClient] Register request to:', `${this.baseUrl}/api/users`);
+    console.log('[PayloadClient] Register email:', email);
+
+    const registerData = {
+      email,
+      password,
+      isAnonymous: false,
+      ...additionalData,
+    };
+
+    const { data, error } = await this.request<PayloadUser>('/api/users', {
+      method: 'POST',
+      body: JSON.stringify(registerData),
+    });
+
+    console.log('[PayloadClient] Register response - data:', data, 'error:', error);
+
+    if (error) {
+      console.error('[PayloadClient] Register error:', error);
+      return { data: null, error };
+    }
+
+    // Auto-login after successful registration
+    if (data) {
+      console.log('[PayloadClient] Registration successful, auto-logging in');
+      return this.login(email, password);
+    }
+
+    return { data, error: null };
+  }
+
   async loginAnonymously() {
     // Create anonymous user
     const randomEmail = `anon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}@anonymous.local`;
-    const randomPassword = Math.random().toString(36).substr(2, 15) + Math.random().toString(36).substr(2, 15);
+    const randomPassword =
+      Math.random().toString(36).substr(2, 15) + Math.random().toString(36).substr(2, 15);
 
     const { data: userData, error: createError } = await this.request('/api/users', {
       method: 'POST',
@@ -178,13 +616,16 @@ class PayloadAPIClient {
   }
 
   // Generic CRUD operations
-  async findMany<T = any>(collection: string, params?: {
-    where?: any;
-    limit?: number;
-    page?: number;
-    sort?: string;
-    depth?: number;
-  }) {
+  async findMany<T = any>(
+    collection: string,
+    params?: {
+      where?: any;
+      limit?: number;
+      page?: number;
+      sort?: string;
+      depth?: number;
+    }
+  ) {
     const queryParams = new URLSearchParams();
     if (params?.where) queryParams.append('where', JSON.stringify(params.where));
     if (params?.limit) queryParams.append('limit', params.limit.toString());
@@ -259,4 +700,3 @@ class PayloadAPIClient {
 }
 
 export const payloadClient = new PayloadAPIClient();
-

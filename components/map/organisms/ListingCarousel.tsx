@@ -6,9 +6,9 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 import DefaultCard from '~/components/map/molecules/DefaultCard';
 import ListingCard from '~/components/map/molecules/ListingCard';
-import { ListingRecord } from '~/lib/types/models';
 import { useToggleFavorite } from '~/lib/hooks/usePayloadQuery';
 import { useAuth } from '~/lib/providers/AuthProvider';
+import { ListingRecord } from '~/lib/types/models';
 
 const { width: screenWidth } = Dimensions.get('window');
 

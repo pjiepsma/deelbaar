@@ -1,5 +1,6 @@
-import { AttachmentRecord } from '../types/types';
 import _ from 'lodash';
+
+import { AttachmentRecord } from '../types/types';
 
 import { PictureEntry } from '~/lib/types/types';
 

@@ -1,3 +1,4 @@
+import { Button, Icon } from '@rneui/themed';
 import { CameraType } from 'expo-camera';
 import { CameraView, useCameraPermissions } from 'expo-camera/next';
 import * as ImagePicker from 'expo-image-picker';
@@ -12,7 +13,6 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { Button, Icon } from '@rneui/themed';
 
 export interface Props {
   onCaptured: (photo: ImagePickerResult) => void;

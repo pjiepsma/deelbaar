@@ -1,21 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import {
-  useFocusEffect,
-  useLocalSearchParams,
-  useNavigation,
-  useRouter,
-} from 'expo-router';
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import {
-  Alert,
-  Dimensions,
-  Image,
-  Share,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
-import Carousel from 'react-native-reanimated-carousel';
-import {
   Badge,
   BadgeText,
   Box,
@@ -27,6 +11,10 @@ import {
   VStack,
 } from '@gluestack-ui/themed';
 import * as ImagePicker from 'expo-image-picker';
+import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { Alert, Dimensions, Image, Share, StyleSheet, TouchableOpacity } from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
 
 import Loader from '~/components/Loader';
 import Avatar from '~/components/review/atom/Avatar';
@@ -34,6 +22,7 @@ import RatingScreen from '~/components/review/organisms/RatingScreen';
 import RatingSummary from '~/components/review/organisms/RatingSummary';
 import ReviewsScreen from '~/components/review/organisms/ReviewsScreen';
 import Colors from '~/constants/Colors';
+import { payloadClient } from '~/lib/api/PayloadClient';
 import {
   PictureStatus,
   useListing,
@@ -44,12 +33,25 @@ import {
 } from '~/lib/hooks/usePayloadQuery';
 import { useAuth } from '~/lib/providers/AuthProvider';
 import { sqliteManager } from '~/lib/storage/SQLiteManager';
-import { payloadClient } from '~/lib/api/PayloadClient';
 
 const { width } = Dimensions.get('window');
 const IMG_HEIGHT = 300;
 
 const defaultImage = require('~/assets/images/default-placeholder.png');
+
+const FACILITY_INFO: Record<string, { label: string; icon: string }> = {
+  '24_7_access': { label: '24/7 Toegang', icon: 'time-outline' },
+  'wheelchair_accessible': { label: 'Rolstoeltoegankelijk', icon: 'accessibility-outline' },
+  'parking': { label: 'Parkeren mogelijk', icon: 'car-outline' },
+  'indoor': { label: 'Binnenlocatie', icon: 'home-outline' },
+  'outdoor': { label: 'Buitenlocatie', icon: 'leaf-outline' },
+  'sheltered': { label: 'Beschut', icon: 'shield-outline' },
+  'lighting': { label: 'Verlichting', icon: 'bulb-outline' },
+  'security_camera': { label: 'Beveiligingscamera', icon: 'videocam-outline' },
+  'contact_required': { label: 'Contact vereist', icon: 'call-outline' },
+  'free_access': { label: 'Gratis toegang', icon: 'cash-outline' },
+  'membership_required': { label: 'Lidmaatschap vereist', icon: 'card-outline' },
+};
 
 type ListingParams = {
   id: string;
@@ -75,6 +77,7 @@ export default function ListingDetailsModal() {
   const { data: listingData } = useListing(id);
   const { data: reviewsData } = useReviews(id);
   const { data: approvedPhotos = [] } = useListingPhotos(id ?? null, 'approved');
+  const { data: pendingPhotos = [] } = useListingPhotos(id ?? null, 'pending');
   const toggleFavorite = useToggleFavorite();
   const requestListingPhoto = useRequestListingPhoto();
 
@@ -83,6 +86,7 @@ export default function ListingDetailsModal() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [hasQueuedPhoto, setHasQueuedPhoto] = useState(false);
 
   useEffect(() => {
     if (!listingData) return;
@@ -113,6 +117,25 @@ export default function ListingDetailsModal() {
 
     syncFavoriteState();
   }, [user?.id, id]);
+
+  // Check for queued photos
+  useEffect(() => {
+    const checkQueuedPhotos = async () => {
+      if (id) {
+        try {
+          const localListing = await sqliteManager.getListingById(id);
+          if (localListing?.pictures) {
+            const hasQueued = localListing.pictures.some((pic: any) => pic.status === 'queued');
+            setHasQueuedPhoto(hasQueued);
+          }
+        } catch (error) {
+          console.warn('[ListingDetails] Failed to check queued photos', error);
+        }
+      }
+    };
+
+    checkQueuedPhotos();
+  }, [id, listing]);
 
   useFocusEffect(
     useCallback(() => {
@@ -204,10 +227,18 @@ export default function ListingDetailsModal() {
         },
       });
 
-      Alert.alert(
-        'Bedankt!',
-        'Je foto is ingestuurd en wacht op goedkeuring van de beheerder.'
-      );
+      // Check if we're online or offline
+      const netInfo = await NetInfo.fetch();
+      if (netInfo.isConnected) {
+        Alert.alert('Bedankt!', 'Je foto is ingestuurd en wacht op goedkeuring van de beheerder.');
+      } else {
+        Alert.alert(
+          'Foto opgeslagen! 📱',
+          'Je foto is lokaal opgeslagen en wordt automatisch geüpload zodra je weer online bent. Dan wacht het op goedkeuring van de beheerder.'
+        );
+        // Trigger check for queued photos
+        setHasQueuedPhoto(true);
+      }
     } catch (error: any) {
       Alert.alert('Upload mislukt', error.message || 'Kon de foto niet uploaden.');
     } finally {
@@ -238,24 +269,21 @@ export default function ListingDetailsModal() {
     });
   }, [navigation, user, isFavorite, handleToggleFavorite, handleShare]);
 
-  const CarouselItem = useCallback(
-    ({ photo }: { photo: any }) => {
-      const mediaId = typeof photo?.photo === 'string' ? photo.photo : photo.photo?.id;
-      const uri = mediaId ? payloadClient.getFileUrl(mediaId) : null;
+  const CarouselItem = useCallback(({ photo }: { photo: any }) => {
+    const mediaId = typeof photo?.photo === 'string' ? photo.photo : photo.photo?.id;
+    const uri = mediaId ? payloadClient.getFileUrl(mediaId) : null;
 
-      return (
-        <VStack style={styles.carouselItemContainer}>
-          <Image
-            key={mediaId || 'default-image'}
-            source={uri ? { uri } : defaultImage}
-            style={styles.image}
-            resizeMode="cover"
-          />
-        </VStack>
-      );
-    },
-    []
-  );
+    return (
+      <VStack style={styles.carouselItemContainer}>
+        <Image
+          key={mediaId || 'default-image'}
+          source={uri ? { uri } : defaultImage}
+          style={styles.image}
+          resizeMode="cover"
+        />
+      </VStack>
+    );
+  }, []);
 
   const hasPhotos = approvedPhotos.length > 0;
 
@@ -292,16 +320,24 @@ export default function ListingDetailsModal() {
               </Box>
             </Box>
           ) : (
-            <Image source={defaultImage} style={{ width: '100%', height: IMG_HEIGHT }} resizeMode="cover" />
+            <Image
+              source={defaultImage}
+              style={{ width: '100%', height: IMG_HEIGHT }}
+              resizeMode="cover"
+            />
           )}
 
           {user && (
             <TouchableOpacity
-              style={[styles.addPhotoButton, isUploadingPhoto && styles.addPhotoButtonDisabled]}
+              style={[styles.addPhotoButton, (isUploadingPhoto || hasQueuedPhoto) && styles.addPhotoButtonDisabled]}
               onPress={handleAddPhoto}
-              disabled={isUploadingPhoto}>
+              disabled={isUploadingPhoto || hasQueuedPhoto}>
               <Text style={styles.addPhotoButtonText}>
-                {isUploadingPhoto ? 'Uploaden...' : 'Voeg een foto toe'}
+                {isUploadingPhoto
+                  ? 'Uploaden...'
+                  : hasQueuedPhoto
+                  ? 'Foto in wachtrij'
+                  : 'Voeg een foto toe'}
               </Text>
             </TouchableOpacity>
           )}
@@ -339,6 +375,60 @@ export default function ListingDetailsModal() {
             )}
 
             <Divider />
+
+            {/* Opening Hours */}
+            {listing.facilities?.openingHours && (
+              <VStack space="xs">
+                <Heading size="sm">🕐 Openingstijden</Heading>
+                <Text size="sm" color="$coolGray700" lineHeight="$lg">
+                  {listing.facilities.openingHours}
+                </Text>
+              </VStack>
+            )}
+
+            {/* Facilities */}
+            {listing.facilities?.facilities && listing.facilities.facilities.length > 0 && (
+              <VStack space="xs">
+                <Heading size="sm">🏢 Voorzieningen</Heading>
+                <View style={styles.facilitiesContainer}>
+                  {listing.facilities.facilities.map((facilityItem: any, index: number) => {
+                    const facility = facilityItem.facility;
+                    const facilityInfo = FACILITY_INFO[facility];
+                    return (
+                      <View key={index} style={styles.facilityItem}>
+                        <Ionicons name={facilityInfo?.icon as any} size={16} color="#6b7280" />
+                        <Text style={styles.facilityText}>{facilityInfo?.label || facility}</Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              </VStack>
+            )}
+
+            {/* House Rules */}
+            {listing.facilities?.rules && (
+              <VStack space="xs">
+                <Heading size="sm">📋 Huisregels</Heading>
+                <Text size="sm" color="$coolGray700" lineHeight="$lg">
+                  {listing.facilities.rules}
+                </Text>
+              </VStack>
+            )}
+
+            {/* Contact Info */}
+            {listing.facilities?.contactInfo && (
+              <VStack space="xs">
+                <Heading size="sm">📞 Contact</Heading>
+                <Text size="sm" color="$coolGray700" lineHeight="$lg">
+                  {listing.facilities.contactInfo}
+                </Text>
+              </VStack>
+            )}
+
+            {(listing.facilities?.openingHours || listing.facilities?.facilities?.length > 0 ||
+              listing.facilities?.rules || listing.facilities?.contactInfo) && (
+              <Divider />
+            )}
 
             <VStack space="md">
               <RatingSummary reviews={listing.reviews || []} />
@@ -461,6 +551,24 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
   },
+  facilitiesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 8,
+  },
+  facilityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f3f4f6',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    gap: 6,
+  },
+  facilityText: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
 });
-
-

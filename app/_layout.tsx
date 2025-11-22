@@ -5,6 +5,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider } from '~/lib/providers/AuthProvider';
 import { UserProvider } from '~/lib/providers/UserProvider';
+import { NotificationProvider } from '~/lib/providers/NotificationProvider';
+import { OnboardingProvider } from '~/lib/providers/OnboardingProvider';
 import { useEffect } from 'react';
 import { GluestackUIProvider } from '@gluestack-ui/themed';
 import config from '~/gluestack-ui.config';
@@ -23,15 +25,19 @@ export default function RootLayout() {
         <GestureHandlerRootView style={{ flex: 1 }}>
           <SafeAreaProvider>
             <AuthProvider>
-              <UserProvider>
-                <Stack screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                  <Stack.Screen
-                    name="(modals)"
-                    options={{ presentation: 'modal', headerShown: false }}
-                  />
-                </Stack>
-              </UserProvider>
+              <NotificationProvider>
+                <UserProvider>
+                  <OnboardingProvider>
+                    <Stack screenOptions={{ headerShown: false }}>
+                      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                      <Stack.Screen
+                        name="(modals)"
+                        options={{ presentation: 'modal', headerShown: false }}
+                      />
+                    </Stack>
+                  </OnboardingProvider>
+                </UserProvider>
+              </NotificationProvider>
             </AuthProvider>
           </SafeAreaProvider>
         </GestureHandlerRootView>

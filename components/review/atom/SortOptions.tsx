@@ -1,9 +1,5 @@
+import { HStack, Button, ButtonText } from '@gluestack-ui/themed';
 import React from 'react';
-import {
-  HStack,
-  Button,
-  ButtonText,
-} from '@gluestack-ui/themed';
 
 interface SortOptionsProps {
   selectedSort: string;

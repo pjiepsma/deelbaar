@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   VStack,
   HStack,
@@ -8,6 +7,7 @@ import {
   Progress,
   ProgressFilledTrack,
 } from '@gluestack-ui/themed';
+import React from 'react';
 
 const RatingSummary = ({ reviews }) => {
   const totalReviews = reviews.length;
@@ -21,7 +21,7 @@ const RatingSummary = ({ reviews }) => {
     ratingDistribution[rating - 1]++;
   });
 
-  const ratingPercentages = ratingDistribution.map((count) => 
+  const ratingPercentages = ratingDistribution.map((count) =>
     totalReviews > 0 ? (count / totalReviews) * 100 : 0
   );
 
@@ -36,8 +36,10 @@ const RatingSummary = ({ reviews }) => {
 
   return (
     <VStack space="md">
-      <Heading size="lg" color="#6B8E23">Reviews</Heading>
-      
+      <Heading size="lg" color="#6B8E23">
+        Reviews
+      </Heading>
+
       {totalReviews > 0 ? (
         <HStack space="lg" alignItems="flex-start">
           {/* Left: Average Rating */}
@@ -45,9 +47,7 @@ const RatingSummary = ({ reviews }) => {
             <Heading size="3xl" color="#6B8E23">
               {averageRating}
             </Heading>
-            <HStack space="2xs">
-              {renderStars(averageRating)}
-            </HStack>
+            <HStack space="2xs">{renderStars(averageRating)}</HStack>
             <Text size="sm" color="$coolGray600">
               {totalReviews} review{totalReviews !== 1 ? 's' : ''}
             </Text>
@@ -58,7 +58,7 @@ const RatingSummary = ({ reviews }) => {
             {[5, 4, 3, 2, 1].map((star) => {
               const percentage = ratingPercentages[star - 1];
               const count = ratingDistribution[star - 1];
-              
+
               return (
                 <HStack key={star} space="sm" alignItems="center">
                   <Text size="xs" color="$coolGray600" minWidth={30}>
@@ -77,7 +77,9 @@ const RatingSummary = ({ reviews }) => {
         </HStack>
       ) : (
         <Box bg="#F5F5DC" p="$6" borderRadius="$lg" alignItems="center">
-          <Text size="2xl" mb="$2">📚</Text>
+          <Text size="2xl" mb="$2">
+            📚
+          </Text>
           <Heading size="sm" color="#6B8E23" mb="$1">
             No reviews yet
           </Heading>

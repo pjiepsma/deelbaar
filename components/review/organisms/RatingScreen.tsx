@@ -1,4 +1,5 @@
 import { FontAwesome } from '@expo/vector-icons';
+import { Box, HStack, Text } from '@gluestack-ui/themed';
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -9,7 +10,6 @@ import Animated, {
   withSpring,
   useDerivedValue,
 } from 'react-native-reanimated';
-import { Box, HStack, Text } from '@gluestack-ui/themed';
 
 const MAX_STARS = 5;
 const STAR_SIZE = 36;
@@ -78,18 +78,18 @@ const Starstars: React.FC<StarstarsProps> = ({ rating, setRating }) => {
       <GestureDetector gesture={panGesture}>
         <Box position="relative" w={STAR_SIZE * MAX_STARS} h={STAR_SIZE}>
           {/* Highlight bar behind the stars */}
-          <Animated.View 
+          <Animated.View
             style={[
               {
                 position: 'absolute',
                 height: STAR_SIZE,
                 backgroundColor: 'transparent',
                 zIndex: 0,
-              }, 
-              animatedStyle
-            ]} 
+              },
+              animatedStyle,
+            ]}
           />
-          
+
           {/* Render Stars */}
           <HStack space="xs">
             {[...Array(MAX_STARS)].map((_, index) => (
@@ -105,7 +105,7 @@ const Starstars: React.FC<StarstarsProps> = ({ rating, setRating }) => {
           </HStack>
         </Box>
       </GestureDetector>
-      
+
       {stars > 0 && (
         <Text size="sm" color="#6B8E23" mt="$2" fontWeight="$semibold">
           {stars} star{stars !== 1 ? 's' : ''}

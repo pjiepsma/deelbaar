@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
+
+import apeldoornListings from '../scripts/seedApeldoornMinibiebs.json';
+
 import { payloadClient } from '~/lib/api/PayloadClient';
 import { useAuth } from '~/lib/providers/AuthProvider';
-import apeldoornListings from '../scripts/seedApeldoornMinibiebs.json';
 
 /**
  * Component to seed Minibieb listings in Apeldoorn
@@ -44,7 +46,7 @@ export default function SeedMinibiebs() {
 
     setResults(newResults);
     setLoading(false);
-    Alert.alert('Done!', `Seeded ${newResults.filter(r => r.startsWith('✅')).length} listings`);
+    Alert.alert('Done!', `Seeded ${newResults.filter((r) => r.startsWith('✅')).length} listings`);
   };
 
   return (
@@ -71,9 +73,7 @@ export default function SeedMinibiebs() {
       </TouchableOpacity>
 
       {!user && (
-        <Text className="text-red-500 mt-2 text-sm">
-          ⚠️ You must be logged in to seed data
-        </Text>
+        <Text className="text-red-500 mt-2 text-sm">⚠️ You must be logged in to seed data</Text>
       )}
 
       {results.length > 0 && (
@@ -88,5 +88,10 @@ export default function SeedMinibiebs() {
     </View>
   );
 }
+
+
+
+
+
 
 

@@ -1,7 +1,9 @@
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { useAuth } from '~/lib/providers/AuthProvider';
+
 import AccountScreen from './account';
 import AuthScreen from './auth';
+
+import { useAuth } from '~/lib/providers/AuthProvider';
 
 export default function ProfileTab() {
   const { user, isLoading } = useAuth();

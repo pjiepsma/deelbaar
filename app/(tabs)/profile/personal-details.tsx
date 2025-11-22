@@ -14,8 +14,8 @@ import {
 } from 'react-native';
 
 import Colors from '~/constants/Colors';
-import { useAuth } from '~/lib/providers/AuthProvider';
 import { payloadClient } from '~/lib/api/PayloadClient';
+import { useAuth } from '~/lib/providers/AuthProvider';
 
 type FormState = {
   firstName: string;
@@ -79,7 +79,10 @@ export default function PersonalDetailsScreen() {
   const pickAvatar = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert('Toestemming vereist', 'Geef toegang tot je foto’s om een profielfoto te kiezen.');
+      Alert.alert(
+        'Toestemming vereist',
+        'Geef toegang tot je foto’s om een profielfoto te kiezen.'
+      );
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -465,5 +468,3 @@ const styles = StyleSheet.create({
     color: '#1f2937',
   },
 });
-
-

@@ -1,4 +1,6 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import React, { Suspense, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -6,70 +8,68 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ScrollView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Colors from '~/constants/Colors';
 import { useMyListings } from '~/lib/hooks/usePayloadQuery';
+import { usePendingApprovalsCount } from '~/lib/hooks/useProductOfferings';
+// Lazy load components to avoid circular dependencies
+const ManageListingsScreen = React.lazy(() => import('../profile/manage-listings'));
+const NotificationsScreen = React.lazy(() => import('../profile/notifications'));
 
 export default function MyHomeTab() {
+  const [activeTab, setActiveTab] = useState<'overview' | 'manage' | 'approvals'>('overview');
   const router = useRouter();
-  const {
-    data: listings = [],
-    isLoading,
-    refetch,
-    isRefetching,
-  } = useMyListings();
+  const { data: listings = [], isLoading, refetch, isRefetching } = useMyListings();
+  const { data: pendingCount = 0 } = usePendingApprovalsCount();
 
-  const handleManage = () => {
-    router.push('(tabs)/profile/manage-listings');
-  };
-
-  const renderEmpty = () => (
-    <View style={styles.emptyState}>
-      <Ionicons name="home-outline" size={48} color="#9AA4B5" />
-      <Text style={styles.emptyText}>Nog geen listings</Text>
-      <Text style={styles.emptySubtext}>
-        Voeg je eerste locatie toe via je account om hem hier terug te zien.
-      </Text>
-      <TouchableOpacity style={styles.primaryButton} onPress={handleManage}>
-        <Text style={styles.primaryButtonText}>Voeg een listing toe</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const renderItem = ({ item }: any) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() =>
-        router.push({
-          pathname: '/(modals)/listing/[id]',
-          params: { id: item.id },
-        })
-      }>
-      <View style={styles.cardHeader}>
-        <Text style={styles.cardTitle}>{item.name}</Text>
-        <Ionicons name="chevron-forward" size={18} color="#9AA4B5" />
-      </View>
-      {item.location?.address ? (
-        <Text style={styles.cardSubtitle}>{item.location.address}</Text>
-      ) : (
-        <Text style={styles.cardSubtitleMuted}>Adres nog niet ingevuld</Text>
-      )}
-      {item.category ? <Text style={styles.cardMeta}>Type: {item.category}</Text> : null}
-    </TouchableOpacity>
-  );
-
-  if (isLoading && listings.length === 0) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator />
+  const renderOverviewTab = () => {
+    const renderEmpty = () => (
+      <View style={styles.emptyState}>
+        <Ionicons name="home-outline" size={48} color="#9AA4B5" />
+        <Text style={styles.emptyText}>Nog geen kasten</Text>
+        <Text style={styles.emptySubtext}>
+          Voeg je eerste kast toe om hem hier terug te zien en te beheren.
+        </Text>
+        <TouchableOpacity style={styles.primaryButton} onPress={() => setActiveTab('manage')}>
+          <Text style={styles.primaryButtonText}>Voeg een kast toe</Text>
+        </TouchableOpacity>
       </View>
     );
-  }
 
-  return (
-    <View style={styles.container}>
+    const renderItem = ({ item }: any) => (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() =>
+          router.push({
+            pathname: '/(modals)/listing/[id]',
+            params: { id: item.id },
+          })
+        }>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>{item.name}</Text>
+          <Ionicons name="chevron-forward" size={18} color="#9AA4B5" />
+        </View>
+        {item.location?.address ? (
+          <Text style={styles.cardSubtitle}>{item.location.address}</Text>
+        ) : (
+          <Text style={styles.cardSubtitleMuted}>Adres nog niet ingevuld</Text>
+        )}
+        {item.category ? <Text style={styles.cardMeta}>Type: {item.category}</Text> : null}
+      </TouchableOpacity>
+    );
+
+    if (isLoading && listings.length === 0) {
+      return (
+        <View style={styles.loader}>
+          <ActivityIndicator />
+        </View>
+      );
+    }
+
+    return (
       <FlatList
         data={listings}
         refreshing={isRefetching}
@@ -79,20 +79,149 @@ export default function MyHomeTab() {
         ListEmptyComponent={renderEmpty}
         contentContainerStyle={styles.listContent}
       />
-      {listings.length > 0 && (
-        <TouchableOpacity style={styles.manageButton} onPress={handleManage}>
-          <Ionicons name="create-outline" size={18} color="#fff" />
-          <Text style={styles.manageButtonText}>Beheer mijn listings</Text>
-        </TouchableOpacity>
-      )}
-    </View>
+    );
+  };
+
+  const renderManageTab = () => (
+    <Suspense fallback={<ActivityIndicator size="large" />}>
+      <ManageListingsScreen />
+    </Suspense>
+  );
+
+  const renderApprovalsTab = () => (
+    <Suspense fallback={<ActivityIndicator size="large" />}>
+      <NotificationsScreen />
+    </Suspense>
+  );
+
+  return (
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>🏠 Mijn kasten</Text>
+        </View>
+
+        {/* Tab Navigator */}
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'overview' && styles.activeTab]}
+            onPress={() => setActiveTab('overview')}>
+            <Ionicons name="home" size={16} color={activeTab === 'overview' ? '#fff' : '#6b7280'} />
+            <Text style={[styles.tabText, activeTab === 'overview' && styles.activeTabText]}>
+              Overzicht
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'manage' && styles.activeTab]}
+            onPress={() => setActiveTab('manage')}>
+            <Ionicons name="create" size={16} color={activeTab === 'manage' ? '#fff' : '#6b7280'} />
+            <Text style={[styles.tabText, activeTab === 'manage' && styles.activeTabText]}>
+              Beheren
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'approvals' && styles.activeTab]}
+            onPress={() => setActiveTab('approvals')}>
+            <Ionicons
+              name="checkmark-circle"
+              size={16}
+              color={activeTab === 'approvals' ? '#fff' : '#6b7280'}
+            />
+            <Text style={[styles.tabText, activeTab === 'approvals' && styles.activeTabText]}>
+              Goedkeuringen
+            </Text>
+            {(pendingCount || 0) > 0 && (
+              <View style={styles.tabBadge}>
+                <Text style={styles.tabBadgeText}>{pendingCount > 99 ? '99+' : pendingCount}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {/* Tab Content */}
+        <View style={styles.content}>
+          {activeTab === 'overview' && renderOverviewTab()}
+          {activeTab === 'manage' && renderManageTab()}
+          {activeTab === 'approvals' && renderApprovalsTab()}
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F3F5F9',
+  },
   container: {
     flex: 1,
     backgroundColor: '#F3F5F9',
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1f2937',
+    textAlign: 'center',
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#f9fafb',
+    marginHorizontal: 20,
+    marginVertical: 16,
+    borderRadius: 12,
+    padding: 4,
+  },
+  tab: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    gap: 6,
+    position: 'relative',
+  },
+  activeTab: {
+    backgroundColor: '#3b82f6',
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
+  activeTabText: {
+    color: '#fff',
+  },
+  tabBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    backgroundColor: '#ef4444',
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#fff',
+  },
+  tabBadgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  content: {
+    flex: 1,
   },
   listContent: {
     padding: 16,
@@ -165,23 +294,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6B7280',
   },
-  manageButton: {
-    position: 'absolute',
-    bottom: 24,
-    left: 16,
-    right: 16,
-    borderRadius: 10,
-    backgroundColor: Colors.primary,
-    paddingVertical: 14,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 8,
-    elevation: 3,
-  },
-  manageButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
 });
-

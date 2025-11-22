@@ -1,12 +1,5 @@
+import { VStack, HStack, Text, Heading, Box, Divider } from '@gluestack-ui/themed';
 import React, { useState } from 'react';
-import {
-  VStack,
-  HStack,
-  Text,
-  Heading,
-  Box,
-  Divider,
-} from '@gluestack-ui/themed';
 
 import Avatar from '../atom/Avatar';
 import FullImageModal from '../atom/FullImageModal';
@@ -59,10 +52,10 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({ reviews }) => {
             <Avatar name={userName[0]?.toUpperCase() || 'A'} uri={avatarUri} />
             <VStack flex={1} space="2xs">
               <Heading size="sm">{userName}</Heading>
-              <UserInfo 
-                userName={item.created_by} 
-                rating={item.rating} 
-                date={item.createdAt || item.created_at} 
+              <UserInfo
+                userName={item.created_by}
+                rating={item.rating}
+                date={item.createdAt || item.created_at}
               />
             </VStack>
           </HStack>
@@ -81,7 +74,7 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({ reviews }) => {
             />
           )}
         </VStack>
-        
+
         <Divider mt="$4" />
       </Box>
     );

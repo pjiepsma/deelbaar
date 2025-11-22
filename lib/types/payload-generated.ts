@@ -75,9 +75,9 @@ export interface Config {
     users: User;
     media: Media;
     listings: Listing;
-    pictures: Picture;
     reviews: Review;
-    favorites: Favorite;
+    'listing-claims': ListingClaim;
+    'book-wishes': BookWish;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -88,9 +88,9 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     listings: ListingsSelect<false> | ListingsSelect<true>;
-    pictures: PicturesSelect<false> | PicturesSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
-    favorites: FavoritesSelect<false> | FavoritesSelect<true>;
+    'listing-claims': ListingClaimsSelect<false> | ListingClaimsSelect<true>;
+    'book-wishes': BookWishesSelect<false> | BookWishesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -158,6 +158,88 @@ export interface User {
    * User role
    */
   role: 'user' | 'admin';
+  /**
+   * Expo push token voor dit account
+   */
+  pushToken?: string | null;
+  /**
+   * Laatst bijgewerkte push token
+   */
+  pushTokenUpdatedAt?: string | null;
+  /**
+   * User address information for claim validation
+   */
+  address?: {
+    /**
+     * Street name
+     */
+    street?: string | null;
+    /**
+     * House number
+     */
+    houseNumber?: string | null;
+    /**
+     * Postal code
+     */
+    postalCode?: string | null;
+    /**
+     * City
+     */
+    city?: string | null;
+    /**
+     * Geographic coordinates (optional)
+     *
+     * @minItems 2
+     * @maxItems 2
+     */
+    coordinates?: [number, number] | null;
+  };
+  /**
+   * User's favorite listings
+   */
+  favorites?:
+    | {
+        listing: string | Listing;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Voorkeuren voor push notificaties
+   */
+  notificationSettings?: {
+    photoRequests?: boolean | null;
+    statusUpdates?: boolean | null;
+    reviews?: boolean | null;
+    favorites?: boolean | null;
+  };
+  /**
+   * Stripe connected account ID
+   */
+  stripeAccountId?: string | null;
+  /**
+   * Stripe onboarding status
+   */
+  stripeAccountStatus?: ('pending' | 'complete') | null;
+  /**
+   * Stripe charges enabled
+   */
+  stripeChargesEnabled?: boolean | null;
+  /**
+   * Stripe payouts enabled
+   */
+  stripePayoutsEnabled?: boolean | null;
+  /**
+   * Currently due Stripe requirements
+   */
+  stripeRequirementsDue?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -203,11 +285,35 @@ export interface Listing {
   id: string;
   name: string;
   description: string;
+  category: 'book' | 'food' | 'hygiene' | 'community' | 'other';
   /**
-   * The user who created this listing
+   * Whether this listing is visible to the public or still in draft mode
    */
-  owner: string | User;
+  publishStatus: 'draft' | 'live';
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * The user who owns this listing
+   */
+  owner?: (string | null) | User;
+  /**
+   * User who has submitted a claim for this listing
+   */
+  pendingOwner?: (string | null) | User;
   location?: {
+    street?: string | null;
+    houseNumber?: string | null;
+    zipCode?: string | null;
+    city?: string | null;
+    province?: string | null;
+    country?: string | null;
+    /**
+     * Full address string for display and geocoding
+     */
     address?: string | null;
     /**
      * @minItems 2
@@ -215,32 +321,57 @@ export interface Listing {
      */
     coordinates?: [number, number] | null;
   };
-  category?: string | null;
-  tags?:
+  facilities?: {
+    /**
+     * When is this location accessible? E.g., "Mon-Fri 9-17, Sat 10-16"
+     */
+    openingHours?: string | null;
+    facilities?:
+      | {
+          facility?:
+            | (
+                | '24_7_access'
+                | 'wheelchair_accessible'
+                | 'parking'
+                | 'indoor'
+                | 'outdoor'
+                | 'sheltered'
+                | 'lighting'
+                | 'security_camera'
+                | 'contact_required'
+                | 'free_access'
+                | 'membership_required'
+              )
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Any special rules or guidelines for using this location
+     */
+    rules?: string | null;
+    /**
+     * How can people get in touch if they need help?
+     */
+    contactInfo?: string | null;
+  };
+  /**
+   * Photos for this listing
+   */
+  pictures?:
     | {
-        tag?: string | null;
+        photo: string | Media;
+        created_by: string | User;
+        status: 'pending' | 'approved' | 'rejected';
+        approved_by?: (string | null) | User;
+        approved_at?: string | null;
+        rejection_reason?: string | null;
         id?: string | null;
       }[]
     | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pictures".
- */
-export interface Picture {
-  id: string;
-  photo: string | Media;
-  created_by: string | User;
-  listing: string | Listing;
-  review?: (string | null) | Review;
-  status: 'pending' | 'approved' | 'rejected';
-  approved_by?: (string | null) | User;
-  approved_at?: string | null;
-  rejection_reason?: string | null;
-  updatedAt: string;
-  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -257,12 +388,63 @@ export interface Review {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "favorites".
+ * via the `definition` "listing-claims".
  */
-export interface Favorite {
+export interface ListingClaim {
   id: string;
-  user: string | User;
+  /**
+   * The listing being claimed
+   */
   listing: string | Listing;
+  /**
+   * User submitting the claim
+   */
+  user: string | User;
+  /**
+   * Claim status
+   */
+  status: 'pending' | 'approved' | 'rejected';
+  /**
+   * Distance in meters from user location to listing (for auto-approval)
+   */
+  distanceMeters?: number | null;
+  /**
+   * Snapshot of user address at time of claim
+   */
+  addressSnapshot?: {
+    street?: string | null;
+    houseNumber?: string | null;
+    postalCode?: string | null;
+    city?: string | null;
+    /**
+     * @minItems 2
+     * @maxItems 2
+     */
+    coordinates?: [number, number] | null;
+  };
+  /**
+   * Additional notes from the user or admin
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "book-wishes".
+ */
+export interface BookWish {
+  id: string;
+  title: string;
+  author?: string | null;
+  isbn?: string | null;
+  description?: string | null;
+  location: {
+    latitude: number;
+    longitude: number;
+    radius: number;
+  };
+  created_by: string | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -303,16 +485,16 @@ export interface PayloadLockedDocument {
         value: string | Listing;
       } | null)
     | ({
-        relationTo: 'pictures';
-        value: string | Picture;
-      } | null)
-    | ({
         relationTo: 'reviews';
         value: string | Review;
       } | null)
     | ({
-        relationTo: 'favorites';
-        value: string | Favorite;
+        relationTo: 'listing-claims';
+        value: string | ListingClaim;
+      } | null)
+    | ({
+        relationTo: 'book-wishes';
+        value: string | BookWish;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -367,6 +549,36 @@ export interface UsersSelect<T extends boolean = true> {
   surname?: T;
   avatar?: T;
   role?: T;
+  pushToken?: T;
+  pushTokenUpdatedAt?: T;
+  address?:
+    | T
+    | {
+        street?: T;
+        houseNumber?: T;
+        postalCode?: T;
+        city?: T;
+        coordinates?: T;
+      };
+  favorites?:
+    | T
+    | {
+        listing?: T;
+        id?: T;
+      };
+  notificationSettings?:
+    | T
+    | {
+        photoRequests?: T;
+        statusUpdates?: T;
+        reviews?: T;
+        favorites?: T;
+      };
+  stripeAccountId?: T;
+  stripeAccountStatus?: T;
+  stripeChargesEnabled?: T;
+  stripePayoutsEnabled?: T;
+  stripeRequirementsDue?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -409,38 +621,55 @@ export interface MediaSelect<T extends boolean = true> {
 export interface ListingsSelect<T extends boolean = true> {
   name?: T;
   description?: T;
-  owner?: T;
-  location?:
-    | T
-    | {
-        address?: T;
-        coordinates?: T;
-      };
   category?: T;
+  publishStatus?: T;
   tags?:
     | T
     | {
         tag?: T;
         id?: T;
       };
+  owner?: T;
+  pendingOwner?: T;
+  location?:
+    | T
+    | {
+        street?: T;
+        houseNumber?: T;
+        zipCode?: T;
+        city?: T;
+        province?: T;
+        country?: T;
+        address?: T;
+        coordinates?: T;
+      };
+  facilities?:
+    | T
+    | {
+        openingHours?: T;
+        facilities?:
+          | T
+          | {
+              facility?: T;
+              id?: T;
+            };
+        rules?: T;
+        contactInfo?: T;
+      };
+  pictures?:
+    | T
+    | {
+        photo?: T;
+        created_by?: T;
+        status?: T;
+        approved_by?: T;
+        approved_at?: T;
+        rejection_reason?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pictures_select".
- */
-export interface PicturesSelect<T extends boolean = true> {
-  photo?: T;
-  created_by?: T;
-  listing?: T;
-  review?: T;
-  status?: T;
-  approved_by?: T;
-  approved_at?: T;
-  rejection_reason?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -456,11 +685,43 @@ export interface ReviewsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "favorites_select".
+ * via the `definition` "listing-claims_select".
  */
-export interface FavoritesSelect<T extends boolean = true> {
-  user?: T;
+export interface ListingClaimsSelect<T extends boolean = true> {
   listing?: T;
+  user?: T;
+  status?: T;
+  distanceMeters?: T;
+  addressSnapshot?:
+    | T
+    | {
+        street?: T;
+        houseNumber?: T;
+        postalCode?: T;
+        city?: T;
+        coordinates?: T;
+      };
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "book-wishes_select".
+ */
+export interface BookWishesSelect<T extends boolean = true> {
+  title?: T;
+  author?: T;
+  isbn?: T;
+  description?: T;
+  location?:
+    | T
+    | {
+        latitude?: T;
+        longitude?: T;
+        radius?: T;
+      };
+  created_by?: T;
   updatedAt?: T;
   createdAt?: T;
 }

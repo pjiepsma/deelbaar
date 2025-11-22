@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
+
 import Loader from '~/components/Loader';
 import Colors from '~/constants/Colors';
-import { ListingRecord } from '~/lib/types/models';
 import { useNearbyListingsAuto } from '~/lib/hooks/useLocationQueries';
 import { useAuth } from '~/lib/providers/AuthProvider';
 import { useUser } from '~/lib/providers/UserProvider';
+import { ListingRecord } from '~/lib/types/models';
 
 interface Props {
   category: string;
@@ -53,7 +54,7 @@ const ListingsMap = ({
 
   const handleMarkerPress = (listingItem: ListingRecord) => {
     setListing(listingItem);
-    
+
     // Center map on selected listing
     if (listingItem.location?.coordinates) {
       mapRef.current?.animateToRegion({
@@ -77,8 +78,7 @@ const ListingsMap = ({
         initialRegion={region}
         showsUserLocation
         showsMyLocationButton
-        showsCompass
-      >
+        showsCompass>
         {listings.map((item) => {
           if (!item.location?.coordinates) return null;
 
@@ -111,6 +111,10 @@ const styles = StyleSheet.create({
 });
 
 export default ListingsMap;
+
+
+
+
 
 
 

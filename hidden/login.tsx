@@ -9,8 +9,8 @@ import {
   View,
 } from 'react-native';
 
-import { useAuth } from '~/lib/providers/AuthProvider';
 import { payloadClient } from '~/lib/api/PayloadClient';
+import { useAuth } from '~/lib/providers/AuthProvider';
 
 const Login = () => {
   const [email, setEmail] = useState('');

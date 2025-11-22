@@ -4,12 +4,16 @@ import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '~/constants/Colors';
 import { useAuth } from '~/lib/providers/AuthProvider';
+import { useOnboarding } from '~/lib/providers/OnboardingProvider';
+import { usePendingApprovalsCount } from '~/lib/hooks/useProductOfferings';
+import { NotificationBadge } from '~/components/NotificationBadge';
 
 type AccountLink = {
   label: string;
   description: string;
   icon: keyof typeof Ionicons.glyphMap;
   href: string;
+  badgeCount?: number;
 };
 
 const profileLinks: AccountLink[] = [
@@ -50,6 +54,12 @@ const supportLinks: AccountLink[] = [
     href: '/(tabs)/profile/faq',
   },
   {
+    label: 'App introductie',
+    description: 'Bekijk opnieuw hoe de app werkt',
+    icon: 'school-outline',
+    href: 'onboarding',
+  },
+  {
     label: 'Voorwaarden & beleid',
     description: 'Bekijk de communityregels en privacy',
     icon: 'document-text-outline',
@@ -57,7 +67,20 @@ const supportLinks: AccountLink[] = [
   },
 ];
 
-const extrasLinks: AccountLink[] = [
+const getExtrasLinks = (pendingApprovalsCount: number): AccountLink[] => [
+  {
+    label: 'Goedkeuringen',
+    description: 'Beoordeel community inzendingen voor je kasten',
+    icon: 'checkmark-circle-outline',
+    href: '/(tabs)/my-home',
+    badgeCount: pendingApprovalsCount,
+  },
+  {
+    label: 'Boek wensen',
+    description: 'Bekijk gemeenschappelijke wensen en beheer je eigen wensen',
+    icon: 'heart-outline',
+    href: '/(tabs)/wishlist',
+  },
   {
     label: 'Statistieken',
     description: 'Inzicht in views en bijdragen (binnenkort)',
@@ -81,9 +104,15 @@ const extrasLinks: AccountLink[] = [
 export default function AccountScreen() {
   const { user, signOut } = useAuth();
   const router = useRouter();
+  const { startOnboarding } = useOnboarding();
+  const { data: pendingApprovalsCount } = usePendingApprovalsCount();
 
   const navigate = (href: string) => {
-    router.push(href);
+    if (href === 'onboarding') {
+      startOnboarding();
+    } else {
+      router.push(href);
+    }
   };
 
   return (
@@ -101,7 +130,7 @@ export default function AccountScreen() {
       <AccountSection title="Profiel" links={profileLinks} onNavigate={navigate} />
       <AccountSection title="Meldingen" links={notificationLinks} onNavigate={navigate} />
       <AccountSection title="Support" links={supportLinks} onNavigate={navigate} />
-      <AccountSection title="Extra" links={extrasLinks} onNavigate={navigate} />
+      <AccountSection title="Extra" links={getExtrasLinks(pendingApprovalsCount || 0)} onNavigate={navigate} />
 
       <TouchableOpacity style={styles.logoutButton} onPress={signOut}>
         <Text style={styles.logoutText}>Log uit</Text>
@@ -125,7 +154,12 @@ function AccountSection({
       {links.map((item) => (
         <TouchableOpacity key={item.href} style={styles.cardRow} onPress={() => onNavigate(item.href)}>
           <View style={styles.rowLeft}>
-            <Ionicons name={item.icon} size={20} color={Colors.primary} />
+            <View style={styles.iconContainer}>
+              <Ionicons name={item.icon} size={20} color={Colors.primary} />
+              {item.badgeCount !== undefined && item.badgeCount > 0 ? (
+                <NotificationBadge count={item.badgeCount} size="small" />
+              ) : null}
+            </View>
             <View style={styles.rowTextContainer}>
               <Text style={styles.rowLabel}>{item.label}</Text>
               <Text style={styles.rowDescription}>{item.description}</Text>
@@ -200,6 +234,9 @@ const styles = StyleSheet.create({
     gap: 12,
     alignItems: 'center',
     flex: 1,
+  },
+  iconContainer: {
+    position: 'relative',
   },
   rowTextContainer: {
     flex: 1,

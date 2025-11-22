@@ -1,7 +1,9 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@gluestack-ui/themed';
 import { useNetInfo } from '@react-native-community/netinfo';
+import * as ImagePicker from 'expo-image-picker';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
 import {
   Alert,
   Image,
@@ -13,8 +15,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@gluestack-ui/themed';
-import { Ionicons } from '@expo/vector-icons';
 
 import RatingScreen from '~/components/review/organisms/RatingScreen';
 import { useCreateReview } from '~/lib/hooks/usePayloadQuery';
@@ -44,7 +44,10 @@ export default function ReviewModal() {
     try {
       const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permission.granted) {
-        Alert.alert('Toestemming vereist', 'Geef toegang tot je foto’s om een afbeelding toe te voegen.');
+        Alert.alert(
+          'Toestemming vereist',
+          'Geef toegang tot je foto’s om een afbeelding toe te voegen.'
+        );
         return;
       }
 
@@ -103,7 +106,12 @@ export default function ReviewModal() {
       });
 
       const online = netInfo.isConnected ?? true;
-      Alert.alert('Bedankt!', online ? 'Je review is opgeslagen en wordt snel verwerkt.' : 'Je review wordt verstuurd zodra je weer online bent.');
+      Alert.alert(
+        'Bedankt!',
+        online
+          ? 'Je review is opgeslagen en wordt snel verwerkt.'
+          : 'Je review wordt verstuurd zodra je weer online bent.'
+      );
       router.back();
     } catch (error: any) {
       console.error('[ReviewModal] Failed to create review', error);
@@ -207,5 +215,3 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
 });
-
-

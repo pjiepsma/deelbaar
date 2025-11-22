@@ -5,8 +5,8 @@ export default function StatsScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>Statistieken</Text>
       <Text style={styles.body}>
-        Binnenkort zie je hier inzichten over views, favoriete plaatsen en bijdragen uit de community.
-        We verzamelen de data al, zodat we straks mooie grafieken kunnen tonen.
+        Binnenkort zie je hier inzichten over views, favoriete plaatsen en bijdragen uit de
+        community. We verzamelen de data al, zodat we straks mooie grafieken kunnen tonen.
       </Text>
     </ScrollView>
   );
@@ -29,5 +29,10 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 });
+
+
+
+
+
 
 

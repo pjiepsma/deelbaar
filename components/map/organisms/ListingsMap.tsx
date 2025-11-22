@@ -9,10 +9,10 @@ import { Region } from 'react-native-maps/lib/sharedTypes';
 import Loader from '~/components/Loader';
 import MapWithMarkers from '~/components/map/molecules/MapWithMarkers';
 import Colors from '~/constants/Colors';
-import { ListingRecord } from '~/lib/types/models';
 import { useListings } from '~/lib/hooks/usePayloadQuery';
 import { useAuth } from '~/lib/providers/AuthProvider';
 import { useUser } from '~/lib/providers/UserProvider';
+import { ListingRecord } from '~/lib/types/models';
 import { PictureEntry } from '~/lib/types/types';
 
 interface Props {
@@ -74,16 +74,17 @@ const ListingsMap: React.FC<Props> = ({
     }) => {
       try {
         // Filter listings to those in view
-        const filtered = allListings?.filter((listing: any) => {
-          if (!listing.location?.coordinates) return false;
-          const [lon, lat] = listing.location.coordinates;
-          return (
-            lat >= params.min_lat &&
-            lat <= params.max_lat &&
-            lon >= params.min_long &&
-            lon <= params.max_long
-          );
-        }) || [];
+        const filtered =
+          allListings?.filter((listing: any) => {
+            if (!listing.location?.coordinates) return false;
+            const [lon, lat] = listing.location.coordinates;
+            return (
+              lat >= params.min_lat &&
+              lat <= params.max_lat &&
+              lon >= params.min_long &&
+              lon <= params.max_long
+            );
+          }) || [];
 
         return filtered;
       } catch (err) {
