@@ -9,7 +9,6 @@ interface ClusterMarkerProps {
   longitude: number;
   pointCount: number;
   category: string | null;
-  onPress: () => void;
 }
 
 /**
@@ -21,7 +20,6 @@ export const ClusterMarker = ({
   longitude,
   pointCount,
   category,
-  onPress,
 }: ClusterMarkerProps) => {
   const markerRef = useRef<MapMarker>(null);
 
@@ -38,7 +36,6 @@ export const ClusterMarker = ({
     <Marker
       ref={markerRef}
       coordinate={{ latitude, longitude }}
-      onPress={onPress}
       tracksViewChanges={false}>
       <View style={styles.marker}>
         <View style={[styles.clusterContainer, { backgroundColor: categoryColor }]}>

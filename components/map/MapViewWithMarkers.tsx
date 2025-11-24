@@ -138,11 +138,7 @@ export const MapViewWithMarkers = React.memo<MapViewWithMarkersProps>(
                   longitude={longitude}
                   pointCount={pointCount}
                   category={dominantCategory}
-                  onPress={() => {
-                    if (supercluster && clusterId !== undefined) {
-                      onClusterPress(latitude, longitude, clusterId, supercluster);
-                    }
-                  }}
+
                 />
               );
             } else {
