@@ -4,6 +4,7 @@ export default function ProfileLayout() {
   return (
     <Stack
       screenOptions={{
+        headerShown: true,
         headerStyle: { backgroundColor: '#fff' },
         headerTintColor: '#000',
       }}>
@@ -22,6 +23,9 @@ export default function ProfileLayout() {
       <Stack.Screen name="terms" options={{ title: 'Voorwaarden & beleid' }} />
       <Stack.Screen name="stats" options={{ title: 'Statistieken' }} />
       <Stack.Screen name="admin" options={{ title: 'Admin tools' }} />
+      <Stack.Screen name="register" options={{ headerShown: false }} />
+      <Stack.Screen name="forgot-password" options={{ title: 'Wachtwoord vergeten' }} />
+      <Stack.Screen name="reset-password" options={{ title: 'Wachtwoord resetten' }} />
     </Stack>
   );
 }

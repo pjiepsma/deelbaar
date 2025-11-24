@@ -44,8 +44,8 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Kasten',
-            headerTitle: 'Kasten',
+            title: 'Kaart',
+            headerTitle: 'Kaart',
             headerTransparent: true,
             headerStyle: {
               backgroundColor: 'transparent',
@@ -60,7 +60,7 @@ export default function TabsLayout() {
                 justifyContent: 'center',
               }}>
                 <Ionicons
-                  name={focused ? 'business' : 'business-outline'}
+                  name={focused ? 'map' : 'map-outline'}
                   size={focused ? 20 : 18}
                   color={color}
                 />
@@ -129,7 +129,7 @@ export default function TabsLayout() {
                 justifyContent: 'center',
               }}>
                 <Ionicons
-                  name={focused ? 'library' : 'library-outline'}
+                  name={focused ? 'business' : 'business-outline'}
                   size={focused ? 20 : 18}
                   color={color}
                 />
@@ -141,7 +141,7 @@ export default function TabsLayout() {
           name="profile"
           options={{
             title: 'Account',
-            headerTitle: 'Account',
+            headerShown: false,
             tabBarIcon: ({ color, size, focused }) => (
               <View style={{
                 width: 32,

@@ -97,10 +97,6 @@ export default function MyHomeTab() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>🏠 Mijn kasten</Text>
-        </View>
-
         {/* Tab Navigator */}
         <View style={styles.tabContainer}>
           <TouchableOpacity
@@ -159,18 +155,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F3F5F9',
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#1f2937',
-    textAlign: 'center',
   },
   tabContainer: {
     flexDirection: 'row',

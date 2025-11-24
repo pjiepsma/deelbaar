@@ -208,23 +208,6 @@ export default function BookWishlist({ onClose, mode = 'community' }: BookWishli
 
   return (
     <View style={styles.container}>
-      {/* Hide header when used in tab mode */}
-      {mode === 'community' && (
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Ionicons name="close" size={24} color="#666" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Boek wensen</Text>
-          {isLoggedIn && (
-            <TouchableOpacity
-              onPress={() => setIsAddingWish(!isAddingWish)}
-              style={styles.addButton}>
-              <Ionicons name={isAddingWish ? 'close' : 'add'} size={20} color={Colors.primary} />
-            </TouchableOpacity>
-          )}
-        </View>
-      )}
-
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {isLoggedIn && isAddingWish && mode === 'community'
           ? renderAddWishForm()

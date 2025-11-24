@@ -16,10 +16,6 @@ export default function WishlistScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>📚 Boek wensen</Text>
-      </View>
-
       {/* Tab Navigator */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
@@ -62,18 +58,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#1f2937',
-    textAlign: 'center',
   },
   tabContainer: {
     flexDirection: 'row',

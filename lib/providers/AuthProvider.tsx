@@ -10,6 +10,7 @@ export const AuthContext = createContext<{
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error?: any }>;
   signUp: (email: string, password: string, additionalData?: any) => Promise<{ error?: any }>;
+  startRegistration: (email: string, password: string) => Promise<{ data?: any; error?: any }>;
   signInAnonymously: () => Promise<{ error?: any }>;
   signOut: () => Promise<void>;
 }>({
@@ -18,6 +19,7 @@ export const AuthContext = createContext<{
   isLoading: true,
   signIn: async () => ({}),
   signUp: async () => ({}),
+  startRegistration: async () => ({}),
   signInAnonymously: async () => ({}),
   signOut: async () => {},
 });
@@ -89,8 +91,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = async (email: string, password: string, additionalData?: any) => {
     console.log('⭐⭐⭐ [AuthProvider v5.0] signUp CALLED - email:', email);
     try {
-      console.log('⭐ [AuthProvider] Calling payloadClient.register');
-      const { data, error } = await payloadClient.register(email, password, additionalData);
+      console.log('⭐ [AuthProvider] Calling payloadClient.registerAndLogin');
+      const { data, error } = await payloadClient.registerAndLogin(email, password, additionalData);
       console.log('⭐ [AuthProvider] Register response - data:', data, 'error:', error);
 
       if (error) {
@@ -110,6 +112,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await syncManager.init();
 
       return {};
+    } catch (error: any) {
+      console.error('[AuthProvider] Register exception:', error);
+      return { error: { message: error.message || 'Registration failed' } };
+    }
+  };
+
+  // New method for the multi-step registration flow
+  const startRegistration = async (email: string, password: string) => {
+    console.log('⭐⭐⭐ [AuthProvider] startRegistration CALLED - email:', email);
+    try {
+      console.log('⭐ [AuthProvider] Calling payloadClient.register (no auto-login)');
+      const { data, error } = await payloadClient.register(email, password);
+      console.log('⭐ [AuthProvider] Register response - data:', data, 'error:', error);
+
+      if (error) {
+        console.error('[AuthProvider] Register error:', error);
+        return { error };
+      }
+
+      // Don't set user/token here - email verification is required first
+      return { data };
     } catch (error: any) {
       console.error('[AuthProvider] Register exception:', error);
       return { error: { message: error.message || 'Registration failed' } };
@@ -163,6 +186,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         signIn,
         signUp,
+        startRegistration,
         signInAnonymously,
         signOut,
       }}>

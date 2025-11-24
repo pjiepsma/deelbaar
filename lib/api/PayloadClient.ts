@@ -563,13 +563,22 @@ class PayloadAPIClient {
       return { data: null, error };
     }
 
-    // Auto-login after successful registration
-    if (data) {
-      console.log('[PayloadClient] Registration successful, auto-logging in');
-      return this.login(email, password);
+    // For new email verification flow, don't auto-login
+    // The user needs to verify email first
+    return { data, error: null };
+  }
+
+  async registerAndLogin(email: string, password: string, additionalData?: any) {
+    console.log('[PayloadClient] Register and login request');
+
+    const { data: registerData, error: registerError } = await this.register(email, password, additionalData);
+    if (registerError) {
+      return { data: null, error: registerError };
     }
 
-    return { data, error: null };
+    // Auto-login after successful registration (for legacy compatibility)
+    console.log('[PayloadClient] Registration successful, auto-logging in');
+    return this.login(email, password);
   }
 
   async loginAnonymously() {
@@ -599,6 +608,83 @@ class PayloadAPIClient {
     this.user = null;
   }
 
+  async resendVerificationEmail() {
+    console.log('[PayloadClient] Resend verification email');
+    const { data, error } = await this.request('/api/users/resend-verification', {
+      method: 'POST',
+    });
+
+    console.log('[PayloadClient] Resend verification email response:', { data, error });
+    if (error) {
+      console.error('[PayloadClient] Resend verification email error:', error);
+      return { data: null, error };
+    }
+
+    return { data, error: null };
+  }
+
+  // Email verification methods
+
+  async verifyEmail(token: string) {
+    console.log('[PayloadClient] Verify email with token');
+    const { data, error } = await this.request(`/api/users/verify/${token}`, {
+      method: 'POST',
+    });
+
+    console.log('[PayloadClient] Verify email response:', { data, error });
+    if (error) {
+      console.error('[PayloadClient] Verify email error:', error);
+      return { data: null, error };
+    }
+
+    if (data) {
+      console.log('[PayloadClient] Email verification successful');
+    }
+
+    return { data, error: null };
+  }
+
+  // Password reset methods
+  async forgotPassword(email: string) {
+    console.log('[PayloadClient] Forgot password for email:', email);
+    const { data, error } = await this.request('/api/users/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+
+    console.log('[PayloadClient] Forgot password response:', { data, error });
+    if (error) {
+      console.error('[PayloadClient] Forgot password error:', error);
+      return { data: null, error };
+    }
+
+    return { data, error: null };
+  }
+
+  async resetPassword(token: string, password: string) {
+    console.log('[PayloadClient] Reset password with token');
+    const { data, error } = await this.request('/api/users/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, password }),
+    });
+
+    console.log('[PayloadClient] Reset password response:', { data, error });
+    if (error) {
+      console.error('[PayloadClient] Reset password error:', error);
+      return { data: null, error };
+    }
+
+    if (data) {
+      console.log('[PayloadClient] Password reset successful, storing token');
+      this.token = data.token;
+      this.user = data.user;
+      await AsyncStorage.setItem('auth_token', data.token);
+      await AsyncStorage.setItem('auth_user', JSON.stringify(data.user));
+    }
+
+    return { data, error: null };
+  }
+
   async me() {
     return this.request<PayloadUser>('/api/users/me');
   }
@@ -624,6 +710,7 @@ class PayloadAPIClient {
       page?: number;
       sort?: string;
       depth?: number;
+      select?: any;
     }
   ) {
     const queryParams = new URLSearchParams();
@@ -632,6 +719,7 @@ class PayloadAPIClient {
     if (params?.page) queryParams.append('page', params.page.toString());
     if (params?.sort) queryParams.append('sort', params.sort);
     if (params?.depth !== undefined) queryParams.append('depth', params.depth.toString());
+    if (params?.select) queryParams.append('select', JSON.stringify(params.select));
 
     const query = queryParams.toString();
     return this.request<{ docs: T[]; totalDocs: number; limit: number; page: number }>(

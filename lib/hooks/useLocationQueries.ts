@@ -15,6 +15,24 @@ export interface LocationCoordinates {
 }
 
 /**
+ * Minimal field selection for map/carousel display
+ * Only fetches fields needed for rendering and filtering
+ */
+export const LISTINGS_MAP_SELECT = {
+  id: true,
+  name: true,
+  description: true,
+  category: true,
+  location: {
+    coordinates: true,
+    address: true,
+  },
+  pictures: {
+    photo: true,
+  },
+};
+
+/**
  * Get user's current location
  */
 export function useCurrentLocation() {
@@ -87,12 +105,13 @@ export function useListingsInBounds(
   options?: {
     limit?: number;
     enabled?: boolean;
+    select?: any;
   }
 ) {
-  const { limit = 1000, enabled = true } = options || {};
+  const { limit = 1000, enabled = true, select } = options || {};
 
   return useQuery({
-    queryKey: ['listings', 'bounds', bounds?.northEast, bounds?.southWest, limit],
+    queryKey: ['listings', 'bounds', bounds?.northEast, bounds?.southWest, limit, select],
     queryFn: async () => {
       if (!bounds) return { docs: [], totalDocs: 0 };
 
@@ -101,6 +120,10 @@ export function useListingsInBounds(
         southWest: `${bounds.southWest.lat},${bounds.southWest.lon}`,
         limit: limit.toString(),
       });
+
+      if (select) {
+        params.append('select', JSON.stringify(select));
+      }
 
       const { data, error } = await payloadClient.request(
         `/api/listings/bounds?${params.toString()}`

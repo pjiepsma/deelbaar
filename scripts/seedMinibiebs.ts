@@ -39,7 +39,7 @@ const listings = apeldoornMinibiebs.map((minibieb: any, index: number) => {
 
 // Function to seed via Payload API
 async function seedListings() {
-  const PAYLOAD_URL = process.env.EXPO_PUBLIC_PAYLOAD_URL || 'http://192.168.1.186:3000';
+  const PAYLOAD_URL = process.env.EXPO_PUBLIC_PAYLOAD_URL || 'http://localhost:4000';
 
   console.log(`Seeding to: ${PAYLOAD_URL}\n`);
   console.log('⚠️  Make sure you are logged in to Payload CMS!\n');
