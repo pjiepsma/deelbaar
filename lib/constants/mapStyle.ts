@@ -1,36 +1,24 @@
 // Interface map style from Snazzy Maps: https://snazzymaps.com/style/1243/interface-map
 // User Interface design mapping or UI design mapping user experience map
 export const paperMapStyle = [
-  {
-    featureType: "all",
-    elementType: "labels.text",
-    stylers: [{ color: "#878787" }],
-  },
-  {
-    featureType: "all",
-    elementType: "labels.text.stroke",
-    stylers: [{ visibility: "off" }],
-  },
-  {
-    featureType: "landscape",
-    elementType: "all",
-    stylers: [{ color: "#f9f5ed" }],
-  },
+  { featureType: "administrative", stylers: [{ visibility: "off" }] },
+  { featureType: "poi", stylers: [{ visibility: "simplified" }] },
+  { featureType: "road", stylers: [{ visibility: "simplified" }] },
+  { featureType: "water", stylers: [{ visibility: "simplified" }] },
+  { featureType: "transit", stylers: [{ visibility: "simplified" }] },
+  { featureType: "landscape", stylers: [{ visibility: "simplified" }] },
+  { featureType: "road.highway", stylers: [{ visibility: "off" }] },
+  { featureType: "road.local", stylers: [{ visibility: "on" }] },
   {
     featureType: "road.highway",
-    elementType: "all",
-    stylers: [{ color: "#f5f5f5" }],
+    elementType: "geometry",
+    stylers: [{ visibility: "on" }],
   },
-  {
-    featureType: "road.highway",
-    elementType: "geometry.stroke",
-    stylers: [{ color: "#c9c9c9" }],
-  },
-  {
-    featureType: "water",
-    elementType: "all",
-    stylers: [{ color: "#aee0f4" }],
-  },
+  { featureType: "water", stylers: [{ color: "#84afa3" }, { lightness: 52 }] },
+  { stylers: [{ saturation: -77 }] },
+  { featureType: "road", stylers: [{ visibility: "simplified" }] },
+  { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] },
+  { featureType: "poi.business", elementType: "geometry", stylers: [{ visibility: "off" }] },
 ]
   
 
