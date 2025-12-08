@@ -4,6 +4,7 @@ import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import BookWishlist from '~/components/BookWishlist';
+import { LoginPrompt } from '~/components/LoginPrompt';
 import { useAuth } from '~/lib/providers/AuthProvider';
 
 export default function WishlistScreen() {
@@ -13,6 +14,19 @@ export default function WishlistScreen() {
   const handleClose = () => {
     // In tab navigator, we don't close - just stay on the tab
   };
+
+  // Show login prompt if user is not logged in
+  if (!user) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <LoginPrompt
+          title="Log in om je wensen te zien"
+          message="Log in om boek wensen te bekijken en te beheren."
+          icon="heart-outline"
+        />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
@@ -33,8 +47,7 @@ export default function WishlistScreen() {
 
         <TouchableOpacity
           style={[styles.tab, activeTab === 'personal' && styles.activeTab]}
-          onPress={() => setActiveTab('personal')}
-          disabled={!user}>
+          onPress={() => setActiveTab('personal')}>
           <Ionicons name="heart" size={16} color={activeTab === 'personal' ? '#fff' : '#6b7280'} />
           <Text style={[styles.tabText, activeTab === 'personal' && styles.activeTabText]}>
             Mijn wensen

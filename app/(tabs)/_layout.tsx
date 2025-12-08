@@ -1,13 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
-import { View } from 'react-native';
 
-import OnboardingModal from '~/components/OnboardingModal';
 import { NotificationBell } from '~/components/NotificationBell';
+import OnboardingModal from '~/components/OnboardingModal';
 import Colors from '~/constants/Colors';
+import { useAuth } from '~/lib/providers/AuthProvider';
 
 export default function TabsLayout() {
+  const { user } = useAuth();
+
   return (
     <>
       <Tabs
@@ -19,7 +20,9 @@ export default function TabsLayout() {
           },
           headerTitleStyle: {
             fontWeight: 'bold',
+            color: Colors.text.tertiary,
           },
+          headerTintColor: Colors.text.tertiary,
           tabBarStyle: {
             backgroundColor: Colors.background.primary,
             borderTopColor: Colors.border.light,
@@ -50,21 +53,12 @@ export default function TabsLayout() {
             headerStyle: {
               backgroundColor: 'transparent',
             },
-            tabBarIcon: ({ color, size, focused }) => (
-              <View style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                backgroundColor: focused ? Colors.primary + '15' : 'transparent',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <Ionicons
-                  name={focused ? 'map' : 'map-outline'}
-                  size={focused ? 20 : 18}
-                  color={color}
-                />
-              </View>
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons
+                name={focused ? 'map' : 'map-outline'}
+                size={focused ? 20 : 18}
+                color={color}
+              />
             ),
           }}
         />
@@ -73,21 +67,13 @@ export default function TabsLayout() {
           options={{
             title: 'Wensen',
             headerTitle: 'Wensen',
-            tabBarIcon: ({ color, size, focused }) => (
-              <View style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                backgroundColor: focused ? Colors.accent + '15' : 'transparent',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <Ionicons
-                  name={focused ? 'heart' : 'heart-outline'}
-                  size={focused ? 20 : 18}
-                  color={color}
-                />
-              </View>
+            headerRight: () => <NotificationBell disabled={!user} />,
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons
+                name={focused ? 'heart' : 'heart-outline'}
+                size={focused ? 20 : 18}
+                color={color}
+              />
             ),
           }}
         />
@@ -96,21 +82,13 @@ export default function TabsLayout() {
           options={{
             title: 'Favorieten',
             headerTitle: 'Favorieten',
-            tabBarIcon: ({ color, size, focused }) => (
-              <View style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                backgroundColor: focused ? Colors.warning + '15' : 'transparent',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <Ionicons
-                  name={focused ? 'star' : 'star-outline'}
-                  size={focused ? 20 : 18}
-                  color={color}
-                />
-              </View>
+            headerRight: () => <NotificationBell disabled={!user} />,
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons
+                name={focused ? 'star' : 'star-outline'}
+                size={focused ? 20 : 18}
+                color={color}
+              />
             ),
           }}
         />
@@ -119,21 +97,13 @@ export default function TabsLayout() {
           options={{
             title: 'Mijn kasten',
             headerTitle: 'Mijn kasten',
-            tabBarIcon: ({ color, size, focused }) => (
-              <View style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                backgroundColor: focused ? Colors.secondary + '20' : 'transparent',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <Ionicons
-                  name={focused ? 'business' : 'business-outline'}
-                  size={focused ? 20 : 18}
-                  color={color}
-                />
-              </View>
+            headerRight: () => <NotificationBell disabled={!user} />,
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons
+                name={focused ? 'business' : 'business-outline'}
+                size={focused ? 20 : 18}
+                color={color}
+              />
             ),
           }}
         />
@@ -142,21 +112,12 @@ export default function TabsLayout() {
           options={{
             title: 'Account',
             headerShown: false,
-            tabBarIcon: ({ color, size, focused }) => (
-              <View style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                backgroundColor: focused ? Colors.info + '15' : 'transparent',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <Ionicons
-                  name={focused ? 'person' : 'person-outline'}
-                  size={focused ? 20 : 18}
-                  color={color}
-                />
-              </View>
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons
+                name={focused ? 'person' : 'person-outline'}
+                size={focused ? 20 : 18}
+                color={color}
+              />
             ),
           }}
         />

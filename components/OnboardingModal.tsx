@@ -82,7 +82,7 @@ export default function OnboardingModal() {
   const handleCreateAccount = () => {
     // Skip onboarding and navigate to auth
     skipOnboarding();
-    router.push('/(tabs)/profile/auth');
+    router.push('/(tabs)/profile');
   };
 
   return (

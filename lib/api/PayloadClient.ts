@@ -62,21 +62,23 @@ class PayloadAPIClient {
 
   private async request<T = any>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit & { suppressErrorLogging?: number[] } = {}
   ): Promise<{ data?: T; error?: any }> {
+    const { suppressErrorLogging = [], ...fetchOptions } = options;
+
     try {
       const url = `${this.baseUrl}${endpoint}`;
       console.log('[PayloadClient.request] URL:', url);
-      console.log('[PayloadClient.request] Method:', options.method || 'GET');
-      console.log('[PayloadClient.request] Body:', options.body);
+      console.log('[PayloadClient.request] Method:', fetchOptions.method || 'GET');
+      console.log('[PayloadClient.request] Body:', fetchOptions.body);
 
       const headers: HeadersInit = {
         ...this.getAuthHeaders(),
-        ...options.headers,
+        ...fetchOptions.headers,
       };
 
       const response = await fetch(url, {
-        ...options,
+        ...fetchOptions,
         headers,
       });
 
@@ -95,7 +97,10 @@ class PayloadAPIClient {
       console.log('[PayloadClient.request] Response data:', JSON.stringify(data).substring(0, 200));
 
       if (!response.ok) {
-        console.error('[PayloadClient.request] Request failed!', response.status);
+        // Only log error if status code is not in suppressErrorLogging array
+        if (!suppressErrorLogging.includes(response.status)) {
+          console.error('[PayloadClient.request] Request failed!', response.status);
+        }
         return {
           error: {
             message: data?.errors?.[0]?.message || data?.message || 'Request failed',
@@ -148,21 +153,33 @@ class PayloadAPIClient {
     return { data, error: null };
   }
 
-  // Wishlist/Book requests methods
+  // Wishlist/Book requests methods - using standard Payload collection API
   async getBookWishes(): Promise<any[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/book-wishes`, {
-        headers: this.getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch book wishes');
+      if (!this.isAuthenticated()) {
+        return [];
       }
 
-      const data = await response.json();
-      return data.docs || [];
-    } catch (error) {
-      console.warn('getBookWishes error:', error);
+      // Suppress 404 error logging since collection may not exist yet
+      const { data, error } = await this.findMany('book-wishes', {
+        limit: 1000,
+        depth: 2, // Include user and other relations
+        suppressErrorLogging: [404], // Don't log 404 errors
+      });
+
+      if (error) {
+        // Handle 404 gracefully (collection doesn't exist yet) - silently return empty array
+        if (error.status === 404) {
+          return [];
+        }
+        // Only log non-404 errors
+        console.warn('[PayloadClient.getBookWishes] Error fetching book wishes:', error);
+        return [];
+      }
+
+      return data?.docs || [];
+    } catch {
+      // Silently handle errors - collection may not exist
       return [];
     }
   }
@@ -179,38 +196,36 @@ class PayloadAPIClient {
     };
   }): Promise<any> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/book-wishes`, {
-        method: 'POST',
-        headers: {
-          ...this.getAuthHeaders(),
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(wishData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create book wish');
+      if (!this.isAuthenticated()) {
+        throw new Error('Not authenticated');
       }
 
-      return await response.json();
-    } catch (error) {
-      console.warn('createBookWish error:', error);
+      const { data, error } = await this.create('book-wishes', wishData);
+
+      if (error) {
+        throw new Error(error.message || 'Failed to create book wish');
+      }
+
+      return data;
+    } catch (error: any) {
+      console.warn('[PayloadClient.createBookWish] Error:', error);
       throw error;
     }
   }
 
   async deleteBookWish(wishId: string): Promise<void> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/book-wishes/${wishId}`, {
-        method: 'DELETE',
-        headers: this.getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete book wish');
+      if (!this.isAuthenticated()) {
+        throw new Error('Not authenticated');
       }
-    } catch (error) {
-      console.warn('deleteBookWish error:', error);
+
+      const { error } = await this.delete('book-wishes', wishId);
+
+      if (error) {
+        throw new Error(error.message || 'Failed to delete book wish');
+      }
+    } catch (error: any) {
+      console.warn('[PayloadClient.deleteBookWish] Error:', error);
       throw error;
     }
   }
@@ -221,47 +236,76 @@ class PayloadAPIClient {
     isbn?: string;
   }): Promise<any[]> {
     try {
-      const params = new URLSearchParams({
-        title: bookData.title,
-        ...(bookData.author && { author: bookData.author }),
-        ...(bookData.isbn && { isbn: bookData.isbn }),
-      });
-
-      const response = await fetch(`${this.baseUrl}/api/book-wishes/match?${params}`, {
-        headers: this.getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to find matching wishes');
+      if (!this.isAuthenticated()) {
+        return [];
       }
 
-      const data = await response.json();
-      return data.matches || [];
-    } catch (error) {
-      console.warn('getMatchingWishes error:', error);
+      // Build where clause for matching
+      const where: any = {};
+
+      if (bookData.title) {
+        where.title = { contains: bookData.title };
+      }
+
+      if (bookData.author) {
+        where.author = { contains: bookData.author };
+      }
+
+      if (bookData.isbn) {
+        where.isbn = { equals: bookData.isbn };
+      }
+
+      // Suppress 404 error logging since collection may not exist yet
+      const { data, error } = await this.findMany('book-wishes', {
+        where,
+        limit: 100,
+        depth: 2, // Include user and other relations
+        suppressErrorLogging: [404], // Don't log 404 errors
+      });
+
+      if (error) {
+        // Handle 404 gracefully (collection doesn't exist yet) - silently return empty array
+        if (error.status === 404) {
+          return [];
+        }
+        // Only log non-404 errors
+        console.warn('[PayloadClient.getMatchingWishes] Error:', error);
+        return [];
+      }
+
+      return data?.docs || [];
+    } catch {
+      // Silently handle errors - collection may not exist
       return [];
     }
   }
 
-  // Product offerings methods (for farm stands, repair cafes, etc.)
+  // Product offerings methods (for farm stands, repair cafes, etc.) - using standard Payload collection API
   async getProductOfferings(listingId?: string): Promise<any[]> {
     try {
-      const url = listingId
-        ? `${this.baseUrl}/api/product-offerings?listing=${listingId}`
-        : `${this.baseUrl}/api/product-offerings`;
-
-      const response = await fetch(url, {
-        headers: this.getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch product offerings');
+      if (!this.isAuthenticated()) {
+        return [];
       }
 
-      const data = await response.json();
-      return data.docs || [];
-    } catch (error) {
-      console.warn('getProductOfferings error:', error);
+      const where = listingId ? { listing: { equals: listingId } } : undefined;
+
+      const { data, error } = await this.findMany('product-offerings', {
+        where,
+        limit: 1000,
+        depth: 2, // Include listing and other relations
+        suppressErrorLogging: [404], // Don't log 404 errors if collection doesn't exist
+      });
+
+      if (error) {
+        if (error.status === 404) {
+          return [];
+        }
+        console.warn('[PayloadClient.getProductOfferings] Error:', error);
+        return [];
+      }
+
+      return data?.docs || [];
+    } catch {
       return [];
     }
   }
@@ -279,22 +323,19 @@ class PayloadAPIClient {
     photos?: string[];
   }): Promise<any> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/product-offerings`, {
-        method: 'POST',
-        headers: {
-          ...this.getAuthHeaders(),
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(offeringData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create product offering');
+      if (!this.isAuthenticated()) {
+        throw new Error('Not authenticated');
       }
 
-      return await response.json();
-    } catch (error) {
-      console.warn('createProductOffering error:', error);
+      const { data, error } = await this.create('product-offerings', offeringData);
+
+      if (error) {
+        throw new Error(error.message || 'Failed to create product offering');
+      }
+
+      return data;
+    } catch (error: any) {
+      console.warn('[PayloadClient.createProductOffering] Error:', error);
       throw error;
     }
   }
@@ -308,110 +349,137 @@ class PayloadAPIClient {
     }
   ): Promise<any> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/product-offerings/${offeringId}`, {
-        method: 'PATCH',
-        headers: {
-          ...this.getAuthHeaders(),
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updates),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update product offering');
+      if (!this.isAuthenticated()) {
+        throw new Error('Not authenticated');
       }
 
-      return await response.json();
-    } catch (error) {
-      console.warn('updateProductOffering error:', error);
+      const { data, error } = await this.update('product-offerings', offeringId, updates);
+
+      if (error) {
+        throw new Error(error.message || 'Failed to update product offering');
+      }
+
+      return data;
+    } catch (error: any) {
+      console.warn('[PayloadClient.updateProductOffering] Error:', error);
       throw error;
     }
   }
 
   async deleteProductOffering(offeringId: string): Promise<void> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/product-offerings/${offeringId}`, {
-        method: 'DELETE',
-        headers: this.getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete product offering');
+      if (!this.isAuthenticated()) {
+        throw new Error('Not authenticated');
       }
-    } catch (error) {
-      console.warn('deleteProductOffering error:', error);
+
+      const { error } = await this.delete('product-offerings', offeringId);
+
+      if (error) {
+        throw new Error(error.message || 'Failed to delete product offering');
+      }
+    } catch (error: any) {
+      console.warn('[PayloadClient.deleteProductOffering] Error:', error);
       throw error;
     }
   }
 
-  // Product favorites/following
+  // Product favorites/following - using standard Payload collection API
   async getProductFavorites(): Promise<any[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/product-favorites`, {
-        headers: this.getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch product favorites');
+      if (!this.isAuthenticated()) {
+        return [];
       }
 
-      const data = await response.json();
-      return data.docs || [];
-    } catch (error) {
-      console.warn('getProductFavorites error:', error);
+      const { data, error } = await this.findMany('product-favorites', {
+        limit: 1000,
+        depth: 2, // Include offering and user relations
+        suppressErrorLogging: [404], // Don't log 404 errors if collection doesn't exist
+      });
+
+      if (error) {
+        if (error.status === 404) {
+          return [];
+        }
+        console.warn('[PayloadClient.getProductFavorites] Error:', error);
+        return [];
+      }
+
+      return data?.docs || [];
+    } catch {
       return [];
     }
   }
 
   async toggleProductFavorite(offeringId: string): Promise<any> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/product-favorites/toggle`, {
-        method: 'POST',
-        headers: {
-          ...this.getAuthHeaders(),
-          'Content-Type': 'application/json',
+      if (!this.isAuthenticated()) {
+        throw new Error('Not authenticated');
+      }
+
+      // Check if favorite already exists
+      const { data: existing } = await this.findMany('product-favorites', {
+        where: {
+          offering: { equals: offeringId },
+          user: { equals: this.user?.id },
         },
-        body: JSON.stringify({ offeringId }),
+        limit: 1,
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to toggle product favorite');
+      if (existing?.docs && existing.docs.length > 0) {
+        // Delete existing favorite
+        const { error } = await this.delete('product-favorites', existing.docs[0].id);
+        if (error) {
+          throw new Error(error.message || 'Failed to remove product favorite');
+        }
+        return { favorited: false };
+      } else {
+        // Create new favorite
+        const { data, error } = await this.create('product-favorites', {
+          offering: offeringId,
+        });
+        if (error) {
+          throw new Error(error.message || 'Failed to add product favorite');
+        }
+        return { favorited: true, data };
       }
-
-      return await response.json();
-    } catch (error) {
-      console.warn('toggleProductFavorite error:', error);
+    } catch (error: any) {
+      console.warn('[PayloadClient.toggleProductFavorite] Error:', error);
       throw error;
     }
   }
 
-  // Report product as out of stock
+  // Report product as out of stock - using standard Payload collection API
   async reportOutOfStock(offeringId: string, reporterNote?: string): Promise<any> {
     try {
-      const response = await fetch(
-        `${this.baseUrl}/api/product-offerings/${offeringId}/report-out-of-stock`,
-        {
-          method: 'POST',
-          headers: {
-            ...this.getAuthHeaders(),
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ reporterNote }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to report out of stock');
+      if (!this.isAuthenticated()) {
+        throw new Error('Not authenticated');
       }
 
-      return await response.json();
-    } catch (error) {
-      console.warn('reportOutOfStock error:', error);
+      // Update the offering status to out_of_stock
+      const updateData: any = {
+        status: 'out_of_stock',
+      };
+
+      if (reporterNote) {
+        // If there's a notes field or we need to store the reporter note
+        // This might need to be adjusted based on your schema
+        updateData.notes = reporterNote;
+      }
+
+      const { data, error } = await this.update('product-offerings', offeringId, updateData);
+
+      if (error) {
+        throw new Error(error.message || 'Failed to report out of stock');
+      }
+
+      return data;
+    } catch (error: any) {
+      console.warn('[PayloadClient.reportOutOfStock] Error:', error);
       throw error;
     }
   }
 
-  // Tool reservations for Repair Cafés
+  // Tool reservations for Repair Cafés - using standard Payload collection API
   async createToolReservation(reservationData: {
     toolId: string;
     startDate: string; // ISO string
@@ -419,95 +487,110 @@ class PayloadAPIClient {
     notes?: string;
   }): Promise<any> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/tool-reservations`, {
-        method: 'POST',
-        headers: {
-          ...this.getAuthHeaders(),
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(reservationData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create tool reservation');
+      if (!this.isAuthenticated()) {
+        throw new Error('Not authenticated');
       }
 
-      return await response.json();
-    } catch (error) {
-      console.warn('createToolReservation error:', error);
+      const { data, error } = await this.create('tool-reservations', reservationData);
+
+      if (error) {
+        throw new Error(error.message || 'Failed to create tool reservation');
+      }
+
+      return data;
+    } catch (error: any) {
+      console.warn('[PayloadClient.createToolReservation] Error:', error);
       throw error;
     }
   }
 
   async getToolReservations(toolId?: string): Promise<any[]> {
     try {
-      const url = toolId
-        ? `${this.baseUrl}/api/tool-reservations?tool=${toolId}`
-        : `${this.baseUrl}/api/tool-reservations`;
-
-      const response = await fetch(url, {
-        headers: this.getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch tool reservations');
+      if (!this.isAuthenticated()) {
+        return [];
       }
 
-      const data = await response.json();
-      return data.docs || [];
-    } catch (error) {
-      console.warn('getToolReservations error:', error);
+      const where = toolId ? { tool: { equals: toolId } } : undefined;
+
+      const { data, error } = await this.findMany('tool-reservations', {
+        where,
+        limit: 1000,
+        depth: 2, // Include tool and user relations
+        suppressErrorLogging: [404], // Don't log 404 errors if collection doesn't exist
+      });
+
+      if (error) {
+        if (error.status === 404) {
+          return [];
+        }
+        console.warn('[PayloadClient.getToolReservations] Error:', error);
+        return [];
+      }
+
+      return data?.docs || [];
+    } catch {
       return [];
     }
   }
 
-  // Product offering approval system
+  // Product offering approval system - using standard Payload collection API
   async approveProductOffering(
     offeringId: string,
     approved: boolean,
     rejectionReason?: string
   ): Promise<any> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/product-offerings/${offeringId}/approve`, {
-        method: 'POST',
-        headers: {
-          ...this.getAuthHeaders(),
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          approved,
-          rejectionReason,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to approve/reject product offering');
+      if (!this.isAuthenticated()) {
+        throw new Error('Not authenticated');
       }
 
-      return await response.json();
-    } catch (error) {
-      console.warn('approveProductOffering error:', error);
+      const updateData: any = {
+        status: approved ? 'approved' : 'rejected',
+      };
+
+      if (rejectionReason) {
+        updateData.rejectionReason = rejectionReason;
+      }
+
+      const { data, error } = await this.update('product-offerings', offeringId, updateData);
+
+      if (error) {
+        throw new Error(error.message || 'Failed to approve/reject product offering');
+      }
+
+      return data;
+    } catch (error: any) {
+      console.warn('[PayloadClient.approveProductOffering] Error:', error);
       throw error;
     }
   }
 
   async getPendingProductOfferings(listingId: string): Promise<any[]> {
     try {
-      const response = await fetch(
-        `${this.baseUrl}/api/product-offerings/pending?listing=${listingId}`,
-        {
-          headers: this.getAuthHeaders(),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch pending product offerings');
+      if (!this.isAuthenticated()) {
+        return [];
       }
 
-      const data = await response.json();
-      return data.docs || [];
-    } catch (error) {
-      console.warn('getPendingProductOfferings error:', error);
+      const { data, error } = await this.findMany('product-offerings', {
+        where: {
+          listing: { equals: listingId },
+          status: { equals: 'pending' },
+        },
+        limit: 1000,
+        depth: 2,
+        suppressErrorLogging: [404],
+      });
+
+      if (error) {
+        if (error.status === 404) {
+          return [];
+        }
+        console.warn('[PayloadClient.getPendingProductOfferings] Error:', error);
+        return [];
+      }
+
+      return data?.docs || [];
+    } catch {
       return [];
     }
   }
@@ -711,19 +794,22 @@ class PayloadAPIClient {
       sort?: string;
       depth?: number;
       select?: any;
+      suppressErrorLogging?: number[]; // Allow suppressing error logging for specific status codes
     }
   ) {
-    const queryParams = new URLSearchParams();
-    if (params?.where) queryParams.append('where', JSON.stringify(params.where));
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.sort) queryParams.append('sort', params.sort);
-    if (params?.depth !== undefined) queryParams.append('depth', params.depth.toString());
-    if (params?.select) queryParams.append('select', JSON.stringify(params.select));
+    const { suppressErrorLogging, ...queryParams } = params || {};
+    const urlParams = new URLSearchParams();
+    if (queryParams.where) urlParams.append('where', JSON.stringify(queryParams.where));
+    if (queryParams.limit) urlParams.append('limit', queryParams.limit.toString());
+    if (queryParams.page) urlParams.append('page', queryParams.page.toString());
+    if (queryParams.sort) urlParams.append('sort', queryParams.sort);
+    if (queryParams.depth !== undefined) urlParams.append('depth', queryParams.depth.toString());
+    if (queryParams.select) urlParams.append('select', JSON.stringify(queryParams.select));
 
-    const query = queryParams.toString();
+    const query = urlParams.toString();
     return this.request<{ docs: T[]; totalDocs: number; limit: number; page: number }>(
-      `/api/${collection}${query ? `?${query}` : ''}`
+      `/api/${collection}${query ? `?${query}` : ''}`,
+      { suppressErrorLogging }
     );
   }
 

@@ -88,7 +88,7 @@ export default function ResetPasswordScreen() {
   };
 
   const handleBackToLogin = () => {
-    router.replace('/(tabs)/profile/auth');
+    router.replace('/(tabs)/profile');
   };
 
   if (tokenValid === false) {

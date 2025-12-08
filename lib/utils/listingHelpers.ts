@@ -25,3 +25,5 @@ export function isListingOwner(listing: ListingRecord, userId: string | null): b
   const ownerId = resolveOwnerId(listing);
   return ownerId === userId;
 }
+
+

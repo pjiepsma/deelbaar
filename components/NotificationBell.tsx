@@ -5,23 +5,34 @@ import { TouchableOpacity, View, Text, StyleSheet } from 'react-native'
 import { useUnreadCount } from '~/lib/hooks/useNotifications'
 import Colors from '~/constants/Colors'
 
-export function NotificationBell() {
+interface NotificationBellProps {
+  disabled?: boolean;
+}
+
+export function NotificationBell({ disabled = false }: NotificationBellProps) {
   const router = useRouter()
   const { data: unreadCount = 0 } = useUnreadCount()
 
   const handlePress = () => {
+    if (disabled) return;
     router.push('/(modals)/notifications')
   }
 
+  const iconColor = disabled ? '#9ca3af' : Colors.text.primary;
+
   return (
-    <TouchableOpacity onPress={handlePress} style={styles.container}>
+    <TouchableOpacity 
+      onPress={handlePress} 
+      style={styles.container}
+      disabled={disabled}
+      activeOpacity={disabled ? 1 : 0.7}>
       <View style={styles.iconContainer}>
         <Ionicons
           name={unreadCount > 0 ? 'notifications' : 'notifications-outline'}
           size={24}
-          color={Colors.text.primary}
+          color={iconColor}
         />
-        {unreadCount > 0 && (
+        {unreadCount > 0 && !disabled && (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>
               {unreadCount > 99 ? '99+' : unreadCount}

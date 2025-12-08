@@ -297,14 +297,21 @@ export function useFavorites() {
   return useQuery({
     queryKey: ['favorites', user?.id],
     queryFn: async () => {
-      if (!user) return [];
+      console.log('[useFavorites] queryFn called', { userId: user?.id });
+      
+      if (!user) {
+        console.log('[useFavorites] No user, returning empty array');
+        return [];
+      }
 
       // Try to get user data with favorites from API first
       try {
+        console.log('[useFavorites] Fetching from API', { userId: user.id });
         const { data, error } = await payloadClient.findById('users', user.id, 2); // depth 2 to get full listing data
 
         if (!error && data?.favorites) {
           // API is available, return fresh favorites with full listing data
+          console.log('[useFavorites] Got favorites from API', { count: data.favorites.length });
           const favoritesWithListings = data.favorites.map((fav: any) => ({
             id: `${user.id}-${fav.listing?.id || fav.listing}`, // Generate ID for compatibility
             user: user.id,
@@ -312,14 +319,17 @@ export function useFavorites() {
             createdAt: fav.createdAt || new Date().toISOString(),
             updatedAt: fav.updatedAt || new Date().toISOString(),
           }));
+          console.log('[useFavorites] Returning favorites from API', { count: favoritesWithListings.length });
           return favoritesWithListings;
         }
       } catch (error) {
-        console.log('Using local favorites (offline or error)', error);
+        console.log('[useFavorites] Using local favorites (offline or error)', error);
       }
 
       // Fallback: get local favorites
+      console.log('[useFavorites] Fetching from SQLite', { userId: user.id });
       const local = await sqliteManager.getFavorites(user.id);
+      console.log('[useFavorites] Got favorites from SQLite', { count: local.length });
       return local;
     },
     enabled: !!user,
@@ -332,49 +342,76 @@ export function useToggleFavorite() {
 
   return useMutation({
     mutationFn: async ({ listingId, isFavorite }: { listingId: string; isFavorite: boolean }) => {
-      if (!user) throw new Error('Not authenticated');
+      console.log('[useToggleFavorite] mutationFn called', { listingId, isFavorite, userId: user?.id });
+      
+      if (!user) {
+        console.error('[useToggleFavorite] Not authenticated');
+        throw new Error('Not authenticated');
+      }
 
       // Get current user data to see existing favorites
+      console.log('[useToggleFavorite] Fetching user data', { userId: user.id });
       const { data: userData, error: userError } = await payloadClient.findById(
         'users',
         user.id,
         1
       );
-      if (userError) throw new Error(userError.message);
+      if (userError) {
+        console.error('[useToggleFavorite] Error fetching user data', userError);
+        throw new Error(userError.message);
+      }
 
       const currentFavorites = userData?.favorites || [];
+      console.log('[useToggleFavorite] Current favorites count', { count: currentFavorites.length });
 
       if (isFavorite) {
         // Remove favorite - filter out the listing from favorites array
+        console.log('[useToggleFavorite] Removing favorite', { listingId });
         const updatedFavorites = currentFavorites.filter((fav: any) => {
           const favListingId = typeof fav.listing === 'string' ? fav.listing : fav.listing?.id;
           return favListingId !== listingId;
         });
 
+        console.log('[useToggleFavorite] Updated favorites count after removal', { count: updatedFavorites.length });
+
         // Update local SQLite immediately (offline-first)
         await sqliteManager.removeFavorite(user.id, listingId);
+        console.log('[useToggleFavorite] Removed from SQLite');
 
         // Queue user update for sync
         await syncManager.queueUpdate('users', user.id, {
           favorites: updatedFavorites,
         });
+        console.log('[useToggleFavorite] Queued user update for sync');
       } else {
         // Add favorite - append to favorites array
+        console.log('[useToggleFavorite] Adding favorite', { listingId });
         const newFavorite = { listing: listingId };
         const updatedFavorites = [...currentFavorites, newFavorite];
 
+        console.log('[useToggleFavorite] Updated favorites count after addition', { count: updatedFavorites.length });
+
         // Update local SQLite immediately (offline-first)
         await sqliteManager.addFavorite(user.id, listingId);
+        console.log('[useToggleFavorite] Added to SQLite');
 
         // Queue user update for sync
         await syncManager.queueUpdate('users', user.id, {
           favorites: updatedFavorites,
         });
+        console.log('[useToggleFavorite] Queued user update for sync');
       }
     },
     onSuccess: () => {
+      console.log('[useToggleFavorite] Mutation succeeded, invalidating queries');
+      // Invalidate all favorites queries (including ['favorites', user?.id])
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
-      queryClient.invalidateQueries({ queryKey: ['profile'] }); // Also invalidate profile since favorites are part of user data
+      // Also invalidate profile since favorites are part of user data
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      console.log('[useToggleFavorite] Queries invalidated');
+    },
+    onError: (error) => {
+      console.error('[useToggleFavorite] Mutation failed', error);
     },
   });
 }

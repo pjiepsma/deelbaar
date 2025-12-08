@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ProductOfferingsManager from '~/components/ProductOfferingsManager';
@@ -125,9 +125,28 @@ export default function SearchTab() {
 
   const handleToggleFavorite = useCallback(
     (listingId: string, currentlyFavorite: boolean) => {
-      toggleFavorite.mutate({ listingId, isFavorite: currentlyFavorite });
+      console.log('[SearchTab] handleToggleFavorite called', { listingId, currentlyFavorite, user: !!user });
+      
+      if (!user) {
+        console.warn('[SearchTab] Cannot toggle favorite - user not authenticated');
+        Alert.alert('Inloggen vereist', 'Log in om favorieten op te slaan.');
+        return;
+      }
+      
+      toggleFavorite.mutate(
+        { listingId, isFavorite: currentlyFavorite },
+        {
+          onSuccess: () => {
+            console.log('[SearchTab] toggleFavorite mutation succeeded', { listingId });
+          },
+          onError: (error: any) => {
+            console.error('[SearchTab] toggleFavorite mutation failed', { listingId, error });
+            Alert.alert('Fout', error?.message || 'Kon favoriet niet bijwerken.');
+          },
+        }
+      );
     },
-    [toggleFavorite]
+    [toggleFavorite, user]
   );
 
   const handleClusterPress = useCallback(

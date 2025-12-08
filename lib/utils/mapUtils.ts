@@ -49,3 +49,5 @@ export function getFirstImageUrl(listing: ListingRecord): string | null {
   const mediaId = typeof firstPic.photo === 'string' ? firstPic.photo : firstPic.photo?.id;
   return mediaId ? payloadClient.getFileUrl(mediaId) : null;
 }
+
+

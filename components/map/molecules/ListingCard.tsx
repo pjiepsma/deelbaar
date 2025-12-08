@@ -12,8 +12,10 @@ import {
 import React from 'react';
 import { Image, Pressable } from 'react-native';
 
+import Colors from '~/constants/Colors';
 import { useAuth } from '~/lib/providers/AuthProvider';
 import { ListingRecord } from '~/lib/types/models';
+import { getCategoryColor } from '~/lib/utils/categoryHelpers';
 
 interface HikeItemProps {
   item: ListingRecord;
@@ -122,20 +124,22 @@ const ListingCard: React.FC<HikeItemProps> = ({
 
             {/* Bottom Info */}
             <VStack space="2xs">
-              <HStack space="xs" alignItems="center" flexWrap="wrap">
-                <Badge variant="solid" bg="#6B8E23" size="sm">
-                  <BadgeText fontSize={10}>📚 {category}</BadgeText>
-                </Badge>
+            <HStack space="xs" alignItems="center" flexWrap="wrap">
+              <Badge variant="solid" bg={getCategoryColor(category)} size="sm">
+                <BadgeText fontSize={10} color={Colors.white}>
+                  {category}
+                </BadgeText>
+              </Badge>
 
-                {numericRating > 0 && (
-                  <Text size="2xs" fontWeight="$semibold" color="#6B8E23">
-                    {numericRating.toFixed(1)} ⭐
-                  </Text>
-                )}
-                <Text size="2xs" color="$coolGray500">
-                  • {distanceInKm}km
+              {numericRating > 0 && (
+                <Text size="2xs" fontWeight="$semibold" color={Colors.primary}>
+                  {numericRating.toFixed(1)} ⭐
                 </Text>
-              </HStack>
+              )}
+              <Text size="2xs" color="$coolGray500">
+                • {distanceInKm}km
+              </Text>
+            </HStack>
             </VStack>
           </VStack>
         </HStack>

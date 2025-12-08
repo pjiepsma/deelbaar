@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { payloadClient } from '~/lib/api/PayloadClient';
+import { useAuth } from '~/lib/providers/AuthProvider';
 
 interface BookWish {
   id: string;
@@ -35,9 +36,12 @@ interface CreateBookWishData {
 }
 
 export const useBookWishes = () => {
+  const { user } = useAuth();
+
   return useQuery({
-    queryKey: ['bookWishes'],
+    queryKey: ['bookWishes', user?.id],
     queryFn: () => payloadClient.getBookWishes(),
+    enabled: !!user, // Only run when user is logged in
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
@@ -49,6 +53,7 @@ export const useCreateBookWish = () => {
     mutationFn: (wishData: CreateBookWishData) => payloadClient.createBookWish(wishData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookWishes'] });
+      queryClient.invalidateQueries({ queryKey: ['matchingWishes'] });
     },
   });
 };
@@ -60,15 +65,18 @@ export const useDeleteBookWish = () => {
     mutationFn: (wishId: string) => payloadClient.deleteBookWish(wishId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookWishes'] });
+      queryClient.invalidateQueries({ queryKey: ['matchingWishes'] });
     },
   });
 };
 
 export const useMatchingWishes = (bookData: { title: string; author?: string; isbn?: string }) => {
+  const { user } = useAuth();
+
   return useQuery({
-    queryKey: ['matchingWishes', bookData],
+    queryKey: ['matchingWishes', bookData, user?.id],
     queryFn: () => payloadClient.getMatchingWishes(bookData),
-    enabled: !!bookData.title, // Only run if we have a title
+    enabled: !!user && !!bookData.title, // Only run if user is logged in and we have a title
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 };

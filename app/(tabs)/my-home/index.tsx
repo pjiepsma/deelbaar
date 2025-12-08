@@ -13,6 +13,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Colors from '~/constants/Colors';
+import { LoginPrompt } from '~/components/LoginPrompt';
+import { useAuth } from '~/lib/providers/AuthProvider';
 import { useMyListings } from '~/lib/hooks/usePayloadQuery';
 import { usePendingApprovalsCount } from '~/lib/hooks/useProductOfferings';
 // Lazy load components to avoid circular dependencies
@@ -22,8 +24,22 @@ const NotificationsScreen = React.lazy(() => import('../profile/notifications'))
 export default function MyHomeTab() {
   const [activeTab, setActiveTab] = useState<'overview' | 'manage' | 'approvals'>('overview');
   const router = useRouter();
+  const { user } = useAuth();
   const { data: listings = [], isLoading, refetch, isRefetching } = useMyListings();
   const { data: pendingCount = 0 } = usePendingApprovalsCount();
+
+  // Show login prompt if user is not logged in
+  if (!user) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <LoginPrompt
+          title="Log in om je kasten te beheren"
+          message="Log in om je kasten te bekijken, toe te voegen en te beheren."
+          icon="home-outline"
+        />
+      </SafeAreaView>
+    );
+  }
 
   const renderOverviewTab = () => {
     const renderEmpty = () => (

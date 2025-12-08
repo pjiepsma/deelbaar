@@ -2,12 +2,28 @@ import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View }
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '~/constants/Colors';
+import { LoginPrompt } from '~/components/LoginPrompt';
+import { useAuth } from '~/lib/providers/AuthProvider';
 import { useFavorites } from '~/lib/hooks/usePayloadQuery';
 import { useToggleFavorite } from '~/lib/hooks/usePayloadQuery';
 
 export default function FavoritesTab() {
+  const { user } = useAuth();
   const { data: favorites = [], isLoading, isError } = useFavorites();
   const toggleFavorite = useToggleFavorite();
+
+  // Show login prompt if user is not logged in
+  if (!user) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <LoginPrompt
+          title="Log in om je favorieten te zien"
+          message="Log in om je favoriete listings te bekijken en te beheren."
+          icon="heart-outline"
+        />
+      </SafeAreaView>
+    );
+  }
 
   if (isLoading) {
     return (

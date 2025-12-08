@@ -37,9 +37,19 @@ export const MapViewWithMarkers = React.memo<MapViewWithMarkersProps>(
     onMarkerPress,
     onClusterPress,
   }) => {
+    // Generate stable cluster key based on rounded coordinates
+    const getClusterKey = React.useCallback((latitude: number, longitude: number) => {
+      // Round to 4 decimal places (~11 meters precision) for stability
+      const roundedLat = Math.round(latitude * 10000) / 10000;
+      const roundedLon = Math.round(longitude * 10000) / 10000;
+      return `cluster-${roundedLat}-${roundedLon}`;
+    }, []);
+
     // Convert listings to GeoJSON format for clustering
+    // Limit to 1000 markers to prevent OOM errors
     const geoJsonPoints = React.useMemo(() => {
-      return markers
+      const limitedMarkers = markers.slice(0, 1000);
+      return limitedMarkers
         .map((listing) => {
           const coords = listing.location?.coordinates;
           if (!coords || coords.length < 2) return null;
@@ -112,33 +122,40 @@ export const MapViewWithMarkers = React.memo<MapViewWithMarkersProps>(
 
               // Get all listings in this cluster to determine category
               let dominantCategory: string | null = null;
-              if (supercluster && clusterId !== undefined) {
-                const leaves = supercluster.getLeaves(clusterId, Infinity);
-                const categoryCounts: Record<string, number> = {};
-                leaves.forEach((leaf: any) => {
-                  const listing = leaf.properties?.listing as ListingRecord | undefined;
-                  if (listing?.category) {
-                    categoryCounts[listing.category] = (categoryCounts[listing.category] || 0) + 1;
+              if (supercluster && clusterId !== undefined && typeof clusterId === 'number') {
+                try {
+                  const leaves = supercluster.getLeaves(clusterId, Infinity);
+                  if (leaves && Array.isArray(leaves)) {
+                    const categoryCounts: Record<string, number> = {};
+                    leaves.forEach((leaf: any) => {
+                      const listing = leaf.properties?.listing as ListingRecord | undefined;
+                      if (listing?.category) {
+                        categoryCounts[listing.category] = (categoryCounts[listing.category] || 0) + 1;
+                      }
+                    });
+                    // Find the most common category
+                    let maxCount = 0;
+                    Object.entries(categoryCounts).forEach(([category, count]) => {
+                      if (count > maxCount) {
+                        maxCount = count;
+                        dominantCategory = category;
+                      }
+                    });
                   }
-                });
-                // Find the most common category
-                let maxCount = 0;
-                Object.entries(categoryCounts).forEach(([category, count]) => {
-                  if (count > maxCount) {
-                    maxCount = count;
-                    dominantCategory = category;
-                  }
-                });
+                } catch (error) {
+                  // Cluster may have been removed or clusterId is invalid
+                  // Continue without category information
+                  console.warn('Failed to get cluster leaves:', error);
+                }
               }
 
               return (
                 <ClusterMarker
-                  key={`cluster-${clusterId}`}
+                  key={getClusterKey(latitude, longitude)}
                   latitude={latitude}
                   longitude={longitude}
                   pointCount={pointCount}
                   category={dominantCategory}
-
                 />
               );
             } else {

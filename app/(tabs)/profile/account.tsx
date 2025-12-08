@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
 
 import Colors from '~/constants/Colors';
 import { useAuth } from '~/lib/providers/AuthProvider';
@@ -102,10 +103,44 @@ const getExtrasLinks = (pendingApprovalsCount: number): AccountLink[] => [
 ];
 
 export default function AccountScreen() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, signIn } = useAuth();
   const router = useRouter();
   const { startOnboarding } = useOnboarding();
   const { data: pendingApprovalsCount } = usePendingApprovalsCount();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [status, setStatus] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const withStatus = async (action: () => Promise<{ error?: { message: string } }>) => {
+    setLoading(true);
+    setStatus(null);
+    const result = await action();
+    if (result.error) {
+      setStatus(result.error.message);
+    } else {
+      setStatus('Ingelogd!');
+      setEmail('');
+      setPassword('');
+    }
+    setLoading(false);
+  };
+
+  const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      setStatus('Vul je email en wachtwoord in');
+      return;
+    }
+    await withStatus(() => signIn(email, password));
+  };
+
+  const handleForgotPassword = () => {
+    router.push('/(tabs)/profile/forgot-password');
+  };
+
+  const handleRegister = () => {
+    router.push('/(tabs)/profile/register/step1-account');
+  };
 
   const navigate = (href: string) => {
     if (href === 'onboarding') {
@@ -115,6 +150,65 @@ export default function AccountScreen() {
     }
   };
 
+  // Show login form if user is not logged in
+  if (!user) {
+    return (
+      <ScrollView style={styles.container} contentContainerStyle={styles.authContent}>
+        <Text style={styles.authTitle}>Log in om verder te gaan</Text>
+
+        <TextInput
+          placeholder="email@adres.com"
+          placeholderTextColor="#999"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+          style={styles.input}
+          editable={!loading}
+        />
+        <TextInput
+          placeholder="Wachtwoord"
+          placeholderTextColor="#999"
+          secureTextEntry
+          autoCapitalize="none"
+          value={password}
+          onChangeText={setPassword}
+          style={styles.input}
+          editable={!loading}
+        />
+
+        <TouchableOpacity
+          style={[styles.button, loading && styles.buttonDisabled]}
+          disabled={loading}
+          onPress={handleLogin}>
+          <Text style={styles.buttonText}>
+            {loading ? 'Bezig...' : 'Inloggen'}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.linkButton, loading && styles.buttonDisabled]}
+          disabled={loading}
+          onPress={handleForgotPassword}>
+          <Text style={styles.linkButtonText}>Wachtwoord vergeten?</Text>
+        </TouchableOpacity>
+
+        <View style={styles.registerSection}>
+          <Text style={styles.registerText}>Nog geen account?</Text>
+          <TouchableOpacity
+            style={[styles.registerButton, loading && styles.buttonDisabled]}
+            disabled={loading}
+            onPress={handleRegister}>
+            <Text style={styles.registerButtonText}>Account aanmaken</Text>
+          </TouchableOpacity>
+        </View>
+
+        {status && <Text style={styles.statusMessage}>{status}</Text>}
+      </ScrollView>
+    );
+  }
+
+  // Show account content if user is logged in
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.hero}>
@@ -261,6 +355,72 @@ const styles = StyleSheet.create({
   logoutText: {
     color: '#dc2626',
     fontWeight: '600',
+  },
+  authContent: {
+    padding: 24,
+    paddingVertical: 32,
+    gap: 16,
+  },
+  authTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: Colors.text.primary,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 16,
+    backgroundColor: '#fafafa',
+  },
+  button: {
+    marginTop: 12,
+    backgroundColor: Colors.primary,
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
+  buttonText: {
+    color: Colors.white,
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  linkButton: {
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  linkButtonText: {
+    color: Colors.primary,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  registerSection: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  registerText: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  registerButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  registerButtonText: {
+    color: Colors.primary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  statusMessage: {
+    marginTop: 12,
+    textAlign: 'center',
+    color: '#2563eb',
+    fontWeight: '500',
   },
 });
 

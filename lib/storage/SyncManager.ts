@@ -15,11 +15,29 @@ class SyncManager {
   private netInfoUnsubscribe: (() => void) | null = null;
   private appStateSubscription: { remove: () => void } | null = null;
 
+  private initPromise: Promise<void> | null = null;
+
   async init() {
+    // If already initialized, return immediately
     if (this.initialized) {
       return;
     }
 
+    // If initialization is in progress, wait for it
+    if (this.initPromise) {
+      return this.initPromise;
+    }
+
+    // Start initialization
+    this.initPromise = this._doInit();
+    try {
+      await this.initPromise;
+    } finally {
+      this.initPromise = null;
+    }
+  }
+
+  private async _doInit() {
     // Initialize SQLite
     await sqliteManager.init();
 
@@ -188,21 +206,25 @@ class SyncManager {
         await sqliteManager.saveListings(listingsData.docs);
       }
 
-      // Pull user's own data
-      const { data: userData } = await payloadClient.findById('users', user.id, 1);
+      // Pull user's own data (with favorites included)
+      const { data: userData } = await payloadClient.findById('users', user.id, 2);
 
       if (userData) {
         await sqliteManager.saveUser(userData);
-      }
-
-      // Pull user's favorites
-      const { data: favoritesData } = await payloadClient.findMany('favorites', {
-        where: { user: { equals: user.id } },
-        limit: 1000,
-      });
-
-      if (favoritesData?.docs) {
-        await sqliteManager.saveFavorites(favoritesData.docs, user.id);
+        
+        // Save favorites from user data (favorites are stored as an array on the user object)
+        if (userData.favorites && Array.isArray(userData.favorites)) {
+          // Convert user.favorites array to the format expected by saveFavorites
+          const favoritesData = userData.favorites.map((fav: any) => ({
+            id: fav.id || `${user.id}-${fav.listing?.id || fav.listing}`,
+            listing: fav.listing?.id || fav.listing,
+            createdAt: fav.createdAt || new Date().toISOString(),
+          }));
+          await sqliteManager.saveFavorites(favoritesData, user.id);
+        } else {
+          // If no favorites array, clear existing favorites
+          await sqliteManager.saveFavorites([], user.id);
+        }
       }
     } catch (error) {
       console.error('Pull data error:', error);

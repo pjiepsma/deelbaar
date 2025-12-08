@@ -1,83 +1,91 @@
+import { mapColors } from '~/lib/constants/mapColors';
+
 // Modern Design System for Deelbaar
+const primary = mapColors.roadHighlight;
+const secondary = mapColors.landscape;
+const accent = mapColors.poiAccent;
+
 export default {
   // Primary Brand Colors
-  primary: '#6B8E23', // Olive green - community & nature
-  primaryLight: '#9ACD32', // Light olive
-  primaryDark: '#556B2F', // Dark olive
+  primary,
+  primaryLight: '#F0EDE4',
+  primaryDark: '#A79986',
 
   // Secondary Colors
-  secondary: '#D4A574', // Warm beige
-  secondaryLight: '#E6D2B5', // Light beige
-  secondaryDark: '#B8955D', // Dark beige
+  secondary,
+  secondaryLight: '#F7F4EA',
+  secondaryDark: '#B8AC98',
 
   // Accent Colors
-  accent: '#FF6B6B', // Coral for actions
-  accentLight: '#FF9A9A',
-  accentDark: '#E63939',
+  accent,
+  accentLight: '#E6F1E4',
+  accentDark: '#8EB78E',
 
   // Semantic Colors
-  success: '#22C55E', // Green
+  success: '#22C55E',
   successLight: '#86EFAC',
   successDark: '#16A34A',
 
-  warning: '#F59E0B', // Amber
+  warning: '#F59E0B',
   warningLight: '#FED7AA',
   warningDark: '#D97706',
 
-  error: '#EF4444', // Red
+  error: '#EF4444',
   errorLight: '#FCA5A5',
   errorDark: '#DC2626',
 
-  info: '#3B82F6', // Blue
+  info: '#3B82F6',
   infoLight: '#93C5FD',
   infoDark: '#1D4ED8',
 
   // Neutral Backgrounds
   background: {
     primary: '#FFFFFF',
-    secondary: '#F8FAFC',
-    tertiary: '#F1F5F9',
+    secondary: '#FFFFFF',
+    tertiary: '#F8F6F2',
     overlay: 'rgba(0, 0, 0, 0.5)',
-    modal: 'rgba(0, 0, 0, 0.7)',
+    modal: 'rgba(0, 0, 0, 0.78)',
+    surface: '#FFFFFF',
+    surfaceDark: '#F0E8DB',
   },
 
   // Text Colors
   text: {
-    primary: '#1E293B',
-    secondary: '#64748B',
-    tertiary: '#94A3B8',
+    primary: '#0F0D08',
+    secondary: '#2B241A',
+    tertiary: '#5B5144',
     inverse: '#FFFFFF',
-    accent: '#6B8E23',
+    accent,
   },
 
   // Border Colors
   border: {
-    light: '#E2E8F0',
-    medium: '#CBD5E1',
-    dark: '#94A3B8',
-    focus: '#6B8E23',
+    light: '#DFD8CF',
+    medium: '#C3B9AB',
+    dark: '#958974',
+    focus: primary,
   },
 
   // Legacy support (keeping old names for compatibility)
-  light: '#F8FAFC',
-  grey: '#64748B',
-  dark: '#1E293B',
+  light: '#F9F3EC',
+  grey: '#5C564B',
+  dark: '#2C2C29',
   white: '#FFFFFF',
 
   // Gradients for modern UI
   gradients: {
-    primary: ['#6B8E23', '#9ACD32'],
-    secondary: ['#D4A574', '#E6D2B5'],
-    accent: ['#FF6B6B', '#FF9A9A'],
-    background: ['#F8FAFC', '#FFFFFF'],
+    primary: ['#A79986', '#F0EDE4'],
+    secondary: ['#B8AC98', '#F7F4EA'],
+    accent: ['#8EB78E', '#E6F1E4'],
+    background: ['#F7F3EB', '#FFFFFF'],
   },
 
   // Shadow system
   shadows: {
     sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-    md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    md: '0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04)',
+    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.06)',
+    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.08)',
   },
 
   // Border radius system
@@ -102,20 +110,3 @@ export default {
     '3xl': 64,
   },
 };
-
-/*
-For a community-oriented app, consider pairing olive green with beige and dusty rose for a warm,
-inviting palette, or with white and slate blue for a more fresh and modern look. These combinations
-will help create a balanced and appealing design that feels both grounded and welcoming.
-
-Olive green (#808000) is a muted, earthy tone that pairs well with a variety of colors, creating a
- balanced and harmonious palette. Here are some colors that work well with olive green:
-
-Dusty Rose (#D3A297): A muted pink that adds warmth and a touch of elegance to olive green.
-This combination is subtle yet chic.
-Beige (#F5F5DC): A warm neutral that complements olive green, creating a soft, natural palette
-that feels cozy and inviting.
-
-Slate Blue (#6A5ACD): A softer, muted blue that pairs nicely with olive green, offering a calm
-and serene combination.
- */

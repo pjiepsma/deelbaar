@@ -77,19 +77,26 @@ export const ListingCard = React.memo<ListingCardProps>(
           {/* Favorite Button Row */}
           <View style={styles.cardHeaderRow}>
             <View style={{ flex: 1 }} />
-            <TouchableOpacity
-              style={styles.cardFavoriteButton}
-              onPress={(e) => {
-                e.stopPropagation();
-                onToggleFavorite(listing.id, isFavorite);
-              }}
-              activeOpacity={0.7}>
-              <Ionicons
-                name={isFavorite ? 'heart' : 'heart-outline'}
-                size={20}
-                color={isFavorite ? Colors.error : '#9ca3af'}
-              />
-            </TouchableOpacity>
+            {userId && (
+              <TouchableOpacity
+                style={styles.cardFavoriteButton}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  console.log('[ListingCard] Favorite button pressed', {
+                    listingId: listing.id,
+                    isFavorite,
+                    userId,
+                  });
+                  onToggleFavorite(listing.id, isFavorite);
+                }}
+                activeOpacity={0.7}>
+                <Ionicons
+                  name={isFavorite ? 'heart' : 'heart-outline'}
+                  size={20}
+                  color={isFavorite ? Colors.error : '#9ca3af'}
+                />
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Title */}
@@ -164,12 +171,12 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
       },
       android: {
-        elevation: 3,
+        elevation: 1,
       },
     }),
   },
@@ -178,13 +185,13 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     ...Platform.select({
       ios: {
-        shadowColor: Colors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
       },
       android: {
-        elevation: 8,
+        elevation: 1,
       },
     }),
   },

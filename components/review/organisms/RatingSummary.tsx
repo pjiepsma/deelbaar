@@ -9,6 +9,8 @@ import {
 } from '@gluestack-ui/themed';
 import React from 'react';
 
+import Colors from '~/constants/Colors';
+
 const RatingSummary = ({ reviews }) => {
   const totalReviews = reviews.length;
   let averageRating = 0;
@@ -28,15 +30,18 @@ const RatingSummary = ({ reviews }) => {
   // Simple flat stars - no gradients
   const renderStars = (rating: number) => {
     return [...Array(5)].map((_, i) => (
-      <Text key={i} size="sm">
-        {i < Math.floor(rating) ? '⭐' : '☆'}
+      <Text
+        key={i}
+        size="sm"
+        color={i < Math.floor(rating) ? Colors.primary : Colors.border.light}>
+        {i < Math.floor(rating) ? '★' : '☆'}
       </Text>
     ));
   };
 
   return (
     <VStack space="md">
-      <Heading size="lg" color="#6B8E23">
+      <Heading size="lg" color={Colors.text.primary}>
         Reviews
       </Heading>
 
@@ -44,11 +49,11 @@ const RatingSummary = ({ reviews }) => {
         <HStack space="lg" alignItems="flex-start">
           {/* Left: Average Rating */}
           <VStack space="xs" alignItems="center" minWidth={100}>
-            <Heading size="3xl" color="#6B8E23">
+            <Heading size="3xl" color={Colors.primary}>
               {averageRating}
             </Heading>
             <HStack space="2xs">{renderStars(averageRating)}</HStack>
-            <Text size="sm" color="$coolGray600">
+            <Text size="sm" color={Colors.text.secondary}>
               {totalReviews} review{totalReviews !== 1 ? 's' : ''}
             </Text>
           </VStack>
@@ -61,13 +66,13 @@ const RatingSummary = ({ reviews }) => {
 
               return (
                 <HStack key={star} space="sm" alignItems="center">
-                  <Text size="xs" color="$coolGray600" minWidth={30}>
+                <Text size="xs" color={Colors.text.secondary} minWidth={30}>
                     {star} ⭐
                   </Text>
                   <Progress value={percentage} w="$full" size="sm">
-                    <ProgressFilledTrack bg="#6B8E23" />
+                  <ProgressFilledTrack bg={Colors.primary} />
                   </Progress>
-                  <Text size="xs" color="$coolGray500" minWidth={24}>
+                  <Text size="xs" color={Colors.text.secondary} minWidth={24}>
                     {count}
                   </Text>
                 </HStack>
@@ -76,14 +81,17 @@ const RatingSummary = ({ reviews }) => {
           </VStack>
         </HStack>
       ) : (
-        <Box bg="#F5F5DC" p="$6" borderRadius="$lg" alignItems="center">
-          <Text size="2xl" mb="$2">
-            📚
-          </Text>
-          <Heading size="sm" color="#6B8E23" mb="$1">
+        <Box
+          bg={Colors.background.secondary}
+          borderRadius="$lg"
+          borderWidth={1}
+          borderColor={Colors.border.light}
+          p="$6"
+          alignItems="center">
+          <Heading size="sm" color={Colors.text.secondary} mb="$1">
             No reviews yet
           </Heading>
-          <Text size="sm" color="$coolGray600" textAlign="center">
+          <Text size="sm" color={Colors.text.secondary} textAlign="center">
             Be the first to review this Minibieb!
           </Text>
         </Box>

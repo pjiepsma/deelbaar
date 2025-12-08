@@ -302,24 +302,31 @@ export class SQLiteManager {
   }
 
   async saveFavorites(favorites: any[], userId: string) {
-    await this.execute('DELETE FROM favorites WHERE user_id = ?', [userId]);
+    try {
+      await db.withTransactionAsync(async () => {
+        // Delete existing favorites for this user
+        await db.runAsync('DELETE FROM favorites WHERE user_id = ?', [userId]);
 
-    if (!favorites.length) {
-      return;
+        if (favorites.length > 0) {
+          // Insert new favorites
+          for (const favorite of favorites) {
+            await db.runAsync(
+              `INSERT OR REPLACE INTO favorites (id, user_id, listing_id, created_at, synced)
+               VALUES (?, ?, ?, ?, 1)`,
+              [
+                favorite.id ?? `${userId}_${favorite.listing?.id || favorite.listing}`,
+                userId,
+                favorite.listing?.id || favorite.listing,
+                new Date(favorite.createdAt ?? Date.now()).getTime(),
+              ]
+            );
+          }
+        }
+      });
+    } catch (error) {
+      console.error('SQLite saveFavorites error:', error);
+      throw error;
     }
-
-    const queries = favorites.map((favorite: any) => ({
-      query: `INSERT OR REPLACE INTO favorites (id, user_id, listing_id, created_at, synced)
-              VALUES (?, ?, ?, ?, 1)`,
-      params: [
-        favorite.id ?? `${userId}_${favorite.listing?.id || favorite.listing}`,
-        userId,
-        favorite.listing?.id || favorite.listing,
-        new Date(favorite.createdAt ?? Date.now()).getTime(),
-      ],
-    }));
-
-    await this.executeBatch(queries);
   }
 
   // Sync Queue

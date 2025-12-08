@@ -1,12 +1,11 @@
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import AccountScreen from './account';
-import AuthScreen from './auth';
 
 import { useAuth } from '~/lib/providers/AuthProvider';
 
 export default function ProfileTab() {
-  const { user, isLoading } = useAuth();
+  const { isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -16,7 +15,7 @@ export default function ProfileTab() {
     );
   }
 
-  return user ? <AccountScreen /> : <AuthScreen />;
+  return <AccountScreen />;
 }
 
 const styles = StyleSheet.create({

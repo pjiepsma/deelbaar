@@ -92,7 +92,7 @@ export const ListingCarousel = React.memo<ListingCarouselProps>(
           maxToRenderPerBatch={5}
           updateCellsBatchingPeriod={100}
           initialNumToRender={3}
-          extraData={selectedId}
+          extraData={`${selectedId}-${Array.from(favoriteIds).sort().join(',')}`}
           onScrollToIndexFailed={(info) => {
             const wait = new Promise((resolve) => setTimeout(resolve, 500));
             wait.then(() => {

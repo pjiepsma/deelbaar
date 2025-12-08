@@ -13,8 +13,9 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { Alert, Dimensions, Image, Share, StyleSheet, TouchableOpacity } from 'react-native';
-import Carousel from 'react-native-reanimated-carousel';
+import { Alert, Dimensions, Image, Share, StyleSheet, TouchableOpacity, View } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
+import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 import Loader from '~/components/Loader';
 import Avatar from '~/components/review/atom/Avatar';
@@ -25,6 +26,7 @@ import Colors from '~/constants/Colors';
 import { payloadClient } from '~/lib/api/PayloadClient';
 import {
   PictureStatus,
+  useFavorites,
   useListing,
   useListingPhotos,
   useRequestListingPhoto,
@@ -33,6 +35,7 @@ import {
 } from '~/lib/hooks/usePayloadQuery';
 import { useAuth } from '~/lib/providers/AuthProvider';
 import { sqliteManager } from '~/lib/storage/SQLiteManager';
+import { getCategoryColor, getCategoryDisplayName } from '~/lib/utils/categoryHelpers';
 
 const { width } = Dimensions.get('window');
 const IMG_HEIGHT = 300;
@@ -78,6 +81,7 @@ export default function ListingDetailsModal() {
   const { data: reviewsData } = useReviews(id);
   const { data: approvedPhotos = [] } = useListingPhotos(id ?? null, 'approved');
   const { data: pendingPhotos = [] } = useListingPhotos(id ?? null, 'pending');
+  const { data: favoritesData = [] } = useFavorites();
   const toggleFavorite = useToggleFavorite();
   const requestListingPhoto = useRequestListingPhoto();
 
@@ -101,22 +105,49 @@ export default function ListingDetailsModal() {
     });
   }, [listingData, reviewsData, dist_meters, lat, long]);
 
+  // Sync favorite state from useFavorites hook (real-time updates)
   useEffect(() => {
-    const syncFavoriteState = async () => {
-      if (user?.id && id) {
+    console.log('[ListingDetails] Syncing favorite state from useFavorites', { 
+      user: !!user?.id, 
+      id, 
+      favoritesCount: favoritesData.length 
+    });
+    
+    if (!user?.id || !id) {
+      console.log('[ListingDetails] No user or id, setting isFavorite to false');
+      setIsFavorite(false);
+      return;
+    }
+
+    // Check if listing is in favorites from the query data
+    const isInFavorites = favoritesData.some((fav: any) => {
+      const favListingId =
+        typeof fav.listing === 'string' ? fav.listing : fav.listing?.id ?? fav.listing_id;
+      return favListingId === id;
+    });
+
+    console.log('[ListingDetails] Setting isFavorite', { isInFavorites, listingId: id });
+    setIsFavorite(isInFavorites);
+  }, [favoritesData, user?.id, id]);
+
+  // Fallback: sync from SQLite on mount (for offline-first support)
+  useEffect(() => {
+    const syncFavoriteStateFromSQLite = async () => {
+      if (user?.id && id && favoritesData.length === 0) {
+        console.log('[ListingDetails] Syncing from SQLite fallback', { userId: user.id, listingId: id });
         try {
           const favorites = await sqliteManager.getFavorites(user.id);
-          setIsFavorite(favorites.some((fav: any) => fav.listing_id === id));
+          const isInSQLite = favorites.some((fav: any) => fav.listing_id === id);
+          console.log('[ListingDetails] SQLite sync result', { isInSQLite, favoritesCount: favorites.length });
+          setIsFavorite(isInSQLite);
         } catch (error) {
           console.warn('[ListingDetails] Failed to load favorites from SQLite', error);
         }
-      } else {
-        setIsFavorite(false);
       }
     };
 
-    syncFavoriteState();
-  }, [user?.id, id]);
+    syncFavoriteStateFromSQLite();
+  }, [user?.id, id, favoritesData.length]);
 
   // Check for queued photos
   useEffect(() => {
@@ -161,14 +192,20 @@ export default function ListingDetailsModal() {
   }, [rating, listing, user, id, router]);
 
   const handleToggleFavorite = useCallback(async () => {
+    console.log('[ListingDetails] handleToggleFavorite called', { user: !!user, id, isFavorite });
+    
     if (!user || !id) {
+      console.warn('[ListingDetails] Cannot toggle favorite - missing user or id', { user: !!user, id });
       Alert.alert('Inloggen vereist', 'Log in om favorieten op te slaan.');
       return;
     }
 
+    console.log('[ListingDetails] Calling toggleFavorite.mutateAsync', { listingId: id, isFavorite });
+    
     try {
       await toggleFavorite.mutateAsync({ listingId: id, isFavorite });
-      setIsFavorite((current) => !current);
+      console.log('[ListingDetails] toggleFavorite.mutateAsync succeeded');
+      // State will be updated automatically via useFavorites hook when query invalidates
     } catch (error) {
       console.error('[ListingDetails] Toggle favorite failed', error);
       Alert.alert('Fout', 'Kon favoriet niet bijwerken.');
@@ -286,9 +323,16 @@ export default function ListingDetailsModal() {
   }, []);
 
   const hasPhotos = approvedPhotos.length > 0;
+  const categoryLabel = listing?.category
+    ? getCategoryDisplayName(listing.category)
+    : 'Onbekend';
+
+  const categoryColor = listing?.category
+    ? getCategoryColor(listing.category)
+    : Colors.border.light;
 
   return (
-    <Box flex={1} bg="$white">
+    <Box flex={1} bg={Colors.background.primary}>
       {!listing ? (
         <Loader delay={200} amount={3} visible />
       ) : (
@@ -346,19 +390,24 @@ export default function ListingDetailsModal() {
             <VStack space="xs">
               <Heading size="xl">{listing.name}</Heading>
               <HStack space="xs" alignItems="center">
-                <Ionicons name="location-outline" size={16} color="#666" />
-                <Text size="sm" color="$coolGray600">
+                <Ionicons name="location-outline" size={16} color={Colors.text.secondary} />
+                <Text size="sm" color={Colors.text.secondary}>
                   {listing.location?.address || 'Onbekend adres'}
                 </Text>
               </HStack>
               {listing.distance && (
-                <Text size="sm" color="$coolGray500">
+                <Text size="sm" color={Colors.text.secondary}>
                   📍 {listing.distance} km verwijderd
                 </Text>
               )}
               {listing.category && (
-                <Badge variant="solid" bg="#6B8E23" size="md" mt="$2" alignSelf="flex-start">
-                  <BadgeText color="$white">{listing.category}</BadgeText>
+                <Badge
+                  variant="solid"
+                  bg={categoryColor}
+                  size="md"
+                  mt="$2"
+                  alignSelf="flex-start">
+                  <BadgeText color={Colors.white}>{categoryLabel}</BadgeText>
                 </Badge>
               )}
             </VStack>
@@ -367,8 +416,8 @@ export default function ListingDetailsModal() {
 
             {listing.description && (
               <VStack space="xs">
-                <Heading size="sm">Over deze locatie</Heading>
-                <Text size="sm" color="$coolGray700" lineHeight="$lg">
+              <Heading size="sm">Over deze locatie</Heading>
+              <Text size="sm" color={Colors.text.tertiary} lineHeight="$lg">
                   {listing.description}
                 </Text>
               </VStack>
@@ -380,7 +429,7 @@ export default function ListingDetailsModal() {
             {listing.facilities?.openingHours && (
               <VStack space="xs">
                 <Heading size="sm">🕐 Openingstijden</Heading>
-                <Text size="sm" color="$coolGray700" lineHeight="$lg">
+                <Text size="sm" color={Colors.text.tertiary} lineHeight="$lg">
                   {listing.facilities.openingHours}
                 </Text>
               </VStack>
@@ -396,7 +445,11 @@ export default function ListingDetailsModal() {
                     const facilityInfo = FACILITY_INFO[facility];
                     return (
                       <View key={index} style={styles.facilityItem}>
-                        <Ionicons name={facilityInfo?.icon as any} size={16} color="#6b7280" />
+                        <Ionicons
+                          name={facilityInfo?.icon as any}
+                          size={16}
+                          color={Colors.text.tertiary}
+                        />
                         <Text style={styles.facilityText}>{facilityInfo?.label || facility}</Text>
                       </View>
                     );
@@ -409,7 +462,7 @@ export default function ListingDetailsModal() {
             {listing.facilities?.rules && (
               <VStack space="xs">
                 <Heading size="sm">📋 Huisregels</Heading>
-                <Text size="sm" color="$coolGray700" lineHeight="$lg">
+                <Text size="sm" color={Colors.text.tertiary} lineHeight="$lg">
                   {listing.facilities.rules}
                 </Text>
               </VStack>
@@ -419,7 +472,7 @@ export default function ListingDetailsModal() {
             {listing.facilities?.contactInfo && (
               <VStack space="xs">
                 <Heading size="sm">📞 Contact</Heading>
-                <Text size="sm" color="$coolGray700" lineHeight="$lg">
+                <Text size="sm" color={Colors.text.tertiary} lineHeight="$lg">
                   {listing.facilities.contactInfo}
                 </Text>
               </VStack>
@@ -439,11 +492,11 @@ export default function ListingDetailsModal() {
             {user ? (
               <VStack space="md">
                 <Heading size="md">Beoordeel deze locatie</Heading>
-                <Box bg="$coolGray50" p="$4" borderRadius="$lg">
+                <Box bg={Colors.background.secondary} p="$4" borderRadius="$lg">
                   <HStack space="md" alignItems="center">
                     <Avatar name={user.email?.[0]?.toUpperCase() || 'A'} uri={null} />
                     <VStack flex={1} space="xs">
-                      <Text size="sm" fontWeight="$semibold" color="$gray900">
+                      <Text size="sm" fontWeight="$semibold" color={Colors.text.primary}>
                         {user.email || 'Jij'}
                       </Text>
                       <RatingScreen setRating={setRating} rating={rating} />
@@ -452,17 +505,22 @@ export default function ListingDetailsModal() {
                 </Box>
               </VStack>
             ) : (
-              <Box
-                bg="#F5F5DC"
-                p="$5"
-                borderRadius="$lg"
-                alignItems="center"
-                borderWidth={1}
-                borderColor="#E8E8D0">
-                <Text size="sm" color="#6B8E23" textAlign="center" mb="$2" fontWeight="$semibold">
-                  🔒 Log in om te beoordelen en te reviewen
+                <Box
+                  bg={Colors.background.secondary}
+                  p="$5"
+                  borderRadius="$lg"
+                  alignItems="center"
+                  borderWidth={1}
+                  borderColor={Colors.border.light}>
+                <Text
+                  size="sm"
+                  color={Colors.primary}
+                  textAlign="center"
+                  mb="$2"
+                  fontWeight="$semibold">
+                  Log in om te beoordelen en te reviewen
                 </Text>
-                <Text size="xs" color="$coolGray600" textAlign="center">
+                <Text size="xs" color={Colors.text.secondary} textAlign="center">
                   Deel jouw ervaring met de community.
                 </Text>
               </Box>
@@ -495,16 +553,22 @@ function TopBarButtons({
   return (
     <HStack space="sm" alignItems="center">
       {canFavorite && (
-        <TouchableOpacity style={styles.roundButton} onPress={onToggleFavorite} activeOpacity={0.7}>
+        <TouchableOpacity
+          style={styles.roundButton}
+          onPress={() => {
+            console.log('[TopBarButtons] Favorite button pressed', { isFavorite, canFavorite });
+            onToggleFavorite();
+          }}
+          activeOpacity={0.7}>
           <Ionicons
             name={isFavorite ? 'heart' : 'heart-outline'}
             size={22}
-            color={isFavorite ? '#FF385C' : '#000'}
+            color={isFavorite ? Colors.error : Colors.text.primary}
           />
         </TouchableOpacity>
       )}
       <TouchableOpacity style={styles.roundButton} onPress={onShare} activeOpacity={0.7}>
-        <Ionicons name="share-outline" size={22} color="#000" />
+        <Ionicons name="share-outline" size={22} color={Colors.text.primary} />
       </TouchableOpacity>
     </HStack>
   );
@@ -523,21 +587,21 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 50,
-    backgroundColor: 'white',
+    backgroundColor: Colors.background.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: Colors.dark,
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.12,
+    shadowRadius: 3,
+    elevation: 4,
   },
   addPhotoButton: {
     alignSelf: 'flex-end',
-    backgroundColor: '#00000099',
+    backgroundColor: 'rgba(15, 13, 8, 0.85)',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
@@ -548,7 +612,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   addPhotoButtonText: {
-    color: '#fff',
+    color: Colors.white,
     fontWeight: '600',
   },
   facilitiesContainer: {
@@ -560,15 +624,17 @@ const styles = StyleSheet.create({
   facilityItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 6,
     gap: 6,
+    borderWidth: 1,
+    borderColor: Colors.border.light,
   },
   facilityText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     fontWeight: '500',
   },
 });
