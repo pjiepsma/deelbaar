@@ -4,8 +4,8 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const BACKEND_PATH = path.resolve(ROOT, '..', 'deelbaar-api', 'src', 'payload-types.ts');
-const TARGET_DIR = path.resolve(ROOT, 'lib', 'types');
+const BACKEND_PATH = path.join(ROOT, 'apps', 'cms', 'src', 'payload-types.ts');
+const TARGET_DIR = path.join(ROOT, 'apps', 'mobile', 'lib', 'types');
 const TARGET_FILE = path.join(TARGET_DIR, 'payload-generated.ts');
 
 function copyTypes() {
@@ -20,8 +20,8 @@ function copyTypes() {
 
   const banner = `/**
  * 🚨 Deze file wordt automatisch gegenereerd.
- * Bron: deelbaar-api/src/payload-types.ts
- * Voer "yarn copy:payload-types" uit om te vernieuwen.
+ * Bron: apps/cms/src/payload-types.ts
+ * Voer "pnpm copy:payload-types" uit om te vernieuwen.
  */
 `;
 
@@ -32,12 +32,3 @@ function copyTypes() {
 }
 
 copyTypes();
-
-
-
-
-
-
-
-
-

@@ -1,0 +1,47 @@
+version: '3.8'
+
+# Development docker-compose (for local dev with hot reload)
+services:
+  payload:
+    image: node:22.17.0-alpine
+    container_name: deelbaar-api-dev
+    ports:
+      - '4000:4000'
+    volumes:
+      - .:/home/node/app
+      - node_modules:/home/node/app/node_modules
+    working_dir: /home/node/app/
+    command: sh -c "corepack enable && corepack prepare pnpm@9.15.0 --activate && pnpm install && pnpm dev"
+    depends_on:
+      - mongo
+    env_file:
+      - .env
+    environment:
+      - SELECTED_CONFIG=${SELECTED_CONFIG:-default}
+      - DATABASE_URI=mongodb://mongo:27017/payload
+    networks:
+      - deelbaar-network
+
+  mongo:
+    image: mongo:7.0
+    container_name: deelbaar-mongo-dev
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_dev_data:/data/db
+    command:
+      - --storageEngine=wiredTiger
+    networks:
+      - deelbaar-network
+    logging:
+      driver: none
+
+volumes:
+  mongo_dev_data:
+    driver: local
+  node_modules:
+
+networks:
+  deelbaar-network:
+    driver: bridge
+

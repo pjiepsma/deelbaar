@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  payload:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SENTRY_ORG=${SENTRY_ORG:-}
+        - SENTRY_PROJECT=${SENTRY_PROJECT:-}
+        - SENTRY_DSN=${SENTRY_DSN:-}
+        - NEXT_PUBLIC_SENTRY_DSN=${NEXT_PUBLIC_SENTRY_DSN:-}
+        - PAYLOAD_SECRET=${PAYLOAD_SECRET:-dummy-secret-for-build-only}
+        - SELECTED_CONFIG=${SELECTED_CONFIG:-production}
+    container_name: deelbaar-api
+    restart: unless-stopped
+    ports:
+      - '4000:4000'
+    volumes:
+      # Persistent media storage (uploads)
+      - media_data:/app/media
+    environment:
+      - NODE_ENV=production
+      - SELECTED_CONFIG=production
+      - DATABASE_URI=mongodb://mongo:27017/payload
+      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
+      - BACKEND_URL=${BACKEND_URL:-http://localhost:4000}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - EXPO_URLS=${EXPO_URLS}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - NEXT_PUBLIC_SENTRY_DSN=${NEXT_PUBLIC_SENTRY_DSN}
+      - SENTRY_ORG=${SENTRY_ORG}
+      - SENTRY_PROJECT=${SENTRY_PROJECT}
+    depends_on:
+      mongo:
+        condition: service_started
+    networks:
+      - deelbaar-network
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:4000/admin']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  mongo:
+    image: mongo:7.0
+    container_name: deelbaar-mongo
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+      - mongo_config:/data/configdb
+    environment:
+      - MONGO_INITDB_DATABASE=payload
+    networks:
+      - deelbaar-network
+    healthcheck:
+      test: ['CMD-SHELL', 'mongosh --eval "db.adminCommand(\"ping\")" --quiet | grep -q "ok.*1" || exit 1']
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    command:
+      - --storageEngine=wiredTiger
+      - --wiredTigerCacheSizeGB=1
+
+volumes:
+  mongo_data:
+    driver: local
+  mongo_config:
+    driver: local
+  media_data:
+    driver: local
+
+networks:
+  deelbaar-network:
+    driver: bridge
+

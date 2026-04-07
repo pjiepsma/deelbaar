@@ -1,0 +1,821 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Minibiebs Gelderland.xlsx</name>
+    <Style id="icon-1526-9C27B0-normal">
+      <IconStyle>
+        <color>ffb0279c</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1526-9C27B0-highlight">
+      <IconStyle>
+        <color>ffb0279c</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1526-9C27B0">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1526-9C27B0-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1526-9C27B0-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Minibieb Jumbo</name>
+      <address>Nieuwe Markt 5 3771 CB Barneveld</address>
+      <description><![CDATA[Adres: Nieuwe Markt 5<br>Plaatsnaam: 3771 CB Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Nieuwe Markt 5</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3771 CB Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Boekenwurm</name>
+      <address>Van Wijnbergenlaan 13 3771 JG Barneveld</address>
+      <description><![CDATA[Adres: Van Wijnbergenlaan 13<br>Plaatsnaam: 3771 JG Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Van Wijnbergenlaan 13</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3771 JG Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>OBS De Lijster</name>
+      <address>Lijsterhof 6 3772 AA Barneveld</address>
+      <description><![CDATA[Adres: Lijsterhof 6<br>Plaatsnaam: 3772 AA Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: binnen <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Lijsterhof 6</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3772 AA Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value>binnen </value>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name><![CDATA[Minibieb 't koekoeksnest]]></name>
+      <address>Koekoekstraat 4 3772 AR Barneveld</address>
+      <description><![CDATA[Adres: Koekoekstraat 4<br>Plaatsnaam: 3772 AR Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Koekoekstraat 4</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3772 AR Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>CJG Barneveld</name>
+      <address>Wilhelminastraat 10 3772 AR Barneveld</address>
+      <description><![CDATA[Adres: Wilhelminastraat 10<br>Plaatsnaam: 3772 AR Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: binnen <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Wilhelminastraat 10</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3772 AR Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value>binnen </value>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name><![CDATA[Myrthe's minibieb]]></name>
+      <address>Van Schothorststraat 17 3772 AX Barneveld</address>
+      <description><![CDATA[Adres: Van Schothorststraat 17<br>Plaatsnaam: 3772 AX Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Van Schothorststraat 17</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3772 AX Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Minibieb</name>
+      <address>Zijdehoenderlaan 3772 Barneveld</address>
+      <description><![CDATA[Adres: Zijdehoenderlaan<br>Plaatsnaam: 3772 Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Zijdehoenderlaan</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3772 Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Minibiep Huuske
+</name>
+      <address>Rooseveltstraat 12 3772 BK Barneveld</address>
+      <description><![CDATA[Adres: Rooseveltstraat 12<br>Plaatsnaam: 3772 BK Barneveld<br><br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Rooseveltstraat 12</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3772 BK Barneveld
+</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Antoniusschool</name>
+      <address>Achterdorpstraat 3 3772 CC Barneveld</address>
+      <description><![CDATA[Adres: Achterdorpstraat 3<br>Plaatsnaam: 3772 CC Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Achterdorpstraat 3</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3772 CC Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Minibieb</name>
+      <address>Zoete Kroon 8 3772 HP Barneveld</address>
+      <description><![CDATA[Adres: Zoete Kroon 8<br>Plaatsnaam: 3772 HP Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Zoete Kroon 8</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3772 HP Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Buurtbieb ‘de Burgt’</name>
+      <address>Tijsselinglaan 46 3772 NM Barneveld</address>
+      <description><![CDATA[Adres: Tijsselinglaan 46<br>Plaatsnaam: 3772 NM Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Tijsselinglaan 46</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3772 NM Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name><![CDATA[Minibieb "Mollie", Veller]]></name>
+      <address>Groninger Meeuwlaan 77 3772 PD Barneveld</address>
+      <description><![CDATA[Adres: Groninger Meeuwlaan 77<br>Plaatsnaam: 3772 PD Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Groninger Meeuwlaan 77</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3772 PD Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Minibieb</name>
+      <address>Grote Beek 5 3772 TA Barneveld</address>
+      <description><![CDATA[Adres: Grote Beek 5<br>Plaatsnaam: 3772 TA Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Grote Beek 5</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3772 TA Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Bloemenbuurtbieb</name>
+      <address>Hortensiastraat 66 3772 XD Barneveld</address>
+      <description><![CDATA[Adres: Hortensiastraat 66<br>Plaatsnaam: 3772 XD Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Hortensiastraat 66</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3772 XD Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Minibieb Vogelwikke</name>
+      <address>Vogelwikke 25 3773 CP Barneveld</address>
+      <description><![CDATA[Adres: Vogelwikke 25<br>Plaatsnaam: 3773 CP Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: Emily Jo-Ann<br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Vogelwikke 25</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3773 CP Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value>Emily Jo-Ann</value>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Minibieb de Leeskip</name>
+      <address>Het ruige veld 10 3773 ZG Barneveld</address>
+      <description><![CDATA[Adres: Het ruige veld 10<br>Plaatsnaam: 3773 ZG Barneveld<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Het ruige veld 10</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3773 ZG Barneveld</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name><![CDATA[Minibieb 't Nachtegaaltje]]></name>
+      <address>Nachtegaalweg 12 3774 PG Kootwijkerbroek</address>
+      <description><![CDATA[Adres: Nachtegaalweg 12<br>Plaatsnaam: 3774 PG Kootwijkerbroek<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Nachtegaalweg 12</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3774 PG Kootwijkerbroek</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Minibieb</name>
+      <address>Ericaweg 9 3776 MD Stroe</address>
+      <description><![CDATA[Adres: Ericaweg 9<br>Plaatsnaam: 3776 MD Stroe<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Ericaweg 9</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3776 MD Stroe</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Minibieb/zwerfboekenkast</name>
+      <address>Harderwijkerkarweg 8 3776 PS Stroe</address>
+      <description><![CDATA[Adres: Harderwijkerkarweg 8<br>Plaatsnaam: 3776 PS Stroe<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Harderwijkerkarweg 8</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3776 PS Stroe</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Minibieb</name>
+      <address>Tolnegenweg 14 3776 PW Stroe</address>
+      <description><![CDATA[Adres: Tolnegenweg 14<br>Plaatsnaam: 3776 PW Stroe<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Tolnegenweg 14</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3776 PW Stroe</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Minibieb Vakantiepark Ackersate</name>
+      <address>Harremaatweg 26 3781 NJ Voorthuizen</address>
+      <description><![CDATA[Adres: Harremaatweg 26<br>Plaatsnaam: 3781 NJ Voorthuizen<br>Provincie: Gelderland<br>Bijzonderheid: bij de receptie<br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Harremaatweg 26</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3781 NJ Voorthuizen</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value>bij de receptie</value>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Groenboeks</name>
+      <address>Evertsenlaan 17 3781 TA Voorthuizen</address>
+      <description><![CDATA[Adres: Evertsenlaan 17<br>Plaatsnaam: 3781 TA Voorthuizen<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Evertsenlaan 17</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3781 TA Voorthuizen</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Boekvink Minibieb</name>
+      <address>Hoevelakenseweg 180A 3784 WL Terschuur</address>
+      <description><![CDATA[Adres: Hoevelakenseweg 180A<br>Plaatsnaam: 3784 WL Terschuur<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Hoevelakenseweg 180A</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3784 WL Terschuur</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Hanneke’s Minibieb + Kinderzwerfboekstation</name>
+      <address>Damweg 20 3785 LK Zwartebroek</address>
+      <description><![CDATA[Adres: Damweg 20<br>Plaatsnaam: 3785 LK Zwartebroek<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Damweg 20</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3785 LK Zwartebroek</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Maxibieb</name>
+      <address>Melissenpad 3794 De Glind</address>
+      <description><![CDATA[Adres: Melissenpad<br>Plaatsnaam: 3794 De Glind<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Melissenpad</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3794 De Glind</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Intermetzo De Glind</name>
+      <address>Postweg 80 3794 MN De Glind</address>
+      <description><![CDATA[Adres: Postweg 80<br>Plaatsnaam: 3794 MN De Glind<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: Fokelien Haije<br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Postweg 80</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3794 MN De Glind</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value>Fokelien Haije</value>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Minibieb</name>
+      <address>Laan 1940 - 1945 26 3841 JD Harderwijk</address>
+      <description><![CDATA[Adres: Laan 1940 - 1945 26<br>Plaatsnaam: 3841 JD Harderwijk<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: Danielle Colen<br>Internet: www.facebook.com/groups/280625625699265]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Laan 1940 - 1945 26</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3841 JD Harderwijk</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value>Danielle Colen</value>
+        </Data>
+        <Data name="Internet">
+          <value>www.facebook.com/groups/280625625699265</value>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>Minibieb</name>
+      <address>Laan 1940 - 1945 4 3841 JZ Harderwijk</address>
+      <description><![CDATA[Adres: Laan 1940 - 1945 4<br>Plaatsnaam: 3841 JZ Harderwijk<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Laan 1940 - 1945 4</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3841 JZ Harderwijk</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>CBS De Schakel S2</name>
+      <address>Busken Huetlaan 4 3842 CS Harderwijk</address>
+      <description><![CDATA[Adres: Busken Huetlaan 4<br>Plaatsnaam: 3842 CS Harderwijk<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Busken Huetlaan 4</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3842 CS Harderwijk</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    <Placemark xmlns="http://www.opengis.net/kml/2.2">
+      <name>CBS De Schakel S1</name>
+      <address>Vondellaan 26 3842 EH Harderwijk</address>
+      <description><![CDATA[Adres: Vondellaan 26<br>Plaatsnaam: 3842 EH Harderwijk<br>Provincie: Gelderland<br>Bijzonderheid: <br>Beheerder: <br>Internet: ]]></description>
+      <styleUrl>#icon-1526-9C27B0</styleUrl>
+      <ExtendedData>
+        <Data name="Adres">
+          <value>Vondellaan 26</value>
+        </Data>
+        <Data name="Plaatsnaam">
+          <value>3842 EH Harderwijk</value>
+        </Data>
+        <Data name="Provincie">
+          <value>Gelderland</value>
+        </Data>
+        <Data name="Bijzonderheid">
+          <value/>
+        </Data>
+        <Data name="Beheerder">
+          <value/>
+        </Data>
+        <Data name="Internet">
+          <value/>
+        </Data>
+      </ExtendedData>
+    </Placemark>
+    </Document></kml>

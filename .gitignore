@@ -1,3 +1,6 @@
+# Local Cursor skills clone (separate git repo)
+.cursor/skills/agent-skills/
+
 node_modules/
 .expo/
 dist/

@@ -15,8 +15,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
-          cache: 'yarn'
-          cache-dependency-path: 'yarn.lock'
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -35,9 +35,10 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build Android app
+        working-directory: apps/mobile
         run: eas build --platform android --local --profile development --output ${{ github.workspace }}/app-development.apk
 
       - name: Upload APK artifact
