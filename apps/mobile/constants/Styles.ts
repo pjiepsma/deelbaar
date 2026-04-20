@@ -1,6 +1,7 @@
 import { StyleSheet, Platform, Dimensions } from 'react-native';
 
 import Colors from '~/constants/Colors';
+import { inputText } from '~/constants/Typography';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -121,18 +122,27 @@ export const defaultStyles = StyleSheet.create({
       fontWeight: '500',
       letterSpacing: 0.5,
     },
+
+    /** Reference-style light gray for descriptions / meta (pair with bodySmall or labelSmall) */
+    caption: {
+      fontSize: 13,
+      lineHeight: 18,
+      fontWeight: '400',
+      letterSpacing: 0.15,
+      color: Colors.text.caption,
+    },
   },
 
   // Input Fields
   inputField: {
-    minHeight: 56,
+    minHeight: 52,
     borderWidth: 1,
     borderColor: Colors.border.light,
     borderRadius: Colors.radius.lg,
     paddingHorizontal: Colors.spacing.md,
     paddingVertical: Colors.spacing.sm,
     backgroundColor: Colors.background.primary,
-    fontSize: 16,
+    ...inputText,
     color: Colors.text.primary,
     ...Colors.shadowTokens.sm,
   },

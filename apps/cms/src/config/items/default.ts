@@ -1,8 +1,15 @@
+const parseCsvEnv = (value: string | undefined): string[] =>
+  (value || '')
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+
 export const defaultConfig = {
   secret: process.env.PAYLOAD_SECRET || '',
   url: 'http://localhost:4000',
   databaseURI: process.env.DATABASE_URI || 'mongodb://127.0.0.1/payload',
   title: 'Title',
+  googleClientIds: parseCsvEnv(process.env.GOOGLE_CLIENT_IDS),
   corsCsrfUrls: [
     'http://localhost:4000',
     'http://localhost:3000',

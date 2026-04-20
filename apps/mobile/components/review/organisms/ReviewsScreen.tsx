@@ -1,5 +1,5 @@
-import { YStack, XStack, Text, Separator } from 'tamagui';
 import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import Avatar from '../atom/Avatar';
 import FullImageModal from '../atom/FullImageModal';
@@ -42,28 +42,25 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({ reviews }) => {
   const renderReview = (item: Review) => {
     const userName = item.name || item.created_by?.name || item.created_by?.email || 'Anonymous';
     const avatarUri = item.created_by?.avatar?.url || null;
-    const photoUri = null; // TODO: Implement photo loading
+    const photoUri = null;
 
     return (
-      <YStack key={item.id} marginBottom={16} paddingBottom={16}>
-        <YStack gap={8}>
-          {/* User Info & Rating */}
-          <XStack gap={16} alignItems="flex-start">
+      <View key={item.id} style={{ marginBottom: 16, paddingBottom: 16 }}>
+        <View style={{ gap: 8 }}>
+          <View style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
             <Avatar name={userName[0]?.toUpperCase() || 'A'} uri={avatarUri} />
-            <YStack flex={1} gap={4}>
-              <Text fontSize={16} fontWeight="600">{userName}</Text>
+            <View style={{ flex: 1, gap: 4 }}>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: '#111' }}>{userName}</Text>
               <UserInfo
                 userName={item.created_by}
                 rating={item.rating}
                 date={item.createdAt || item.created_at}
               />
-            </YStack>
-          </XStack>
+            </View>
+          </View>
 
-          {/* Review Text */}
           <ReviewText description={item.description} />
 
-          {/* Photo if exists */}
           {photoUri && (
             <Thumbnail
               uri={photoUri}
@@ -73,34 +70,39 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({ reviews }) => {
               }}
             />
           )}
-        </YStack>
+        </View>
 
-        <Separator marginTop={16} />
-      </YStack>
+        <View style={[styles.sep, { marginTop: 16 }]} />
+      </View>
     );
   };
 
   return (
-    <YStack gap={16}>
+    <View style={{ gap: 16 }}>
       <SortOptions selectedSort={selectedSort} onSortChange={handleSortChange} />
-      <YStack gap={8}>
+      <View style={{ gap: 8 }}>
         {sortedReviews.length > 0 ? (
           sortedReviews.map(renderReview)
         ) : (
-          <YStack padding={16} alignItems="center">
-            <Text fontSize={14} color="#6b7280">
-              No reviews to display
-            </Text>
-          </YStack>
+          <View style={{ padding: 16, alignItems: 'center' }}>
+            <Text style={{ fontSize: 14, color: '#6b7280' }}>No reviews to display</Text>
+          </View>
         )}
-      </YStack>
+      </View>
       <FullImageModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         imageUri={selectedImageUri}
       />
-    </YStack>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  sep: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#e5e7eb',
+  },
+});
 
 export default ReviewsScreen;

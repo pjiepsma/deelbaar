@@ -95,6 +95,7 @@ export const ImportDashboard = () => {
     { label: 'Food', value: 'food' },
     { label: 'Hygiene', value: 'hygiene' },
     { label: 'Community', value: 'community' },
+    { label: 'Boerderijautomaat', value: 'farm' },
     { label: 'Other', value: 'other' },
   ];
 

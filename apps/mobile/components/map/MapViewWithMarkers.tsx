@@ -5,7 +5,8 @@ import Mapbox, { Camera, CircleLayer, MapView, ShapeSource, SymbolLayer } from '
 import type { Region } from '~/lib/utils/mapUtils';
 import type { ListingRecord } from '~/lib/types/models';
 import { CATEGORY_COLORS_MAP } from '~/lib/utils/categoryHelpers';
-import { MAP_STYLE_URL } from '~/constants/Map';
+import { mapStyleUrlForResolvedTheme } from '~/constants/Map';
+import { useThemePreference } from '~/lib/providers/ThemePreferenceProvider';
 
 // Set Mapbox token (must be called before any Mapbox component renders)
 const mapboxToken = process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -32,6 +33,11 @@ const DEFAULT_COLOR = CATEGORY_COLORS_MAP.other;
  */
 export const MapViewWithMarkers = React.memo<MapViewWithMarkersProps>(
   ({ mapRef, region, markers, selectedId, onRegionChangeComplete, onMarkerPress }) => {
+    const { resolvedTheme } = useThemePreference();
+    const mapStyleUrl = useMemo(
+      () => mapStyleUrlForResolvedTheme(resolvedTheme),
+      [resolvedTheme],
+    );
     const shapeSourceRef = useRef<ShapeSource>(null);
 
     const center = useMemo<[number, number]>(
@@ -152,7 +158,7 @@ export const MapViewWithMarkers = React.memo<MapViewWithMarkersProps>(
     return (
       <MapView
         style={StyleSheet.absoluteFill}
-        styleURL={MAP_STYLE_URL}
+        styleURL={mapStyleUrl}
         onCameraChanged={handleCameraChanged}
         compassEnabled={false}
         scaleBarEnabled={false}

@@ -99,6 +99,7 @@ export const Listings: CollectionConfig = {
                 { label: 'Food', value: 'food' },
                 { label: 'Hygiene', value: 'hygiene' },
                 { label: 'Community', value: 'community' },
+                { label: 'Boerderijautomaat', value: 'farm' },
                 { label: 'Other', value: 'other' },
               ],
               defaultValue: 'other',

@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import Colors from '~/constants/Colors';
+import { useAppColors } from '~/lib/theme';
 
 interface MarkerComponentProps {
   store: any; // ListingRecord or old format
@@ -12,6 +12,7 @@ interface MarkerComponentProps {
 }
 
 const MarkerComponent: React.FC<MarkerComponentProps> = memo(({ store, onPress, selected }) => {
+  const colors = useAppColors();
   const latitude = store.lat ?? store.location?.coordinates?.[1];
   const longitude = store.long ?? store.location?.coordinates?.[0];
 
@@ -20,11 +21,18 @@ const MarkerComponent: React.FC<MarkerComponentProps> = memo(({ store, onPress, 
   }
 
   return (
-    <View style={[styles.marker, { backgroundColor: selected ? Colors.light : Colors.primary }]}>
+    <View
+      style={[
+        styles.marker,
+        {
+          backgroundColor: selected ? colors.light : colors.primary,
+          borderColor: colors.primary,
+        },
+      ]}>
       <Ionicons
         name="library-outline"
         size={10}
-        color={selected ? Colors.primary : Colors.light}
+        color={selected ? colors.primary : colors.light}
       />
     </View>
   );
@@ -34,7 +42,6 @@ const styles = StyleSheet.create({
   marker: {
     flexDirection: 'row',
     padding: 4,
-    borderColor: Colors.primary,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',

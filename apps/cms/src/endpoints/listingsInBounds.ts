@@ -219,6 +219,27 @@ const parseLimit = (limitParam: string | null): number => {
 }
 
 /**
+ * Default projection for map bounds — must NOT expand `owner` → `users`.
+ * `depth: 2` with a full document would populate other users’ profiles; the auth
+ * `users` collection denies that → 403 "You are not allowed to perform this action."
+ * The mobile client sends the same shape via `?select=`; we default to this if absent.
+ */
+const DEFAULT_LISTINGS_BOUNDS_SELECT = {
+  id: true,
+  name: true,
+  description: true,
+  category: true,
+  publishStatus: true,
+  location: {
+    coordinates: true,
+    address: true,
+  },
+  pictures: {
+    photo: true,
+  },
+} as const
+
+/**
  * Get listings within a bounding box (viewport bounds)
  * Useful when user is browsing the map and you want to show only visible listings
  * 
@@ -276,6 +297,21 @@ export async function listingsInBounds(req: AppRouteRequest): Promise<Response> 
   const { neLat, neLon, swLat, swLon } = validation.coordinates
   const limit = parseLimit(limitParam)
 
+  const selectParam = getParam('select')
+  let resolvedSelect: Record<string, unknown> = {
+    ...DEFAULT_LISTINGS_BOUNDS_SELECT,
+  }
+  if (selectParam) {
+    try {
+      const parsed = JSON.parse(selectParam) as unknown
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        resolvedSelect = parsed as Record<string, unknown>
+      }
+    } catch {
+      /* keep default projection */
+    }
+  }
+
   try {
     const payload = await resolvePayload(req)
 
@@ -299,6 +335,7 @@ export async function listingsInBounds(req: AppRouteRequest): Promise<Response> 
       },
       limit,
       depth: 2,
+      select: resolvedSelect as never,
     })
 
     const successResponse: SuccessResponse = {

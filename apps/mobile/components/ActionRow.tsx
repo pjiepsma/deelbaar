@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Dropdown from '~/components/Dropdown';
-import Colors from '~/constants/Colors';
 import { OptionItem } from '~/constants/Types';
 import { ListingRecord } from '~/lib/types/models';
 
@@ -13,7 +12,7 @@ interface Props {
   listing: ListingRecord | null;
 }
 
-const ActionRow = ({ onCategoryChanged, setFilterState, listing }: Props) => {
+const ActionRow = (_props: Props) => {
   const DATA: OptionItem[] = [
     {
       value: 'Books',
@@ -29,19 +28,12 @@ const ActionRow = ({ onCategoryChanged, setFilterState, listing }: Props) => {
     paddingRight: insets.right,
   };
 
-  const [selected, setSelected] = useState<{ label: string; value: string }>();
+  const [_selected, setSelected] = useState<OptionItem | undefined>();
 
   return (
     <View style={[styles.actions, safeAreaPadding]}>
       <View style={styles.container}>
         <Dropdown label="Select Item" data={DATA} onSelect={setSelected} />
-        {/*<TouchableOpacity style={styles.filterButton} onPress={() => setFilterState(true)}>*/}
-        {/*  <Ionicons name="options-outline" size={24} color={Colors.dark} />*/}
-        {/*  <Text>Filter</Text>*/}
-        {/*  <View style={styles.round}>*/}
-        {/*    <Text style={styles.filterText}>3</Text>*/}
-        {/*  </View>*/}
-        {/*</TouchableOpacity>*/}
       </View>
     </View>
   );
@@ -58,36 +50,6 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     zIndex: 3,
-  },
-  round: {
-    backgroundColor: Colors.primary,
-    borderWidth: 1,
-    borderColor: Colors.grey,
-    height: 16,
-    width: 16,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  filterText: {
-    fontSize: 10,
-    color: 'white',
-  },
-  filterButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 10,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: {
-      width: 1,
-      height: 10,
-    },
   },
 });
 

@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Modal,
   View,
@@ -26,13 +26,43 @@ const mapboxToken = process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN;
 if (mapboxToken) Mapbox.setAccessToken(mapboxToken);
 
 import Colors from '~/constants/Colors';
-import { MAP_STYLE_URL } from '~/constants/Map';
+import { mapStyleUrlForResolvedTheme } from '~/constants/Map';
+import { useThemePreference } from '~/lib/providers/ThemePreferenceProvider';
 import { payloadClient } from '~/lib/api/PayloadClient';
 import { useCreateListing } from '~/lib/hooks/usePayloadQuery';
 
 const { width, height } = Dimensions.get('window');
 
-type ListingCategory = 'book_bank' | 'food_bank' | 'hygiene_bank' | 'community_market' | 'other';
+/** Values must match Payload listings `category` select (CMS). */
+type ListingCategory =
+  | 'book'
+  | 'food'
+  | 'hygiene'
+  | 'community'
+  | 'farm'
+  | 'other';
+
+const LEGACY_CATEGORY_ALIASES: Record<string, ListingCategory> = {
+  book_bank: 'book',
+  food_bank: 'food',
+  hygiene_bank: 'hygiene',
+  community_market: 'community',
+  farm_vending: 'farm',
+};
+
+function normalizeListingCategory(raw: string | undefined | null): ListingCategory {
+  const allowed = new Set<ListingCategory>([
+    'book',
+    'food',
+    'hygiene',
+    'community',
+    'farm',
+    'other',
+  ]);
+  if (!raw) return 'book';
+  if (allowed.has(raw as ListingCategory)) return raw as ListingCategory;
+  return LEGACY_CATEGORY_ALIASES[raw] ?? 'book';
+}
 
 interface InventoryItem {
   id: string;
@@ -69,32 +99,39 @@ const FACILITY_OPTIONS = [
 
 const CATEGORY_OPTIONS: CategoryOption[] = [
   {
-    value: 'book_bank',
+    value: 'book',
     label: 'Minibieb',
     description: 'Boeken delen en ruilen',
     icon: 'library',
     color: '#3B82F6',
   },
   {
-    value: 'food_bank',
+    value: 'food',
     label: 'Voedselkast',
     description: 'Supermarkt producten delen (spaghetti, saus, bonen, conserven)',
     icon: 'storefront',
     color: '#EF4444',
   },
   {
-    value: 'hygiene_bank',
+    value: 'hygiene',
     label: 'Hygiënekast',
     description: 'Gratis hygiëne producten',
     icon: 'medical',
     color: '#EC4899',
   },
   {
-    value: 'community_market',
+    value: 'community',
     label: 'Gemeenschapskast',
     description: 'Verse lokale producten (aardbeien, honing, pompoenen, zelfgeteelde groente)',
     icon: 'restaurant',
     color: '#22C55E',
+  },
+  {
+    value: 'farm',
+    label: 'Boerderijautomaat',
+    description: 'Automaten bij boeren met verse producten (melk, eieren, groente)',
+    icon: 'nutrition',
+    color: '#A16207',
   },
   {
     value: 'other',
@@ -121,7 +158,7 @@ export default function CreateListingModal({
   const [currentStep, setCurrentStep] = useState<Step>('category');
 
   // Form data
-  const [category, setCategory] = useState<ListingCategory>('book_bank');
+  const [category, setCategory] = useState<ListingCategory>('book');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [address, setAddress] = useState('');
@@ -151,6 +188,11 @@ export default function CreateListingModal({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const createListing = useCreateListing();
+  const { resolvedTheme } = useThemePreference();
+  const mapStyleUrl = useMemo(
+    () => mapStyleUrlForResolvedTheme(resolvedTheme),
+    [resolvedTheme],
+  );
 
   // Reset form when modal opens and try to load draft
   useEffect(() => {
@@ -174,7 +216,7 @@ export default function CreateListingModal({
 
   const resetForm = () => {
     setCurrentStep('category');
-    setCategory('book_bank');
+    setCategory('book');
     setName('');
     setDescription('');
     setAddress('');
@@ -387,7 +429,7 @@ export default function CreateListingModal({
       const draftJson = await AsyncStorage.getItem('listing_draft');
       if (draftJson) {
         const draftData = JSON.parse(draftJson);
-        setCategory(draftData.category || 'book_bank');
+        setCategory(normalizeListingCategory(draftData.category));
         setName(draftData.name || '');
         setDescription(draftData.description || '');
         setAddress(draftData.address || '');
@@ -610,7 +652,7 @@ export default function CreateListingModal({
         {mapboxToken ? (
           <MapView
             style={styles.map}
-            styleURL={MAP_STYLE_URL}
+            styleURL={mapStyleUrl}
             onPress={handleMapPress}>
             <Camera
               defaultSettings={{
@@ -783,8 +825,8 @@ export default function CreateListingModal({
   );
 
   const renderPhotosStep = () => {
-    // Special handling for book_bank - show inventory scanner
-    if (category === 'book_bank') {
+    // Special handling for book - show inventory scanner
+    if (category === 'book') {
       return (
         <View style={styles.stepContent}>
           <Text style={styles.stepTitle}>📚 Boekenkast inventaris</Text>
@@ -921,8 +963,8 @@ export default function CreateListingModal({
             )}
           </View>
 
-          {/* Show inventory for book_bank */}
-          {category === 'book_bank' && inventory.length > 0 && (
+          {/* Show inventory for book */}
+          {category === 'book' && inventory.length > 0 && (
             <View style={styles.reviewSection}>
               <Text style={styles.reviewSectionTitle}>
                 📚 Inventaris ({inventory.length} items)
@@ -948,7 +990,7 @@ export default function CreateListingModal({
           )}
 
           {/* Show photos for non-minibieb */}
-          {category !== 'minibieb' && photos.length > 0 && (
+          {category !== 'book' && photos.length > 0 && (
             <View style={styles.reviewSection}>
               <Text style={styles.reviewSectionTitle}>Foto's ({photos.length})</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>

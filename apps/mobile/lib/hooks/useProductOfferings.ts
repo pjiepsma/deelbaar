@@ -202,9 +202,7 @@ export const usePendingApprovalsCount = () => {
       let totalPending = 0;
       for (const listing of userListings) {
         if (
-          ['food_bank', 'hygiene_bank', 'medicine_bank', 'community_market'].includes(
-            listing.category
-          )
+          ['food', 'hygiene', 'community', 'farm'].includes(listing.category)
         ) {
           const pending = await payloadClient.getPendingProductOfferings(listing.id);
           totalPending += pending.length;
@@ -248,9 +246,7 @@ export const useUserPendingApprovals = () => {
       const allPending: any[] = [];
       for (const listing of userListings) {
         if (
-          ['food_bank', 'hygiene_bank', 'medicine_bank', 'community_market'].includes(
-            listing.category
-          )
+          ['food', 'hygiene', 'community', 'farm'].includes(listing.category)
         ) {
           const pending = await payloadClient.getPendingProductOfferings(listing.id);
           allPending.push(

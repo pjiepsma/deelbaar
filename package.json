@@ -8,6 +8,7 @@
     "start": "pnpm --filter @deelbaar/mobile start",
     "dev": "pnpm copy:payload-types && concurrently -n \"CMS,MOBILE\" -c \"bgBlue.bold,bgMagenta.bold\" \"pnpm dev:cms\" \"pnpm dev:mobile\"",
     "dev:mobile": "pnpm --filter @deelbaar/mobile dev",
+    "dev:native": "pnpm --filter @deelbaar/native dev",
     "dev:cms": "pnpm --filter @deelbaar/cms dev",
     "prebuild": "pnpm --filter @deelbaar/mobile prebuild",
     "eas": "pnpm --filter @deelbaar/mobile eas",
@@ -24,5 +25,6 @@
       "esbuild",
       "unrs-resolver"
     ]
-  }
+  },
+  "version": "1.0.0"
 }

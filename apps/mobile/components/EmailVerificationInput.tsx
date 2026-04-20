@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
+import { Platform, View, TextInput, StyleSheet, Text } from 'react-native';
 import Colors from '~/constants/Colors';
 
 interface EmailVerificationInputProps {
@@ -110,16 +110,21 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   input: {
-    width: 45,
-    height: 50,
+    width: 44,
+    height: 48,
     borderWidth: 2,
-    borderColor: '#d1d5db',
+    borderColor: Colors.border.medium,
     borderRadius: 8,
     textAlign: 'center',
-    fontSize: 20,
     fontWeight: '600',
     color: Colors.primary,
-    backgroundColor: '#fafafa',
+    backgroundColor: Colors.background.secondary,
+    fontSize: 18,
+    lineHeight: Platform.OS === 'ios' ? 22 : undefined,
+    ...Platform.select({
+      android: { includeFontPadding: false },
+      default: {},
+    }),
   },
   inputFocused: {
     borderColor: Colors.primary,

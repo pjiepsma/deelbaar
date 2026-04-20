@@ -1,10 +1,11 @@
 // molecules/MapWithMarkers.tsx
-import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import Mapbox, { Camera, MapView, PointAnnotation } from '@rnmapbox/maps';
 
 import MarkerComponent from '~/components/map/atom/Marker';
-import { MAP_STYLE_URL } from '~/constants/Map';
+import { mapStyleUrlForResolvedTheme } from '~/constants/Map';
+import { useThemePreference } from '~/lib/providers/ThemePreferenceProvider';
 import type { Region } from '~/lib/utils/mapUtils';
 import { ListingRecord } from '~/lib/types/models';
 
@@ -26,6 +27,11 @@ interface MapWithMarkersProps {
 
 const MapWithMarkers = forwardRef<MapWithMarkersRef, MapWithMarkersProps>(
   ({ region, listings, onMarkerPress, onRegionChangeComplete, selectedListingId }, ref) => {
+    const { resolvedTheme } = useThemePreference();
+    const mapStyleUrl = useMemo(
+      () => mapStyleUrlForResolvedTheme(resolvedTheme),
+      [resolvedTheme],
+    );
     const cameraRef = useRef<any>(null);
     const zoomLevel = Math.log2(360 / region.latitudeDelta);
     const center: [number, number] = [region.longitude, region.latitude];
@@ -64,7 +70,7 @@ const MapWithMarkers = forwardRef<MapWithMarkersRef, MapWithMarkersProps>(
     return (
       <MapView
         style={StyleSheet.absoluteFill}
-        styleURL={MAP_STYLE_URL}
+        styleURL={mapStyleUrl}
         onCameraChanged={handleCameraChanged}>
         <Camera
           ref={cameraRef}

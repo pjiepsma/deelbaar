@@ -4,7 +4,7 @@ import { View, FlatList, ActivityIndicator, StyleSheet, Dimensions } from 'react
 import { EmptyStateCard } from './EmptyStateCard';
 import { ListingCard } from './ListingCard';
 
-import Colors from '~/constants/Colors';
+import { useAppColors } from '~/lib/theme';
 import { CARD_TOTAL_WIDTH, CARD_WIDTH } from '~/lib/constants/listings';
 import { ListingRecord } from '~/lib/types/models';
 
@@ -45,14 +45,15 @@ export const ListingCarousel = React.memo<ListingCarouselProps>(
     onViewableItemsChanged,
     paddingBottom = 24,
   }) => {
+    const colors = useAppColors();
     const data: (ListingRecord | { id: 'empty' })[] =
       listings.length === 0 ? [{ id: 'empty' as const }] : listings;
 
     return (
       <View style={[styles.bottomSheet, { paddingBottom }]}>
         {isInitialLoading && (
-          <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" color={Colors.primary} />
+          <View style={[styles.loadingOverlay, { backgroundColor: `${colors.background.primary}B3` }]}>
+            <ActivityIndicator size="large" color={colors.primary} />
           </View>
         )}
 
@@ -134,7 +135,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.8)',
     zIndex: 10,
   },
   cardList: {

@@ -1,9 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Input, XStack } from 'tamagui';
-import { TouchableOpacity } from 'react-native';
+import { TextInput, TouchableOpacity, View } from 'react-native';
 
-import Colors from '~/constants/Colors';
+import { useAppColors } from '~/lib/theme';
 
 interface SearchBarProps {
   value: string;
@@ -16,36 +15,41 @@ interface SearchBarProps {
  */
 export const SearchBar = React.memo<SearchBarProps>(
   ({ value, onChangeText, placeholder }) => {
+    const colors = useAppColors();
     return (
-      <XStack
-        alignItems="center"
-        backgroundColor={Colors.background.secondary}
-        borderRadius={Colors.radius.md}
-        paddingHorizontal={16}
-        paddingVertical={12}
-        gap={8}
-        marginBottom={8}
-        {...Colors.shadowTokens.sm}>
-        <Ionicons name="search" size={20} color={Colors.text.secondary} />
-        <Input
-          flex={1}
+      <View
+        style={[
+          {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: colors.background.secondary,
+            borderRadius: colors.radius.md,
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            gap: 8,
+            marginBottom: 8,
+          },
+          colors.shadowTokens.sm,
+        ]}>
+        <Ionicons name="search" size={20} color={colors.icon.muted} />
+        <TextInput
+          style={{
+            flex: 1,
+            fontSize: 16,
+            color: colors.text.primary,
+            padding: 0,
+          }}
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder || 'Zoek minibiebs, voedselbanken...'}
-          placeholderTextColor={Colors.text.secondary}
-          fontSize={16}
-          color={Colors.text.primary}
-          backgroundColor="transparent"
-          borderWidth={0}
-          padding={0}
-          focusStyle={{ borderWidth: 0, outlineStyle: 'none' }}
+          placeholderTextColor={colors.text.secondary}
         />
         {value ? (
           <TouchableOpacity onPress={() => onChangeText('')} hitSlop={8}>
-            <Ionicons name="close-circle" size={20} color={Colors.text.secondary} />
+            <Ionicons name="close-circle" size={20} color={colors.icon.muted} />
           </TouchableOpacity>
         ) : null}
-      </XStack>
+      </View>
     );
   }
 );

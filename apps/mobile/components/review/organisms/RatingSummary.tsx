@@ -1,9 +1,24 @@
-import { YStack, XStack, Text, Progress } from 'tamagui';
 import React from 'react';
+import { Text, View } from 'react-native';
 
 import Colors from '~/constants/Colors';
 
-const RatingSummary = ({ reviews }) => {
+function DistributionBar({
+  percentage,
+}: {
+  percentage: number;
+}) {
+  const p = Math.min(100, Math.max(0, percentage));
+  const rest = 100 - p;
+  return (
+    <View style={{ flex: 1, height: 8, flexDirection: 'row', borderRadius: 4, overflow: 'hidden' }}>
+      <View style={{ flex: Math.max(p, 0.001), backgroundColor: Colors.primary }} />
+      <View style={{ flex: Math.max(rest, 0.001), backgroundColor: Colors.border.light }} />
+    </View>
+  );
+}
+
+const RatingSummary = ({ reviews }: { reviews: Array<{ rating: number }> }) => {
   const totalReviews = reviews.length;
   let averageRating = 0;
   if (reviews.length > 0) {
@@ -19,76 +34,71 @@ const RatingSummary = ({ reviews }) => {
     totalReviews > 0 ? (count / totalReviews) * 100 : 0
   );
 
-  // Simple flat stars - no gradients
   const renderStars = (rating: number) => {
     return [...Array(5)].map((_, i) => (
       <Text
         key={i}
-        fontSize={14}
-        color={i < Math.floor(rating) ? Colors.primary : Colors.border.light}>
+        style={{
+          fontSize: 14,
+          color: i < Math.floor(rating) ? Colors.primary : Colors.border.light,
+        }}>
         {i < Math.floor(rating) ? '★' : '☆'}
       </Text>
     ));
   };
 
   return (
-    <YStack gap={16}>
-      <Text fontSize={18} fontWeight="600" color={Colors.text.primary}>
-        Reviews
-      </Text>
+    <View style={{ gap: 16 }}>
+      <Text style={{ fontSize: 18, fontWeight: '600', color: Colors.text.primary }}>Reviews</Text>
 
       {totalReviews > 0 ? (
-        <XStack gap={24} alignItems="flex-start">
-          {/* Left: Average Rating */}
-          <YStack gap={8} alignItems="center" minWidth={100}>
-            <Text fontSize={32} fontWeight="700" color={Colors.primary}>
-              {averageRating}
-            </Text>
-            <XStack gap={4}>{renderStars(averageRating)}</XStack>
-            <Text fontSize={14} color={Colors.text.secondary}>
+        <View style={{ flexDirection: 'row', gap: 24, alignItems: 'flex-start' }}>
+          <View style={{ gap: 8, alignItems: 'center', minWidth: 100 }}>
+            <Text style={{ fontSize: 32, fontWeight: '700', color: Colors.primary }}>{averageRating}</Text>
+            <View style={{ flexDirection: 'row', gap: 4 }}>{renderStars(averageRating)}</View>
+            <Text style={{ fontSize: 14, color: Colors.text.secondary }}>
               {totalReviews} review{totalReviews !== 1 ? 's' : ''}
             </Text>
-          </YStack>
+          </View>
 
-          {/* Right: Rating Distribution */}
-          <YStack gap={8} flex={1}>
+          <View style={{ gap: 8, flex: 1 }}>
             {[5, 4, 3, 2, 1].map((star) => {
               const percentage = ratingPercentages[star - 1];
               const count = ratingDistribution[star - 1];
 
               return (
-                <XStack key={star} gap={8} alignItems="center">
-                  <Text fontSize={12} color={Colors.text.secondary} minWidth={30}>
+                <View key={star} style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+                  <Text style={{ fontSize: 12, color: Colors.text.secondary, minWidth: 30 }}>
                     {star} ⭐
                   </Text>
-                  <Progress value={percentage} flex={1} size="$2">
-                    <Progress.Indicator backgroundColor={Colors.primary} animation="bouncy" />
-                  </Progress>
-                  <Text fontSize={12} color={Colors.text.secondary} minWidth={24}>
+                  <DistributionBar percentage={percentage} />
+                  <Text style={{ fontSize: 12, color: Colors.text.secondary, minWidth: 24 }}>
                     {count}
                   </Text>
-                </XStack>
+                </View>
               );
             })}
-          </YStack>
-        </XStack>
+          </View>
+        </View>
       ) : (
-        <YStack
-          backgroundColor={Colors.background.secondary}
-          borderRadius={12}
-          borderWidth={1}
-          borderColor={Colors.border.light}
-          padding={24}
-          alignItems="center">
-          <Text fontSize={16} fontWeight="600" color={Colors.text.secondary} marginBottom={4}>
+        <View
+          style={{
+            backgroundColor: Colors.background.secondary,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: Colors.border.light,
+            padding: 24,
+            alignItems: 'center',
+          }}>
+          <Text style={{ fontSize: 16, fontWeight: '600', color: Colors.text.secondary, marginBottom: 4 }}>
             No reviews yet
           </Text>
-          <Text fontSize={14} color={Colors.text.secondary} textAlign="center">
+          <Text style={{ fontSize: 14, color: Colors.text.secondary, textAlign: 'center' }}>
             Be the first to review this Minibieb!
           </Text>
-        </YStack>
+        </View>
       )}
-    </YStack>
+    </View>
   );
 };
 

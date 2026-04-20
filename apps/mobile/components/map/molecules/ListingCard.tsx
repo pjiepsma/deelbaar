@@ -1,9 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import { YStack, XStack, Text } from 'tamagui';
 import React from 'react';
-import { Image, Pressable } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 
-import Colors from '~/constants/Colors';
+import { useAppColors } from '~/lib/theme';
 import { useAuth } from '~/lib/providers/AuthProvider';
 import { ListingRecord } from '~/lib/types/models';
 import { getCategoryColor } from '~/lib/utils/categoryHelpers';
@@ -23,11 +22,11 @@ const ListingCard: React.FC<HikeItemProps> = ({
   onAddFavorite,
   onRemoveFavorite,
 }) => {
+  const colors = useAppColors();
   const { user } = useAuth();
 
   console.log('🎴 Rendering card for:', item?.name);
 
-  // Handle Payload media structure
   const latestPicture = item?.picture;
   const uri = latestPicture?.photo?.url || latestPicture?.url || null;
 
@@ -51,28 +50,28 @@ const ListingCard: React.FC<HikeItemProps> = ({
 
   return (
     <Pressable onPress={onPress}>
-      <YStack
-        backgroundColor="white"
-        borderRadius={12}
-        marginHorizontal={8}
-        height={140}
-        overflow="hidden"
-        shadowColor="black"
-        shadowOpacity={0.08}
-        shadowRadius={6}
-        shadowOffset={{ width: 0, height: 1 }}
-        elevationAndroid={2}>
-        <XStack height="100%">
-          {/* Image Section - Left side - Smaller */}
-          <YStack position="relative" width={110} height="100%">
+      <View
+        style={{
+          backgroundColor: colors.background.secondary,
+          borderRadius: 12,
+          marginHorizontal: 8,
+          height: 140,
+          overflow: 'hidden',
+          shadowColor: colors.dark,
+          shadowOpacity: 0.08,
+          shadowRadius: 6,
+          shadowOffset: { width: 0, height: 1 },
+          elevation: 2,
+        }}>
+        <View style={{ flexDirection: 'row', height: '100%' }}>
+          <View style={{ position: 'relative', width: 110, height: '100%' }}>
             <Image
               key={item.id}
-              source={uri ? { uri } : require('assets/images/default-placeholder.png')}
+              source={uri ? { uri } : require('~/assets/images/default-placeholder.png')}
               style={{ width: 110, height: 140 }}
               resizeMode="cover"
             />
 
-            {/* Favorite Button - Smaller */}
             {user && (
               <Pressable
                 onPress={handleFavoritePress}
@@ -98,45 +97,42 @@ const ListingCard: React.FC<HikeItemProps> = ({
                 />
               </Pressable>
             )}
-          </YStack>
+          </View>
 
-          {/* Content Section - Right side - Compact */}
-          <YStack flex={1} padding={10} justifyContent="space-between">
-            {/* Title & Location */}
-            <YStack gap={4}>
-              <Text fontSize={14} fontWeight="600" numberOfLines={2} lineHeight={18}>
+          <View style={{ flex: 1, padding: 10, justifyContent: 'space-between' }}>
+            <View style={{ gap: 4 }}>
+              <Text style={{ fontSize: 14, fontWeight: '600', lineHeight: 18 }} numberOfLines={2}>
                 {item.name}
               </Text>
 
-              <Text fontSize={11} color="#6b7280" numberOfLines={1}>
+              <Text style={{ fontSize: 11, color: colors.text.secondary }} numberOfLines={1}>
                 {item.location?.address || 'Apeldoorn'}
               </Text>
-            </YStack>
+            </View>
 
-            {/* Bottom Info */}
-            <YStack gap={4}>
-              <XStack gap={8} alignItems="center" flexWrap="wrap">
-                <XStack
-                  backgroundColor={getCategoryColor(category)}
-                  paddingHorizontal={8}
-                  paddingVertical={4}
-                  borderRadius={6}>
-                  <Text fontSize={10} color="white">{category}</Text>
-                </XStack>
+            <View style={{ gap: 4 }}>
+              <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <View
+                  style={{
+                    backgroundColor: getCategoryColor(category),
+                    paddingHorizontal: 8,
+                    paddingVertical: 4,
+                    borderRadius: 6,
+                  }}>
+                  <Text style={{ fontSize: 10, color: 'white' }}>{category}</Text>
+                </View>
 
                 {numericRating > 0 && (
-                  <Text fontSize={11} fontWeight="600" color={Colors.primary}>
+                  <Text style={{ fontSize: 11, fontWeight: '600', color: colors.primary }}>
                     {numericRating.toFixed(1)} ⭐
                   </Text>
                 )}
-                <Text fontSize={11} color="#6b7280">
-                  • {distanceInKm}km
-                </Text>
-              </XStack>
-            </YStack>
-          </YStack>
-        </XStack>
-      </YStack>
+                <Text style={{ fontSize: 11, color: colors.text.secondary }}>• {distanceInKm}km</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
     </Pressable>
   );
 };

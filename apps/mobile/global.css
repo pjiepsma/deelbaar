@@ -1,13 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import 'uniwind';
 
+@import 'heroui-native/styles';
 
+@source './node_modules/heroui-native/lib';
 
-
-
-
-
-
-
-
+/*
+ * Light/dark: `@variant light` / `@variant dark` in HeroUI styles + Uniwind.
+ * Theme selection is driven from JS: `Uniwind.setTheme('system' | 'light' | 'dark')` in `app/_layout.tsx`
+ * (`ThemedAppShell`), aligned with `ThemePreferenceProvider`.
+ */
+@theme {
+  --font-normal: 'BricolageGrotesque-Regular';
+  --font-medium: 'BricolageGrotesque-Medium';
+  --font-semibold: 'BricolageGrotesque-SemiBold';
+  --font-bold: 'BricolageGrotesque-Bold';
+}

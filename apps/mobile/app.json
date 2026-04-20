@@ -6,11 +6,11 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FBFBFB"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -48,11 +48,19 @@
       "@rnmapbox/maps",
       [
         "expo-location",
-        { "locationWhenInUsePermission": "Deelbaar needs your location to show nearby minibiebs and share locations." }
+        {
+          "locationWhenInUsePermission": "Deelbaar needs your location to show nearby minibiebs and share locations."
+        }
       ],
       "expo-system-ui",
       "expo-notifications",
-      "expo-image-picker"
+      "expo-image-picker",
+      [
+        "react-native-google-auth",
+        {
+          "googleServicesFile": "./app/google-services.json"
+        }
+      ]
     ]
   }
 }

@@ -170,6 +170,10 @@ export interface User {
    */
   role: 'user' | 'admin';
   /**
+   * Google account subject identifier
+   */
+  googleSub?: string | null;
+  /**
    * Expo push token voor dit account
    */
   pushToken?: string | null;
@@ -271,7 +275,7 @@ export interface Listing {
   id: string;
   name: string;
   description: string;
-  category: 'book' | 'food' | 'hygiene' | 'community' | 'other';
+  category: 'book' | 'food' | 'hygiene' | 'community' | 'farm' | 'other';
   /**
    * Whether this listing is visible to the public or still in draft mode
    */
@@ -707,6 +711,7 @@ export interface UsersSelect<T extends boolean = true> {
   surname?: T;
   avatar?: T;
   role?: T;
+  googleSub?: T;
   pushToken?: T;
   pushTokenUpdatedAt?: T;
   address?:

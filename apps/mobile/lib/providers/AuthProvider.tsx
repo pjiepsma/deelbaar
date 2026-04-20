@@ -4,6 +4,8 @@ import { payloadClient, PayloadUser } from '../api/PayloadClient';
 import { AppConfig } from '../config/AppConfig';
 import { syncManager } from '../storage/SyncManager';
 
+let isGoogleAuthConfigured = false;
+
 export const AuthContext = createContext<{
   user: PayloadUser | null;
   token: string | null;
@@ -11,6 +13,7 @@ export const AuthContext = createContext<{
   signIn: (email: string, password: string) => Promise<{ error?: any }>;
   signUp: (email: string, password: string, additionalData?: any) => Promise<{ error?: any }>;
   startRegistration: (email: string, password: string) => Promise<{ data?: any; error?: any }>;
+  signInWithGoogle: () => Promise<{ error?: any }>;
   signInAnonymously: () => Promise<{ error?: any }>;
   signOut: () => Promise<void>;
 }>({
@@ -20,6 +23,7 @@ export const AuthContext = createContext<{
   signIn: async () => ({}),
   signUp: async () => ({}),
   startRegistration: async () => ({}),
+  signInWithGoogle: async () => ({}),
   signInAnonymously: async () => ({}),
   signOut: async () => {},
 });
@@ -162,6 +166,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      // Dynamic import so missing native GoogleAuth does not crash the whole app at startup
+      // (TurboModule must exist in the dev client — rebuild after adding react-native-google-auth).
+      const { GoogleAuth } = await import('react-native-google-auth');
+
+      if (!isGoogleAuthConfigured) {
+        await GoogleAuth.configure({
+          scopes: ['email', 'profile'],
+        });
+        isGoogleAuthConfigured = true;
+      }
+
+      const response = await GoogleAuth.signIn();
+
+      if (response.type === 'cancelled') {
+        return { error: { message: 'Google login geannuleerd' } };
+      }
+
+      const idToken = response.data?.idToken;
+      if (!idToken) {
+        return { error: { message: 'Geen Google token ontvangen' } };
+      }
+
+      const { data, error } = await payloadClient.loginWithGoogle(idToken);
+      if (error) {
+        return { error };
+      }
+
+      if (!data) {
+        return { error: { message: 'Google login mislukt - geen sessie ontvangen' } };
+      }
+
+      setToken(data.token);
+      setUser(data.user);
+      await syncManager.init();
+
+      return {};
+    } catch (error: any) {
+      console.error('[AuthProvider] Google login exception:', error);
+      const msg = String(error?.message ?? error);
+      if (msg.includes('GoogleAuth') || msg.includes('TurboModuleRegistry')) {
+        return {
+          error: {
+            message:
+              'Google-login vereist een nieuwe native build (expo run:android). Deze installatie mist het GoogleAuth-native onderdeel.',
+          },
+        };
+      }
+      return { error: { message: error?.message || 'Google login mislukt' } };
+    }
+  };
+
   const signOut = async () => {
     try {
       await syncManager.reset();
@@ -187,6 +244,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signIn,
         signUp,
         startRegistration,
+        signInWithGoogle,
         signInAnonymously,
         signOut,
       }}>

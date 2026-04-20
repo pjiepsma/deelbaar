@@ -11,7 +11,13 @@ const payload = await getPayload({ config })
 const KML_FILE_PATH = process.env.KML_FILE_PATH || './data/import.kml'
 const BATCH_SIZE = parseInt(process.env.BATCH_SIZE || '50', 10)
 const DEFAULT_OWNER_EMAIL = process.env.DEFAULT_OWNER_EMAIL || 'info@deelbaar.com'
-const DEFAULT_CATEGORY = (process.env.DEFAULT_CATEGORY || 'other') as 'book' | 'food' | 'hygiene' | 'community' | 'other'
+const DEFAULT_CATEGORY = (process.env.DEFAULT_CATEGORY || 'other') as
+  | 'book'
+  | 'food'
+  | 'hygiene'
+  | 'community'
+  | 'farm'
+  | 'other'
 const DEFAULT_PUBLISH_STATUS = (process.env.DEFAULT_PUBLISH_STATUS || 'draft') as 'draft' | 'live'
 
 export interface ParsedPlacemark {

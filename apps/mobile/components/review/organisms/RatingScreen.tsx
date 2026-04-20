@@ -1,7 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
-import { XStack, YStack, Text } from 'tamagui';
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -36,11 +35,10 @@ const Starstars: React.FC<StarstarsProps> = ({ rating, setRating }) => {
     }
   }, [rating]);
 
-  // Function to handle clicks on stars
   const handleStarPress = (index: number) => {
     const newRating = index + 1;
     if (newRating === rating) {
-      setRating(rating - 1); // Deselect the current star
+      setRating(rating - 1);
       panX.value = withSpring((rating - 1) * (starWidth / MAX_STARS));
     } else {
       setRating(newRating);
@@ -48,24 +46,20 @@ const Starstars: React.FC<StarstarsProps> = ({ rating, setRating }) => {
     }
   };
 
-  // Gesture handler for swiping
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
-      const x = Math.max(0, Math.min(event.translationX, starWidth)); // Constrain swipe to star area
+      const x = Math.max(0, Math.min(event.translationX, starWidth));
       const newstars = Math.ceil((x / starWidth) * MAX_STARS);
-      runOnJS(setStars)(newstars); // Update stars in JS
-      panX.value = x; // Update pan position
+      runOnJS(setStars)(newstars);
+      panX.value = x;
     })
     .onEnd(() => {
-      panX.value = withSpring(stars * (starWidth / MAX_STARS)); // Snap to the nearest star on release
-
-      // Navigate after swipe ends
-      runOnJS(handleNavigate)(); // Call navigation after swipe ends
+      panX.value = withSpring(stars * (starWidth / MAX_STARS));
+      runOnJS(handleNavigate)();
     });
 
   const derivedPanX = useDerivedValue(() => panX.value);
 
-  // Animated style for the highlight area
   const animatedStyle = useAnimatedStyle(() => {
     return {
       width: derivedPanX.value,
@@ -73,11 +67,9 @@ const Starstars: React.FC<StarstarsProps> = ({ rating, setRating }) => {
   });
 
   return (
-    <YStack>
-      {/* GestureDetector for swipe gestures */}
+    <View>
       <GestureDetector gesture={panGesture}>
-        <YStack position="relative" width={STAR_SIZE * MAX_STARS} height={STAR_SIZE}>
-          {/* Highlight bar behind the stars */}
+        <View style={{ position: 'relative', width: STAR_SIZE * MAX_STARS, height: STAR_SIZE }}>
           <Animated.View
             style={[
               {
@@ -90,8 +82,7 @@ const Starstars: React.FC<StarstarsProps> = ({ rating, setRating }) => {
             ]}
           />
 
-          {/* Render Stars */}
-          <XStack gap={8}>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
             {[...Array(MAX_STARS)].map((_, index) => (
               <TouchableOpacity key={index} onPress={() => handleStarPress(index)}>
                 <FontAwesome
@@ -102,16 +93,16 @@ const Starstars: React.FC<StarstarsProps> = ({ rating, setRating }) => {
                 />
               </TouchableOpacity>
             ))}
-          </XStack>
-        </YStack>
+          </View>
+        </View>
       </GestureDetector>
 
       {stars > 0 && (
-        <Text fontSize={14} color="#6B8E23" marginTop={8} fontWeight="600">
+        <Text style={{ fontSize: 14, color: '#6B8E23', marginTop: 8, fontWeight: '600' }}>
           {stars} star{stars !== 1 ? 's' : ''}
         </Text>
       )}
-    </YStack>
+    </View>
   );
 };
 

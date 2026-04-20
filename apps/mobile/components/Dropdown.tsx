@@ -1,140 +1,95 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { FC, ReactElement, useRef, useState } from 'react';
-import { FlatList, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Select } from 'heroui-native/select';
 
-import Colors from '~/constants/Colors';
-import { OptionItem } from '~/constants/Types';
+import type { OptionItem } from '~/constants/Types';
+import { useAppColors } from '~/lib/theme';
 
 interface Props {
   label: string;
   data: OptionItem[];
-  onSelect: (item: { label: string; value: string }) => void;
+  onSelect: (item: OptionItem) => void;
 }
 
-const Dropdown: FC<Props> = ({ label, data, onSelect }) => {
-  const DropdownButton = useRef<TouchableOpacity>();
-  const [visible, setVisible] = useState(false);
+/**
+ * Single-select dropdown — HeroUI Select with popover presentation (floating menu).
+ */
+const Dropdown: React.FC<Props> = ({ label, data, onSelect }) => {
+  const colors = useAppColors();
   const [selected, setSelected] = useState<OptionItem>(data[0]);
-  const [dropdownTop, setDropdownTop] = useState(0);
+  const [open, setOpen] = useState(false);
 
-  const toggleDropdown = (): void => {
-    setVisible(!visible);
-  };
-
-  const onLayout = (): void => {
-    DropdownButton?.current?.measure((x, y, w, h, px, py) => {
-      setDropdownTop(py + h / 3);
-    });
-  };
-
-  const onItemPress = (item): void => {
-    setSelected(item);
-    onSelect(item);
-    setVisible(false);
-  };
-
-  const renderItem = ({ item }): ReactElement<any, any> => (
-    <TouchableOpacity style={styles.item} onPress={() => onItemPress(item)}>
-      <Ionicons name={item.icon} size={24} color={Colors.dark} />
-    </TouchableOpacity>
+  const selectedOption = useMemo(
+    () => ({ value: selected.value, label: selected.value }),
+    [selected.value]
   );
 
-  const renderDropdown = (): ReactElement<any, any> => {
-    return (
-      <Modal visible={visible} transparent animationType="none">
-        <TouchableOpacity style={styles.overlay} onPress={() => setVisible(false)}>
-          <View style={[styles.dropdown, { top: dropdownTop }]}>
-            <FlatList
-              data={data}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
-            />
-          </View>
-        </TouchableOpacity>
-      </Modal>
-    );
+  const handleValueChange = (opt: { value: string; label: string } | undefined) => {
+    if (!opt) return;
+    const item = data.find((d) => d.value === opt.value);
+    if (item) {
+      setSelected(item);
+      onSelect(item);
+    }
   };
 
   return (
-    <TouchableOpacity
-      ref={DropdownButton}
-      style={styles.button}
-      onPress={toggleDropdown}
-      onLayout={onLayout}>
-      {renderDropdown()}
-      <Ionicons name={selected.icon} size={24} color={Colors.dark} />
-      <Ionicons
-        name={visible ? 'chevron-up-outline' : 'chevron-down-outline'}
-        size={24}
-        color={Colors.dark}
-      />
-    </TouchableOpacity>
+    <Select
+      value={selectedOption}
+      onValueChange={handleValueChange}
+      isOpen={open}
+      onOpenChange={setOpen}>
+      <Select.Trigger variant="unstyled" asChild>
+        <Pressable
+          style={[
+            styles.trigger,
+            {
+              backgroundColor: colors.white,
+              ...colors.shadowTokens.md,
+            },
+          ]}>
+          <Ionicons name={selected.icon} size={24} color={colors.text.primary} />
+          <Ionicons
+            name={open ? 'chevron-up-outline' : 'chevron-down-outline'}
+            size={22}
+            color={colors.text.primary}
+          />
+        </Pressable>
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Overlay />
+        <Select.Content presentation="popover" placement="bottom" width={280}>
+          <Select.ListLabel className="text-xs font-semibold text-muted">{label}</Select.ListLabel>
+          {data.map((item) => (
+            <Select.Item key={item.value} value={item.value} label={item.value}>
+              <View style={styles.itemRow}>
+                <Ionicons name={item.icon} size={22} color={colors.text.primary} />
+                <Select.ItemLabel />
+              </View>
+            </Select.Item>
+          ))}
+        </Select.Content>
+      </Select.Portal>
+    </Select>
   );
 };
 
 const styles = StyleSheet.create({
-  button: {
+  trigger: {
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 10,
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 10,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: {
-      width: 1,
-      height: 10,
-    },
-  },
-  buttonText: {
-    flex: 1,
-    textAlign: 'center',
-  },
-  icon: {
-    marginRight: 10,
-  },
-  dropdown: {
-    position: 'absolute',
-    backgroundColor: '#fff',
-    left: 10,
-    width: 200,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: Colors.grey,
-  },
-  overlay: {
-    width: '100%',
-    height: '100%',
-  },
-  item: {
-    paddingHorizontal: 10,
     paddingVertical: 10,
-    borderBottomWidth: 1,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    gap: 8,
   },
-
-  optionItem: {
+  itemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 10,
-    display: 'flex',
-    flexDirection: 'row',
-    backgroundColor: 'white',
-    height: 30,
-    alignItems: 'center',
-  },
-  buttonB: {
-    height: 40,
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    width: 70,
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.grey,
+    flex: 1,
   },
 });
 

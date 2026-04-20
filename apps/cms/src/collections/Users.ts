@@ -218,6 +218,17 @@ export const Users: CollectionConfig = {
       },
     },
     {
+      name: 'googleSub',
+      type: 'text',
+      unique: true,
+      index: true,
+      admin: {
+        description: 'Google account subject identifier',
+        position: 'sidebar',
+        readOnly: true,
+      },
+    },
+    {
       name: 'pushToken',
       type: 'text',
       admin: {

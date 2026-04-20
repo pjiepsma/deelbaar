@@ -1,0 +1,24 @@
+---
+description: HeroUI Native — docs (@Docs, CLI) and Expo mobile wiring in this repo
+globs: apps/mobile/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# HeroUI Native (mobile app)
+
+## Docs for the AI
+
+1. **Local (recommended):** Run from repo root:  
+   `npx heroui-cli@latest agents-md --native --output AGENTS.md`  
+   Docs land in `.heroui-docs/native/` (gitignored); the machine-readable index is in **`AGENTS.md`** at repo root.
+
+2. **Cursor `@Docs`:** Attach **`https://heroui.com/native/llms-full.txt`** in chat for full upstream docs. Shorter index: **`https://heroui.com/native/llms.txt`**.
+
+3. Optional analytics opt-out for the CLI: `HEROUI_ANALYTICS_DISABLED=1`.
+
+## This codebase
+
+- **`apps/mobile/global.css`** — `@import 'tailwindcss'`, `uniwind`, `heroui-native/styles`, `@source` for `heroui-native/lib`.
+- **`apps/mobile/metro.config.js`** — **`withUniwindConfig`** is the outermost Metro wrapper (`cssEntryFile: './global.css'`).
+- **`apps/mobile/app/_layout.tsx`** — **`HeroUINativeProvider`** inside **`GestureHandlerRootView`**; **`ThemedAppShell`** calls **`Uniwind.setTheme('system')`** when preference is system (OS-driven HeroUI tokens), else **`Uniwind.setTheme('light'|'dark')`** — aligned with **`ThemePreferenceProvider`** (RN `StyleSheet` still uses **`resolvedTheme`** / **`useAppColors()`**).
+- Prefer **`heroui-native`** components + Uniwind **`className`** where the library expects it; use **`~/lib/theme`** (`useAppColors`) for RN `StyleSheet` / icons where HeroUI CSS tokens do not apply.

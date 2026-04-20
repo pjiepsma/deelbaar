@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import Mapbox, { Camera, MapView, PointAnnotation } from '@rnmapbox/maps';
 
 import Loader from '~/components/Loader';
 import Colors from '~/constants/Colors';
-import { MAP_STYLE_URL } from '~/constants/Map';
+import { mapStyleUrlForResolvedTheme } from '~/constants/Map';
+import { useThemePreference } from '~/lib/providers/ThemePreferenceProvider';
 import { useNearbyListingsAuto } from '~/lib/hooks/useLocationQueries';
 import { useAuth } from '~/lib/providers/AuthProvider';
 import { useUser } from '~/lib/providers/UserProvider';
@@ -31,6 +32,11 @@ const ListingsMapNew = ({
   listing,
   setRegionBounds,
 }: Props) => {
+  const { resolvedTheme } = useThemePreference();
+  const mapStyleUrl = useMemo(
+    () => mapStyleUrlForResolvedTheme(resolvedTheme),
+    [resolvedTheme],
+  );
   const { setLocation } = useUser();
   const { user } = useAuth();
   const [region, setRegion] = useState<Region | null>(null);
@@ -78,7 +84,7 @@ const ListingsMapNew = ({
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} styleURL={MAP_STYLE_URL}>
+      <MapView style={styles.map} styleURL={mapStyleUrl}>
         <Camera
           ref={cameraRef}
           defaultSettings={{ centerCoordinate: center, zoomLevel: zoom }}

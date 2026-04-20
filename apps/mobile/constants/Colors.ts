@@ -1,130 +1,154 @@
-// Professional palette: Slate + Emerald (Tailwind/shadcn-style)
-// 60-30-10 rule, WCAG AA compliant
+/**
+ * Raw color tokens (light default export + `ColorsDark`).
+ *
+ * **Do not import the default export in UI for theme-aware styling** — use
+ * `useAppColors()` / `useTheme()` from `~/lib/theme` so light/dark follow
+ * Account → Weergave and system preference.
+ */
 
-const primary = '#059669'; // emerald-600
-const primaryLight = '#10b981'; // emerald-500
-const primaryDark = '#047857'; // emerald-700
+/**
+ * Two-tone palette + Bricolage Grotesque (fonts loaded in root layout).
+ * Paper #FBFBFB, ink #3E3131 — inspired by the travel-board reference.
+ */
 
-export default {
-  // Primary Brand Colors
-  primary,
-  primaryLight,
-  primaryDark,
+const paper = '#FBFBFB';
+const paperElevated = '#FFFFFF';
+const ink = '#3E3131';
+const inkDark = '#2A2222';
 
-  // Secondary Colors (supporting structure)
-  secondary: '#f1f5f9', // slate-100
-  secondaryLight: '#f8fafc', // slate-50
-  secondaryDark: '#e2e8f0', // slate-200
+/** Neutral grays for secondary / caption (reference-style, not brown-tinted ink) */
+const gray600 = '#6B6B6B';
+const gray500 = '#8F8F8F';
+const gray400 = '#A3A3A3';
 
-  // Accent Colors
-  accent: '#0d9488', // teal-600
-  accentLight: '#2dd4bf', // teal-400
-  accentDark: '#0f766e', // teal-700
+const colorsLight = {
+  primary: ink,
+  primaryLight: '#5C4F4F',
+  primaryDark: inkDark,
 
-  // Semantic Colors
-  success: '#22C55E',
-  successLight: '#86EFAC',
-  successDark: '#16A34A',
+  secondary: '#F2EFEF',
+  secondaryLight: paperElevated,
+  secondaryDark: '#E5E0E0',
 
-  warning: '#F59E0B',
-  warningLight: '#FED7AA',
-  warningDark: '#D97706',
+  accent: ink,
+  accentLight: '#5C4F4F',
+  accentDark: inkDark,
 
-  error: '#EF4444',
-  errorLight: '#FCA5A5',
-  errorDark: '#DC2626',
+  success: '#3D5A3D',
+  successLight: '#E8F0E8',
+  successDark: '#2F472F',
 
-  info: '#3B82F6',
-  infoLight: '#93C5FD',
-  infoDark: '#1D4ED8',
+  warning: '#8A6A3E',
+  warningLight: '#F5EFE3',
+  warningDark: '#6B522F',
 
-  // Neutral Backgrounds (60% dominant, 30% secondary)
+  error: '#8F3D3D',
+  errorLight: '#F7EAEA',
+  errorDark: '#6F3030',
+
+  info: ink,
+  infoLight: paperElevated,
+  infoDark: inkDark,
+
   background: {
-    primary: '#f8fafc', // slate-50 - main canvas
-    secondary: '#ffffff', // white - cards, inputs
-    tertiary: '#f1f5f9', // slate-100 - search bar, filter panel
-    overlay: 'rgba(0, 0, 0, 0.5)',
-    modal: 'rgba(0, 0, 0, 0.78)',
-    surface: '#ffffff',
-    surfaceDark: '#e2e8f0', // slate-200
+    primary: paper,
+    secondary: paperElevated,
+    tertiary: '#F2EFEF',
+    overlay: 'rgba(62, 49, 49, 0.35)',
+    modal: 'rgba(62, 49, 49, 0.55)',
+    surface: paperElevated,
+    surfaceDark: '#E8E4E4',
   },
 
-  // Text Colors (WCAG AA compliant)
   text: {
-    primary: '#0f172a', // slate-900
-    secondary: '#475569', // slate-600 - 4.5:1 on white
-    tertiary: '#64748b', // slate-500 - muted labels
-    inverse: '#ffffff',
-    accent: primary,
-  },
-
-  // Border Colors
-  border: {
-    light: '#e2e8f0', // slate-200
-    medium: '#cbd5e1', // slate-300
-    dark: '#94a3b8', // slate-400
-    focus: primary,
-  },
-
-  // Legacy support (keeping old names for compatibility)
-  light: '#f8fafc',
-  grey: '#64748b',
-  dark: '#0f172a',
-  white: '#FFFFFF',
-
-  // Gradients for modern UI
-  gradients: {
-    primary: [primaryDark, primaryLight],
-    secondary: ['#0f766e', '#2dd4bf'],
-    accent: [primaryDark, '#2dd4bf'],
-    background: ['#f1f5f9', '#ffffff'],
-  },
-
-  // Shadow system
-  // CSS strings for web; use shadowTokens for React Native
-  shadows: {
-    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-    md: '0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04)',
-    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.06)',
-    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.08)',
+    primary: ink,
+    /** Subheadings, secondary lines */
+    secondary: gray600,
+    /** Helper text, inactive tabs, descriptions */
+    tertiary: gray500,
+    /** Smallest labels / meta (use with smaller font sizes) */
+    caption: gray400,
+    inverse: paper,
+    accent: ink,
   },
 
   /**
-   * React Native shadow tokens (design plan: softer for inputs, stronger for cards).
-   * Spread into style objects: { ...Colors.shadowTokens.sm }
+   * Vector icons (tabs, header, map chrome) — light pastel brown / taupe tints on paper.
    */
+  icon: {
+    /** Selected tab, back button, primary toolbar icons */
+    active: '#7A6B65',
+    /** Unselected tab icons, very soft */
+    inactive: '#C9BCB5',
+    /** Search / secondary glyphs, disabled */
+    muted: '#ADA39D',
+  },
+
+  border: {
+    light: 'rgba(62, 49, 49, 0.12)',
+    medium: 'rgba(62, 49, 49, 0.2)',
+    dark: 'rgba(62, 49, 49, 0.35)',
+    focus: ink,
+  },
+
+  light: paper,
+  grey: gray500,
+  dark: ink,
+  white: paperElevated,
+
+  gradients: {
+    primary: [ink, inkDark] as [string, string],
+    secondary: [paper, paperElevated] as [string, string],
+    accent: [ink, '#4A3D3D'] as [string, string],
+    background: [paper, paperElevated] as [string, string],
+  },
+
+  shadows: {
+    sm: '0 1px 2px 0 rgba(62, 49, 49, 0.06)',
+    md: '0 4px 6px -1px rgba(62, 49, 49, 0.08), 0 2px 4px -1px rgba(62, 49, 49, 0.04)',
+    lg: '0 10px 15px -3px rgba(62, 49, 49, 0.1), 0 4px 6px -2px rgba(62, 49, 49, 0.05)',
+    xl: '0 20px 25px -5px rgba(62, 49, 49, 0.12), 0 10px 10px -5px rgba(62, 49, 49, 0.06)',
+  },
+
   shadowTokens: {
-    sm: {
-      shadowColor: '#0f172a',
+    /** Map listing carousel — border does most of the work; keep lift minimal */
+    mapCard: {
+      shadowColor: ink,
       shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.06,
+      shadowOpacity: 0.05,
+      shadowRadius: 3,
+      elevation: 1,
+    },
+    sm: {
+      shadowColor: ink,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.08,
       shadowRadius: 4,
       elevation: 2,
     },
     md: {
-      shadowColor: '#0f172a',
+      shadowColor: ink,
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.08,
+      shadowOpacity: 0.1,
       shadowRadius: 4,
       elevation: 3,
     },
     lg: {
-      shadowColor: '#0f172a',
+      shadowColor: ink,
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
+      shadowOpacity: 0.12,
       shadowRadius: 8,
       elevation: 4,
     },
     xl: {
-      shadowColor: '#0f172a',
+      shadowColor: ink,
       shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.12,
+      shadowOpacity: 0.14,
       shadowRadius: 12,
       elevation: 6,
     },
   } as const,
 
-  // Border radius system (sm: 8, md: 12, lg: 16, xl: 20)
   radius: {
     none: 0,
     sm: 8,
@@ -135,7 +159,6 @@ export default {
     full: 9999,
   },
 
-  // Spacing system (multiples of 4)
   spacing: {
     xs: 4,
     sm: 8,
@@ -146,3 +169,130 @@ export default {
     '3xl': 64,
   },
 };
+
+/**
+ * Dark surfaces: warm ink; text and chrome stay on-brand (paper-tinted, not pure white).
+ */
+export const ColorsDark = {
+  primary: '#D2C9C6',
+  primaryLight: '#E8E4E4',
+  primaryDark: '#B8AEAA',
+
+  secondary: '#2E2828',
+  secondaryLight: '#363030',
+  secondaryDark: '#242020',
+
+  accent: '#D2C9C6',
+  accentLight: '#E8E4E4',
+  accentDark: '#B8AEAA',
+
+  success: '#8FBC8F',
+  successLight: '#2A3A2A',
+  successDark: '#6FA06F',
+
+  warning: '#D4B896',
+  warningLight: '#3A3228',
+  warningDark: '#B89A6E',
+
+  error: '#D48A8A',
+  errorLight: '#3A2828',
+  errorDark: '#B56565',
+
+  info: '#D2C9C6',
+  infoLight: '#363030',
+  infoDark: '#B8AEAA',
+
+  background: {
+    primary: '#1A1616',
+    secondary: '#242020',
+    tertiary: '#2E2828',
+    overlay: 'rgba(0, 0, 0, 0.45)',
+    modal: 'rgba(0, 0, 0, 0.62)',
+    surface: '#242020',
+    surfaceDark: '#1A1616',
+  },
+
+  text: {
+    primary: '#F5F2F2',
+    secondary: '#A89F9C',
+    tertiary: '#8A807E',
+    caption: '#6B6563',
+    inverse: ink,
+    accent: '#E8E4E4',
+  },
+
+  icon: {
+    active: '#C9BCB5',
+    inactive: '#5C5554',
+    muted: '#6B6563',
+  },
+
+  border: {
+    light: 'rgba(245, 242, 242, 0.1)',
+    medium: 'rgba(245, 242, 242, 0.16)',
+    dark: 'rgba(245, 242, 242, 0.26)',
+    focus: '#D2C9C6',
+  },
+
+  light: '#1A1616',
+  grey: '#8A807E',
+  dark: '#F5F2F2',
+  white: '#242020',
+
+  gradients: {
+    primary: ['#3A3232', '#2A2424'] as [string, string],
+    secondary: ['#1A1616', '#242020'] as [string, string],
+    accent: ['#D2C9C6', '#B8AEAA'] as [string, string],
+    background: ['#1A1616', '#242020'] as [string, string],
+  },
+
+  shadows: {
+    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.35)',
+    md: '0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.28)',
+    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.45), 0 4px 6px -2px rgba(0, 0, 0, 0.32)',
+    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.35)',
+  },
+
+  shadowTokens: {
+    mapCard: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.35,
+      shadowRadius: 3,
+      elevation: 2,
+    },
+    sm: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.38,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    md: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.42,
+      shadowRadius: 4,
+      elevation: 4,
+    },
+    lg: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.45,
+      shadowRadius: 8,
+      elevation: 5,
+    },
+    xl: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.48,
+      shadowRadius: 12,
+      elevation: 7,
+    },
+  } as const,
+
+  radius: colorsLight.radius,
+  spacing: colorsLight.spacing,
+};
+
+export default colorsLight;

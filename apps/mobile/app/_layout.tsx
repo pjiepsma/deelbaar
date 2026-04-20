@@ -1,48 +1,40 @@
 import 'react-native-reanimated';
+import '../global.css';
+import { useLayoutEffect, type ReactNode } from 'react';
 import { Stack } from 'expo-router';
-
-import { QueryProvider } from '~/lib/providers/QueryProvider';
+import { StatusBar } from 'expo-status-bar';
+import { useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { AuthProvider } from '~/lib/providers/AuthProvider';
-import { UserProvider } from '~/lib/providers/UserProvider';
-import { NotificationProvider } from '~/lib/providers/NotificationProvider';
-import { OnboardingProvider } from '~/lib/providers/OnboardingProvider';
-import { useEffect } from 'react';
-import { TamaguiProvider } from 'tamagui';
-import config from '~/tamagui.config';
-import { sqliteManager } from '~/lib/storage/SQLiteManager';
+import { HeroUINativeProvider } from 'heroui-native/provider';
+import { Uniwind } from 'uniwind';
 
-export default function RootLayout() {
-  useEffect(() => {
-    sqliteManager
-      .init()
-      .catch((error) => console.error('[RootLayout] Failed to initialize SQLite', error));
+/** Default Expo + HeroUI Native + Uniwind — nothing else. */
+function Shell({ children }: { children: ReactNode }) {
+  const colorScheme = useColorScheme();
+
+  useLayoutEffect(() => {
+    Uniwind.setTheme('system');
   }, []);
 
   return (
-    <QueryProvider>
-      <TamaguiProvider config={config} defaultTheme="light">
-        <GestureHandlerRootView style={{ flex: 1 }}>
+    <>
+      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+      {children}
+    </>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <HeroUINativeProvider>
+        <Shell>
           <SafeAreaProvider>
-            <AuthProvider>
-              <NotificationProvider>
-                <UserProvider>
-                  <OnboardingProvider>
-                    <Stack screenOptions={{ headerShown: false }}>
-                      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                      <Stack.Screen
-                        name="(modals)"
-                        options={{ presentation: 'modal', headerShown: false }}
-                      />
-                    </Stack>
-                  </OnboardingProvider>
-                </UserProvider>
-              </NotificationProvider>
-            </AuthProvider>
+            <Stack screenOptions={{ headerShown: false }} />
           </SafeAreaProvider>
-        </GestureHandlerRootView>
-      </TamaguiProvider>
-    </QueryProvider>
+        </Shell>
+      </HeroUINativeProvider>
+    </GestureHandlerRootView>
   );
 }

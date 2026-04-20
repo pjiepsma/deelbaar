@@ -18,6 +18,12 @@ export interface PayloadSession {
   exp: number;
 }
 
+type LoginResponse = {
+  token: string;
+  user: PayloadUser;
+  exp: number;
+}
+
 class PayloadAPIClient {
   private baseUrl: string = '';
   private token: string | null = null;
@@ -127,7 +133,7 @@ class PayloadAPIClient {
     console.log('[PayloadClient] Login request to:', `${this.baseUrl}/api/users/login`);
     console.log('[PayloadClient] Login email:', email);
 
-    const { data, error } = await this.request<{ token: string; user: PayloadUser }>(
+    const { data, error } = await this.request<LoginResponse>(
       '/api/users/login',
       {
         method: 'POST',
@@ -144,10 +150,30 @@ class PayloadAPIClient {
 
     if (data) {
       console.log('[PayloadClient] Login successful, storing token');
-      this.token = data.token;
-      this.user = data.user;
-      await AsyncStorage.setItem('auth_token', data.token);
-      await AsyncStorage.setItem('auth_user', JSON.stringify(data.user));
+      await this.persistSession(data);
+    }
+
+    return { data, error: null };
+  }
+
+  async loginWithGoogle(idToken: string) {
+    console.log('[PayloadClient] Google login request to:', `${this.baseUrl}/api/users/google`);
+
+    const { data, error } = await this.request<LoginResponse>('/api/users/google', {
+      method: 'POST',
+      body: JSON.stringify({ idToken }),
+    });
+
+    console.log('[PayloadClient] Google login response - data:', data, 'error:', error);
+
+    if (error) {
+      console.error('[PayloadClient] Google login error:', error);
+      return { data: null, error };
+    }
+
+    if (data) {
+      console.log('[PayloadClient] Google login successful, storing token');
+      await this.persistSession(data);
     }
 
     return { data, error: null };
@@ -778,6 +804,13 @@ class PayloadAPIClient {
 
   getUser() {
     return this.user;
+  }
+
+  private async persistSession(session: LoginResponse) {
+    this.token = session.token;
+    this.user = session.user;
+    await AsyncStorage.setItem('auth_token', session.token);
+    await AsyncStorage.setItem('auth_user', JSON.stringify(session.user));
   }
 
   isAuthenticated() {

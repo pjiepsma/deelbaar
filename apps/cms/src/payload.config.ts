@@ -19,6 +19,7 @@ import { Notifications } from './collections/Notifications'
 import { Mail } from './globals/Mail/mail'
 import { listingsNearby } from './endpoints/listingsNearby'
 import { listingsInBounds } from './endpoints/listingsInBounds'
+import { googleAuthEndpoint } from './endpoints/googleAuth'
 import { listingsImportExport } from './lib/listings-import-export'
 import { geocodeListingsEndpoint } from './endpoints/geocodeListings'
 import { geocodeListings } from './tasks/geocodeListings'
@@ -60,6 +61,7 @@ export default buildConfig({
       method: 'get',
       handler: listingsInBounds,
     },
+    googleAuthEndpoint,
     geocodeListingsEndpoint,
   ],
   sharp,
