@@ -9,6 +9,7 @@ const json = (body: object, init?: ResponseInit): Response => {
 }
 
 type QueryBag = Record<string, string | string[] | undefined>
+type SearchScope = 'city' | 'province' | 'country' | 'world'
 
 const getQueryParam = (req: Parameters<PayloadHandler>[0], key: string): string | null => {
   if (typeof req.url === 'string' && req.url.length > 0) {
@@ -32,6 +33,7 @@ export const listingsNearby: PayloadHandler = async (req) => {
     const longitude = getQueryParam(req, 'longitude')
     const radiusRaw = getQueryParam(req, 'radius') ?? '50000'
     const limitRaw = getQueryParam(req, 'limit') ?? '100'
+    const scopeRaw = getQueryParam(req, 'scope') ?? 'city'
 
     if (!latitude || !longitude) {
       return json(
@@ -46,6 +48,30 @@ export const listingsNearby: PayloadHandler = async (req) => {
     const lon = parseFloat(longitude)
     const maxDistance = parseInt(radiusRaw, 10)
     const maxResults = parseInt(limitRaw, 10)
+    const requestedScope: SearchScope = normalizeScope(scopeRaw)
+    const authUser = req.user as
+      | {
+          id?: string
+          searchAccess?: { province?: boolean; country?: boolean; world?: boolean }
+        }
+      | undefined
+    const isLoggedIn = !!authUser?.id
+    const allowedScope = getAllowedScope(requestedScope, isLoggedIn, authUser?.searchAccess)
+
+    if (requestedScope !== allowedScope) {
+      return json(
+        {
+          error: 'Search scope is locked',
+          code: 'SEARCH_SCOPE_LOCKED',
+          requestedScope,
+          allowedScope,
+          requiresLogin: !isLoggedIn && requestedScope !== 'city',
+        },
+        { status: 403 },
+      )
+    }
+
+    const enforcedRadius = Math.min(maxDistance, radiusForScope(allowedScope))
 
     if (Number.isNaN(lat) || Number.isNaN(lon)) {
       return json(
@@ -60,7 +86,7 @@ export const listingsNearby: PayloadHandler = async (req) => {
       collection: 'listings',
       where: {
         'location.coordinates': {
-          near: [lon, lat, maxDistance],
+          near: [lon, lat, enforcedRadius],
         },
       },
       limit: maxResults,
@@ -92,11 +118,50 @@ export const listingsNearby: PayloadHandler = async (req) => {
       limit: listings.limit,
       page: listings.page,
       totalPages: listings.totalPages,
+      scope: allowedScope,
+      radius: enforcedRadius,
     })
   } catch (error) {
     console.error('Error fetching nearby listings:', error)
     return json({ error: 'Failed to fetch nearby listings' }, { status: 500 })
   }
+}
+
+function normalizeScope(value: string): SearchScope {
+  if (value === 'province' || value === 'country' || value === 'world') return value
+  return 'city'
+}
+
+function radiusForScope(scope: SearchScope): number {
+  switch (scope) {
+    case 'city':
+      return 15000
+    case 'province':
+      return 80000
+    case 'country':
+      return 300000
+    case 'world':
+      return 20000000
+  }
+}
+
+function getAllowedScope(
+  requestedScope: SearchScope,
+  isLoggedIn: boolean,
+  searchAccess?: { province?: boolean; country?: boolean; world?: boolean },
+): SearchScope {
+  if (requestedScope === 'city') return 'city'
+  if (!isLoggedIn) return 'city'
+
+  if (requestedScope === 'province') {
+    return searchAccess?.province ? 'province' : 'city'
+  }
+
+  if (requestedScope === 'country') {
+    return searchAccess?.country ? 'country' : 'city'
+  }
+
+  return searchAccess?.world ? 'world' : 'city'
 }
 
 function calculateDistance(

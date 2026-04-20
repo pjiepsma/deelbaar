@@ -340,5 +340,33 @@ export const Users: CollectionConfig = {
         },
       ],
     },
+    {
+      name: 'searchAccess',
+      type: 'group',
+      admin: {
+        description: 'One-time unlocked search scopes for listings',
+        position: 'sidebar',
+      },
+      fields: [
+        {
+          name: 'province',
+          type: 'checkbox',
+          label: 'Province unlocked',
+          defaultValue: false,
+        },
+        {
+          name: 'country',
+          type: 'checkbox',
+          label: 'Country unlocked',
+          defaultValue: false,
+        },
+        {
+          name: 'world',
+          type: 'checkbox',
+          label: 'World unlocked',
+          defaultValue: false,
+        },
+      ],
+    },
   ],
 }

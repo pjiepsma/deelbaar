@@ -1,0 +1,9 @@
+# Copy to: apps/core/.env
+# Never commit .env — it is gitignored.
+
+# Payload CMS API (dev)
+# Android emulator uses 10.0.2.2 automatically in app code paths where needed.
+EXPO_PUBLIC_PAYLOAD_URL=http://localhost:4000
+
+# Mapbox — required for map rendering
+EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN=pk.eyJ1IjoieW91ci11c2VybmFtZSIsImEiOiJjbG...

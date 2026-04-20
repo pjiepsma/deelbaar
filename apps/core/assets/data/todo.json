@@ -1,0 +1,3540 @@
+[
+  {
+    "name": "Minibieb Ontmoetingstuin Rietmeen",
+    "description": null,
+    "location": "POINT(5.6032712 52.332451799999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "wijk : Drielanden",
+    "location": "POINT(5.5967736 52.3334012)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Ragtime Minibieb",
+    "description": null,
+    "location": "POINT(5.6005632 52.329978399999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Barbabieb",
+    "description": null,
+    "location": "POINT(5.599145699999999 52.3304851)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb ‘t Koningshuisje",
+    "description": null,
+    "location": "POINT(5.5864553 52.323792)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6564977 52.322005999999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "wijk: Frankrijk",
+    "location": "POINT(5.6468209 52.348634999999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.648177899999999 52.3481186)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb bosrestaurant Het Draakje",
+    "description": null,
+    "location": "POINT(5.6885408 52.350591599999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Groevenbieb",
+    "description": null,
+    "location": "POINT(5.6121935 52.2883011)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Suikerbieb",
+    "description": null,
+    "location": "POINT(5.6180337 52.2933826)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kinderzwerfboekenstation Centrum Jeugd en Gezin",
+    "description": null,
+    "location": "POINT(5.6125212 52.2980163)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Alexiahof",
+    "description": null,
+    "location": "POINT(5.621042999999999 52.314426999999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Materra's minibieb",
+    "description": null,
+    "location": "POINT(5.6258228 52.2984953)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6266184 52.2993734)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb aan de Van Beekweg",
+    "description": "(achter de Dorpskamer)",
+    "location": "POINT(5.6288755 52.3001484)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Weggeefkast",
+    "description": "ook boeken; geen school- of studieboeken",
+    "location": "POINT(5.6213017 52.299416699999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Eikenlaan",
+    "description": null,
+    "location": "POINT(5.6253608999999996 52.3021761)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6272898 52.302543)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Bieb van Beek",
+    "description": null,
+    "location": "POINT(5.619314 52.3121386)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6220161 52.313617799999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Welkom",
+    "description": "(binnen in toegankelijke hal)",
+    "location": "POINT(5.6251397999999995 52.292042599999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Rust en Ruimte",
+    "description": null,
+    "location": "POINT(5.6206646000000005 52.306523399999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Nies d’r boeken",
+    "description": null,
+    "location": "POINT(5.6292023 52.3048213)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "LEAF Minibieb",
+    "description": null,
+    "location": "POINT(5.6287633999999995 52.306543899999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6235189 52.307893599999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "wijk: Zeebuurt",
+    "location": "POINT(5.6317472 52.2958659)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Ontmoetingstuin Rietmeen",
+    "description": null,
+    "location": "POINT(5.6032712 52.332451799999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "wijk : Drielanden",
+    "location": "POINT(5.5967736 52.3334012)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Ragtime Minibieb",
+    "description": null,
+    "location": "POINT(5.6005632 52.329978399999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Barbabieb",
+    "description": null,
+    "location": "POINT(5.599145699999999 52.3304851)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb ‘t Koningshuisje",
+    "description": null,
+    "location": "POINT(5.5864553 52.323792)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6564977 52.322005999999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "wijk: Frankrijk",
+    "location": "POINT(5.6468209 52.348634999999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.648177899999999 52.3481186)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb bosrestaurant Het Draakje",
+    "description": null,
+    "location": "POINT(5.6885408 52.350591599999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Groevenbieb",
+    "description": null,
+    "location": "POINT(5.6121935 52.2883011)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Suikerbieb",
+    "description": null,
+    "location": "POINT(5.6180337 52.2933826)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kinderzwerfboekenstation Centrum Jeugd en Gezin",
+    "description": null,
+    "location": "POINT(5.6125212 52.2980163)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Alexiahof",
+    "description": null,
+    "location": "POINT(5.621042999999999 52.314426999999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Materra's minibieb",
+    "description": null,
+    "location": "POINT(5.6258228 52.2984953)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6266184 52.2993734)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb aan de Van Beekweg",
+    "description": "(achter de Dorpskamer)",
+    "location": "POINT(5.6288755 52.3001484)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Weggeefkast",
+    "description": "ook boeken; geen school- of studieboeken",
+    "location": "POINT(5.6213017 52.299416699999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Eikenlaan",
+    "description": null,
+    "location": "POINT(5.6253608999999996 52.3021761)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6272898 52.302543)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Bieb van Beek",
+    "description": null,
+    "location": "POINT(5.619314 52.3121386)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6220161 52.313617799999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Welkom",
+    "description": "(binnen in toegankelijke hal)",
+    "location": "POINT(5.6251397999999995 52.292042599999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Rust en Ruimte",
+    "description": null,
+    "location": "POINT(5.6206646000000005 52.306523399999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Nies d’r boeken",
+    "description": null,
+    "location": "POINT(5.6292023 52.3048213)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "LEAF Minibieb",
+    "description": null,
+    "location": "POINT(5.6287633999999995 52.306543899999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6235189 52.307893599999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "wijk: Zeebuurt",
+    "location": "POINT(5.6317472 52.2958659)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.043219 51.866541)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.0422842 51.8632444)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.0502771 51.8645092)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Jessy & Bobby's minibieb",
+    "description": null,
+    "location": "POINT(4.42717 51.2252478)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.0585228 51.8613416)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9224069 51.8182281)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9252672 51.828531)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.926009199999999 51.8272391)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kinderopvang dol-fijn",
+    "description": null,
+    "location": "POINT(5.9331987 51.827004099999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.909734299999999 51.8345209)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Claudia´s minibieb",
+    "description": null,
+    "location": "POINT(5.934952 51.857714099999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.913497299999999 51.8698428)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Bij Puck",
+    "description": null,
+    "location": "POINT(5.851947099999999 51.789413499999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Sophie's minibieb",
+    "description": null,
+    "location": "POINT(5.8481127 51.7883176)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "HappyStone Bieb",
+    "description": "In een smal doodlopend straatje zijn de Lierdalse Huuskes te vinden tussen Lierdalseweg 2 en 4 in. Er zijn 2 biebjes; 1 voor de kinderzwerfboeken en een bieb voor de volwassenen.",
+    "location": "POINT(5.8550086 51.7772218)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Lierdalse Huuskes",
+    "description": null,
+    "location": "POINT(4.8299292 51.1772223)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Poëzie minibieb",
+    "description": null,
+    "location": "POINT(5.8650834000000005 51.78001810000001)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Hof van de Elst",
+    "description": null,
+    "location": "POINT(5.7223564 51.8114099)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.7239512 51.812229800000004)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb De Boekvink",
+    "description": null,
+    "location": "POINT(5.7065673 51.8127061)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.7238865 51.8159985)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.7084028 51.8132352)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.7110474 51.815947699999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.7138675999999995 51.816109)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kinderzwerfboekstation De Leesstoel",
+    "description": null,
+    "location": "POINT(5.717733099999999 51.816541799999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.7174198 51.81753630000001)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Eefkes kinderbieb de Leesboom",
+    "description": null,
+    "location": "POINT(5.7176488999999995 51.8169494)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Imke’s biebje ‘De Heilige Stoel’",
+    "description": null,
+    "location": "POINT(5.7154568999999995 51.8142359)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(9.412751299999999 50.60420729999999)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Pyramid Design",
+    "description": null,
+    "location": "POINT(5.993727799999999 51.879368799999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Speeltuin Hulhuizen",
+    "description": null,
+    "location": "POINT(5.9923271 51.8798159)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kleine bieb aan de haven",
+    "description": null,
+    "location": "POINT(5.659547900000001 51.962718599999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "‘t Herenzaakje",
+    "description": null,
+    "location": "POINT(5.663805 51.9655862)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Huis van de Wijk de Nude",
+    "description": null,
+    "location": "POINT(5.6517824999999995 51.9625339)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6705995 51.9686337)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6832875 51.967062899999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Boekenruilkist",
+    "description": null,
+    "location": "POINT(5.6897905 51.9674505)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6832993 51.969496199999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6668256999999995 51.9730354)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Startpunt Wageningen",
+    "description": null,
+    "location": "POINT(5.6649816 51.9731862)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Candlekeep Charter #82965",
+    "description": null,
+    "location": "POINT(5.671406 51.973698000000006)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Tarthorst",
+    "description": "Minibieb in winkelcentrum De Tarthorst, in samenwerking met Jumbo",
+    "location": "POINT(5.6629337 51.978584)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kardinaal Alfrinkschool",
+    "description": null,
+    "location": "POINT(5.6615533 51.9792597)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Wageningen Noordwest-Dijkgraaf",
+    "description": null,
+    "location": "POINT(5.654895700000001 51.9814138)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Nessa's minibieb",
+    "description": null,
+    "location": "POINT(5.6520904 51.9835614)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6506396 51.9845532)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6471675 51.983087)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Johan Frisoschool locatie Noord",
+    "description": null,
+    "location": "POINT(5.647873199999999 51.9817732)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6471564 51.9793794)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.646392 51.96958)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Cultura",
+    "description": null,
+    "location": "POINT(5.6674158 52.0461178)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "onderweg-bieb",
+    "description": null,
+    "location": "POINT(5.6804122 52.0450003)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6859630999999995 52.039758199999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6881135 52.0392444999999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "(in het hofje achter huisnummer 77)",
+    "location": "POINT(5.6886953 52.0383768)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6912803 52.0357853)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6944248 52.0346164)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6956794 52.0324737)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6951983 52.0288126)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6939811 52.0252659)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6915249 52.0214294)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.688649 52.0196812)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6858055 52.0195893)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.685123 52.0211135)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6828323 52.0203693)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6798794 52.0214165)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6765381 52.0206955)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Pyramid Design",
+    "description": null,
+    "location": "POINT(5.9937278 51.8793688)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Speeltuin Hulhuizen",
+    "description": null,
+    "location": "POINT(5.9923271 51.8798159)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kleine bieb aan de haven",
+    "description": null,
+    "location": "POINT(5.6595479 51.9627186)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "‘t Herenzaakje",
+    "description": null,
+    "location": "POINT(5.663805 51.9655862)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Huis van de Wijk de Nude",
+    "description": null,
+    "location": "POINT(5.6517825 51.9625339)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6705995 51.9686337)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6832875 51.9670629)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Boekenruilkist",
+    "description": null,
+    "location": "POINT(5.6897905 51.9674505)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6832993 51.9694962)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6668257 51.9730354)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Startpunt Wageningen",
+    "description": null,
+    "location": "POINT(5.6649816 51.9731862)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Candlekeep Charter #82965",
+    "description": null,
+    "location": "POINT(5.671406 51.973698)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Tarthorst",
+    "description": "Minibieb in winkelcentrum De Tarthorst, in samenwerking met Jumbo",
+    "location": "POINT(5.6629337 51.978584)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kardinaal Alfrinkschool",
+    "description": null,
+    "location": "POINT(5.6615533 51.9792597)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Wageningen Noordwest-Dijkgraaf",
+    "description": null,
+    "location": "POINT(5.6548957 51.9814138)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Nessa's minibieb",
+    "description": null,
+    "location": "POINT(5.6520904 51.9835614)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6506396 51.9845532)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6471675 51.983087)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Johan Frisoschool locatie Noord",
+    "description": null,
+    "location": "POINT(5.6478732 51.9817732)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6471564 51.9793794)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.646392 51.96958)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Cultura",
+    "description": null,
+    "location": "POINT(5.6674158 52.0461178)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "onderweg-bieb",
+    "description": null,
+    "location": "POINT(5.6804122 52.0450003)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6859631 52.0397582)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6881135 52.0392445)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "(in het hofje achter huisnummer 77)",
+    "location": "POINT(5.674939 52.033979)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6764295 52.0416463)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6793858 52.0385863)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Bieb van Bunt",
+    "description": null,
+    "location": "POINT(5.672835 52.0244651)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.670012 52.018078)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Huizen",
+    "description": null,
+    "location": "POINT(5.653919 52.090944)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(4.52369 51.26657)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(4.6922841 51.90315)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.5957625 52.0224857)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(4.7004364 52.6700882)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6666326 52.0512626)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.670772 52.037268)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "bij de 3e flat vanaf het gemeentehuis",
+    "location": "POINT(6.4251757 53.1425304)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6771824 52.0484285)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(4.4716245 52.044531)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9552604 50.9175818)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.8578937 50.9720795)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6562387 52.0282763)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6508764 52.0295836)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6561155 52.028715)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Nijverheidplein",
+    "description": null,
+    "location": "POINT(5.6553341 52.0278185)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6624354 52.0251554)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.664098 52.02155)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6657577 52.0268815)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb RVL",
+    "description": null,
+    "location": "POINT(5.6680306 52.0232822)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6666433 52.0240318)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6630769 52.0233487)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6668205 52.0190607)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "hoek Viscoselaan",
+    "location": "POINT(5.6823203 52.0247555)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Kiekeboek",
+    "description": null,
+    "location": "POINT(5.6524689 52.0210447)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6596598 52.0225048)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Buurtkastje van Stichting SoGoed Buurtkastjes en Buurtkoelkasten",
+    "description": null,
+    "location": "POINT(5.6553582 52.019097)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Ruisdaelstraat",
+    "description": null,
+    "location": "POINT(5.6586044 52.0205216)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6411293 52.0205542)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "Blok 1, naast de hoofdgang",
+    "location": "POINT(5.6616344 52.0275728)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6477845 52.0211142)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6431502 52.0251079)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "Bij de 3e flat",
+    "location": "POINT(5.6543904 52.0263705)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "bij de 3e flat vanaf het gemeentehuis",
+    "location": "POINT(5.6554803 52.0271149)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "Minibieb op het vakantiepark",
+    "location": "POINT(5.499373 51.620865)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb, bij cafe",
+    "description": null,
+    "location": "POINT(5.568712 52.37942)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.598495 51.757672)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.503041 51.699708)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.519137 51.719465)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.497225 51.725732)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.637078 51.746256)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.665389 52.057933)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.627575 52.052316)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb, hoek Sibculum",
+    "description": null,
+    "location": "POINT(5.649748 52.060155)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.592247 51.776865)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.632849 51.839106)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.491834 51.706142)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.490264 51.705804)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.498752 51.721912)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.486578 51.751805)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.570154 51.701357)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.660034 51.636639)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.505081 51.692781)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.577439 51.696291)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.639299 51.747388)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.671993 52.039015)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "bij de 3e flat",
+    "location": "POINT(5.672031 52.038176)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb, hoek Otterspoor",
+    "description": null,
+    "location": "POINT(5.666076 52.044334)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.663295 52.054376)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "bij de 3e flat vanaf het gemeentehuis",
+    "location": "POINT(5.672064 52.038724)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "Minibieb op het vakantiepark",
+    "location": "POINT(5.634177 51.753355)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "bij de 3e flat",
+    "location": "POINT(5.619958 51.70697)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "bij de 3e flat vanaf het gemeentehuis",
+    "location": "POINT(5.637576 51.709776)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "hoek W.H. van der Heijdenstraat",
+    "location": "POINT(5.564425 51.695847)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Konings Hoekje",
+    "description": null,
+    "location": "POINT(5.9207269 51.9874975)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Iederal Minibieb",
+    "description": null,
+    "location": "POINT(5.9250577 51.9905352)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9277087 51.9847403)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.936769 51.9877486)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "Oprit voor tuin",
+    "location": "POINT(5.9398287 51.9883826)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9581622 51.9801381)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kinderzwerfboekstation Jongerencentrum De Madser",
+    "description": null,
+    "location": "POINT(5.8964558 51.957383)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Iederal Minibieb",
+    "description": "in de proeftuin aan de groene route Malburgen",
+    "location": "POINT(5.9067703 51.9659775)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Boekenkast Holthuizen",
+    "description": null,
+    "location": "POINT(5.9092842 51.9500005)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Tabula Rasa",
+    "description": null,
+    "location": "POINT(5.8932887 51.9462346)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kinderzwerfboekstation Boerderijcafé De Hooijmaat",
+    "description": null,
+    "location": "POINT(5.9004745 51.9469653)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Alex Zwerfboek Minibieb",
+    "description": null,
+    "location": "POINT(5.9374903 52.0016955)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Onder de lijsterbes",
+    "description": null,
+    "location": "POINT(5.8861939 51.9412977)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Lieveheersbeestje",
+    "description": null,
+    "location": "POINT(4.9078243 52.3759553)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Iederal Minibieb",
+    "description": "staat bij woonzorgcomplex De Zeeg",
+    "location": "POINT(5.8618875 51.9566423)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb van een Creatiep",
+    "description": null,
+    "location": "POINT(5.8629654 51.9584333)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb De Boekgaard",
+    "description": "Shuytgraaf (wijk: Vestingstad) 23-8-2021 gesloten vanwege vandalisme, herstart in oktober",
+    "location": "POINT(5.8699816 51.9667638)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Nossos Livros",
+    "description": null,
+    "location": "POINT(5.8749002 51.9647204)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Wijkcentrum De Laarhof",
+    "description": "Weggeefwinkel; ook veel boeken",
+    "location": "POINT(5.8595129 51.9473863)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Nicole",
+    "description": "achterzijde/tuinkant in Conventstraat",
+    "location": "POINT(5.8490803 51.9459148)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kinderzwerfboekstation Skar - BSO en Peuterwerk Kunstig en zo",
+    "description": "buiten",
+    "location": "POINT(5.8344036 51.9484131)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Straatbieb",
+    "description": "tegenover 46",
+    "location": "POINT(5.9402849 51.9372908)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9294845 51.9262506)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Het Boekenhuis",
+    "description": null,
+    "location": "POINT(5.9350218 51.9404294)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9247339 51.9428448)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.861358 51.9298549)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Wijkcentrum Vleugel",
+    "description": "heeft een kinderboekenkast",
+    "location": "POINT(5.8281467 51.9277373)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.8502644 51.9379927)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "Buitenkant",
+    "location": "POINT(5.8515006 51.9398594)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "Aan de Maas",
+    "location": "POINT(5.8632404 51.9471579)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Zwerfboeken Minibieb",
+    "description": null,
+    "location": "POINT(5.857104 51.946379)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "aan de straatkant, groene bieb",
+    "location": "POINT(5.8676907 51.9491517)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.8676345 51.9436755)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9740899 51.999956499999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9713804 51.9986563)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9709875 51.996354999999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Remedial TeachingPraktijk Velp het Boekenhotel",
+    "description": null,
+    "location": "POINT(5.9707759 51.9980954)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "thv Advocaat Schouwenaar",
+    "location": "POINT(5.9670808 51.997836)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9638146 51.997173499999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9731583 51.995566999999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9786585 51.9961919)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Speelotheek Het Kasteel",
+    "description": null,
+    "location": "POINT(5.979442800000001 51.9969841)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Litlle Free Library Charter #22339",
+    "description": null,
+    "location": "POINT(5.9786288 52.00494)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.2994201 52.2101007)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9761048 51.9942582)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9668963 51.9914552)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.970891 51.9903616)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.969754600000001 51.9913477)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9793887 51.9898201)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.983129099999999 51.992289899999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9834062 51.995785999999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9819032 51.9960422)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.983643 51.9916951)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9793793 52.0016815)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(3.7041210999999996 51.5722401)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb '66b'",
+    "description": null,
+    "location": "POINT(6.0350519 52.005344099999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb De Schatkist",
+    "description": null,
+    "location": "POINT(6.0644221 51.9305294)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.063655499999999 51.9314397)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "(=tevens OBCZ Zuidspoor voor Bookcrossing.com)",
+    "location": "POINT(6.067149199999999 51.9214145)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Lobith",
+    "description": null,
+    "location": "POINT(6.0586281 51.8689991)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb 'Schoenmaker'",
+    "description": null,
+    "location": "POINT(5.9728323 51.9944343)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9706654 51.9960065)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.974227 51.9983781)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.974392 51.9984169)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb 'De Bibliotheek van Pjotr'",
+    "description": null,
+    "location": "POINT(5.9680081 51.9897243)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9678606 51.9884342)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb 'De Fijnste boeken'",
+    "description": null,
+    "location": "POINT(6.0327521 52.0596675)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb 'Klein maar fijn'",
+    "description": null,
+    "location": "POINT(6.0337738 52.0600192)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1365379 52.0147055)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "De Paarse Kast",
+    "description": null,
+    "location": "POINT(6.1436915 52.0124127)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Molenveld",
+    "description": "hoek Van Brakellaan",
+    "location": "POINT(6.1432222 52.0160916)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1338126 52.0031079)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1308872 51.9963684)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "De Kleine Zebra",
+    "description": null,
+    "location": "POINT(6.1376616 51.9965756)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Giesbeek",
+    "description": null,
+    "location": "POINT(6.0664229 51.9963646)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Scouting Doesburg",
+    "description": null,
+    "location": "POINT(6.0749688 51.9963604)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Mini Bibliotheek Onder de bomen",
+    "description": null,
+    "location": "POINT(6.0222469 52.0038369)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Brede school de Kroesenboom",
+    "description": null,
+    "location": "POINT(6.0226755 52.0059976)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.0217345 52.0052022)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Basisschool de Holtbanck",
+    "description": null,
+    "location": "POINT(6.0279685 52.0061938)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Tijdschriftenbieb",
+    "description": null,
+    "location": "POINT(6.0310612 52.0035621)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Dorpshuis",
+    "description": null,
+    "location": "POINT(6.0330491 52.0051954)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.0279594 52.0057368)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.0228721 52.0020096)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.062724 52.0202102)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb aan gevel Sint Willibrorduskerk",
+    "description": null,
+    "location": "POINT(6.1809016 52.0224558)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.2033757 52.0037088)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb aan een boom",
+    "description": null,
+    "location": "POINT(6.2067615 52.0038978)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Boekenuitleen FF naar Steef",
+    "description": null,
+    "location": "POINT(6.234257 52.006148)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.2348735 52.0026838)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "HEMA Doetinchem",
+    "description": "is deze er nog?",
+    "location": "POINT(6.2902708 51.9650578)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Stadstuin Amphionpark",
+    "description": null,
+    "location": "POINT(6.291629 51.968002)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kinderboekenzwerfstation Montessorischool De Pas",
+    "description": null,
+    "location": "POINT(6.2951408 51.9614383)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb de Klaproos",
+    "description": null,
+    "location": "POINT(6.3135776 51.9506795)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Alexander Station Doetinchem",
+    "description": null,
+    "location": "POINT(6.3204126 51.9705843)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Zeddam",
+    "description": null,
+    "location": "POINT(6.306828 51.9517997)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb aan het Hondsrug",
+    "description": null,
+    "location": "POINT(6.3166603 51.9536423)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Lydjes minibieb",
+    "description": null,
+    "location": "POINT(6.761423 51.9390148)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.7599776 51.9277383)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.6844827 51.9440299)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb op landgoed De Zonnebloem",
+    "description": null,
+    "location": "POINT(6.7428483 51.9516375)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.6599782 51.9697205)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb & Kinderzwerfboekstation Corle",
+    "description": null,
+    "location": "POINT(6.6479292 51.9541259)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.663088 51.9756712)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Wilhelminibieb",
+    "description": "tegenover massagepraktijk Culem in Aalten.",
+    "location": "POINT(6.5892907 51.9289325)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "t.o. Kinderboerderij De Ahof",
+    "location": "POINT(6.5874199 51.9245322)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb ijsboerderij 'olde Pietepol",
+    "description": null,
+    "location": "POINT(6.6561911 51.9243008)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.5953295 51.9273183)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.5367806 51.9373512)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.579106 51.9237553)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.5796228 51.9268054)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Suusjes minibiebje",
+    "description": null,
+    "location": "POINT(6.5803326 51.9310733)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Praktijk EFT-Aalten",
+    "description": "niet publiek toegankelijk?",
+    "location": "POINT(6.5482094 51.9245695)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Mini-bieb Schokkin bij zorgboerderij de Neeth",
+    "description": null,
+    "location": "POINT(6.5689232 51.9624545)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb De Neeth",
+    "description": null,
+    "location": "POINT(6.5756828 51.9587925)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Weggeefkast Vilakakelbont",
+    "description": null,
+    "location": "POINT(6.6159874 51.9424049)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.6161453 51.9426632)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Ryan",
+    "description": null,
+    "location": "POINT(6.6167526 51.9420332)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Veelheden Hoe",
+    "description": null,
+    "location": "POINT(6.6171131 51.9425809)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.6168745 51.9435064)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.6210719 51.9459881)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Beethoven",
+    "description": null,
+    "location": "POINT(6.5513627 51.9864088)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Anita's minibieb",
+    "description": null,
+    "location": "POINT(6.5563985 51.9880435)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Aalten",
+    "description": null,
+    "location": "POINT(6.5541753 51.9876404)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.5417813 51.9897333)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.5465178 51.9959244)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb broodjeszaak ‘Kiosk’",
+    "description": null,
+    "location": "POINT(6.1952196 52.1447429)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Bieps Elsje Aan de Oever",
+    "description": null,
+    "location": "POINT(6.2207324999999996 52.1238767)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "(horecacomplex ‘Het Koelhuis’)",
+    "location": "POINT(6.1913135 52.1452944)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  null,
+  {
+    "name": "Minibieb",
+    "description": "(in woonzorgcentrum de Polbeek)",
+    "location": "POINT(6.2080025999999995 52.1514241)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.215410299999999 52.151702799999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb/Little Free Library Zutphen Charter #1384",
+    "description": null,
+    "location": "POINT(6.2199643 52.152357099999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.2206706 52.151857899999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kinderzwerfboekstation AZC-school De Waaier",
+    "description": null,
+    "location": "POINT(6.2241051 52.1511145)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.2146612 52.1477417)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kinderzwerfboekstation wijkcentrum The Lighthouse",
+    "description": null,
+    "location": "POINT(4.3524923 51.9974681)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.2102441 52.1442529)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.209156699999999 52.1406)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.2097009 52.1403216)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "openbaar in flatportiek",
+    "location": "POINT(6.2144542 52.140486499999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "(bij ingang Wijkcentrum Waterkracht)",
+    "location": "POINT(6.2046671 52.133461999999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "herstart 8-10-23",
+    "location": "POINT(6.2022618 52.1331415)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.2066138 52.1338429)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.182870599999999 52.1401812)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1829998999999995 52.1416639)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.180351 52.142626)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.180478099999999 52.1365494)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "(OBS Prins Clausschool, alleen kinderboeken)",
+    "location": "POINT(6.2075971999999995 52.126370599999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.2064482 52.124534100000005)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb kinderboerderij de Schouw",
+    "description": null,
+    "location": "POINT(6.1991098 52.128783299999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1944237 52.1205128)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1920467 52.132481)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1952187 52.1317572)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "(in woonkamer) bij Jan, Dick, Anita, Geke, Anja",
+    "location": "POINT(6.1895149 52.1267762)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.182032899999999 52.1379563)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1875075 52.1372638)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1860913 52.1364943)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.189394999999999 52.1373275)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.186971899999999 52.1364185)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.186591699999999 52.1363026)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1891663 52.1371712)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1828182 52.1368573)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1960443 52.1373275)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1822061 52.1370743)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1830925 52.1373624)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1881163 52.1368047)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Boekenboom/De Boekenbarg",
+    "description": "dit is een dorpsminibieb op een grasveld, een locatie zonder huisnummer",
+    "location": "POINT(6.2585901 52.090588999999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "(Logopedie de Brug, hal eerste verdieping, alleen kinderboeken)",
+    "location": "POINT(6.4082688999999995 52.1639012)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Topi",
+    "description": null,
+    "location": "POINT(6.4198938 52.1601991)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb In den olifant",
+    "description": null,
+    "location": "POINT(6.425377699999999 52.154275899999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Jorina leest",
+    "description": "geopend op 1-1-2024",
+    "location": "POINT(6.4244248 52.1596443)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Berkeloord",
+    "description": "(op het terrein van Voetbalvereniging Klein Dochteren)",
+    "location": "POINT(6.0538587 52.4701689)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.445080700000001 52.149915199999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "(bij de loods naast Rest. de Zonnebloem)",
+    "location": "POINT(6.3819139 52.1466061)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.401180399999999 52.1610235)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kinderzwerfboekstation Prins Hendrikschool",
+    "description": null,
+    "location": "POINT(6.4135765 52.1599321)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.3996967 52.1579397)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.4030787 52.1578303)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.4074542999999995 52.1569991)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "De beheerder van deze minibieb heeft de bieb op een parkeerplaats voor de woning staan",
+    "location": "POINT(6.3975178999999995 52.1585128)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.3985863 52.156898399999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Kinderzwerfboekstation CBS De Rank Lochem",
+    "description": null,
+    "location": "POINT(6.3978090000000005 52.1560728)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Heggerank",
+    "description": null,
+    "location": "POINT(6.3961362 52.152775299999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "Buurtbieb op grasveld in deze straat",
+    "location": "POINT(6.4441935 52.123990299999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Buurtbieb",
+    "description": "(grote buurtbieb op grasveld, dus zonder huisnummer)",
+    "location": "POINT(6.4420604 52.1214866)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Barchemse Buurtbieb",
+    "description": "Camping 't Fleerhof",
+    "location": "POINT(6.424701799999999 52.110959199999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Landjeverweg",
+    "description": null,
+    "location": "POINT(6.364353299999999 52.1921148)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Jeanets Boekenwereld",
+    "description": "jeanetsboekenwereld@gmail.com",
+    "location": "POINT(6.376849099999999 52.179268799999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.328877599999999 52.170009099999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "(camping de Bosrand)",
+    "location": "POINT(6.4208175 52.212474099999994)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Kantankye",
+    "description": null,
+    "location": "POINT(6.3862403 52.1381073)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Blomberg",
+    "description": "bezoek, bij voorkeur telefonisch even afspreken",
+    "location": "POINT(6.3611247 52.1599538)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "de eigenaar woont hier aan de weg",
+    "location": "POINT(6.337580699999999 52.1792801)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Haverkamp",
+    "description": null,
+    "location": "POINT(6.3354336 52.1702977)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Bruin",
+    "description": null,
+    "location": "POINT(6.394020699999999 52.1658819)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Wespelaar",
+    "description": null,
+    "location": "POINT(6.413528499999999 52.1528322)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb T-Box",
+    "description": null,
+    "location": "POINT(6.430865299999999 52.1696722)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.3478405 52.1468695)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.3107007 52.1342452)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "minibieb in het dorp",
+    "location": "POINT(6.3821275 52.1720556)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.397136399999999 52.1376748)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Oosterlaan",
+    "description": null,
+    "location": "POINT(3.4349144 50.8964341)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb de Ratelaar",
+    "description": "juli 2023 niet aangetroffen",
+    "location": "POINT(5.981730799999999 52.2223444)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb ",
+    "description": null,
+    "location": "POINT(5.9759533 52.2203224)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Trekweg",
+    "description": null,
+    "location": "POINT(5.9790456 52.2188981)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Bieb Jumbo winkelcentrum de Mheen",
+    "description": null,
+    "location": "POINT(5.9923342 52.2211827)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Kervelstraat",
+    "description": null,
+    "location": "POINT(5.9958348 52.2188492)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Tomatenlaan",
+    "description": null,
+    "location": "POINT(5.9812905 52.2184842)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "De Parelvisser",
+    "description": null,
+    "location": "POINT(6.0000421 52.220800100000005)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb “die klein boekrak”",
+    "description": null,
+    "location": "POINT(5.9887032 52.2321718)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Boekje erbij?",
+    "description": "(besloten?)",
+    "location": "POINT(5.9885231 52.2290888)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Basisschool de Zevensprong",
+    "description": null,
+    "location": "POINT(5.9912222 52.2264343)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.993722 52.2314551)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Pakkast Apeldoorn",
+    "description": null,
+    "location": "POINT(5.998217599999999 52.2301827)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.0010863 52.226978599999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Terwoldseweg",
+    "description": null,
+    "location": "POINT(6.007541 52.2299593)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb/Weggeefhoek bij het Kristal",
+    "description": null,
+    "location": "POINT(5.995940099999999 52.2361121)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb De Boekenwurm",
+    "description": "(voetpad naar Kanaalpark ter hoogte van speeltuin aan het Schepenenveld)",
+    "location": "POINT(5.9920142 52.236799399999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Poiroos",
+    "description": null,
+    "location": "POINT(6.0049116 52.237066999999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.016098599999999 52.21800220000001)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Little Free Library",
+    "description": null,
+    "location": "POINT(6.0170034 52.221057699999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Zonnehoeve",
+    "description": null,
+    "location": "POINT(6.008595499999999 52.202869799999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Little Free Library De Zomereik",
+    "description": null,
+    "location": "POINT(6.007629 52.2036978)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Yvonne’s minibieb ‘t Zonnetje",
+    "description": null,
+    "location": "POINT(6.0104356 52.218808100000004)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "De Zonnewende",
+    "description": null,
+    "location": "POINT(6.009239099999999 52.217663)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.0155337 52.222073599999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Little Library De Zomereik",
+    "description": null,
+    "location": "POINT(6.0135974 52.2277433)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Het Honingraat",
+    "description": null,
+    "location": "POINT(6.0173949 52.2301115)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Little Free Library Apeldoorn",
+    "description": null,
+    "location": "POINT(6.0243965 52.2291105)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Ugchelen",
+    "description": null,
+    "location": "POINT(5.9509726 52.1862692)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.943925 52.1883793)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  null,
+  {
+    "name": "Minibieb Beemte Broekland",
+    "description": "De Vecht",
+    "location": "POINT(5.9933374 52.2656977)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.0309934 52.2599558)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Partij voor de Dieren (tijdelijk?) Zwolseweg",
+    "description": null,
+    "location": "POINT(5.9522874 52.2553022)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9587473 52.2439213)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Boerderij De Flesse",
+    "description": null,
+    "location": "POINT(5.9735286 52.2689226)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9504072 52.26435)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Partij voor de Dieren (tijdelijk?)",
+    "description": null,
+    "location": "POINT(6.1415503 52.2688358)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.8789999 52.2194533)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb restaurant Landal Miggelenberg",
+    "description": "Langs het klompenpad aan de Achterste Kerkweg",
+    "location": "POINT(5.8975796 52.1302143)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "HeNa’s MINIBIEB Op ’t Veluws Hof",
+    "description": "Je vindt de bieb op de hoek bij de Helmgraslaan (vlakbij de tennisbaan, richting de sportvelden). Initiatiefnemers zijn Henk en zijn schoondochter Nanna",
+    "location": "POINT(5.9219293 52.122478)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Veluwezicht",
+    "description": null,
+    "location": "POINT(5.8743123 52.115642)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Partij voor de Dieren (tijdelijk?)",
+    "description": null,
+    "location": "POINT(5.9926643 52.1554634)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Onze MiniBieb",
+    "description": null,
+    "location": "POINT(5.9696609 52.1652223)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Loenenseweg",
+    "description": null,
+    "location": "POINT(5.9680399 52.1575333)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9842702 52.1660953)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Mini BieB",
+    "description": null,
+    "location": "POINT(5.9915856 52.1613227)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9948525 52.1600808)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.0083767 52.1556714)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.0158003 52.1248644)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb Basisschool de Poort",
+    "description": "alleen kinderboeken",
+    "location": "POINT(6.0212654 52.1226303)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  null,
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.0167217 52.1124663)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "(kringloop ‘De Olde Bakkerije’)",
+    "location": "POINT(6.0679092 52.1691633)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.141907 52.1713521)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1568484 52.1513872)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1692393 52.1314784)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1800078 52.0918775)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1820468 52.0755457)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1948591 52.0799631)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1981356 52.0782878)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1953282 52.0663186)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1934964 52.0744059)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.1630728 52.0553647)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb het Zonnestraaltje",
+    "description": null,
+    "location": "POINT(6.0984731 52.220805999999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6600907 52.0495163)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "(Boeken)ruilrek voor bezoekers Winkelcentrum Zilverkamp",
+    "description": null,
+    "location": "POINT(5.9342586 51.9357323)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6691647 52.021746400000005)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6488471 52.0415827)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9460638 52.210775999999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.4160117 52.1621444)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9283848 52.206430499999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.9552893 52.209536799999995)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "vlakbij Wilpermolen",
+    "location": "POINT(6.117780799999999 52.2132161)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.2675576 51.888261299999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.154043199999999 51.888442)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.200831 52.2271053)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6625692 52.04387)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "Creabieb, omdat er naast boeken ook spelletjes, zelfgemaakte kaarten, knutselspullen, stenen en later in het seizoen ook plantjes worden aangeboden worden. Je kunt hier ruilen, meenemen en doneren. De zelfgemaakte kaarten zijn te koop voor een kleine vergoeding.",
+    "location": "POINT(5.738813599999999 51.9788856)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "De Groene Bieb",
+    "description": null,
+    "location": "POINT(5.6206195999999995 52.2981955)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.615189 52.1372875)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb 4Noppes weggeefwinkel",
+    "description": null,
+    "location": "POINT(6.1028889 52.0539553)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb & Minimuseum",
+    "description": null,
+    "location": "POINT(5.4123677 51.9603021)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.669240299999999 52.0395031)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.593313299999999 52.009824099999996)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Bep’s bieb",
+    "description": null,
+    "location": "POINT(5.516089099999999 52.1632908)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(6.5709789 51.9709819)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "in het buurtschap bij de Bolwerksmolen (tip: minibieb zit aan zijkant van woning)",
+    "location": "POINT(6.1507401999999995 52.2459436)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.7240948 51.9748431)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": null,
+    "location": "POINT(5.6828187 52.0690876)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  },
+  {
+    "name": "Minibieb",
+    "description": "Minibieb aan de Nieuweweg, vlakbij de Dorpsstraat, ook ruilplek voor spellen en knutselspullen.",
+    "location": "POINT(6.2195321999999995 52.2414257)",
+    "owner_id": "ab55810d-1281-4eb3-8b2a-ff8693feac94",
+    "category": "Books"
+  }
+]

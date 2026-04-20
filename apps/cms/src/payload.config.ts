@@ -23,6 +23,7 @@ import { googleAuthEndpoint } from './endpoints/googleAuth'
 import { listingsImportExport } from './lib/listings-import-export'
 import { geocodeListingsEndpoint } from './endpoints/geocodeListings'
 import { geocodeListings } from './tasks/geocodeListings'
+import { unlockSearchScope } from './endpoints/unlockSearchScope'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -60,6 +61,11 @@ export default buildConfig({
       path: '/listings/bounds',
       method: 'get',
       handler: listingsInBounds,
+    },
+    {
+      path: '/search-access/unlock',
+      method: 'post',
+      handler: unlockSearchScope,
     },
     googleAuthEndpoint,
     geocodeListingsEndpoint,
