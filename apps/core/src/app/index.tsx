@@ -1,5 +1,7 @@
 import * as Device from 'expo-device';
 import { Platform, StyleSheet } from 'react-native';
+import { Button } from 'heroui-native/button';
+import { Menu } from 'heroui-native/menu';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnimatedIcon } from '@/components/animated-icon';
@@ -42,6 +44,33 @@ export default function HomeScreen() {
         <ThemedText type="code" style={styles.code}>
           get started
         </ThemedText>
+
+        <Button className="min-w-48" onPress={() => console.log('HeroUI Button pressed')}>
+          First HeroUI Button
+        </Button>
+
+        <Menu>
+          <Menu.Trigger asChild>
+            <Button variant="secondary" className="min-w-48">
+              Open Menu
+            </Button>
+          </Menu.Trigger>
+          <Menu.Portal>
+            <Menu.Overlay />
+            <Menu.Content presentation="popover" width={240}>
+              <Menu.Label>Quick Actions</Menu.Label>
+              <Menu.Item onPress={() => console.log('Profile tapped')}>
+                <Menu.ItemTitle>View Profile</Menu.ItemTitle>
+              </Menu.Item>
+              <Menu.Item onPress={() => console.log('Settings tapped')}>
+                <Menu.ItemTitle>Settings</Menu.ItemTitle>
+              </Menu.Item>
+              <Menu.Item variant="danger" onPress={() => console.log('Delete tapped')}>
+                <Menu.ItemTitle>Delete Project</Menu.ItemTitle>
+              </Menu.Item>
+            </Menu.Content>
+          </Menu.Portal>
+        </Menu>
 
         <ThemedView type="backgroundElement" style={styles.stepContainer}>
           <HintRow
