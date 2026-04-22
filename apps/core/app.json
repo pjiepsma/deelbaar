@@ -26,7 +26,7 @@
         "android.permission.WRITE_EXTERNAL_STORAGE"
       ],
       "predictiveBackGestureEnabled": false,
-      "package": "com.iepsma.core"
+      "package": "com.deelbaar.app"
     },
     "web": {
       "output": "static",
