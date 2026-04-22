@@ -7,7 +7,7 @@
   "scripts": {
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
     "dev": "concurrently -n \"CMS,DB\" -c \"bgBlue.bold,bgMagenta.bold\" \"pnpm:dev:payload\" \"pnpm:dev:db\"",
-    "dev:payload": "cross-env NODE_OPTIONS=--no-deprecation next dev -p 4000",
+    "dev:payload": "cross-env NODE_OPTIONS=--no-deprecation PORT=4000 next dev",
     "dev:db": "node ./bin/memDb.js",
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
@@ -15,6 +15,7 @@
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/seed.ts",
+    "seed:listings": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/seed-listings.ts",
     "data:clean": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/clean-data.ts",
     "import:kml": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/import-kml.ts",
     "geocode:listings": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/geocode-listings.ts",

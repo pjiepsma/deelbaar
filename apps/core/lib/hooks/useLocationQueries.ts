@@ -90,7 +90,14 @@ export function useNearbyListings(
         `/api/listings/nearby?${params.toString()}`
       );
 
-      if (error) throw new Error(error.message);
+      if (error) {
+        if (error.networkError || error.backendUnavailable) {
+          console.warn(
+            '[useNearbyListings] No minibiebs loaded — request never reached CMS (see BACKEND UNAVAILABLE log above). Map stays empty until the API is reachable.'
+          );
+        }
+        throw new Error(error.message || 'Nearby listings request failed');
+      }
 
       return data;
     },

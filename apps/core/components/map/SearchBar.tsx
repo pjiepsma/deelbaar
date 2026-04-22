@@ -1,10 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Button } from 'heroui-native/button';
-import { Input } from 'heroui-native/input';
 import React from 'react';
-import { View } from 'react-native';
-
-import { useAppColors } from '~/lib/theme';
+import { SearchField } from 'heroui-native/search-field';
 
 interface SearchBarProps {
   value: string;
@@ -13,44 +8,25 @@ interface SearchBarProps {
 }
 
 /**
- * Search bar component for filtering listings
+ * Map search — HeroUI SearchField (icon, input, clear) + Uniwind shell.
  */
-export const SearchBar = React.memo<SearchBarProps>(
-  ({ value, onChangeText, placeholder }) => {
-    const colors = useAppColors();
-    return (
-      <View
-        style={[
-          {
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: colors.background.secondary,
-            borderRadius: colors.radius.md,
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-            gap: 8,
-            marginBottom: 8,
-          },
-          colors.shadowTokens.sm,
-        ]}>
-        <Ionicons name="search" size={20} color={colors.icon.muted} />
-        <Input
-          style={{
-            flex: 1,
-            fontSize: 16,
-            color: colors.text.primary,
-            padding: 0,
-          }}
-          value={value}
-          onChangeText={onChangeText}
+export const SearchBar = React.memo(function SearchBar({
+  value,
+  onChangeText,
+  placeholder,
+}: SearchBarProps) {
+  return (
+    <SearchField value={value} onChange={onChangeText} className="mb-2">
+      <SearchField.Group className="flex-row items-center gap-2 rounded-xl border border-border bg-secondary px-4 py-3 shadow-sm">
+        <SearchField.SearchIcon />
+        <SearchField.Input
           placeholder={placeholder || 'Zoek minibiebs, voedselbanken...'}
+          className="min-h-0 flex-1 bg-transparent"
         />
-        {value ? (
-          <Button isIconOnly variant="tertiary" onPress={() => onChangeText('')}>
-            <Ionicons name="close-circle" size={20} color={colors.icon.muted} />
-          </Button>
-        ) : null}
-      </View>
-    );
-  }
-);
+        <SearchField.ClearButton />
+      </SearchField.Group>
+    </SearchField>
+  );
+});
+
+SearchBar.displayName = 'SearchBar';

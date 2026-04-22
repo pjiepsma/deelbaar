@@ -227,6 +227,14 @@ export interface User {
     reviews?: boolean | null;
     favorites?: boolean | null;
   };
+  /**
+   * One-time unlocked search scopes for listings
+   */
+  searchAccess?: {
+    province?: boolean | null;
+    country?: boolean | null;
+    world?: boolean | null;
+  };
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -736,6 +744,13 @@ export interface UsersSelect<T extends boolean = true> {
         statusUpdates?: T;
         reviews?: T;
         favorites?: T;
+      };
+  searchAccess?:
+    | T
+    | {
+        province?: T;
+        country?: T;
+        world?: T;
       };
   updatedAt?: T;
   createdAt?: T;

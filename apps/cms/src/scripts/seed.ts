@@ -2,6 +2,8 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { exit } from 'process'
 
+import { buildApeldoornListingsSeed } from './seed-data/apeldoornListings'
+
 const payload = await getPayload({ config })
 
 async function seed() {
@@ -120,68 +122,10 @@ async function seed() {
       console.log(`  ✅ Created user: ${userData.username}`)
     }
 
-    // Create Listings
+    // Create Listings (Apeldoorn cluster — same data as `pnpm seed:listings`)
     console.log('📦 Creating listings...')
 
-    const listingsData = [
-      {
-        name: 'Little Free Library - Main Street',
-        description:
-          'A charming little library box filled with books for all ages. Take a book, leave a book!',
-        owner: users[0].id,
-        location: {
-          address: '123 Main Street, Amsterdam, Netherlands',
-          coordinates: [4.9041, 52.3676],
-        },
-        category: 'book',
-        tags: [{ tag: 'books' }, { tag: 'community' }, { tag: 'free' }],
-      },
-      {
-        name: 'Community Tool Library',
-        description: 'Borrow tools for your DIY projects! Drills, saws, hammers, and more.',
-        owner: users[1].id,
-        location: {
-          address: '456 Oak Avenue, Rotterdam, Netherlands',
-          coordinates: [4.4792, 51.9225],
-        },
-        category: 'community',
-        tags: [{ tag: 'tools' }, { tag: 'diy' }, { tag: 'community' }],
-      },
-      {
-        name: 'Toy Sharing Station',
-        description:
-          'Share toys with neighborhood kids! Puzzles, games, and outdoor toys available.',
-        pendingOwner: users[4].id,
-        location: {
-          address: '789 Park Lane, Utrecht, Netherlands',
-          coordinates: [5.1214, 52.0907],
-        },
-        category: 'community',
-        tags: [{ tag: 'toys' }, { tag: 'kids' }, { tag: 'games' }],
-      },
-      {
-        name: 'Seed Library',
-        description:
-          'Share seeds for your garden! Take some seeds, plant them, and return seeds from your harvest.',
-        location: {
-          address: '321 Garden Road, Den Haag, Netherlands',
-          coordinates: [4.3007, 52.0705],
-        },
-        category: 'food',
-        tags: [{ tag: 'seeds' }, { tag: 'garden' }, { tag: 'plants' }],
-      },
-      {
-        name: 'Board Game Exchange',
-        description: 'Love board games? Borrow games or swap yours! Over 50 games available.',
-        owner: users[2].id,
-        location: {
-          address: '654 Elm Street, Eindhoven, Netherlands',
-          coordinates: [5.4697, 51.4416],
-        },
-        category: 'other',
-        tags: [{ tag: 'board-games' }, { tag: 'entertainment' }, { tag: 'social' }],
-      },
-    ]
+    const listingsData = buildApeldoornListingsSeed([adminUser.id, ...users.map((u) => u.id)])
 
     const listings = []
     for (const listingData of listingsData) {

@@ -4,7 +4,7 @@ import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { getSelectedEmailAdapter } from './lib/email-adapters/selectEmailAdapter'
 import path from 'path'
-import { buildConfig } from 'payload'
+import { buildConfig, type PayloadHandler } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
@@ -55,12 +55,12 @@ export default buildConfig({
     {
       path: '/listings/nearby',
       method: 'get',
-      handler: listingsNearby,
+      handler: listingsNearby as PayloadHandler,
     },
     {
       path: '/listings/bounds',
       method: 'get',
-      handler: listingsInBounds,
+      handler: listingsInBounds as PayloadHandler,
     },
     {
       path: '/search-access/unlock',

@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from 'heroui-native/button';
+import { Card } from 'heroui-native/card';
 import { Input } from 'heroui-native/input';
-import {
-  ActivityIndicator,
-  Alert,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Spinner } from 'heroui-native/spinner';
+import { Alert, Text, View } from 'react-native';
 
 import { payloadClient } from '~/lib/api/PayloadClient';
 import { useAuth } from '~/lib/providers/AuthProvider';
@@ -81,78 +77,48 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.container}>
-      {loading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#fff" />
-          <Text style={styles.loadingText}>Loading...</Text>
+    <View className="flex-1 justify-center bg-background px-5">
+      {loading ? (
+        <View className="absolute inset-0 z-10 items-center justify-center gap-3 bg-black/50">
+          <Spinner size="lg" color="default" />
+          <Text className="text-lg text-white">Loading…</Text>
         </View>
-      )}
+      ) : null}
 
-      <Text style={styles.header}>Deelbaar Login</Text>
+      <Text className="mb-8 text-center text-3xl font-bold text-foreground">Deelbaar Login</Text>
 
-      <Input
-        autoCapitalize="none"
-        placeholder="john@doe.com"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.inputField}
-      />
-      <Input
-        placeholder="password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.inputField}
-      />
+      <Card className="mb-4">
+        <Card.Body className="gap-3">
+          <Input
+            autoCapitalize="none"
+            keyboardType="email-address"
+            placeholder="john@doe.com"
+            value={email}
+            onChangeText={setEmail}
+            className="w-full"
+          />
+          <Input
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            className="w-full"
+          />
+        </Card.Body>
+      </Card>
 
-      <Button onPress={onSignInPress} className="mt-4">
-        Sign in
-      </Button>
-      <Button variant="secondary" onPress={onAnonymouslyPress} className="mt-3">
-        Anonymously
-      </Button>
-      <Button variant="outline" onPress={onSignUpPress} className="mt-3">
-        Create Account
-      </Button>
-      <Button variant="tertiary" onPress={onSignOutPress} className="mt-3">
-        Sign out
-      </Button>
+      <View className="gap-3">
+        <Button onPress={onSignInPress}>Sign in</Button>
+        <Button variant="secondary" onPress={onAnonymouslyPress}>
+          Anonymously
+        </Button>
+        <Button variant="outline" onPress={onSignUpPress}>
+          Create Account
+        </Button>
+        <Button variant="tertiary" onPress={onSignOutPress}>
+          Sign out
+        </Button>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 200,
-    padding: 20,
-    backgroundColor: '#151515',
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1,
-    elevation: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    gap: 10,
-  },
-  loadingText: { color: '#fff', fontSize: 20 },
-  header: {
-    fontSize: 30,
-    textAlign: 'center',
-    margin: 50,
-    color: '#fff',
-  },
-  inputField: {
-    marginVertical: 4,
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#A700FF',
-    borderRadius: 4,
-    padding: 10,
-    color: '#fff',
-    backgroundColor: '#363636',
-  },
-});

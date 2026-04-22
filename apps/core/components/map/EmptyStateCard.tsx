@@ -1,51 +1,39 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Card } from 'heroui-native/card';
 import React from 'react';
 import { Text, View } from 'react-native';
 
+import { CARD_HEIGHT, CARD_SPACING, CARD_WIDTH } from '~/lib/constants/listings';
 import { useAppColors } from '~/lib/theme';
-import { CARD_WIDTH, CARD_HEIGHT, CARD_SPACING } from '~/lib/constants/listings';
 
 interface EmptyStateCardProps {
   hasActiveFilters: boolean;
 }
 
 /**
- * Empty state card displayed when no listings are found
+ * Empty state in listing carousel — HeroUI Card + fixed carousel dimensions.
  */
-export const EmptyStateCard = React.memo<EmptyStateCardProps>(
-  ({ hasActiveFilters }) => {
-    const colors = useAppColors();
-    return (
-      <View
-        style={{
-          width: CARD_WIDTH,
-          height: CARD_HEIGHT,
-          borderRadius: colors.radius.md,
-          backgroundColor: colors.background.secondary,
-          overflow: 'hidden',
-          borderWidth: 1,
-          borderColor: colors.border.light,
-          marginRight: CARD_SPACING,
-          justifyContent: 'center',
-          alignItems: 'center',
-          ...colors.shadowTokens.mapCard,
-        }}>
-        <View style={{ alignItems: 'center', justifyContent: 'center', gap: 12, padding: 20 }}>
+export const EmptyStateCard = React.memo(function EmptyStateCard({ hasActiveFilters }: EmptyStateCardProps) {
+  const colors = useAppColors();
+  return (
+    <Card
+      className="justify-center overflow-hidden shadow-sm"
+      style={{
+        width: CARD_WIDTH,
+        height: CARD_HEIGHT,
+        marginRight: CARD_SPACING,
+      }}>
+      <Card.Body className="flex-1 items-center justify-center gap-3 px-5 py-5">
+        <View className="items-center justify-center gap-3">
           <Ionicons name="search-outline" size={32} color={colors.primary} />
-          <Text style={{ fontSize: 18, fontWeight: '600', color: colors.text.primary, textAlign: 'center' }}>
-            Geen kasten gevonden
-          </Text>
-          <Text
-            style={{
-              fontSize: 14,
-              color: colors.text.secondary,
-              textAlign: 'center',
-              lineHeight: 20,
-            }}>
+          <Text className="text-center text-lg font-semibold text-foreground">Geen kasten gevonden</Text>
+          <Text className="text-center text-sm leading-5 text-muted">
             {hasActiveFilters ? 'Probeer andere filters of zoom uit' : 'Zoom uit of verplaats de kaart'}
           </Text>
         </View>
-      </View>
-    );
-  }
-);
+      </Card.Body>
+    </Card>
+  );
+});
+
+EmptyStateCard.displayName = 'EmptyStateCard';

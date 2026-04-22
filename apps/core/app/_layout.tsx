@@ -14,9 +14,11 @@ import { LocalePreferenceProvider } from '~/lib/providers/LocalePreferenceProvid
 import { NotificationProvider } from '~/lib/providers/NotificationProvider';
 import { OnboardingProvider } from '~/lib/providers/OnboardingProvider';
 import { QueryProvider } from '~/lib/providers/QueryProvider';
-import { ThemePreferenceProvider } from '~/lib/providers/ThemePreferenceProvider';
+import {
+  ThemePreferenceProvider,
+  useThemePreference,
+} from '~/lib/providers/ThemePreferenceProvider';
 import { UserProvider } from '~/lib/providers/UserProvider';
-import { useThemePreference } from '~/lib/providers/ThemePreferenceProvider';
 
 /** Default Expo + HeroUI Native + Uniwind — nothing else. */
 function Shell({ children }: { children: ReactNode }) {
@@ -37,7 +39,7 @@ function Shell({ children }: { children: ReactNode }) {
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <HeroUINativeProvider>
+      <HeroUINativeProvider config={{ devInfo: { stylingPrinciples: false } }}>
         <ThemePreferenceProvider>
           <Shell>
             <QueryProvider>

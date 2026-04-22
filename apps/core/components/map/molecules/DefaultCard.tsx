@@ -1,82 +1,33 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button } from 'heroui-native/button';
+import { Card } from 'heroui-native/card';
+import React from 'react';
+import { Text, View } from 'react-native';
 
-import type { AppColorPalette } from '~/lib/theme/types';
-import { useAppColors } from '~/lib/theme';
-
-interface HikeItemProps {
+interface DefaultCardProps {
   onPress: () => void;
   subtleMessage?: string | null;
 }
 
-function createStyles(colors: AppColorPalette) {
-  return StyleSheet.create({
-    card: {
-      height: 170,
-      backgroundColor: colors.background.secondary,
-      borderRadius: 10,
-      padding: 10,
-      marginHorizontal: 25,
-      borderWidth: StyleSheet.hairlineWidth,
-      borderColor: colors.border.light,
-      shadowColor: colors.dark,
-      shadowOpacity: 0.1,
-      shadowOffset: { width: 0, height: 2 },
-      shadowRadius: 10,
-      elevation: 3,
-    },
-    textContainer: {
-      flex: 1,
-    },
-    title: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: colors.text.primary,
-    },
-    subtitle: {
-      color: colors.text.secondary,
-      fontSize: 14,
-    },
-    subtle: {
-      marginTop: 8,
-      color: colors.text.tertiary,
-      fontSize: 12,
-      lineHeight: 16,
-    },
-    button: {
-      width: 150,
-      alignItems: 'center',
-      borderColor: colors.border.medium,
-      padding: 12,
-      borderWidth: 1,
-      borderRadius: 8,
-      justifyContent: 'center',
-      backgroundColor: colors.background.secondary,
-    },
-    buttonText: {
-      color: colors.dark,
-      fontWeight: 'bold',
-      fontSize: 14,
-    },
-  });
-}
-
-const ListingCard: React.FC<HikeItemProps> = ({ onPress, subtleMessage }) => {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
-
+/**
+ * Empty-area listing card — HeroUI Card + Button.
+ */
+const DefaultCard = React.memo(function DefaultCard({ onPress, subtleMessage }: DefaultCardProps) {
   return (
-    <View style={styles.card}>
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>Helaas, geen minibiebs in dit gebied.</Text>
-        <Text style={styles.subtitle}>Probeer een andere locatie</Text>
-        {subtleMessage ? <Text style={styles.subtle}>{subtleMessage}</Text> : null}
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Expand search</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    <Card className="mx-6 border border-border shadow-md" style={{ height: 170 }}>
+      <Card.Body className="flex-1 justify-between gap-2 p-2.5">
+        <View className="flex-1 gap-1">
+          <Text className="text-xl font-bold text-foreground">Helaas, geen minibiebs in dit gebied.</Text>
+          <Text className="text-sm text-muted">Probeer een andere locatie</Text>
+          {subtleMessage ? <Text className="mt-2 text-xs leading-4 text-muted">{subtleMessage}</Text> : null}
+        </View>
+        <Button variant="secondary" className="w-[150px] self-start" onPress={onPress}>
+          Expand search
+        </Button>
+      </Card.Body>
+    </Card>
   );
-};
+});
 
-export default ListingCard;
+DefaultCard.displayName = 'DefaultCard';
+
+export default DefaultCard;

@@ -4,6 +4,13 @@ Primary Expo app: **`apps/core`** (`@deelbaar/core`). Legacy **`apps/mobile`** m
 
 Use this list when implementing or reviewing; tick items in your tracker of choice.
 
+## HeroUI rewrite progress
+
+- **Batch 1 (done):** Root **`HeroUINativeProvider`** `config.devInfo.stylingPrinciples: false` (quieter logs); merged duplicate **`ThemePreferenceProvider`** imports in **`app/_layout.tsx`**. **`app/login.tsx`** — `Card`, `Spinner`, Uniwind layout classes, HeroUI **`Input`** / **`Button`**. **`app/(tabs)/account.tsx`** — **`Card`** (Header / Body / Title / Description), **`Chip`** (role, `color="default"` to avoid bad accent token), **`Separator`**, Uniwind text utilities; **`useMemo`** deps include **`t`**.
+- **Batch 2 (done):** Map shell chrome — **`SearchBar`**: **`SearchField`** + **`SearchIcon`** / **`Input`** / **`ClearButton`**, Uniwind group. **`MapCategoryFilter`**: **`Surface`** trigger + Uniwind / popover header; **`displayName`**. **`EmptyStateCard`**: **`Card`** + **`Card.Body`**, Uniwind typography; **`displayName`**.
+- **Batch 3 (done):** **`global.css` `@theme`** — **`--color-accent`** + **`--color-accent-foreground`** to satisfy Uniwind / HeroUI accent utilities (reduces **`accent-accent`** warning). **`molecules/ListingCard`**: **`Card`** shell, **`Button`** (icon-only) for favorites, **`Chip`** for category pill, Uniwind text utilities; removed debug **`console.log`**. **`molecules/DefaultCard`**: **`Card`** + **`Card.Body`**, **`Button`** for CTA; **`displayName`**.
+- **Next batches:** **`ListingsMapNew`** overlays / chrome, modals, domain screens (reviews, products, books).
+
 ## Routing and shell
 
 - [ ] Root layout: providers (Query, Auth, User, Locale, Onboarding, Notification, Theme), HeroUI + Uniwind, Safe Area, Stack.

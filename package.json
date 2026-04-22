@@ -9,15 +9,13 @@
     "dev": "pnpm copy:payload-types && concurrently -n \"CMS,CORE\" -c \"bgBlue.bold,bgMagenta.bold\" \"pnpm dev:cms\" \"pnpm dev:core\"",
     "dev:core": "pnpm --filter @deelbaar/core dev",
     "dev:cms": "pnpm --filter @deelbaar/cms dev",
-    "dev:mobile": "pnpm --filter @deelbaar/mobile dev",
     "prebuild": "pnpm --filter @deelbaar/core prebuild",
-    "prebuild:mobile": "pnpm --filter @deelbaar/mobile prebuild",
     "eas": "pnpm --filter @deelbaar/core eas",
-    "eas:mobile": "pnpm --filter @deelbaar/mobile eas",
+    "kill:dev-ports": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/kill-dev-ports.ps1",
+    "seed:listings": "pnpm --filter @deelbaar/cms seed:listings",
     "copy:payload-types": "node scripts/sync-payload-types.cjs",
     "lint": "pnpm --filter @deelbaar/core lint",
-    "format": "pnpm --filter @deelbaar/core format",
-    "start:mobile": "pnpm --filter @deelbaar/mobile start"
+    "format": "pnpm --filter @deelbaar/core format"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

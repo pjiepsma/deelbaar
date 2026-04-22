@@ -1,4 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Button } from 'heroui-native/button';
+import { Card } from 'heroui-native/card';
+import { Chip } from 'heroui-native/chip';
 import React from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 
@@ -7,7 +10,7 @@ import { useAuth } from '~/lib/providers/AuthProvider';
 import { ListingRecord } from '~/lib/types/models';
 import { getCategoryColor } from '~/lib/utils/categoryHelpers';
 
-interface HikeItemProps {
+interface ListingCardProps {
   item: ListingRecord;
   category: string;
   onPress: () => void;
@@ -15,17 +18,15 @@ interface HikeItemProps {
   onRemoveFavorite: (id: string) => void;
 }
 
-const ListingCard: React.FC<HikeItemProps> = ({
+const ListingCard = React.memo(function ListingCard({
   item,
   category,
   onPress,
   onAddFavorite,
   onRemoveFavorite,
-}) => {
+}: ListingCardProps) {
   const colors = useAppColors();
   const { user } = useAuth();
-
-  console.log('🎴 Rendering card for:', item?.name);
 
   const latestPicture = item?.picture;
   const uri = latestPicture?.photo?.url || latestPicture?.url || null;
@@ -35,106 +36,90 @@ const ListingCard: React.FC<HikeItemProps> = ({
   const isFavorite = item?.favorite;
 
   if (!item) {
-    console.log('🎴 No item data!');
     return null;
   }
 
-  const handleFavoritePress = (e: any) => {
-    e.stopPropagation();
-    if (isFavorite) {
-      onRemoveFavorite(item.id);
-    } else {
-      onAddFavorite(item.id);
-    }
-  };
+  const categoryColor = getCategoryColor(category);
 
   return (
     <Pressable onPress={onPress}>
-      <View
+      <Card
+        className="mx-2 overflow-hidden shadow-sm"
         style={{
-          backgroundColor: colors.background.secondary,
-          borderRadius: 12,
-          marginHorizontal: 8,
           height: 140,
-          overflow: 'hidden',
           shadowColor: colors.dark,
           shadowOpacity: 0.08,
           shadowRadius: 6,
           shadowOffset: { width: 0, height: 1 },
           elevation: 2,
         }}>
-        <View style={{ flexDirection: 'row', height: '100%' }}>
-          <View style={{ position: 'relative', width: 110, height: '100%' }}>
+        <View className="h-full flex-row">
+          <View className="relative h-full w-[110px]">
             <Image
               key={item.id}
               source={uri ? { uri } : require('~/assets/images/default-placeholder.png')}
-              style={{ width: 110, height: 140 }}
+              className="h-[140px] w-[110px]"
               resizeMode="cover"
             />
 
-            {user && (
-              <Pressable
-                onPress={handleFavoritePress}
-                style={{
-                  position: 'absolute',
-                  top: 6,
-                  right: 6,
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                  borderRadius: 16,
-                  width: 28,
-                  height: 28,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  shadowColor: '#000',
-                  shadowOpacity: 0.15,
-                  shadowRadius: 3,
-                  elevation: 2,
-                }}>
-                <Ionicons
-                  name={isFavorite ? 'heart' : 'heart-outline'}
-                  size={16}
-                  color={isFavorite ? '#FF385C' : '#222'}
-                />
-              </Pressable>
-            )}
+            {user ? (
+              <View className="absolute right-1.5 top-1.5">
+                <Button
+                  isIconOnly
+                  size="sm"
+                  variant="secondary"
+                  className="h-7 w-7 rounded-2xl bg-white/95 shadow-sm"
+                  onPress={() => {
+                    if (isFavorite) onRemoveFavorite(item.id);
+                    else onAddFavorite(item.id);
+                  }}>
+                  <Ionicons
+                    name={isFavorite ? 'heart' : 'heart-outline'}
+                    size={16}
+                    color={isFavorite ? '#FF385C' : '#222'}
+                  />
+                </Button>
+              </View>
+            ) : null}
           </View>
 
-          <View style={{ flex: 1, padding: 10, justifyContent: 'space-between' }}>
-            <View style={{ gap: 4 }}>
-              <Text style={{ fontSize: 14, fontWeight: '600', lineHeight: 18 }} numberOfLines={2}>
+          <View className="flex-1 justify-between p-2.5">
+            <View className="gap-1">
+              <Text className="text-sm font-semibold leading-[18px] text-foreground" numberOfLines={2}>
                 {item.name}
               </Text>
 
-              <Text style={{ fontSize: 11, color: colors.text.secondary }} numberOfLines={1}>
+              <Text className="text-[11px] text-muted" numberOfLines={1}>
                 {item.location?.address || 'Apeldoorn'}
               </Text>
             </View>
 
-            <View style={{ gap: 4 }}>
-              <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                <View
-                  style={{
-                    backgroundColor: getCategoryColor(category),
-                    paddingHorizontal: 8,
-                    paddingVertical: 4,
-                    borderRadius: 6,
-                  }}>
-                  <Text style={{ fontSize: 10, color: 'white' }}>{category}</Text>
-                </View>
+            <View className="gap-1">
+              <View className="flex-row flex-wrap items-center gap-2">
+                <Chip
+                  color="default"
+                  size="sm"
+                  variant="soft"
+                  className="px-2 py-1"
+                  style={{ backgroundColor: categoryColor }}>
+                  <Text className="text-[10px] font-medium text-white">{category}</Text>
+                </Chip>
 
-                {numericRating > 0 && (
-                  <Text style={{ fontSize: 11, fontWeight: '600', color: colors.primary }}>
+                {numericRating > 0 ? (
+                  <Text className="text-[11px] font-semibold" style={{ color: colors.primary }}>
                     {numericRating.toFixed(1)} ⭐
                   </Text>
-                )}
-                <Text style={{ fontSize: 11, color: colors.text.secondary }}>• {distanceInKm}km</Text>
+                ) : null}
+                <Text className="text-[11px] text-muted">• {distanceInKm}km</Text>
               </View>
             </View>
           </View>
         </View>
-      </View>
+      </Card>
     </Pressable>
   );
-};
+});
+
+ListingCard.displayName = 'ListingCard';
 
 export default ListingCard;

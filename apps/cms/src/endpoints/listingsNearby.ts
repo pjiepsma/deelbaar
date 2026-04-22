@@ -1,4 +1,4 @@
-import type { PayloadHandler } from 'payload'
+import { resolvePayload, type AppRouteRequest } from './resolvePayloadFromRequest'
 
 const json = (body: object, init?: ResponseInit): Response => {
   const headers = new Headers(init?.headers)
@@ -11,7 +11,7 @@ const json = (body: object, init?: ResponseInit): Response => {
 type QueryBag = Record<string, string | string[] | undefined>
 type SearchScope = 'city' | 'province' | 'country' | 'world'
 
-const getQueryParam = (req: Parameters<PayloadHandler>[0], key: string): string | null => {
+const getQueryParam = (req: AppRouteRequest, key: string): string | null => {
   if (typeof req.url === 'string' && req.url.length > 0) {
     try {
       const fromUrl = new URL(req.url).searchParams.get(key)
@@ -27,7 +27,7 @@ const getQueryParam = (req: Parameters<PayloadHandler>[0], key: string): string 
   return typeof v === 'string' ? v : null
 }
 
-export const listingsNearby: PayloadHandler = async (req) => {
+export async function listingsNearby(req: AppRouteRequest): Promise<Response> {
   try {
     const latitude = getQueryParam(req, 'latitude')
     const longitude = getQueryParam(req, 'longitude')
@@ -82,49 +82,93 @@ export const listingsNearby: PayloadHandler = async (req) => {
       )
     }
 
-    const listings = await req.payload.find({
+    /*
+     * Use $geoWithin + bounding box (same operator family as listings/bounds), not `near`.
+     * Payload + Mongo paths for `near` are brittle (aggregation vs find, index quirks) and
+     * were returning 500 in production here; box + haversine filter matches the circle well.
+     */
+    const { swLat, swLon, neLat, neLon } = boundingBoxDegrees(lat, lon, enforcedRadius)
+    const boxFetchLimit = Math.min(Math.max(maxResults * 25, maxResults), 1000)
+
+    const payload = await resolvePayload(req)
+    const listings = await payload.find({
       collection: 'listings',
+      req,
       where: {
         'location.coordinates': {
-          near: [lon, lat, enforcedRadius],
+          within: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [swLon, swLat],
+                [neLon, swLat],
+                [neLon, neLat],
+                [swLon, neLat],
+                [swLon, swLat],
+              ],
+            ],
+          },
         },
       },
-      limit: maxResults,
-      depth: 2,
+      limit: boxFetchLimit,
+      depth: 0,
     })
 
-    const listingsWithDistance = listings.docs.map((listing: Record<string, unknown>) => {
-      const loc = listing.location as { coordinates?: [number, number] } | undefined
-      if (loc?.coordinates) {
+    const radiusKm = enforcedRadius / 1000
+    const listingsWithDistance = listings.docs
+      .map((listing: Record<string, unknown>) => {
+        const loc = listing.location as { coordinates?: [number, number] } | undefined
+        if (!loc?.coordinates) return null
         const [listingLon, listingLat] = loc.coordinates
-        const distance = calculateDistance(lat, lon, listingLat, listingLon)
-
+        const distanceKm = calculateDistance(lat, lon, listingLat, listingLon)
+        if (distanceKm > radiusKm) return null
         return {
           ...listing,
-          distance: Math.round(distance * 100) / 100,
+          distance: Math.round(distanceKm * 100) / 100,
         }
-      }
-      return listing
-    })
+      })
+      .filter(Boolean) as Record<string, unknown>[]
 
     listingsWithDistance.sort(
       (a: { distance?: number }, b: { distance?: number }) =>
         (a.distance ?? Infinity) - (b.distance ?? Infinity),
     )
 
+    const trimmed = listingsWithDistance.slice(0, maxResults)
+
     return json({
-      docs: listingsWithDistance,
-      totalDocs: listings.totalDocs,
-      limit: listings.limit,
-      page: listings.page,
-      totalPages: listings.totalPages,
+      docs: trimmed,
+      totalDocs: trimmed.length,
+      limit: maxResults,
+      page: 1,
+      totalPages: 1,
       scope: allowedScope,
       radius: enforcedRadius,
     })
   } catch (error) {
-    console.error('Error fetching nearby listings:', error)
-    return json({ error: 'Failed to fetch nearby listings' }, { status: 500 })
+    const message = error instanceof Error ? error.message : String(error)
+    const stack = error instanceof Error ? error.stack : undefined
+    console.error('[listings/nearby] failed:', message, stack)
+    return json(
+      { error: 'Failed to fetch nearby listings', details: message },
+      { status: 500 },
+    )
   }
+}
+
+/** ~meters per degree latitude (WGS84, mid-latitudes) */
+const METERS_PER_DEG_LAT = 111_320
+
+/** Axis-aligned square around (lat, lon) containing a circle of radiusMeters (for $geoWithin). */
+function boundingBoxDegrees(lat: number, lon: number, radiusMeters: number) {
+  const dLat = radiusMeters / METERS_PER_DEG_LAT
+  const cosLat = Math.cos((lat * Math.PI) / 180)
+  const dLon = radiusMeters / (METERS_PER_DEG_LAT * Math.max(cosLat, 0.01))
+  const swLat = lat - dLat
+  const neLat = lat + dLat
+  const swLon = lon - dLon
+  const neLon = lon + dLon
+  return { swLat, swLon, neLat, neLon }
 }
 
 function normalizeScope(value: string): SearchScope {

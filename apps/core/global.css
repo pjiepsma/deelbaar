@@ -15,4 +15,17 @@
   --font-medium: 'BricolageGrotesque-Medium';
   --font-semibold: 'BricolageGrotesque-SemiBold';
   --font-bold: 'BricolageGrotesque-Bold';
+
+  /*
+   * HeroUI / Uniwind expect a real accent scale. Without it, some components
+   * resolve invalid utilities (e.g. accent-accent) and Uniwind logs a warning.
+   */
+  --color-accent: #208aef;
+  --color-accent-foreground: #ffffff;
+  /*
+   * HeroUI Input passes `selectionColorClassName` built from `accent-accent`
+   * (see heroui-native input.styles). Uniwind treats that as a literal color
+   * name after the `accent-` prefix, so it must exist as `--color-accent-accent`.
+   */
+  --color-accent-accent: #208aef;
 }

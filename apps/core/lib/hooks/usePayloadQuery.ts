@@ -24,7 +24,13 @@ export function useListings() {
       });
 
       if (error) {
-        console.error('[useListings] payload error:', error);
+        if (error.networkError || error.backendUnavailable) {
+          console.warn(
+            '[useListings] CMS unreachable — see BACKEND UNAVAILABLE in logs; using local cache if any.'
+          );
+        } else {
+          console.error('[useListings] payload error:', error);
+        }
         throw new Error(error.message);
       }
 
@@ -307,7 +313,8 @@ export function useFavorites() {
       // Try to get user data with favorites from API first
       try {
         console.log('[useFavorites] Fetching from API', { userId: user.id });
-        const { data, error } = await payloadClient.findById('users', user.id, 2); // depth 2 to get full listing data
+        // depth 1: listing fields for carousel; depth 2 populates listing.owner → other users → 403.
+        const { data, error } = await payloadClient.findById('users', user.id, 1);
 
         if (!error && data?.favorites) {
           // API is available, return fresh favorites with full listing data
@@ -315,7 +322,7 @@ export function useFavorites() {
           const favoritesWithListings = data.favorites.map((fav: any) => ({
             id: `${user.id}-${fav.listing?.id || fav.listing}`, // Generate ID for compatibility
             user: user.id,
-            listing: fav.listing, // Full listing object from depth: 2
+            listing: fav.listing,
             createdAt: fav.createdAt || new Date().toISOString(),
             updatedAt: fav.updatedAt || new Date().toISOString(),
           }));

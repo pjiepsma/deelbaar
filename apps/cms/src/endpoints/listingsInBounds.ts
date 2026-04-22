@@ -1,4 +1,4 @@
-import { getPayload, type Payload, type PayloadRequest } from 'payload'
+import { resolvePayload, type AppRouteRequest, type QueryDictionary } from './resolvePayloadFromRequest'
 
 // Configuration constants
 const DEFAULT_LIMIT = 100
@@ -9,15 +9,6 @@ const MIN_LONGITUDE = -180
 const MAX_LONGITUDE = 180
 
 // Type definitions
-type QueryDictionary = Record<string, string | string[] | undefined>
-
-/** Next.js App Router passes Request/NextRequest; Payload may attach `payload` on the same object */
-type AppRouteRequest = Request & {
-  originalUrl?: string
-  nextUrl?: URL
-  query?: QueryDictionary
-}
-
 interface Coordinates {
   neLat: number
   neLon: number
@@ -144,28 +135,6 @@ const toJsonResponse = (body: object, init?: ResponseInit): Response => {
   }
 
   return new Response(JSON.stringify(body), { ...init, headers })
-}
-
-let payloadConfigPromise: Promise<unknown> | null = null
-
-const loadPayloadConfig = async (): Promise<unknown> => {
-  if (!payloadConfigPromise) {
-    payloadConfigPromise = import('@payload-config').then(mod => {
-      const candidate = (mod as { default?: unknown }).default ?? mod
-      return candidate
-    })
-  }
-
-  return payloadConfigPromise
-}
-
-const resolvePayload = async (req: AppRouteRequest): Promise<Payload> => {
-  if ('payload' in req && (req as PayloadRequest).payload) {
-    return (req as PayloadRequest).payload
-  }
-
-  const config = await loadPayloadConfig()
-  return getPayload({ config: config as never })
 }
 
 const validateBounds = (

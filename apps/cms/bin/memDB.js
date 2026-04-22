@@ -1,28 +1,37 @@
 import { MongoMemoryServer } from 'mongodb-memory-server'
-import { fileURLToPath } from 'url'
 import path from 'path'
 import fs from 'fs'
+import os from 'node:os'
 
-// get dir of the current file
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
-const storageDir = path.resolve(__dirname, './storage')
-
-// Only clean storage if CLEAN_DB env var is set
-// This prevents issues with locked files on restart
-if (process.env.CLEAN_DB === 'true' && fs.existsSync(storageDir)) {
-  try {
-    console.log('Cleaning MongoDB storage directory...')
-    fs.rmSync(storageDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 1000 })
-    console.log('Storage directory cleaned')
-  } catch (error) {
-    console.warn('Warning: Failed to clean storage directory:', error.message)
-    console.warn('Attempting to start MongoDB anyway (will reuse existing data)')
+/**
+ * MongoDB Memory Server data directory.
+ *
+ * Default: unique folder under the OS temp dir each run → no stale `mongod.lock`
+ * when a previous Node process died or when two terminals tried the same path.
+ *
+ * Optional: set `MONGO_MEMORY_PERSIST_PATH` (path relative to `apps/cms` cwd, e.g.
+ * `bin/storage`) to reuse one DB folder. Use a single dev instance only; run
+ * with `CLEAN_DB=true` if the lock file is stuck after a crash.
+ */
+const persistPath = (process.env.MONGO_MEMORY_PERSIST_PATH || '').trim()
+let storageDir
+if (persistPath) {
+  storageDir = path.resolve(process.cwd(), persistPath)
+  if (process.env.CLEAN_DB === 'true' && fs.existsSync(storageDir)) {
+    try {
+      console.log('Cleaning MongoDB storage directory...')
+      fs.rmSync(storageDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 1000 })
+      console.log('Storage directory cleaned')
+    } catch (error) {
+      console.warn('Warning: Failed to clean storage directory:', error.message)
+      console.warn('Attempting to start MongoDB anyway (will reuse existing data)')
+    }
   }
+  fs.mkdirSync(storageDir, { recursive: true })
+} else {
+  storageDir = fs.mkdtempSync(path.join(os.tmpdir(), 'deelbaar-cms-mongo-'))
+  console.log('Ephemeral MongoDB data directory:', storageDir)
 }
-
-// Ensure storage directory exists
-fs.mkdirSync(storageDir, { recursive: true })
 
 async function startMongoServer() {
   try {

@@ -24,6 +24,21 @@ type LoginResponse = {
   exp: number;
 }
 
+/** Log once when fetch fails before any HTTP response (offline, wrong LAN, CMS down, bad URL). */
+function logBackendUnreachable(fullUrl: string, err: unknown) {
+  const msg = err instanceof Error ? err.message : String(err);
+  const m = msg.toLowerCase();
+  let hint =
+    'No HTTP response — phone may be offline, not on the same network as the CMS host, CMS not running, or EXPO_PUBLIC_PAYLOAD_URL wrong for this device.';
+  if (m.includes('network request failed')) {
+    hint =
+      'React Native "Network request failed" — host unreachable from this device (common: CMS on LAN IP while phone is on cellular, or dev server stopped).';
+  } else if (m.includes('aborted') || m.includes('timeout')) {
+    hint = 'Request timed out or was aborted — server may be down or network unstable.';
+  }
+  console.warn(`[PayloadClient] BACKEND UNAVAILABLE\n  ${hint}\n  URL: ${fullUrl}\n  Error: ${msg}`);
+}
+
 class PayloadAPIClient {
   private baseUrl: string = '';
   private token: string | null = null;
@@ -71,10 +86,14 @@ class PayloadAPIClient {
     options: RequestInit & { suppressErrorLogging?: number[] } = {}
   ): Promise<{ data?: T; error?: any }> {
     const { suppressErrorLogging = [], ...fetchOptions } = options;
+    const fullUrl = `${this.baseUrl}${endpoint}`;
+
+    if (!this.baseUrl?.trim()) {
+      console.warn('[PayloadClient.request] Base URL is empty — set EXPO_PUBLIC_PAYLOAD_URL before calling the API.');
+    }
 
     try {
-      const url = `${this.baseUrl}${endpoint}`;
-      console.log('[PayloadClient.request] URL:', url);
+      console.log('[PayloadClient.request] URL:', fullUrl);
       console.log('[PayloadClient.request] Method:', fetchOptions.method || 'GET');
       console.log('[PayloadClient.request] Body:', fetchOptions.body);
 
@@ -83,7 +102,7 @@ class PayloadAPIClient {
         ...fetchOptions.headers,
       };
 
-      const response = await fetch(url, {
+      const response = await fetch(fullUrl, {
         ...fetchOptions,
         headers,
       });
@@ -100,12 +119,17 @@ class PayloadAPIClient {
         data = await response.text();
       }
 
-      console.log('[PayloadClient.request] Response data:', JSON.stringify(data).substring(0, 200));
+      const preview =
+        typeof data === 'string' ? data.slice(0, 200) : JSON.stringify(data).slice(0, 200);
+      console.log('[PayloadClient.request] Response data (preview):', preview);
 
       if (!response.ok) {
         // Only log error if status code is not in suppressErrorLogging array
         if (!suppressErrorLogging.includes(response.status)) {
-          console.error('[PayloadClient.request] Request failed!', response.status);
+          console.error(
+            `[PayloadClient.request] HTTP error ${response.status} for ${fullUrl}`,
+            typeof data === 'object' ? data : preview
+          );
         }
         return {
           error: {
@@ -117,12 +141,14 @@ class PayloadAPIClient {
       }
 
       return { data };
-    } catch (error: any) {
-      console.error('[PayloadClient.request] Exception:', error);
+    } catch (error: unknown) {
+      logBackendUnreachable(fullUrl, error);
+      const message = error instanceof Error ? error.message : 'Network error';
       return {
         error: {
-          message: error.message || 'Network error',
+          message,
           networkError: true,
+          backendUnavailable: true,
         },
       };
     }
