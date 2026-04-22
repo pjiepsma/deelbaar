@@ -8,7 +8,7 @@ This repo uses **HeroUI CLI** to ship local, versioned docs for coding agents (`
 |------|-----|
 | **`@Docs https://heroui.com/native/llms-full.txt`** | Full upstream doc in Cursor chat context ([@Docs](https://docs.cursor.com/context/@-symbols/@-docs)). Use [`/native/llms.txt`](https://heroui.com/native/llms.txt) if you need a shorter index. |
 | **This repo’s `AGENTS.md`** | Points agents at `./.heroui-docs/native`; refresh after upgrades. |
-| **`apps/mobile`** | Already wired with **Uniwind** (`global.css`), **`withUniwindConfig`** in Metro, **`HeroUINativeProvider`** + `Uniwind.setTheme` in `app/_layout.tsx`. |
+| **`apps/core`** | Primary app: **Uniwind** (`global.css`), **`withUniwindConfig`** in Metro, **`HeroUINativeProvider`** + `Uniwind.setTheme` in `app/_layout.tsx`. Legacy **`apps/mobile`** uses the same stack until removed. |
 
 ## Refresh local HeroUI docs (non-interactive)
 

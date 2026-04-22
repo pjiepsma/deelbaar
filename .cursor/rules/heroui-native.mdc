@@ -1,10 +1,10 @@
 ---
-description: HeroUI Native — docs (@Docs, CLI) and Expo mobile wiring in this repo
-globs: apps/mobile/**/*.{ts,tsx}
+description: HeroUI Native — docs (@Docs, CLI) and Expo wiring for Core (and legacy mobile)
+globs: apps/core/**/*.{ts,tsx},apps/mobile/**/*.{ts,tsx}
 alwaysApply: false
 ---
 
-# HeroUI Native (mobile app)
+# HeroUI Native (Core app)
 
 ## Docs for the AI
 
@@ -18,7 +18,7 @@ alwaysApply: false
 
 ## This codebase
 
-- **`apps/mobile/global.css`** — `@import 'tailwindcss'`, `uniwind`, `heroui-native/styles`, `@source` for `heroui-native/lib`.
-- **`apps/mobile/metro.config.js`** — **`withUniwindConfig`** is the outermost Metro wrapper (`cssEntryFile: './global.css'`).
-- **`apps/mobile/app/_layout.tsx`** — **`HeroUINativeProvider`** inside **`GestureHandlerRootView`**; **`ThemedAppShell`** calls **`Uniwind.setTheme('system')`** when preference is system (OS-driven HeroUI tokens), else **`Uniwind.setTheme('light'|'dark')`** — aligned with **`ThemePreferenceProvider`** (RN `StyleSheet` still uses **`resolvedTheme`** / **`useAppColors()`**).
+- **`apps/core/global.css`** — `@import 'tailwindcss'`, `uniwind`, `heroui-native/styles`, `@source` for `heroui-native/lib`.
+- **`apps/core/metro.config.js`** — **`withUniwindConfig`** is the outermost Metro wrapper (`cssEntryFile: './global.css'`).
+- **`apps/core/app/_layout.tsx`** — **`HeroUINativeProvider`** inside **`GestureHandlerRootView`**; **`Uniwind.setTheme(resolvedTheme)`** aligned with **`ThemePreferenceProvider`** (RN `StyleSheet` / icons may still use **`useAppColors()`**).
 - Prefer **`heroui-native`** components + Uniwind **`className`** where the library expects it; use **`~/lib/theme`** (`useAppColors`) for RN `StyleSheet` / icons where HeroUI CSS tokens do not apply.

@@ -3,18 +3,21 @@
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "android": "pnpm --filter @deelbaar/mobile android",
-    "ios": "pnpm --filter @deelbaar/mobile ios",
-    "start": "pnpm --filter @deelbaar/mobile start",
-    "dev": "pnpm copy:payload-types && concurrently -n \"CMS,MOBILE\" -c \"bgBlue.bold,bgMagenta.bold\" \"pnpm dev:cms\" \"pnpm dev:mobile\"",
+    "android": "pnpm --filter @deelbaar/core android",
+    "ios": "pnpm --filter @deelbaar/core ios",
+    "start": "pnpm --filter @deelbaar/core start",
+    "dev": "pnpm copy:payload-types && concurrently -n \"CMS,CORE\" -c \"bgBlue.bold,bgMagenta.bold\" \"pnpm dev:cms\" \"pnpm dev:core\"",
     "dev:core": "pnpm --filter @deelbaar/core dev",
     "dev:cms": "pnpm --filter @deelbaar/cms dev",
-    "prebuild": "pnpm --filter @deelbaar/mobile prebuild",
-    "eas": "pnpm --filter @deelbaar/mobile eas",
+    "dev:mobile": "pnpm --filter @deelbaar/mobile dev",
+    "prebuild": "pnpm --filter @deelbaar/core prebuild",
+    "prebuild:mobile": "pnpm --filter @deelbaar/mobile prebuild",
+    "eas": "pnpm --filter @deelbaar/core eas",
+    "eas:mobile": "pnpm --filter @deelbaar/mobile eas",
     "copy:payload-types": "node scripts/sync-payload-types.cjs",
-    "lint": "pnpm --filter @deelbaar/mobile lint",
-    "format": "pnpm --filter @deelbaar/mobile format",
-    "dev:mobile": "pnpm --filter @deelbaar/mobile dev"
+    "lint": "pnpm --filter @deelbaar/core lint",
+    "format": "pnpm --filter @deelbaar/core format",
+    "start:mobile": "pnpm --filter @deelbaar/mobile start"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

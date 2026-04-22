@@ -1,29 +1,31 @@
 # Deelbaar — monorepo (pnpm workspaces)
 
 ## Layout
-- **`apps/mobile`**: Expo app (router entry, `app/`, `lib/`, `android/`, `eas.json`, `app.json`).
+- **`apps/core`**: Primary Expo app (`@deelbaar/core`) — expo-router, `app/`, `lib/`, `components/`, `global.css`, `metro.config.js` (Uniwind), `eas.json`. Env: **`apps/core/.env`** (see `apps/core/env-example.txt`).
+- **`apps/mobile`**: Legacy Expo app; may be removed after Core parity. Use **`pnpm start:mobile`** / **`pnpm dev:mobile`** / **`pnpm prebuild:mobile`** / **`pnpm eas:mobile`** only if still needed.
 - **`apps/cms`**: Payload CMS + Next (`@deelbaar/cms`); dev server default port **4000**.
-- **Root**: `pnpm-workspace.yaml`, `pnpm copy:payload-types` → `scripts/sync-payload-types.cjs` (copies `apps/cms/src/payload-types.ts` → `apps/mobile/lib/types/payload-generated.ts`).
-- **Dev both**: `pnpm dev` runs `concurrently` — Payload/Next on **:4000** (`dev:cms`) + Expo dev client (`dev:mobile`), after `copy:payload-types`. Same idea as `de-aandachtgevers` (`FND,BCK`).
-- Run mobile only: `pnpm dev:mobile` or `pnpm start` (sync + Metro). CMS only: `pnpm dev:cms`. Native: `pnpm android` / `pnpm ios`.
+- **Root**: `pnpm-workspace.yaml`, `pnpm copy:payload-types` → `scripts/sync-payload-types.cjs` (copies `apps/cms/src/payload-types.ts` → **`apps/core/lib/types/payload-generated.ts`** and `apps/mobile/lib/types/payload-generated.ts` until mobile is deleted).
+- **Dev both**: `pnpm dev` — Payload/Next on **:4000** (`dev:cms`) + Core Expo dev client (`dev:core`), after `copy:payload-types`.
+- **Core only**: `pnpm start` or `pnpm dev:core`. CMS only: `pnpm dev:cms`. Native: `pnpm android` / `pnpm ios`.
 
-## Stack (mobile)
+## Stack (Core)
 - **Expo SDK**: ~55 (dev client: `expo-dev-client`)
 - **React Native**: 0.83.x | **React**: 19.2.x
 - **Navigation**: `expo-router` (file-based app router; entry `expo-router/entry`)
-- **UI**: Tamagui v2 rc (`@tamagui/*`, `tamagui.config.ts`)
+- **UI**: **HeroUI Native** + **Uniwind** + Tailwind v4 (`global.css`, `heroui-native/styles`). Prefer HeroUI components over bespoke controls; use `useAppColors` / RN `StyleSheet` where native or Mapbox-adjacent styling needs it.
 - **Data**: TanStack React Query v5
-- **Backend**: Payload CMS via `lib/api/PayloadClient`; generated types synced with `pnpm copy:payload-types` (also run at the start of `pnpm start`)
-- **Maps**: `@rnmapbox/maps` (Expo plugin in `apps/mobile/app.json`)
-- **On-device / vision**: `@react-native-ml-kit/text-recognition`; image/analysis helpers under `lib/ai/`
-- **Build**: EAS project id in `apps/mobile/app.json` → `expo.extra.eas`; `pnpm eas` = local Android EAS build
+- **Backend**: Payload CMS via `lib/api/PayloadClient`; generated types synced with **`pnpm copy:payload-types`** (also runs at the start of **`pnpm start`** on Core).
+- **Maps**: `@rnmapbox/maps` (Expo plugin in `apps/core/app.json`)
+- **On-device / vision**: `@react-native-ml-kit/text-recognition`; helpers under `lib/ai/`
+- **Build**: EAS config in **`apps/core/eas.json`**; `extra.eas.projectId` in **`apps/core/app.json`**; `pnpm eas` runs Core local Android EAS build.
 - **Package manager**: pnpm 10
 
 ## Conventions for the agent
 - Prefer **Expo-compatible** APIs; use `npx expo install <pkg>` when adding or upgrading native-related packages so versions match the SDK.
-- Match existing patterns: Tamagui styling, expo-router layouts and modals under `apps/mobile/app/`.
-- Do not commit secrets; new mobile config keys belong in `apps/mobile/env-example.txt` and `apps/mobile/.env` (Expo loads env from the app root, not the monorepo root). CMS secrets stay in `apps/cms/.env`.
-- Run **lint** after substantive edits: `pnpm lint` (ESLint universe/native + Prettier).
+- Match existing patterns: HeroUI Native + Uniwind, expo-router layouts under **`apps/core/app/`**.
+- Do not commit secrets; Core config keys belong in **`apps/core/env-example.txt`** (placeholders) and **`apps/core/.env`**. CMS secrets stay in **`apps/cms/.env`**.
+- Run **lint** after substantive edits: **`pnpm lint`** (Core `expo lint`).
+- See **`apps/core/PARITY_CHECKLIST.md`** for behavior parity vs legacy mobile.
 
 ## Skills
 - Project skills live under `.cursor/skills/` (e.g. Callstack **agent-skills** at `.cursor/skills/agent-skills`). Use `/` in Agent chat to pick skills by name when relevant.

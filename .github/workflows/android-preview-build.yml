@@ -38,7 +38,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Android app
-        working-directory: apps/mobile
+        working-directory: apps/core
         run: eas build --platform android --local --profile development --output ${{ github.workspace }}/app-development.apk
 
       - name: Upload APK artifact

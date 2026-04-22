@@ -5,17 +5,17 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const BACKEND_PATH = path.join(ROOT, 'apps', 'cms', 'src', 'payload-types.ts');
-const TARGET_DIR = path.join(ROOT, 'apps', 'mobile', 'lib', 'types');
-const TARGET_FILE = path.join(TARGET_DIR, 'payload-generated.ts');
+
+/** Primary app is Core; mobile kept in sync until apps/mobile is removed. */
+const TARGET_DIRS = [
+  path.join(ROOT, 'apps', 'core', 'lib', 'types'),
+  path.join(ROOT, 'apps', 'mobile', 'lib', 'types'),
+];
 
 function copyTypes() {
   if (!fs.existsSync(BACKEND_PATH)) {
     console.error(`[sync-payload-types] Kon bronbestand niet vinden: ${BACKEND_PATH}`);
     process.exit(1);
-  }
-
-  if (!fs.existsSync(TARGET_DIR)) {
-    fs.mkdirSync(TARGET_DIR, { recursive: true });
   }
 
   const banner = `/**
@@ -26,9 +26,16 @@ function copyTypes() {
 `;
 
   const contents = fs.readFileSync(BACKEND_PATH, 'utf8');
-  fs.writeFileSync(TARGET_FILE, `${banner}${contents}`, 'utf8');
+  const output = `${banner}${contents}`;
 
-  console.log(`[sync-payload-types] Types gekopieerd naar ${path.relative(ROOT, TARGET_FILE)}`);
+  for (const dir of TARGET_DIRS) {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    const file = path.join(dir, 'payload-generated.ts');
+    fs.writeFileSync(file, output, 'utf8');
+    console.log(`[sync-payload-types] Types gekopieerd naar ${path.relative(ROOT, file)}`);
+  }
 }
 
 copyTypes();

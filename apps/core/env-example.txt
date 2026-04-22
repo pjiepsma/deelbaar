@@ -1,9 +1,15 @@
 # Copy to: apps/core/.env
 # Never commit .env — it is gitignored.
 
-# Payload CMS API (dev)
-# Android emulator uses 10.0.2.2 automatically in app code paths where needed.
+# Payload CMS API (dev). Android emulator: use http://10.0.2.2:4000 if localhost does not reach the host.
 EXPO_PUBLIC_PAYLOAD_URL=http://localhost:4000
 
-# Mapbox — required for map rendering
-EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN=pk.eyJ1IjoieW91ci11c2VybmFtZSIsImEiOiJjbG...
+# Mapbox — required for map rendering (public token; EXPO_PUBLIC_ is intentional).
+EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN=pk.replace_me
+
+# Optional: Gemini or other AI keys used by lib/ai (use EXPO_PUBLIC_ only if the value must be readable in JS).
+# EXPO_PUBLIC_GEMINI_API_KEY=
+
+# HeroUI Pro — local CLI / MCP / installs (do NOT use EXPO_PUBLIC_; never ship in client bundle).
+# EXPO_PERSONAL_HERO_UI_TOKEN=
+# EXPO_CICD_HERO_UI_TOKEN=
