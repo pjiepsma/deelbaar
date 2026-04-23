@@ -1,0 +1,34 @@
+---
+description: Fail-fast, no magic literals, minimal comments — names and named constants carry meaning
+globs: apps/**/*.{ts,tsx,js,jsx},packages/**/*.{ts,tsx,js,jsx},scripts/**/*.{ts,tsx,js,jsx,mjs,cjs}
+alwaysApply: true
+---
+
+# Agent code style (Deelbaar)
+
+## Fail fast — bogus “fallbacks” are errors
+
+When missing or invalid data means **the contract or invariant is broken**, do **not** mask it with a silent default that looks like success.
+
+- **Throw or reject** (with a clear message), or route to an **explicit error / empty-state** that says what went wrong — do not return fake empty objects, placeholder IDs, `0`, or `[]` as if nothing failed when the caller required real data.
+- Avoid **`catch { return default }`** that hides network/parsing failures unless the product spec truly defines degraded behaviour; if you degrade, log or surface it intentionally.
+- **`??` / `||`** are fine only where **absence is valid by design** (optional schema fields, user-tunable defaults documented in product, Mapbox APIs that require numeric literals, etc.). They are **not** for “we don’t know what happened, pretend it’s fine.”
+
+## Comments — almost none; never “AI narration”
+
+- Do **not** comment every block, every line, or “what this obvious statement does.”
+- Do **not** leave comments that restate the code, tutorial walkthroughs, or the model’s chain-of-thought (“we do X because…”) in the repo.
+- If readers need a long comment to understand the code, **prefer** clearer names, smaller functions, or stricter types so the code explains itself.
+- Allowed **short** comments: non-obvious **why** (business rule, spec link), **SDK / platform quirk** with a one-line pointer, or a **temporary** workaround with **ticket** / date to remove.
+
+## No magic numbers or strings
+
+Any literal **number or string that carries domain meaning** (zoom, radius, timeouts, route keys, feature flags, copy keys, layout thresholds, magic query params) belongs in a **named `const`** (same file top, `constants/`, or colocated module) — not inlined where readers must guess.
+
+- **Name the meaning**, not the value only: e.g. `NEARBY_LISTINGS_RADIUS_METERS`, not `x = 50000`.
+- **Shared** values live in one place; **local** values can stay at the top of the file as `const`.
+- **Tight exceptions** where a literal is universal and noise: `0`, `1`, `-1` for trivial index/math; `''` for reset; boolean toggles; standard enum-like literals already named by the type system.
+
+## When unsure
+
+Prefer **one explicit path** (success vs error) over multiple silent branches that differ only by hidden defaults.

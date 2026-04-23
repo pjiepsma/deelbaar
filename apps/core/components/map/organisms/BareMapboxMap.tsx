@@ -1,11 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Platform, View } from 'react-native';
-import Mapbox, { Camera, MapView } from '@rnmapbox/maps';
+import { Ionicons } from '@expo/vector-icons';
+import Mapbox, { Camera, MapView, PointAnnotation } from '@rnmapbox/maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Card } from 'heroui-native';
 import { withUniwind } from 'uniwind';
 
 import { mapStyleUrlForResolvedTheme } from '~/constants/Map';
+import { useCurrentLocation, useNearbyListings } from '~/lib/hooks/useLocationQueries';
 import { useThemePreference } from '~/lib/providers/ThemePreferenceProvider';
 
 const mapboxToken = process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -13,21 +15,37 @@ if (mapboxToken) {
   Mapbox.setAccessToken(mapboxToken);
 }
 
-/** MapView + Uniwind so layout uses the same Tailwind pipeline as the rest of Core. */
 const StyledMapView = withUniwind(MapView);
+const MapPin = withUniwind(View);
 
-/** Default map center [lng, lat] — Netherlands. */
-const DEFAULT_CENTER: [number, number] = [5.2913, 52.1326];
+const DEFAULT_MAP_CENTER_NL_LNGLAT: [number, number] = [5.2913, 52.1326];
+const NEARBY_RADIUS_M = 50_000;
 
-/**
- * Map-only shell: Mapbox `MapView` + `Camera`, no listings chrome.
- * UI: Uniwind `className`; HeroUI `Card` for config errors. Mapbox ornaments use numeric layout only.
- * Android: `surfaceView={false}` so future RN overlays can sit above the map.
- */
 export default function BareMapboxMap() {
   const insets = useSafeAreaInsets();
   const { resolvedTheme } = useThemePreference();
   const styleURL = useMemo(() => mapStyleUrlForResolvedTheme(resolvedTheme), [resolvedTheme]);
+  const cameraRef = useRef<any>(null);
+  const centeredOnUser = useRef(false);
+
+  const { data: location } = useCurrentLocation();
+  const { data: nearby } = useNearbyListings(location ?? null, {
+    radius: NEARBY_RADIUS_M,
+    scope: 'city',
+    enabled: !!location,
+  });
+
+  const listings = nearby?.docs ?? [];
+
+  useEffect(() => {
+    if (!location || !cameraRef.current || centeredOnUser.current) return;
+    centeredOnUser.current = true;
+    cameraRef.current.setCamera({
+      centerCoordinate: [location.longitude, location.latitude],
+      zoomLevel: 12,
+      animationDuration: 600,
+    });
+  }, [location]);
 
   if (!mapboxToken) {
     return (
@@ -44,6 +62,11 @@ export default function BareMapboxMap() {
     );
   }
 
+  const initialCenter: [number, number] = location
+    ? [location.longitude, location.latitude]
+    : DEFAULT_MAP_CENTER_NL_LNGLAT;
+  const initialZoom = location ? 12 : 11;
+
   return (
     <View className="flex-1">
       <StyledMapView
@@ -54,8 +77,26 @@ export default function BareMapboxMap() {
         compassEnabled={false}
         logoPosition={{ bottom: insets.bottom + 16, left: 8 }}
         attributionPosition={{ bottom: insets.bottom + 16, right: 8 }}>
-        <Camera defaultSettings={{ centerCoordinate: DEFAULT_CENTER, zoomLevel: 11 }} />
-        <Mapbox.UserLocation visible />
+        <Camera
+          ref={cameraRef}
+          defaultSettings={{ centerCoordinate: initialCenter, zoomLevel: initialZoom }}
+        />
+        {listings.map((item) => {
+          const coords = item.location?.coordinates;
+          if (!coords || coords.length < 2) return null;
+          const [lng, lat] = coords;
+          return (
+            <PointAnnotation
+              key={String(item.id)}
+              id={`listing-${item.id}`}
+              coordinate={[lng, lat]}
+              anchor={{ x: 0.5, y: 1 }}>
+              <MapPin className="min-h-10 min-w-10 items-center justify-center rounded-full border-2 border-background bg-primary shadow-md">
+                <Ionicons name="library-outline" size={16} color="#ffffff" />
+              </MapPin>
+            </PointAnnotation>
+          );
+        })}
       </StyledMapView>
     </View>
   );

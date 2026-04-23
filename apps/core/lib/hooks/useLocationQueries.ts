@@ -2,7 +2,14 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import * as Location from 'expo-location';
 
 import { payloadClient } from '../api/PayloadClient';
+import type { ListingRecord } from '../types/models';
 import type { SearchScope } from './useSearchAccess';
+
+/** Shape of `GET /api/listings/nearby` JSON (typed so consumers get `ListingRecord[]`, not `any`). */
+export type NearbyListingsResponse = {
+  docs: ListingRecord[];
+  totalDocs: number;
+};
 
 export interface Bounds {
   northEast: { lat: number; lon: number };
@@ -75,7 +82,7 @@ export function useNearbyListings(
 
   return useQuery({
     queryKey: ['listings', 'nearby', location?.latitude, location?.longitude, radius, limit, scope],
-    queryFn: async () => {
+    queryFn: async (): Promise<NearbyListingsResponse> => {
       if (!location) return { docs: [], totalDocs: 0 };
 
       const params = new URLSearchParams({
@@ -86,7 +93,7 @@ export function useNearbyListings(
         scope,
       });
 
-      const { data, error } = await payloadClient.request(
+      const { data, error } = await payloadClient.request<NearbyListingsResponse>(
         `/api/listings/nearby?${params.toString()}`
       );
 
@@ -99,7 +106,7 @@ export function useNearbyListings(
         throw new Error(error.message || 'Nearby listings request failed');
       }
 
-      return data;
+      return data ?? { docs: [], totalDocs: 0 };
     },
     enabled: enabled && !!location,
     staleTime: 1000 * 60 * 2, // 2 minutes

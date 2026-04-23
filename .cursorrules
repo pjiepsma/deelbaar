@@ -27,6 +27,7 @@
 - Run **lint** after substantive edits: **`pnpm lint`** (Core `expo lint`).
 - See **`apps/core/PARITY_CHECKLIST.md`** for behavior parity vs legacy mobile.
 - Strict Payload / API typing: **`.cursor/rules/payload-strict-types.mdc`** (with **`deelbaar-api.mdc`**).
+- **Code style (agent):** **`.cursor/rules/agent-code-style.mdc`** — fail fast; no magic numbers/strings (named `const`); minimal comments; clarity via names and structure.
 - Product vision: **`docs/PRODUCT_VISION.md`**.
 
 ## Skills
