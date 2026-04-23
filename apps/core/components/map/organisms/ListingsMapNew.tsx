@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Mapbox, { Camera, MapView, PointAnnotation } from '@rnmapbox/maps';
 
+import MarkerComponent from '~/components/map/atom/Marker';
 import Loader from '~/components/shared/Loader';
-import Colors from '~/constants/Colors';
 import { mapStyleUrlForResolvedTheme } from '~/constants/Map';
 import { useThemePreference } from '~/lib/providers/ThemePreferenceProvider';
 import { useCurrentLocation, useNearbyListings } from '~/lib/hooks/useLocationQueries';
@@ -23,7 +23,6 @@ const DEFAULT_REGION: Region = {
 };
 
 interface Props {
-  category: string;
   listings: ListingRecord[];
   setListings: (state: ListingRecord[]) => void;
   setListing: (state: ListingRecord | null) => void;
@@ -31,11 +30,9 @@ interface Props {
   searchScope: SearchScope;
   searchRadius: number;
   onMapCenterChange?: (center: { latitude: number; longitude: number }) => void;
-  setRegionBounds?: (bounds: any) => void;
 }
 
 const ListingsMapNew = ({
-  category,
   listings,
   setListings,
   setListing,
@@ -43,7 +40,6 @@ const ListingsMapNew = ({
   searchScope,
   searchRadius,
   onMapCenterChange,
-  setRegionBounds,
 }: Props) => {
   const insets = useSafeAreaInsets();
   const { resolvedTheme } = useThemePreference();
@@ -54,14 +50,49 @@ const ListingsMapNew = ({
   const { setLocation } = useUser();
   const [region, setRegion] = useState<Region>(DEFAULT_REGION);
   const cameraRef = useRef<any>(null);
+  const hasAppliedInitialGpsRef = useRef(false);
 
   const { data: location, isLoading: locationLoading } = useCurrentLocation();
-  const { data: nearbyResponse } = useNearbyListings(location || null, {
+  const {
+    data: nearbyResponse,
+    isFetching: nearbyFetching,
+    isError: nearbyIsError,
+    error: nearbyError,
+    isSuccess: nearbyIsSuccess,
+  } = useNearbyListings(location || null, {
     radius: searchRadius,
     enabled: !!location,
     scope: searchScope,
   });
   const nearbyListings = useMemo(() => nearbyResponse?.docs ?? [], [nearbyResponse?.docs]);
+
+  useEffect(() => {
+    if (!__DEV__) return;
+    console.log('[ListingsMapNew]', {
+      platform: Platform.OS,
+      mapboxToken: Boolean(mapboxToken),
+      locationLoading,
+      hasLocation: Boolean(location),
+      nearbyQuery: {
+        fetching: nearbyFetching,
+        success: nearbyIsSuccess,
+        error: nearbyIsError,
+        message: nearbyError instanceof Error ? nearbyError.message : nearbyError ? String(nearbyError) : null,
+        docCount: nearbyListings.length,
+      },
+      propListingsForMarkers: listings.length,
+    });
+  }, [
+    location,
+    locationLoading,
+    listings.length,
+    nearbyError,
+    nearbyFetching,
+    nearbyIsError,
+    nearbyIsSuccess,
+    nearbyListings.length,
+    mapboxToken,
+  ]);
 
   useEffect(() => {
     setListings(nearbyListings ?? []);
@@ -84,15 +115,25 @@ const ListingsMapNew = ({
       setRegion({
         latitude: location.latitude,
         longitude: location.longitude,
-        latitudeDelta: 0.5,
-        longitudeDelta: 0.5,
+        latitudeDelta: 0.08,
+        longitudeDelta: 0.08,
       });
     }
   }, [location, setLocation]);
 
+  /** First GPS fix — fly camera once (avoid controlled Camera props that reset every render). */
+  useEffect(() => {
+    if (!location || !cameraRef.current || hasAppliedInitialGpsRef.current) return;
+    hasAppliedInitialGpsRef.current = true;
+    cameraRef.current.setCamera({
+      centerCoordinate: [location.longitude, location.latitude],
+      zoomLevel: 12,
+      animationDuration: 600,
+    });
+  }, [location]);
+
   const handleMarkerPress = (listingItem: ListingRecord) => {
     setListing(listingItem);
-
     if (listingItem.location?.coordinates && cameraRef.current) {
       const [longitude, latitude] = listingItem.location.coordinates;
       cameraRef.current.setCamera({
@@ -118,28 +159,28 @@ const ListingsMapNew = ({
     return <Loader delay={220} amount={3} visible />;
   }
 
-  const center: [number, number] = [region.longitude, region.latitude];
-  const zoom = Math.log2(360 / region.latitudeDelta);
+  const initialCenter: [number, number] = [region.longitude, region.latitude];
+  const initialZoom = Math.log2(360 / Math.max(region.latitudeDelta, 0.001));
 
   return (
     <View style={styles.container}>
       <MapView
         style={styles.map}
         styleURL={mapStyleUrl}
+        /** Android: GLSurfaceView draws above RN siblings; TextureView allows carousel / bottom sheet on top. */
+        surfaceView={Platform.OS === 'android' ? false : undefined}
         scaleBarEnabled={false}
         compassEnabled={false}
         logoPosition={{ bottom: insets.bottom + 84, left: 8 }}
         attributionPosition={{ bottom: insets.bottom + 84, right: 8 }}
         onCameraChanged={(event: any) => {
-          const center = event?.properties?.center as number[] | undefined;
-          if (!center || center.length < 2 || !onMapCenterChange) return;
-          onMapCenterChange({ latitude: center[1], longitude: center[0] });
+          const centerCoord = event?.properties?.center as number[] | undefined;
+          if (!centerCoord || centerCoord.length < 2 || !onMapCenterChange) return;
+          onMapCenterChange({ latitude: centerCoord[1], longitude: centerCoord[0] });
         }}>
         <Camera
           ref={cameraRef}
-          defaultSettings={{ centerCoordinate: center, zoomLevel: zoom }}
-          centerCoordinate={center}
-          zoomLevel={zoom}
+          defaultSettings={{ centerCoordinate: initialCenter, zoomLevel: initialZoom }}
         />
         <Mapbox.UserLocation visible={true} />
         {listings.map((item) => {
@@ -152,16 +193,13 @@ const ListingsMapNew = ({
               key={item.id}
               id={`marker-${item.id}`}
               coordinate={[longitude, latitude]}
+              anchor={{ x: 0.5, y: 1 }}
               onSelected={() => handleMarkerPress(item)}>
-              <View
-                style={[
-                  styles.marker,
-                  { backgroundColor: isSelected ? Colors.primary : Colors.secondary },
-                ]}>
-                <Text style={styles.markerText} numberOfLines={1}>
-                  {item.name}
-                </Text>
-              </View>
+              <MarkerComponent
+                store={item}
+                selected={isSelected}
+                onPress={() => handleMarkerPress(item)}
+              />
             </PointAnnotation>
           );
         })}
@@ -177,16 +215,6 @@ const styles = StyleSheet.create({
   map: {
     width: '100%',
     height: '100%',
-  },
-  marker: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    maxWidth: 120,
-  },
-  markerText: {
-    color: 'white',
-    fontSize: 12,
   },
   missingTokenContainer: {
     flex: 1,

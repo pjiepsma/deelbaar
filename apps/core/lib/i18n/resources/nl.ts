@@ -2,6 +2,7 @@
 export const nl = {
   tabs: {
     map: 'Kaart',
+    sheetPlayground: 'Blad',
     favorites: 'Favorieten',
     myHome: 'Mijn kasten',
     account: 'Account',
@@ -124,6 +125,8 @@ export const nl = {
     goToMap: 'Ga naar kaart',
     sessionTitle: 'Sessie',
     sessionHelp: 'Beheer je inlogsessie. Als je bent uitgelogd kun je opnieuw inloggen.',
+    sessionSignedInHint: 'Gebruik de rode knop Uitloggen in het Account-blok hierboven om je sessie te beëindigen.',
+    sessionGuestHint: 'Gebruik de blauwe knop Inloggen in het Account-blok hierboven om aan te melden.',
     signIn: 'Inloggen',
     signOut: 'Uitloggen',
     confirmSignOutTitle: 'Uitloggen',

@@ -1,4 +1,4 @@
-import { BottomSheet } from 'heroui-native/bottom-sheet';
+import { BottomSheet, Button } from 'heroui-native';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
@@ -7,9 +7,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import DefaultCard from '~/components/map/molecules/DefaultCard';
 import ListingCard from '~/components/map/molecules/ListingCard';
-import { ListingRecord } from '~/lib/types/models';
+import { CARD_HEIGHT, CARD_WIDTH } from '~/lib/constants/listings';
+import type { ListingRecord } from '~/lib/types/models';
+
+/** https://heroui.com/docs/native/components/bottom-sheet — compound tree + imports from `heroui-native`. */
 
 const { width: screenWidth } = Dimensions.get('window');
+const CAROUSEL_ITEM_WIDTH = Math.min(Math.round(CARD_WIDTH + 24), Math.round(screenWidth));
+const CAROUSEL_ITEM_HEIGHT = Math.round(CARD_HEIGHT + 44);
 
 interface Props {
   category: string;
@@ -30,22 +35,30 @@ const ListingCarousel = ({
   const carouselRef = useRef<ICarouselInstance>(null);
   const [isOpen, setIsOpen] = useState(true);
   const hasListings = listings.length > 0;
-  const snapPoints = ['7%', '30%'];
+  const snapPoints = ['28%', '46%'];
   const router = useRouter();
+
+  const onSheetOpenChange = useCallback((open: boolean) => {
+    setIsOpen(open);
+  }, []);
+
+  useEffect(() => {
+    if (hasListings) setIsOpen(true);
+  }, [hasListings]);
+
   const baseOptions = {
-    vertical: false,
-    width: screenWidth * 0.9,
-    height: 160, // Reduced from 260 to give more map space
+    vertical: false as const,
+    width: CAROUSEL_ITEM_WIDTH,
+    height: CAROUSEL_ITEM_HEIGHT,
   };
 
   useEffect(() => {
-    if (listing) {
-      const index = listings.findIndex((hike) => hike.id === listing.id);
-      if (index !== -1) {
-        scrollToIndex(index);
-      }
+    if (!listing) return;
+    const index = listings.findIndex((hike) => hike.id === listing.id);
+    if (index !== -1) {
+      scrollToIndex(index);
     }
-  }, [listing]);
+  }, [listing, listings]);
 
   const scrollToIndex = (index: number) => {
     if (carouselRef.current) {
@@ -53,39 +66,34 @@ const ListingCarousel = ({
     }
   };
 
-  const handleRemoveFavorite = async (listingId: string) => {
-    // Favorites functionality - to be implemented with useToggleFavorite hook
+  const handleRemoveFavorite = useCallback(async (listingId: string) => {
     console.log('Remove favorite:', listingId);
-  };
+  }, []);
 
-  const handleAddFavorite = async (listingId: string) => {
-    // Favorites functionality - to be implemented with useToggleFavorite hook
+  const handleAddFavorite = useCallback(async (listingId: string) => {
     console.log('Add favorite:', listingId);
-  };
+  }, []);
 
-  const handleNavigate = (item) => {
-    router.push({
-      pathname: '/(modals)/listing/[id]', // Adjust this to your actual detail page path
-      params: {
-        id: item.id,
-        dist_meters: item.dist_meters,
-        lat: item.lat,
-        long: item.long,
-      },
-    });
-  };
+  const handleNavigate = useCallback(
+    (item: ListingRecord) => {
+      router.push(`/(modals)/listing/${item.id}`);
+    },
+    [router],
+  );
 
   const renderItem = useCallback(
-    ({ item }) => (
+    ({ item }: { item: ListingRecord }) => (
       <ListingCard
         item={item}
         category={category}
-        onPress={() => handleNavigate(item)}
+        selected={listing?.id === item.id}
+        onSelect={() => setListing(item)}
+        onOpenDetail={() => handleNavigate(item)}
         onAddFavorite={handleAddFavorite}
         onRemoveFavorite={handleRemoveFavorite}
       />
     ),
-    [category, handleAddFavorite, handleNavigate, handleRemoveFavorite]
+    [category, handleAddFavorite, handleNavigate, handleRemoveFavorite, listing?.id, setListing]
   );
 
   if (!hasListings) {
@@ -97,38 +105,64 @@ const ListingCarousel = ({
   }
 
   return (
-    <BottomSheet isOpen={isOpen} onOpenChange={setIsOpen}>
-      <BottomSheet.Portal>
-        <BottomSheet.Content
-          enableDynamicSizing={false}
-          snapPoints={snapPoints}
-          enablePanDownToClose={false}
-          backgroundClassName="bg-[#f4f4e8]">
-          <View style={styles.container}>
-            {/* Small count badge only - BottomSheet has its own drag handle */}
-            {hasListings && (
+    <View style={styles.sheetRoot} pointerEvents="box-none">
+      <BottomSheet isOpen={isOpen} onOpenChange={onSheetOpenChange}>
+        <View
+          style={[styles.triggerDock, { paddingBottom: Math.max(8, insets.bottom) }]}
+          pointerEvents="box-none">
+          <BottomSheet.Trigger asChild>
+            <Button variant="secondary" className="self-center">
+              {`Minibiebs (${listings.length})`}
+            </Button>
+          </BottomSheet.Trigger>
+        </View>
+        <BottomSheet.Portal>
+          <BottomSheet.Overlay />
+          <BottomSheet.Content
+            bottomInset={insets.bottom}
+            enableDynamicSizing={false}
+            snapPoints={snapPoints}
+            enablePanDownToClose={false}
+            backgroundClassName="bg-[#f4f4e8]">
+            <View style={[styles.container, { minHeight: CAROUSEL_ITEM_HEIGHT + 8 }]}>
               <View style={styles.countBadge}>
                 <Text style={styles.countText}>{listings.length}</Text>
               </View>
-            )}
-            <Carousel
-              {...baseOptions}
-              loop={false}
-              ref={carouselRef}
-              windowSize={2}
-              style={styles.carousel}
-              data={listings}
-              onSnapToItem={(index: number) => setListing(listings[index])}
-              renderItem={renderItem}
-            />
-          </View>
-        </BottomSheet.Content>
-      </BottomSheet.Portal>
-    </BottomSheet>
+              <Carousel
+                {...baseOptions}
+                loop={false}
+                autoFillData={false}
+                ref={carouselRef}
+                windowSize={5}
+                style={styles.carousel}
+                data={listings}
+                onSnapToItem={(index: number) => {
+                  const picked = listings[index];
+                  if (picked) setListing(picked);
+                }}
+                renderItem={renderItem}
+              />
+            </View>
+          </BottomSheet.Content>
+        </BottomSheet.Portal>
+      </BottomSheet>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  sheetRoot: {
+    flex: 1,
+    width: '100%',
+  },
+  triggerDock: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 20,
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     padding: 0,
@@ -152,10 +186,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   carousel: {
-    width: '100%',
-    height: '100%',
     backgroundColor: '#f4f4e8',
-    justifyContent: 'center',
   },
   emptyDock: {
     position: 'absolute',

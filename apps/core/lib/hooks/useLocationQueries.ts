@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import * as Location from 'expo-location';
 
 import { payloadClient } from '../api/PayloadClient';
@@ -103,6 +103,8 @@ export function useNearbyListings(
     },
     enabled: enabled && !!location,
     staleTime: 1000 * 60 * 2, // 2 minutes
+    /** GPS jitter changes queryKey; without this, `data` is briefly undefined and map code clears listings. */
+    placeholderData: keepPreviousData,
   });
 }
 

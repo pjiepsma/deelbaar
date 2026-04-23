@@ -14,11 +14,15 @@ alwaysApply: false
 
 2. **Cursor `@Docs`:** Attach **`https://heroui.com/native/llms-full.txt`** in chat for full upstream docs. Shorter index: **`https://heroui.com/native/llms.txt`**.
 
-3. Optional analytics opt-out for the CLI: `HEROUI_ANALYTICS_DISABLED=1`.
+3. **Semantics & hierarchy:** [Design Principles](https://heroui.com/docs/native/getting-started/design-principles) — variants (`primary` / `secondary` / `tertiary` / `danger`), compound components, progressive disclosure (`Button.Label` when enhancing).
+
+4. Optional analytics opt-out for the CLI: `HEROUI_ANALYTICS_DISABLED=1`.
 
 ## This codebase
 
-- **`apps/core/global.css`** — `@import 'tailwindcss'`, `uniwind`, `heroui-native/styles`, `@source` for `heroui-native/lib`.
+- **`apps/core/global.css`** — `@import 'tailwindcss'`, `uniwind`, `heroui-native/styles`, `@source` for `heroui-native/lib` (in this monorepo: **`../../node_modules/heroui-native/lib`** from `apps/core/global.css`).
 - **`apps/core/metro.config.js`** — **`withUniwindConfig`** is the outermost Metro wrapper (`cssEntryFile: './global.css'`).
-- **`apps/core/app/_layout.tsx`** — **`HeroUINativeProvider`** inside **`GestureHandlerRootView`**; **`Uniwind.setTheme(resolvedTheme)`** aligned with **`ThemePreferenceProvider`** (RN `StyleSheet` / icons may still use **`useAppColors()`**).
-- Prefer **`heroui-native`** components + Uniwind **`className`** where the library expects it; use **`~/lib/theme`** (`useAppColors`) for RN `StyleSheet` / icons where HeroUI CSS tokens do not apply.
+- **`apps/core/app/_layout.tsx`** — **`HeroUINativeProvider`** inside **`GestureHandlerRootView`**; **`Uniwind.setTheme(resolvedTheme)`** aligned with **`ThemePreferenceProvider`**.
+- Prefer **`heroui-native`** + Uniwind **`className`** everywhere user-facing UI is built. Use **`~/lib/theme`** (`useAppColors`) only for **vector icon color/size** or other RN bits **outside** HeroUI/Uniwind — not as the default styling path for new map shells, cards, or layouts.
+- **Third-party native views** — Mapbox `MapView`, etc.: **`withUniwind(NativeComponent)`** + **`className`** for layout; **HeroUI `Card` / `Surface`** for errors and config copy. See **`.cursor/rules/greenfield-heroui-core.mdc`** → *Third-party native views* and *Proactive checklist*.
+- **Reuse rule** — Any **existing** local component that imports HeroUI must match the **official doc** (compound parts, variants, `className` on the right slots). If it cannot, **refactor or delete** it; do not stack a second, non-doc styling layer on top (see **`.cursor/rules/greenfield-heroui-core.mdc`** → *Existing components that touch HeroUI*).

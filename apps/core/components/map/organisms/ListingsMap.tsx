@@ -8,7 +8,7 @@ import Loader from '~/components/shared/Loader';
 import MapWithMarkers, { MapWithMarkersRef } from '~/components/map/molecules/MapWithMarkers';
 import type { Region } from '~/lib/utils/mapUtils';
 import Colors from '~/constants/Colors';
-import { useListings } from '~/lib/hooks/usePayloadQuery';
+import { useListings } from '~/lib/hooks/data/useListingQueries';
 import { useAuth } from '~/lib/providers/AuthProvider';
 import { useUser } from '~/lib/providers/UserProvider';
 import { ListingRecord } from '~/lib/types/models';

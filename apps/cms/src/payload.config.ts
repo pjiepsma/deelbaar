@@ -49,7 +49,12 @@ export default buildConfig({
     declare: false,
   },
   db: mongooseAdapter({
-    url: config.databaseURI ?? process.env.DATABASE_URI ?? false,
+    url:
+      config.databaseURI ||
+      process.env.MONGODB_URI ||
+      process.env.DATABASE_URL ||
+      process.env.DATABASE_URI ||
+      false,
   }),
   endpoints: [
     {

@@ -23,6 +23,7 @@
     "@react-native-ml-kit/text-recognition": "^2.0.0",
     "@react-navigation/bottom-tabs": "^7.15.5",
     "@react-navigation/elements": "^2.9.10",
+    "@payloadcms/sdk": "3.81.0",
     "@react-navigation/native": "^7.1.33",
     "@rnmapbox/maps": "^10.3.0",
     "@tanstack/react-query": "^5.99.2",
@@ -75,6 +76,7 @@
     "@types/react": "~19.2.2",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~55.0.0",
+    "payload": "3.81.0",
     "typescript": "~5.9.2"
   },
   "private": true

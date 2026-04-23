@@ -1,5 +1,6 @@
 import { AppState, AppStateStatus } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
+import { getPayloadSdk, payloadSdkTry } from '../api/payloadSdk';
 import { payloadClient } from '../api/PayloadClient';
 import { sqliteManager, SyncQueue } from './SQLiteManager';
 import { fileQueueManager } from './FileQueueManager';
@@ -176,17 +177,20 @@ class SyncManager {
   private async processSyncItem(item: SyncQueue) {
     const data = JSON.parse(item.data);
 
+    const sdk = getPayloadSdk();
+    const collection = item.collection as any;
+
     switch (item.operation) {
       case 'create':
-        await payloadClient.create(item.collection, data);
+        await sdk.create({ collection, data });
         break;
       case 'update':
         if (!item.recordId) throw new Error('Record ID required for update');
-        await payloadClient.update(item.collection, item.recordId, data);
+        await sdk.update({ collection, id: item.recordId, data });
         break;
       case 'delete':
         if (!item.recordId) throw new Error('Record ID required for delete');
-        await payloadClient.delete(item.collection, item.recordId);
+        await sdk.delete({ collection, id: item.recordId });
         break;
     }
   }
@@ -197,17 +201,18 @@ class SyncManager {
 
     try {
       // Pull listings
-      const { data: listingsData } = await payloadClient.findMany('listings', {
-        limit: 1000,
-        depth: 1,
-      });
+      const { data: listingsData } = await payloadSdkTry(() =>
+        getPayloadSdk().find({ collection: 'listings', limit: 1000, depth: 1 })
+      );
 
       if (listingsData?.docs) {
         await sqliteManager.saveListings(listingsData.docs);
       }
 
       // Pull user's own data (with favorites included)
-      const { data: userData } = await payloadClient.findById('users', user.id, 2);
+      const { data: userData } = await payloadSdkTry(() =>
+        getPayloadSdk().findByID({ collection: 'users', id: user.id, depth: 2 })
+      );
 
       if (userData) {
         await sqliteManager.saveUser(userData);

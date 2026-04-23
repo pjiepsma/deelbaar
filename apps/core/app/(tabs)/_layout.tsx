@@ -15,6 +15,15 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="sheet-playground"
+        options={{
+          title: t('tabs.sheetPlayground'),
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="layers-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="account"
         options={{
           title: t('tabs.account'),

@@ -1,0 +1,48 @@
+---
+description: Strict Payload typing — generated Config, query types, no escape hatches without CMS alignment
+globs: apps/core/**/*.{ts,tsx},apps/cms/src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Payload & API typing (strict)
+
+## Sources of truth
+
+1. **`~/lib/types/payload-generated.ts`** (apps/core) — **never hand-edit**. Regenerate from CMS (`pnpm copy:payload-types` / `payload generate:types` in CMS, then sync script).
+2. **`Config`** and collection document types from that file (`User`, `Listing`, `Review`, …) for **everything** that is a stored document or partial update.
+3. **`payload`** package — **`apps/core`** lists **`payload`** aligned to **`@payloadcms/sdk`** as a **devDependency** for **type-only** imports (`import type { … } from 'payload'`). Use for **`Where`**, **`CollectionSlug`**, **`DataFromCollectionSlug`**, **`PaginatedDocs`**, **`ErrorResult`**, **`RequiredDataFromCollectionSlug`**, etc.
+
+## SDK usage (`getPayloadSdk`)
+
+- **`getPayloadSdk(): PayloadSDK<Config>`** is the default client. **`collection`** must be a key of **`Config['collections']`** (e.g. `'listings'`, `'users'`) so `find` / `create` / `update` / `delete` infer **data** and **where** shapes.
+- **`where`**, **`data`** (create/update), and **`sort`** should be typed via Payload helpers or **`satisfies Where`** (or collection-specific `Where` from generated types if you add thin aliases in `lib/types/`).
+- **`select`** / **`depth`** — use SDK generics; avoid widening to `Record<string, unknown>`.
+
+## Forbidden by default
+
+- **`any`** — use concrete types from **`payload-generated`**, **`payload`**, or **narrow unions** you define in `lib/types/` (e.g. `ListingId = string` is weak; prefer branded types only when worth the cost).
+- **`as any`**, **`as unknown as`** — do not use to silence SDK or query typing. Fix the schema or add the collection to CMS + regenerate types.
+- **`PayloadSDK<any>`** / **`getPayloadSdkLoose()`** — **not allowed in new code**. If a collection slug is missing from **`Config`**, add the collection in **`apps/cms`**, regenerate types, then use **`getPayloadSdk()`**. Legacy-only exception: one small module (e.g. façade on `PayloadClient`) with a **file-level comment** linking a ticket to remove the gap; still avoid `any` inside (use explicit DTO types for responses).
+- **`unknown` in public shapes** — avoid `unknown` on fields returned to UI/hooks; use **`ErrorResult`**, **`PayloadSDKError`**, or a **declared DTO**. In **`catch`**, **`unknown` is allowed** only with immediate narrowing (`instanceof PayloadSDKError`, `instanceof Error`).
+
+## Errors
+
+- Catch **`PayloadSDKError`** from **`@payloadcms/sdk`** for REST failures; use **`e.status`**, **`e.errors`** (typed **`ErrorResult['errors']`** from **`payload`**).
+- **`payloadSdkTry`**: keep **`error`** branch typed with **`message`**, optional **`status`**, and **`errors?: ErrorResult['errors']`** — no `error: any` or `data: unknown` on shared helpers.
+
+## `payloadClient.request`
+
+- Prefer typed **JSON response** DTOs (`interface XResponse` or `z.infer<typeof schema>`) per route under **`lib/api/<domain>/`**, not raw **`{ data?: T; error?: any }`** long-term. New code: **`error`** should use a small **`ApiError`** type (message, status, optional `errors`).
+
+## React Query hooks
+
+- **`queryFn` return types** — explicit return type or **`satisfies`** against **`Listing[]`**, **`PaginatedDocs<Listing>`**, etc., from generated types.
+- **`queryKey`** — tuple literals; include typed ids where possible.
+
+## Reviews & checklist
+
+- Before merging: **`pnpm exec tsc --noEmit`** (or app lint) on touched packages; no new **`@typescript-eslint/no-explicit-any`** suppressions without justification in the PR.
+
+## See also
+
+- **`deelbaar-api.mdc`** — layers and **`getPayloadSdk()`** vs **`payloadClient.request()`**.

@@ -2,7 +2,7 @@
 
 ## Layout
 - **`apps/core`**: Primary Expo app (`@deelbaar/core`) — expo-router, `app/`, `lib/`, `components/`, `global.css`, `metro.config.js` (Uniwind), `eas.json`. Env: **`apps/core/.env`** (see `apps/core/env-example.txt`).
-- **`apps/mobile`**: Legacy Expo app; may be removed after Core parity. Use **`pnpm start:mobile`** / **`pnpm dev:mobile`** / **`pnpm prebuild:mobile`** / **`pnpm eas:mobile`** only if still needed.
+- **`apps/mobile`**: **Migration-only** legacy Expo app; **delete the package** after Core matches **`apps/core/PARITY_CHECKLIST.md`**. Until then, use **`pnpm start:mobile`** / **`pnpm dev:mobile`** / etc. only when you must compare or port behavior — do not add new product features only to mobile.
 - **`apps/cms`**: Payload CMS + Next (`@deelbaar/cms`); dev server default port **4000**.
 - **Root**: `pnpm-workspace.yaml`, `pnpm copy:payload-types` → `scripts/sync-payload-types.cjs` (copies `apps/cms/src/payload-types.ts` → **`apps/core/lib/types/payload-generated.ts`** and `apps/mobile/lib/types/payload-generated.ts` until mobile is deleted).
 - **Dev both**: `pnpm dev` — Payload/Next on **:4000** (`dev:cms`) + Core Expo dev client (`dev:core`), after `copy:payload-types`.
@@ -26,6 +26,8 @@
 - Do not commit secrets; Core config keys belong in **`apps/core/env-example.txt`** (placeholders) and **`apps/core/.env`**. CMS secrets stay in **`apps/cms/.env`**.
 - Run **lint** after substantive edits: **`pnpm lint`** (Core `expo lint`).
 - See **`apps/core/PARITY_CHECKLIST.md`** for behavior parity vs legacy mobile.
+- Strict Payload / API typing: **`.cursor/rules/payload-strict-types.mdc`** (with **`deelbaar-api.mdc`**).
+- Product vision: **`docs/PRODUCT_VISION.md`**.
 
 ## Skills
 - Project skills live under `.cursor/skills/` (e.g. Callstack **agent-skills** at `.cursor/skills/agent-skills`). Use `/` in Agent chat to pick skills by name when relevant.

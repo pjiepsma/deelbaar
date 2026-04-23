@@ -1,6 +1,8 @@
 # Core vs legacy mobile — behavior parity checklist
 
-Primary Expo app: **`apps/core`** (`@deelbaar/core`). Legacy **`apps/mobile`** may be removed after everything here is true for Core.
+Primary Expo app: **`apps/core`** (`@deelbaar/core`). **`apps/mobile`** exists only during migration; once this checklist is satisfied for Core, **`apps/mobile` is removed** (no ongoing rebuild there).
+
+**Product vision and MVP direction:** repo **`docs/PRODUCT_VISION.md`**.
 
 Use this list when implementing or reviewing; tick items in your tracker of choice.
 
@@ -48,6 +50,7 @@ Use this list when implementing or reviewing; tick items in your tracker of choi
 
 ## Data and types
 
+- [x] Payload-backed hooks under **`apps/core/lib/hooks/data/`**; **`lib/hooks/index.ts`** barrel — see **`apps/core/README.md`**.
 - [ ] `pnpm copy:payload-types` updates **`apps/core/lib/types/payload-generated.ts`** (and CI runs it before build if needed).
 - [ ] Payload base URL correct per environment (`EXPO_PUBLIC_PAYLOAD_URL`).
 

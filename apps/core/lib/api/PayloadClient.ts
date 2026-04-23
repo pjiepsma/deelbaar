@@ -1,14 +1,25 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PayloadSDKError } from '@payloadcms/sdk';
 
 import type { User } from '~/lib/types/payload-generated';
 import type {
   CreateStripePaymentParams,
-  StripeAccountStatus,
   StripeConnectResponse,
   StripeDisconnectResponse,
   StripePaymentIntentResponse,
   StripeStatusResponse,
 } from '~/lib/types/stripe';
+
+import { getPayloadSdkLoose } from './payloadSdk';
+import {
+  clearPayloadRuntimeAuth,
+  getPayloadRuntimeAuthHeaders,
+  getPayloadRuntimeBaseUrl,
+  getPayloadRuntimeToken,
+  getPayloadRuntimeUser,
+  setPayloadRuntimeAuth,
+  setPayloadRuntimeBaseUrl,
+} from './payloadRuntime';
 
 export type PayloadUser = User;
 
@@ -40,18 +51,10 @@ function logBackendUnreachable(fullUrl: string, err: unknown) {
 }
 
 class PayloadAPIClient {
-  private baseUrl: string = '';
-  private token: string | null = null;
-  private user: PayloadUser | null = null;
-
-  constructor() {
-    // This will be set during init or can be configured
-  }
-
   async init(baseUrl?: string) {
     if (baseUrl) {
-      this.baseUrl = baseUrl;
-      console.log('[PayloadClient.init] Base URL set to:', this.baseUrl);
+      setPayloadRuntimeBaseUrl(baseUrl);
+      console.log('[PayloadClient.init] Base URL set to:', getPayloadRuntimeBaseUrl());
     } else {
       console.warn('[PayloadClient.init] No base URL provided!');
     }
@@ -60,25 +63,16 @@ class PayloadAPIClient {
     const storedUser = await AsyncStorage.getItem('auth_user');
 
     if (storedToken && storedUser) {
-      this.token = storedToken;
-      this.user = JSON.parse(storedUser);
+      setPayloadRuntimeAuth(storedToken, JSON.parse(storedUser));
     }
   }
 
   getBaseUrl() {
-    return this.baseUrl;
+    return getPayloadRuntimeBaseUrl();
   }
 
   getAuthHeaders(): Record<string, string> {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-
-    if (this.token) {
-      headers['Authorization'] = `JWT ${this.token}`;
-    }
-
-    return headers;
+    return getPayloadRuntimeAuthHeaders();
   }
 
   private async request<T = any>(
@@ -86,9 +80,9 @@ class PayloadAPIClient {
     options: RequestInit & { suppressErrorLogging?: number[] } = {}
   ): Promise<{ data?: T; error?: any }> {
     const { suppressErrorLogging = [], ...fetchOptions } = options;
-    const fullUrl = `${this.baseUrl}${endpoint}`;
+    const fullUrl = `${getPayloadRuntimeBaseUrl()}${endpoint}`;
 
-    if (!this.baseUrl?.trim()) {
+    if (!getPayloadRuntimeBaseUrl()?.trim()) {
       console.warn('[PayloadClient.request] Base URL is empty — set EXPO_PUBLIC_PAYLOAD_URL before calling the API.');
     }
 
@@ -156,7 +150,7 @@ class PayloadAPIClient {
 
   // Authentication
   async login(email: string, password: string) {
-    console.log('[PayloadClient] Login request to:', `${this.baseUrl}/api/users/login`);
+    console.log('[PayloadClient] Login request to:', `${getPayloadRuntimeBaseUrl()}/api/users/login`);
     console.log('[PayloadClient] Login email:', email);
 
     const { data, error } = await this.request<LoginResponse>(
@@ -183,7 +177,7 @@ class PayloadAPIClient {
   }
 
   async loginWithGoogle(idToken: string) {
-    console.log('[PayloadClient] Google login request to:', `${this.baseUrl}/api/users/google`);
+    console.log('[PayloadClient] Google login request to:', `${getPayloadRuntimeBaseUrl()}/api/users/google`);
 
     const { data, error } = await this.request<LoginResponse>('/api/users/google', {
       method: 'POST',
@@ -205,33 +199,42 @@ class PayloadAPIClient {
     return { data, error: null };
   }
 
-  // Wishlist/Book requests methods - using standard Payload collection API
+  private sdkLoose() {
+    return getPayloadSdkLoose();
+  }
+
+  private async sdkFindDocs404Empty(opts: {
+    collection: string;
+    where?: unknown;
+    limit?: number;
+    depth?: number;
+    sort?: string;
+    page?: number;
+  }): Promise<any[]> {
+    try {
+      const r = await this.sdkLoose().find(opts as any);
+      return r.docs ?? [];
+    } catch (e) {
+      if (e instanceof PayloadSDKError && e.status === 404) {
+        return [];
+      }
+      console.warn('[PayloadClient] collection find failed', e);
+      return [];
+    }
+  }
+
+  // Wishlist / book flows (collection slugs may not be in generated Config yet)
   async getBookWishes(): Promise<any[]> {
     try {
       if (!this.isAuthenticated()) {
         return [];
       }
-
-      // Suppress 404 error logging since collection may not exist yet
-      const { data, error } = await this.findMany('book-wishes', {
+      return this.sdkFindDocs404Empty({
+        collection: 'book-wishes',
         limit: 1000,
-        depth: 2, // Include user and other relations
-        suppressErrorLogging: [404], // Don't log 404 errors
+        depth: 2,
       });
-
-      if (error) {
-        // Handle 404 gracefully (collection doesn't exist yet) - silently return empty array
-        if (error.status === 404) {
-          return [];
-        }
-        // Only log non-404 errors
-        console.warn('[PayloadClient.getBookWishes] Error fetching book wishes:', error);
-        return [];
-      }
-
-      return data?.docs || [];
     } catch {
-      // Silently handle errors - collection may not exist
       return [];
     }
   }
@@ -244,41 +247,32 @@ class PayloadAPIClient {
     location?: {
       latitude: number;
       longitude: number;
-      radius: number; // km radius for notifications
+      radius: number;
     };
   }): Promise<any> {
+    if (!this.isAuthenticated()) {
+      throw new Error('Not authenticated');
+    }
     try {
-      if (!this.isAuthenticated()) {
-        throw new Error('Not authenticated');
-      }
-
-      const { data, error } = await this.create('book-wishes', wishData);
-
-      if (error) {
-        throw new Error(error.message || 'Failed to create book wish');
-      }
-
-      return data;
-    } catch (error: any) {
-      console.warn('[PayloadClient.createBookWish] Error:', error);
-      throw error;
+      return await this.sdkLoose().create({
+        collection: 'book-wishes',
+        data: wishData,
+      });
+    } catch (e: any) {
+      console.warn('[PayloadClient.createBookWish] Error:', e);
+      throw e instanceof PayloadSDKError ? new Error(e.message || 'Failed to create book wish') : e;
     }
   }
 
   async deleteBookWish(wishId: string): Promise<void> {
+    if (!this.isAuthenticated()) {
+      throw new Error('Not authenticated');
+    }
     try {
-      if (!this.isAuthenticated()) {
-        throw new Error('Not authenticated');
-      }
-
-      const { error } = await this.delete('book-wishes', wishId);
-
-      if (error) {
-        throw new Error(error.message || 'Failed to delete book wish');
-      }
-    } catch (error: any) {
-      console.warn('[PayloadClient.deleteBookWish] Error:', error);
-      throw error;
+      await this.sdkLoose().delete({ collection: 'book-wishes', id: wishId });
+    } catch (e: any) {
+      console.warn('[PayloadClient.deleteBookWish] Error:', e);
+      throw e instanceof PayloadSDKError ? new Error(e.message || 'Failed to delete book wish') : e;
     }
   }
 
@@ -291,72 +285,39 @@ class PayloadAPIClient {
       if (!this.isAuthenticated()) {
         return [];
       }
-
-      // Build where clause for matching
-      const where: any = {};
-
+      const where: Record<string, unknown> = {};
       if (bookData.title) {
         where.title = { contains: bookData.title };
       }
-
       if (bookData.author) {
         where.author = { contains: bookData.author };
       }
-
       if (bookData.isbn) {
         where.isbn = { equals: bookData.isbn };
       }
-
-      // Suppress 404 error logging since collection may not exist yet
-      const { data, error } = await this.findMany('book-wishes', {
+      return this.sdkFindDocs404Empty({
+        collection: 'book-wishes',
         where,
         limit: 100,
-        depth: 2, // Include user and other relations
-        suppressErrorLogging: [404], // Don't log 404 errors
+        depth: 2,
       });
-
-      if (error) {
-        // Handle 404 gracefully (collection doesn't exist yet) - silently return empty array
-        if (error.status === 404) {
-          return [];
-        }
-        // Only log non-404 errors
-        console.warn('[PayloadClient.getMatchingWishes] Error:', error);
-        return [];
-      }
-
-      return data?.docs || [];
     } catch {
-      // Silently handle errors - collection may not exist
       return [];
     }
   }
 
-  // Product offerings methods (for farm stands, repair cafes, etc.) - using standard Payload collection API
   async getProductOfferings(listingId?: string): Promise<any[]> {
     try {
       if (!this.isAuthenticated()) {
         return [];
       }
-
       const where = listingId ? { listing: { equals: listingId } } : undefined;
-
-      const { data, error } = await this.findMany('product-offerings', {
+      return this.sdkFindDocs404Empty({
+        collection: 'product-offerings',
         where,
         limit: 1000,
-        depth: 2, // Include listing and other relations
-        suppressErrorLogging: [404], // Don't log 404 errors if collection doesn't exist
+        depth: 2,
       });
-
-      if (error) {
-        if (error.status === 404) {
-          return [];
-        }
-        console.warn('[PayloadClient.getProductOfferings] Error:', error);
-        return [];
-      }
-
-      return data?.docs || [];
     } catch {
       return [];
     }
@@ -367,28 +328,24 @@ class PayloadAPIClient {
     productName: string;
     description?: string;
     quantity?: number;
-    unit?: string; // kg, stuks, liter, etc.
+    unit?: string;
     price?: number;
     availableUntil?: string;
     category?: string;
     usageInstructions?: string;
     photos?: string[];
   }): Promise<any> {
+    if (!this.isAuthenticated()) {
+      throw new Error('Not authenticated');
+    }
     try {
-      if (!this.isAuthenticated()) {
-        throw new Error('Not authenticated');
-      }
-
-      const { data, error } = await this.create('product-offerings', offeringData);
-
-      if (error) {
-        throw new Error(error.message || 'Failed to create product offering');
-      }
-
-      return data;
-    } catch (error: any) {
-      console.warn('[PayloadClient.createProductOffering] Error:', error);
-      throw error;
+      return await this.sdkLoose().create({
+        collection: 'product-offerings',
+        data: offeringData,
+      });
+    } catch (e: any) {
+      console.warn('[PayloadClient.createProductOffering] Error:', e);
+      throw e instanceof PayloadSDKError ? new Error(e.message || 'Failed to create product offering') : e;
     }
   }
 
@@ -400,159 +357,121 @@ class PayloadAPIClient {
       description?: string;
     }
   ): Promise<any> {
+    if (!this.isAuthenticated()) {
+      throw new Error('Not authenticated');
+    }
     try {
-      if (!this.isAuthenticated()) {
-        throw new Error('Not authenticated');
-      }
-
-      const { data, error } = await this.update('product-offerings', offeringId, updates);
-
-      if (error) {
-        throw new Error(error.message || 'Failed to update product offering');
-      }
-
-      return data;
-    } catch (error: any) {
-      console.warn('[PayloadClient.updateProductOffering] Error:', error);
-      throw error;
+      return await this.sdkLoose().update({
+        collection: 'product-offerings',
+        id: offeringId,
+        data: updates,
+      });
+    } catch (e: any) {
+      console.warn('[PayloadClient.updateProductOffering] Error:', e);
+      throw e instanceof PayloadSDKError ? new Error(e.message || 'Failed to update product offering') : e;
     }
   }
 
   async deleteProductOffering(offeringId: string): Promise<void> {
+    if (!this.isAuthenticated()) {
+      throw new Error('Not authenticated');
+    }
     try {
-      if (!this.isAuthenticated()) {
-        throw new Error('Not authenticated');
-      }
-
-      const { error } = await this.delete('product-offerings', offeringId);
-
-      if (error) {
-        throw new Error(error.message || 'Failed to delete product offering');
-      }
-    } catch (error: any) {
-      console.warn('[PayloadClient.deleteProductOffering] Error:', error);
-      throw error;
+      await this.sdkLoose().delete({ collection: 'product-offerings', id: offeringId });
+    } catch (e: any) {
+      console.warn('[PayloadClient.deleteProductOffering] Error:', e);
+      throw e instanceof PayloadSDKError ? new Error(e.message || 'Failed to delete product offering') : e;
     }
   }
 
-  // Product favorites/following - using standard Payload collection API
   async getProductFavorites(): Promise<any[]> {
     try {
       if (!this.isAuthenticated()) {
         return [];
       }
-
-      const { data, error } = await this.findMany('product-favorites', {
+      return this.sdkFindDocs404Empty({
+        collection: 'product-favorites',
         limit: 1000,
-        depth: 2, // Include offering and user relations
-        suppressErrorLogging: [404], // Don't log 404 errors if collection doesn't exist
+        depth: 2,
       });
-
-      if (error) {
-        if (error.status === 404) {
-          return [];
-        }
-        console.warn('[PayloadClient.getProductFavorites] Error:', error);
-        return [];
-      }
-
-      return data?.docs || [];
     } catch {
       return [];
     }
   }
 
   async toggleProductFavorite(offeringId: string): Promise<any> {
+    if (!this.isAuthenticated()) {
+      throw new Error('Not authenticated');
+    }
     try {
-      if (!this.isAuthenticated()) {
-        throw new Error('Not authenticated');
-      }
-
-      // Check if favorite already exists
-      const { data: existing } = await this.findMany('product-favorites', {
+      const uid = getPayloadRuntimeUser()?.id;
+      const existing = await this.sdkLoose().find({
+        collection: 'product-favorites',
         where: {
           offering: { equals: offeringId },
-          user: { equals: this.user?.id },
+          user: { equals: uid },
         },
         limit: 1,
       });
 
-      if (existing?.docs && existing.docs.length > 0) {
-        // Delete existing favorite
-        const { error } = await this.delete('product-favorites', existing.docs[0].id);
-        if (error) {
-          throw new Error(error.message || 'Failed to remove product favorite');
-        }
-        return { favorited: false };
-      } else {
-        // Create new favorite
-        const { data, error } = await this.create('product-favorites', {
-          offering: offeringId,
+      if (existing.docs?.length > 0) {
+        await this.sdkLoose().delete({
+          collection: 'product-favorites',
+          id: existing.docs[0].id,
         });
-        if (error) {
-          throw new Error(error.message || 'Failed to add product favorite');
-        }
-        return { favorited: true, data };
+        return { favorited: false };
       }
-    } catch (error: any) {
-      console.warn('[PayloadClient.toggleProductFavorite] Error:', error);
-      throw error;
+
+      const data = await this.sdkLoose().create({
+        collection: 'product-favorites',
+        data: { offering: offeringId },
+      });
+      return { favorited: true, data };
+    } catch (e: any) {
+      console.warn('[PayloadClient.toggleProductFavorite] Error:', e);
+      throw e;
     }
   }
 
-  // Report product as out of stock - using standard Payload collection API
   async reportOutOfStock(offeringId: string, reporterNote?: string): Promise<any> {
+    if (!this.isAuthenticated()) {
+      throw new Error('Not authenticated');
+    }
+    const updateData: Record<string, unknown> = {
+      status: 'out_of_stock',
+    };
+    if (reporterNote) {
+      updateData.notes = reporterNote;
+    }
     try {
-      if (!this.isAuthenticated()) {
-        throw new Error('Not authenticated');
-      }
-
-      // Update the offering status to out_of_stock
-      const updateData: any = {
-        status: 'out_of_stock',
-      };
-
-      if (reporterNote) {
-        // If there's a notes field or we need to store the reporter note
-        // This might need to be adjusted based on your schema
-        updateData.notes = reporterNote;
-      }
-
-      const { data, error } = await this.update('product-offerings', offeringId, updateData);
-
-      if (error) {
-        throw new Error(error.message || 'Failed to report out of stock');
-      }
-
-      return data;
-    } catch (error: any) {
-      console.warn('[PayloadClient.reportOutOfStock] Error:', error);
-      throw error;
+      return await this.sdkLoose().update({
+        collection: 'product-offerings',
+        id: offeringId,
+        data: updateData,
+      });
+    } catch (e: any) {
+      console.warn('[PayloadClient.reportOutOfStock] Error:', e);
+      throw e instanceof PayloadSDKError ? new Error(e.message || 'Failed to report out of stock') : e;
     }
   }
 
-  // Tool reservations for Repair Cafés - using standard Payload collection API
   async createToolReservation(reservationData: {
     toolId: string;
-    startDate: string; // ISO string
-    duration: number; // in hours
+    startDate: string;
+    duration: number;
     notes?: string;
   }): Promise<any> {
+    if (!this.isAuthenticated()) {
+      throw new Error('Not authenticated');
+    }
     try {
-      if (!this.isAuthenticated()) {
-        throw new Error('Not authenticated');
-      }
-
-      const { data, error } = await this.create('tool-reservations', reservationData);
-
-      if (error) {
-        throw new Error(error.message || 'Failed to create tool reservation');
-      }
-
-      return data;
-    } catch (error: any) {
-      console.warn('[PayloadClient.createToolReservation] Error:', error);
-      throw error;
+      return await this.sdkLoose().create({
+        collection: 'tool-reservations',
+        data: reservationData,
+      });
+    } catch (e: any) {
+      console.warn('[PayloadClient.createToolReservation] Error:', e);
+      throw e instanceof PayloadSDKError ? new Error(e.message || 'Failed to create tool reservation') : e;
     }
   }
 
@@ -561,59 +480,43 @@ class PayloadAPIClient {
       if (!this.isAuthenticated()) {
         return [];
       }
-
       const where = toolId ? { tool: { equals: toolId } } : undefined;
-
-      const { data, error } = await this.findMany('tool-reservations', {
+      return this.sdkFindDocs404Empty({
+        collection: 'tool-reservations',
         where,
         limit: 1000,
-        depth: 2, // Include tool and user relations
-        suppressErrorLogging: [404], // Don't log 404 errors if collection doesn't exist
+        depth: 2,
       });
-
-      if (error) {
-        if (error.status === 404) {
-          return [];
-        }
-        console.warn('[PayloadClient.getToolReservations] Error:', error);
-        return [];
-      }
-
-      return data?.docs || [];
     } catch {
       return [];
     }
   }
 
-  // Product offering approval system - using standard Payload collection API
   async approveProductOffering(
     offeringId: string,
     approved: boolean,
     rejectionReason?: string
   ): Promise<any> {
+    if (!this.isAuthenticated()) {
+      throw new Error('Not authenticated');
+    }
+    const updateData: Record<string, unknown> = {
+      status: approved ? 'approved' : 'rejected',
+    };
+    if (rejectionReason) {
+      updateData.rejectionReason = rejectionReason;
+    }
     try {
-      if (!this.isAuthenticated()) {
-        throw new Error('Not authenticated');
-      }
-
-      const updateData: any = {
-        status: approved ? 'approved' : 'rejected',
-      };
-
-      if (rejectionReason) {
-        updateData.rejectionReason = rejectionReason;
-      }
-
-      const { data, error } = await this.update('product-offerings', offeringId, updateData);
-
-      if (error) {
-        throw new Error(error.message || 'Failed to approve/reject product offering');
-      }
-
-      return data;
-    } catch (error: any) {
-      console.warn('[PayloadClient.approveProductOffering] Error:', error);
-      throw error;
+      return await this.sdkLoose().update({
+        collection: 'product-offerings',
+        id: offeringId,
+        data: updateData,
+      });
+    } catch (e: any) {
+      console.warn('[PayloadClient.approveProductOffering] Error:', e);
+      throw e instanceof PayloadSDKError
+        ? new Error(e.message || 'Failed to approve/reject product offering')
+        : e;
     }
   }
 
@@ -622,26 +525,15 @@ class PayloadAPIClient {
       if (!this.isAuthenticated()) {
         return [];
       }
-
-      const { data, error } = await this.findMany('product-offerings', {
+      return this.sdkFindDocs404Empty({
+        collection: 'product-offerings',
         where: {
           listing: { equals: listingId },
           status: { equals: 'pending' },
         },
         limit: 1000,
         depth: 2,
-        suppressErrorLogging: [404],
       });
-
-      if (error) {
-        if (error.status === 404) {
-          return [];
-        }
-        console.warn('[PayloadClient.getPendingProductOfferings] Error:', error);
-        return [];
-      }
-
-      return data?.docs || [];
     } catch {
       return [];
     }
@@ -686,7 +578,7 @@ class PayloadAPIClient {
   }
 
   async register(email: string, password: string, additionalData?: any) {
-    console.log('[PayloadClient] Register request to:', `${this.baseUrl}/api/users`);
+    console.log('[PayloadClient] Register request to:', `${getPayloadRuntimeBaseUrl()}/api/users`);
     console.log('[PayloadClient] Register email:', email);
 
     const registerData = {
@@ -749,8 +641,7 @@ class PayloadAPIClient {
 
   async logout() {
     await AsyncStorage.multiRemove(['auth_token', 'auth_user']);
-    this.token = null;
-    this.user = null;
+    clearPayloadRuntimeAuth();
   }
 
   async resendVerificationEmail() {
@@ -821,8 +712,7 @@ class PayloadAPIClient {
 
     if (data) {
       console.log('[PayloadClient] Password reset successful, storing token');
-      this.token = data.token;
-      this.user = data.user;
+      setPayloadRuntimeAuth(data.token, data.user);
       await AsyncStorage.setItem('auth_token', data.token);
       await AsyncStorage.setItem('auth_user', JSON.stringify(data.user));
     }
@@ -835,76 +725,21 @@ class PayloadAPIClient {
   }
 
   getToken() {
-    return this.token;
+    return getPayloadRuntimeToken();
   }
 
   getUser() {
-    return this.user;
+    return getPayloadRuntimeUser();
   }
 
   private async persistSession(session: LoginResponse) {
-    this.token = session.token;
-    this.user = session.user;
+    setPayloadRuntimeAuth(session.token, session.user);
     await AsyncStorage.setItem('auth_token', session.token);
     await AsyncStorage.setItem('auth_user', JSON.stringify(session.user));
   }
 
   isAuthenticated() {
-    return !!this.token;
-  }
-
-  // Generic CRUD operations
-  async findMany<T = any>(
-    collection: string,
-    params?: {
-      where?: any;
-      limit?: number;
-      page?: number;
-      sort?: string;
-      depth?: number;
-      select?: any;
-      suppressErrorLogging?: number[]; // Allow suppressing error logging for specific status codes
-    }
-  ) {
-    const { suppressErrorLogging, ...queryParams } = params || {};
-    const urlParams = new URLSearchParams();
-    if (queryParams.where) urlParams.append('where', JSON.stringify(queryParams.where));
-    if (queryParams.limit) urlParams.append('limit', queryParams.limit.toString());
-    if (queryParams.page) urlParams.append('page', queryParams.page.toString());
-    if (queryParams.sort) urlParams.append('sort', queryParams.sort);
-    if (queryParams.depth !== undefined) urlParams.append('depth', queryParams.depth.toString());
-    if (queryParams.select) urlParams.append('select', JSON.stringify(queryParams.select));
-
-    const query = urlParams.toString();
-    return this.request<{ docs: T[]; totalDocs: number; limit: number; page: number }>(
-      `/api/${collection}${query ? `?${query}` : ''}`,
-      { suppressErrorLogging }
-    );
-  }
-
-  async findById<T = any>(collection: string, id: string, depth?: number) {
-    const query = depth !== undefined ? `?depth=${depth}` : '';
-    return this.request<T>(`/api/${collection}/${id}${query}`);
-  }
-
-  async create<T = any>(collection: string, data: any) {
-    return this.request<T>(`/api/${collection}`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async update<T = any>(collection: string, id: string, data: any) {
-    return this.request<T>(`/api/${collection}/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async delete(collection: string, id: string) {
-    return this.request(`/api/${collection}/${id}`, {
-      method: 'DELETE',
-    });
+    return !!getPayloadRuntimeToken();
   }
 
   // File upload
@@ -915,11 +750,12 @@ class PayloadAPIClient {
 
     try {
       const headers: HeadersInit = {};
-      if (this.token) {
-        headers['Authorization'] = `JWT ${this.token}`;
+      const t = getPayloadRuntimeToken();
+      if (t) {
+        headers['Authorization'] = `JWT ${t}`;
       }
 
-      const response = await fetch(`${this.baseUrl}/api/media`, {
+      const response = await fetch(`${getPayloadRuntimeBaseUrl()}/api/media`, {
         method: 'POST',
         headers,
         body: formData,
@@ -938,7 +774,7 @@ class PayloadAPIClient {
   }
 
   getFileUrl(mediaId: string) {
-    return `${this.baseUrl}/api/media/file/${mediaId}`;
+    return `${getPayloadRuntimeBaseUrl()}/api/media/file/${mediaId}`;
   }
 }
 

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Button } from 'heroui-native/button';
 import { Card } from 'heroui-native/card';
 import { Chip } from 'heroui-native/chip';
@@ -40,6 +40,9 @@ export default function AccountTabScreen() {
 
   const accountRole = profile?.role || (user ? t('accountTab.roleMember') : t('accountTab.roleGuest'));
 
+  /** HeroUI `profile` is `user` from UserProvider; check both so session actions never disappear if one ref lags. */
+  const isSignedIn = Boolean(user?.id || profile?.id || user?.email || profile?.email);
+
   const handleSignOut = () => {
     Alert.alert(t('accountTab.confirmSignOutTitle'), t('accountTab.confirmSignOutBody'), [
       { text: t('accountTab.cancel'), style: 'cancel' },
@@ -79,6 +82,36 @@ export default function AccountTabScreen() {
           <Text className="text-sm text-muted">
             {t('accountTab.email')}: {profile?.email || t('accountTab.notSignedIn')}
           </Text>
+          <Separator className="my-2" />
+          {isSignedIn ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('accountTab.signOut')}
+              onPress={handleSignOut}
+              style={({ pressed }) => [
+                styles.sessionPrimaryBtn,
+                styles.signOutBtn,
+                pressed && styles.signOutBtnPressed,
+              ]}>
+              <Text style={[styles.sessionPrimaryBtnLabel, styles.signOutPrimaryText]}>
+                {t('accountTab.signOut')}
+              </Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('accountTab.signIn')}
+              onPress={() => router.push('/login')}
+              style={({ pressed }) => [
+                styles.sessionPrimaryBtn,
+                styles.signInBtn,
+                pressed && styles.signInBtnPressed,
+              ]}>
+              <Text style={[styles.sessionPrimaryBtnLabel, styles.signInPrimaryText]}>
+                {t('accountTab.signIn')}
+              </Text>
+            </Pressable>
+          )}
         </Card.Body>
       </Card>
 
@@ -93,7 +126,7 @@ export default function AccountTabScreen() {
               <Button
                 key={option}
                 size="sm"
-                variant={themePreference === option ? 'solid' : 'secondary'}
+                variant={themePreference === option ? 'primary' : 'secondary'}
                 onPress={() => setThemePreference(option)}>
                 {option}
               </Button>
@@ -113,7 +146,7 @@ export default function AccountTabScreen() {
               <Button
                 key={option}
                 size="sm"
-                variant={localePreference === option ? 'solid' : 'secondary'}
+                variant={localePreference === option ? 'primary' : 'secondary'}
                 onPress={() => setLocalePreference(option)}>
                 {option}
               </Button>
@@ -144,13 +177,9 @@ export default function AccountTabScreen() {
           <Card.Description>{t('accountTab.sessionHelp')}</Card.Description>
         </Card.Header>
         <Card.Body>
-          {!user ? (
-            <Button onPress={() => router.push('/login')}>{t('accountTab.signIn')}</Button>
-          ) : (
-            <Button color="danger" variant="secondary" onPress={handleSignOut}>
-              {t('accountTab.signOut')}
-            </Button>
-          )}
+          <Text className="text-sm text-muted">
+            {isSignedIn ? t('accountTab.sessionSignedInHint') : t('accountTab.sessionGuestHint')}
+          </Text>
         </Card.Body>
       </Card>
 
@@ -161,7 +190,7 @@ export default function AccountTabScreen() {
         <Card.Body className="gap-1">
           <Text className="text-sm text-muted">
             {t('accountTab.diagnosticsAuthStatus')}:{' '}
-            {user ? t('accountTab.authIn') : t('accountTab.authOut')}
+            {isSignedIn ? t('accountTab.authIn') : t('accountTab.authOut')}
           </Text>
           <Text className="text-sm text-muted">
             {t('accountTab.diagnosticsThemeActive')}: {resolvedTheme}
@@ -184,3 +213,38 @@ export default function AccountTabScreen() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  sessionPrimaryBtn: {
+    alignSelf: 'stretch',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  sessionPrimaryBtnLabel: {
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  signOutPrimaryText: {
+    color: '#991b1b',
+  },
+  signInPrimaryText: {
+    color: '#1e3a8a',
+  },
+  signOutBtn: {
+    backgroundColor: '#fee2e2',
+    borderColor: '#ef4444',
+  },
+  signOutBtnPressed: {
+    backgroundColor: '#fecaca',
+  },
+  signInBtn: {
+    backgroundColor: '#dbeafe',
+    borderColor: '#3b82f6',
+  },
+  signInBtnPressed: {
+    backgroundColor: '#bfdbfe',
+  },
+});

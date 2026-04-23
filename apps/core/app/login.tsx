@@ -5,7 +5,7 @@ import { Input } from 'heroui-native/input';
 import { Spinner } from 'heroui-native/spinner';
 import { Alert, Text, View } from 'react-native';
 
-import { payloadClient } from '~/lib/api/PayloadClient';
+import { getPayloadSdk, payloadSdkTry } from '~/lib/api/payloadSdk';
 import { useAuth } from '~/lib/providers/AuthProvider';
 
 export default function Login() {
@@ -57,12 +57,17 @@ export default function Login() {
 
     setLoading(true);
     try {
-      const { error } = await payloadClient.create('users', {
-        email,
-        password,
-        role: 'user',
-        isAnonymous: false,
-      });
+      const { error } = await payloadSdkTry(() =>
+        getPayloadSdk().create({
+          collection: 'users',
+          data: {
+            email,
+            password,
+            role: 'user',
+            isAnonymous: false,
+          },
+        })
+      );
 
       if (error) {
         Alert.alert('Sign Up Failed', error.message);

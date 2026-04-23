@@ -2,6 +2,7 @@
 export const en = {
   tabs: {
     map: 'Map',
+    sheetPlayground: 'Sheet',
     favorites: 'Favorites',
     myHome: 'My shelves',
     account: 'Account',
@@ -124,6 +125,8 @@ export const en = {
     goToMap: 'Go to map',
     sessionTitle: 'Session',
     sessionHelp: 'Manage your session. If signed out, you can sign in again.',
+    sessionSignedInHint: 'Use the red Sign out button in the Account card above to end your session.',
+    sessionGuestHint: 'Use the blue Sign in button in the Account card above to log in.',
     signIn: 'Sign in',
     signOut: 'Sign out',
     confirmSignOutTitle: 'Sign out',

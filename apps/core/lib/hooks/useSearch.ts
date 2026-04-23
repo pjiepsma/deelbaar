@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { payloadClient } from '../api/PayloadClient'
+import { getPayloadSdk, payloadSdkTry } from '../api/payloadSdk'
 import { ListingRecord } from '../types/models'
 
 interface SearchOptions {
@@ -55,11 +55,14 @@ export function useListingsSearch(query: string, options?: SearchOptions) {
       }
 
       // Execute search
-      const { data, error } = await payloadClient.findMany('listings', {
-        where,
-        limit: 50,
-        depth: 2,
-      })
+      const { data, error } = await payloadSdkTry(() =>
+        getPayloadSdk().find({
+          collection: 'listings',
+          where,
+          limit: 50,
+          depth: 2,
+        })
+      )
 
       if (error) {
         console.error('[useListingsSearch] Error:', error)

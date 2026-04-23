@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } fr
 
 import apeldoornListings from '../scripts/seedApeldoornMinibiebs.json';
 
-import { payloadClient } from '~/lib/api/PayloadClient';
+import { getPayloadSdk, payloadSdkTry } from '~/lib/api/payloadSdk';
 import { useAuth } from '~/lib/providers/AuthProvider';
 
 /**
@@ -32,7 +32,9 @@ export default function SeedMinibiebs() {
           owner: user.id, // Set current user as owner
         };
 
-        const { data, error } = await payloadClient.create('listings', listingData);
+        const { data, error } = await payloadSdkTry(() =>
+          getPayloadSdk().create({ collection: 'listings', data: listingData })
+        );
 
         if (error) {
           newResults.push(`❌ ${listing.name}: ${error.message}`);

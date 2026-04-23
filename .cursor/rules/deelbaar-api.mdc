@@ -1,0 +1,71 @@
+---
+description: Deelbaar apps/core — API layers, TanStack Query, providers, folder layout (Payload + offline sync)
+globs: apps/core/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# API & data architecture (`apps/core`)
+
+## Layers (top → bottom)
+
+1. **UI** (`app/`, `components/`) — no direct `fetch`; use hooks or thin handlers.
+2. **Server state** — **TanStack Query** (`useQuery` / `useMutation`): cache, retries, `placeholderData` for GPS-sensitive keys (see `useNearbyListings`).
+3. **Domain / repositories** — one module per area under `lib/api/<domain>/` (e.g. `listings/nearby.ts`, `auth/session.ts`). Functions call **`getPayloadSdk()`** for typed Payload REST ([REST SDK](https://payloadcms.com/docs/rest-api/overview#payload-rest-api-sdk)) or **`payloadClient.request()`** for custom Next routes until migrated. **No new 500-line god files.**
+4. **Transport** — **`payloadRuntime.ts`** holds base URL + JWT for **`getPayloadSdk()`** (`payloadSdk.ts`). Call **`payloadClient.init()`** first (loads URL + session into runtime). **`payloadClient`**: `request()`, auth, multipart **`uploadFile`**, Stripe, and typed **domain helpers** (books/products/reservations) that call the SDK internally.
+5. **Offline** — **`SyncManager`**, **`SQLiteManager`**, **`FileQueueManager`** stay the single write path for queued mutations; they may call `payloadClient` to flush — do not duplicate sync logic inside random hooks.
+
+## Providers (React Native–idiomatic)
+
+- **`QueryProvider`** — owns the **singleton `QueryClient`** (already). Prefer stable defaults here (`staleTime`, `retry`), not scattered per hook unless justified.
+- **`AuthProvider`** — owns **session** (`user`, `token`) and **`payloadClient.init`**. Keep side effects ordered: `init` → restore session → optional `syncManager.init`. Do not init Payload from random screens.
+- **Avoid** a second global “API context” unless you need **injectable fetch** for tests; otherwise **`getPayloadSdk()`** after init is enough.
+- **Context rule** — use Context for **identity + theme + locale**; use **Query** for **server lists and documents**; use **local state** for ephemeral UI only.
+
+## Hooks organization
+
+- **Domain modules** — Payload/React Query hooks live under **`lib/hooks/data/`** (`useListingQueries`, `useUserQueries`, `useReviewQueries`, `useUploadQueries`). Optional barrel: **`lib/hooks/index.ts`**.
+- **Naming** — `use<ListingsNearby>` next to `lib/api/listings/nearby.ts` query function `fetchListingsNearby` so `queryKey` + fetch live together or import from domain module.
+- **Logging** — prefer structured `__DEV__` logs or remove noisy `console.log` from hot paths once stable.
+
+## Payload: SDK + client (mandatory default)
+
+- **MUST** use **`getPayloadSdk()`** from `lib/api/payloadSdk.ts` for **collection / global** REST — typed with `Config` from `payload-generated.ts`. Slugs not in generated types: **`getPayloadSdkLoose()`** (same fetch, untyped collection). Export name is **`getPayloadSdk`** (camelCase).
+- **`payloadClient.findMany` / `findById` / `create` / `update` / `delete`** — **removed**; do not reintroduce raw REST shims on the client.
+- **`payloadSdkTry`** — optional `{ data, error }` wrapper for hooks; otherwise **`PayloadSDKError`** + `try`/`catch`.
+- **Keep** `payloadClient.request('/api/…')` for **custom app routes** (e.g. `/api/listings/nearby`) until wrapped under `lib/api/<domain>/`.
+- **`payloadClient` still owns** — **`init`**, **`request`**, **`login`** / session / **`me`**, **`uploadFile`**, **Stripe**, and **domain façade methods** that delegate to the SDK.
+
+## Folder layout (target)
+
+```text
+lib/
+  api/
+    payloadRuntime.ts      # base URL + JWT (no React)
+    payloadSdk.ts          # getPayloadSdk(), payloadSdkTry, getPayloadSdkLoose
+    PayloadClient.ts       # request, auth, upload, Stripe, domain façades → SDK
+    listings/
+      nearby.ts            # custom route + types
+      keys.ts              # shared query keys (optional)
+    auth/
+      …                    # session-related API (optional)
+  hooks/
+    data/                  # useListingQueries, useUserQueries, useReviewQueries, useUploadQueries
+    index.ts               # optional barrel
+    useLocationQueries.ts  # map / nearby GPS queries
+  providers/               # unchanged names; thin providers
+  storage/                 # sync/sqlite/queue — unchanged responsibility
+```
+
+## Anti-patterns
+
+- Re-adding **ad-hoc REST** on **`payloadClient`** instead of **`getPayloadSdk()`** / domain façades.
+- Duplicating Payload REST in components — use a **hook** or **`lib/api/<domain>/`** function.
+- **Hooks that import SyncManager + payloadClient + sqlite** for unrelated concerns — split or move orchestration to a small service module.
+- **Side effects in render** — use `useEffect` or event handlers; moderation polling belongs in a dedicated hook with clear lifecycle.
+
+## References
+
+- TanStack Query: [Query basics](https://tanstack.com/query/latest/docs/framework/react/guides/queries)
+- Payload REST SDK: [Overview](https://payloadcms.com/docs/rest-api/overview#payload-rest-api-sdk)
+- Align with QD-P pattern: `PayloadSDK` + custom `fetch` (see repo `payloadSdk.ts`).
+- Strict Payload / query typing: **`.cursor/rules/payload-strict-types.mdc`**.

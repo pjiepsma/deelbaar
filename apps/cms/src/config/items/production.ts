@@ -4,7 +4,11 @@ import { defaultConfig } from './default'
 export const productionConfig = createConfig({
   secret: process.env.PAYLOAD_SECRET || '',
   url: process.env.BACKEND_URL || 'http://localhost:4000',
-  databaseURI: process.env.DATABASE_URI || 'mongodb://mongo:27017/payload',
+  databaseURI:
+    process.env.MONGODB_URI ||
+    process.env.DATABASE_URL ||
+    process.env.DATABASE_URI ||
+    'mongodb://mongo:27017/payload',
   title: process.env.SITE_TITLE || 'Deelbaar API',
   corsCsrfUrls: [
     process.env.BACKEND_URL || 'http://localhost:4000',

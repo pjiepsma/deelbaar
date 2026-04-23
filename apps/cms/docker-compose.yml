@@ -17,9 +17,9 @@ services:
       - .env
     environment:
       - SELECTED_CONFIG=${SELECTED_CONFIG:-default}
-      - DATABASE_URI=mongodb://mongo/payload
+      - MONGODB_URI=mongodb://mongo:27017/payload
 
-  # Ensure your DATABASE_URI uses 'mongo' as the hostname ie. mongodb://mongo/my-db-name
+  # Use MONGODB_URI (QD-P style); DATABASE_URL / DATABASE_URI also supported by config.
   mongo:
     image: mongo:latest
     ports:

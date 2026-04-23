@@ -6,11 +6,12 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 import DefaultCard from '~/components/map/molecules/DefaultCard';
 import ListingCard from '~/components/map/molecules/ListingCard';
-import { useToggleFavorite } from '~/lib/hooks/usePayloadQuery';
-import { useAuth } from '~/lib/providers/AuthProvider';
+import { CARD_HEIGHT, CARD_WIDTH } from '~/lib/constants/listings';
 import { ListingRecord } from '~/lib/types/models';
 
 const { width: screenWidth } = Dimensions.get('window');
+const CAROUSEL_ITEM_WIDTH = Math.min(Math.round(CARD_WIDTH + 24), Math.round(screenWidth));
+const CAROUSEL_ITEM_HEIGHT = Math.round(CARD_HEIGHT + 44);
 
 interface Props {
   category: string;
@@ -23,12 +24,11 @@ const ListingCarousel = ({ category, listing, listings, setListing }: Props) => 
   const carouselRef = useRef<ICarouselInstance>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const SNAPPOINTS = ['7%', '30%'];
-  const { user } = useAuth();
   const router = useRouter();
   const baseOptions = {
-    vertical: false,
-    width: screenWidth * 0.9,
-    height: 160, // Reduced from 260 to give more map space
+    vertical: false as const,
+    width: CAROUSEL_ITEM_WIDTH,
+    height: CAROUSEL_ITEM_HEIGHT,
   };
 
   useEffect(() => {
@@ -88,7 +88,7 @@ const ListingCarousel = ({ category, listing, listings, setListing }: Props) => 
       ref={bottomSheetRef}
       snapPoints={SNAPPOINTS}
       backgroundStyle={{ backgroundColor: '#f4f4e8' }}>
-      <View style={styles.container}>
+      <View style={[styles.container, { minHeight: CAROUSEL_ITEM_HEIGHT + 8 }]}>
         {/* Small count badge only - BottomSheet has its own drag handle */}
         {listings.length > 0 && (
           <View style={styles.countBadge}>
@@ -99,8 +99,9 @@ const ListingCarousel = ({ category, listing, listings, setListing }: Props) => 
           <Carousel
             {...baseOptions}
             loop={false}
+            autoFillData={false}
             ref={carouselRef}
-            windowSize={2}
+            windowSize={5}
             style={styles.carousel}
             data={listings}
             onSnapToItem={(index: number) => setListing(listings[index])}
@@ -138,10 +139,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   carousel: {
-    width: '100%',
-    height: '100%',
     backgroundColor: '#f4f4e8',
-    justifyContent: 'center',
   },
 });
 

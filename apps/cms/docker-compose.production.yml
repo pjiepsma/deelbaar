@@ -12,7 +12,7 @@ services:
         - NEXT_PUBLIC_SENTRY_DSN=${NEXT_PUBLIC_SENTRY_DSN:-}
         - PAYLOAD_SECRET=${PAYLOAD_SECRET:-dummy-secret-for-build-only}
         - SELECTED_CONFIG=${SELECTED_CONFIG:-production}
-    container_name: deelbaar-api
+    container_name: deelbaar-payload
     restart: unless-stopped
     ports:
       - '4000:4000'
@@ -22,7 +22,7 @@ services:
     environment:
       - NODE_ENV=production
       - SELECTED_CONFIG=production
-      - DATABASE_URI=mongodb://mongo:27017/payload
+      - MONGODB_URI=mongodb://mongo:27017/payload
       - PAYLOAD_SECRET=${PAYLOAD_SECRET}
       - BACKEND_URL=${BACKEND_URL:-http://localhost:4000}
       - FRONTEND_URL=${FRONTEND_URL}

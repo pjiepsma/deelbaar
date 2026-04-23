@@ -1,0 +1,71 @@
+---
+description: Greenfield rebuild in apps/core — HeroUI Native first, doc-faithful UI, no half-legacy patches
+globs: apps/core/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Greenfield Core (`apps/core`)
+
+Treat **`apps/core` as a new app**: prefer **clear, doc-aligned** implementations over incremental hacks on old patterns unless the user explicitly asks to patch legacy.
+
+## UI library (source of truth)
+
+1. **Official Native docs** — e.g. [Bottom Sheet](https://heroui.com/docs/native/components/bottom-sheet): match **import lines** and **compound anatomy** from the page (Trigger → Portal → Overlay → Content when the example shows that order). Do not ship a simplified Portal→Content-only variant and call it “the same”.
+2. **Local mirror** — After `npx heroui-cli@latest agents-md --native --output AGENTS.md`, use **`.heroui-docs/native/`** and **`AGENTS.md`** at repo root (see also **`.cursor/rules/heroui-native.mdc`**).
+3. **Provider stack** — New screens must remain compatible with **`GestureHandlerRootView`** → **`HeroUINativeProvider`** (includes **SafeAreaListener** + **PortalHost** per [Provider](https://heroui.com/docs/native/getting-started/provider) / [Portal](https://heroui.com/docs/native/getting-started/portal)), Uniwind (`className` + `Uniwind.setTheme` from **`ThemePreferenceProvider`**), and **`app/_layout.tsx`**. Do not add an extra root **`SafeAreaProvider`** unless a non–HeroUI subtree truly needs it.
+
+## Design principles (semantics & composition)
+
+Follow **[Design Principles](https://heroui.com/docs/native/getting-started/design-principles)** for intent, not ad-hoc visuals:
+
+- **Semantic variants** — Prefer **`primary`** (one main forward action per context), **`secondary`** (alternatives), **`tertiary`** (dismissive / cancel / skip), **`danger`** / **`danger-soft`** when destructive. Avoid “outline” or random colors when a variant already expresses hierarchy.
+- **Composition** — Use **compound parts** (`Button.Label`, `Card.Body`, sheet `Close` / `Title` / `Description`, etc.) as in docs; **dot notation**, optional **`asChild`** on triggers/closes where documented.
+- **Progressive disclosure** — Start minimal (`<Button>Save</Button>`); add **`Button.Label`**, **`size`**, icons, loading state only when the screen needs that level ([example in docs](https://heroui.com/docs/native/getting-started/design-principles)).
+- **Customization** — Prefer **theme CSS variables** + **`className`** (and **`tv()`** on the correct slot, e.g. label vs root) over one-off hex/`StyleSheet` on HeroUI trees ([Complete Customization](https://heroui.com/docs/native/getting-started/design-principles)).
+
+## Existing components that touch HeroUI
+
+- **Strict or gone** — If a shared component, atom, or screen **imports HeroUI** but does **not** follow the **same compound tree, variants, and styling model** as the official doc for that primitive, treat it as **technical debt**: **refactor** it to match the doc, **replace** call sites with HeroUI used directly, or **delete** it in the same change when unused.
+- **No parallel “almost HeroUI” layers** — Do not keep wrappers that re-style HeroUI with ad-hoc `StyleSheet` / `useAppColors` / random Tailwind on the wrong slot when the doc shows **`className`** on **`Button` / `Button.Label`** (or equivalent). Either align with the doc or remove the wrapper.
+- **Deprecation** — If something must stay briefly for a migration, add a **`@deprecated`** JSDoc with the replacement path and remove it in a follow-up; do not copy the old pattern into new features.
+
+## Third-party native views (Mapbox, camera, etc.) — still Uniwind-first
+
+These components are **not** HeroUI primitives, but **anything you wrap around them in RN is**. Do **not** wait for the user to ask for a “HeroUI pass” — apply this **when you create or touch** the file.
+
+- **Layout on the native view** — Prefer **`import { withUniwind } from 'uniwind'`** then **`const StyledMapView = withUniwind(MapView)`** (same pattern as vector icons), and drive **flex / size / position** with **`className`** (`flex-1`, `size-full`, `absolute inset-0`, …). Avoid introducing **`StyleSheet.create`** for colors, padding, or typography on that subtree.
+- **Chrome around the map** — Loading, **missing token**, permissions, or empty states: use **`heroui-native`** (**`Card`**, **`Button`**, **`Surface`**, …) + **`className`** + semantic variants — same as any other screen. Raw **`Text` + `StyleSheet`** for user-visible messaging is a smell.
+- **Tight exceptions only** — `style` / numeric objects are fine when the **SDK API requires them** (e.g. Mapbox **`logoPosition`**, **`attributionPosition`**, `surfaceView`), or for **pure native geometry** with no Uniwind slot. If you use **`StyleSheet`**, it should be **obviously** for something `className` cannot express; add a **one-line comment** when it could look like laziness.
+
+## Proactive checklist (before you finish a Core UI change)
+
+Apply mentally (or literally) **before** marking work done — do not rely on the user to catch drift:
+
+1. **Scan** the diff for **`StyleSheet.create`** and inline **`style={{ … }}`** on RN/HeroUI subtrees — replace with **`className`** / HeroUI slots unless on the **tight exceptions** list above.
+2. **New or touched native SDK wrapper?** — Add **`withUniwind(...)`** if the root native component should participate in layout tokens.
+3. **Errors / empty / config UI?** — **`Card` + compound parts** (or **`Surface`**) instead of ad-hoc **`Text`** styling.
+4. **HeroUI import present?** — Open the **official component doc** once and match **compound anatomy + variants** (not “close enough”).
+5. **`global.css` `@source`** — If `heroui-native` resolves from the **repo root** `node_modules` (pnpm), the path from `apps/core/global.css` must stay **`../../node_modules/heroui-native/lib`** so utilities resolve.
+
+## Imports
+
+- For **new** screens or **rewritten** files, use the **same import style as the HeroUI doc** for that component (often `import { … } from 'heroui-native'`).
+- For **tiny edits** in files that already use **`heroui-native/<component>`** subpaths, stay consistent with that file unless the user asks to normalize the whole file.
+
+## Product vs debug
+
+- Do **not** remove map, search, filters, or other product UI for debugging unless the user asks.
+- Prefer **temporary `__DEV__` UI** or a **feature flag** over deleting flows “to isolate” a bug.
+
+## Data & native stacking
+
+- **TanStack Query**: if the query key includes GPS coordinates, use **`placeholderData: keepPreviousData`** (or equivalent) so refetches do not briefly clear lists unless the user chooses otherwise.
+- **Mapbox on Android**: **`surfaceView={false}`** on `MapView` when RN overlays must sit above the map (see Mapbox RN guidance); document in code comment when added.
+
+## When unsure
+
+- Prefer **one** approach from the **official doc example**, verify on device, then extend — not multiple parallel half-patterns in the same feature.
+
+## See also
+
+- **Payload, TanStack Query, providers, folder layout** — **`.cursor/rules/deelbaar-api.mdc`**

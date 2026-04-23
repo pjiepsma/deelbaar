@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useState } from 'react';
 
 import { useAuth } from './AuthProvider';
 import { NotificationContext } from './notificationContext';
-import { payloadClient } from '../api/PayloadClient';
+import { getPayloadSdk } from '../api/payloadSdk';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -168,8 +168,10 @@ export function NotificationProviderImpl({ children }: { children: ReactNode }) 
 
     try {
       console.log('[NotificationProvider] Updating push token in backend...');
-      await payloadClient.update('users', user.id, {
-        pushToken: expoPushToken,
+      await getPayloadSdk().update({
+        collection: 'users',
+        id: user.id,
+        data: { pushToken: expoPushToken },
       });
       console.log('[NotificationProvider] Push token updated in backend');
     } catch (err: unknown) {
@@ -188,8 +190,10 @@ export function NotificationProviderImpl({ children }: { children: ReactNode }) 
       await AsyncStorage.setItem('notification_settings', JSON.stringify(settings));
 
       if (user && token) {
-        await payloadClient.update('users', user.id, {
-          notificationSettings: settings,
+        await getPayloadSdk().update({
+          collection: 'users',
+          id: user.id,
+          data: { notificationSettings: settings },
         });
       }
 

@@ -2,7 +2,7 @@ import type { LocationObject } from 'expo-location';
 import { createContext, ReactNode, useContext, useState } from 'react';
 
 import { useAuth } from './AuthProvider';
-import { useModerationNotifications } from '../hooks/usePayloadQuery';
+import { useModerationNotifications } from '../hooks/data/useListingQueries';
 
 export const UserContext = createContext<{
   profile: any | null;

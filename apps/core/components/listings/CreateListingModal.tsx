@@ -29,7 +29,7 @@ import Colors from '~/constants/Colors';
 import { mapStyleUrlForResolvedTheme } from '~/constants/Map';
 import { useThemePreference } from '~/lib/providers/ThemePreferenceProvider';
 import { payloadClient } from '~/lib/api/PayloadClient';
-import { useCreateListing } from '~/lib/hooks/usePayloadQuery';
+import { useCreateListing } from '~/lib/hooks/data/useListingQueries';
 
 const { width, height } = Dimensions.get('window');
 

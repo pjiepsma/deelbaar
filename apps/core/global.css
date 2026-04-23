@@ -3,7 +3,8 @@
 
 @import 'heroui-native/styles';
 
-@source './node_modules/heroui-native/lib';
+/* pnpm monorepo: package lives at repo root, not under apps/core/node_modules */
+@source '../../node_modules/heroui-native/lib';
 
 /*
  * Light/dark: `@variant light` / `@variant dark` in HeroUI styles + Uniwind.

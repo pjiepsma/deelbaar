@@ -32,7 +32,9 @@ async function seed() {
         surname: 'User',
         role: 'admin',
         isAnonymous: false,
+        _verified: true,
       },
+      overrideAccess: true,
     })
     console.log('  ✅ Created admin user')
 
@@ -46,7 +48,9 @@ async function seed() {
         surname: 'Admin',
         role: 'admin',
         isAnonymous: false,
+        _verified: true,
       },
+      overrideAccess: true,
     })
     console.log('  ✅ Created Deelbaar info admin account')
 
@@ -75,7 +79,9 @@ async function seed() {
           surname: userData.surname,
           role: 'user',
           isAnonymous: false,
+          _verified: true,
         },
+        overrideAccess: true,
       })
       users.push(user)
       console.log(`  ✅ Created user: ${userData.username}`)

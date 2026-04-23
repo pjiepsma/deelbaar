@@ -1,7 +1,7 @@
 // atoms/Marker.tsx
 import { Ionicons } from '@expo/vector-icons';
 import React, { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useAppColors } from '~/lib/theme';
 
@@ -21,38 +21,46 @@ const MarkerComponent: React.FC<MarkerComponentProps> = memo(({ store, onPress, 
   }
 
   return (
-    <View
-      style={[
-        styles.marker,
-        {
-          backgroundColor: selected ? colors.light : colors.primary,
-          borderColor: colors.primary,
-        },
-      ]}>
-      <Ionicons
-        name="library-outline"
-        size={10}
-        color={selected ? colors.primary : colors.light}
-      />
-    </View>
+    <Pressable
+      onPress={onPress}
+      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+      accessibilityRole="button"
+      accessibilityLabel={typeof store.name === 'string' ? store.name : 'Listing'}>
+      <View
+        style={[
+          styles.marker,
+          {
+            backgroundColor: selected ? colors.light : colors.primary,
+            borderColor: selected ? colors.primary : colors.light,
+            borderWidth: selected ? 3 : 2,
+          },
+        ]}>
+        <Ionicons
+          name={selected ? 'location' : 'library-outline'}
+          size={selected ? 18 : 16}
+          color={selected ? colors.primary : colors.light}
+        />
+      </View>
+    </Pressable>
   );
 });
 
 const styles = StyleSheet.create({
   marker: {
     flexDirection: 'row',
-    padding: 4,
-    borderWidth: 2,
+    padding: 8,
+    minWidth: 40,
+    minHeight: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
-    elevation: 5,
+    borderRadius: 20,
+    elevation: 6,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
     shadowOffset: {
-      width: 1,
-      height: 10,
+      width: 0,
+      height: 2,
     },
   },
 });

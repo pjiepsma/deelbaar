@@ -2,20 +2,28 @@ import { MongoMemoryServer } from 'mongodb-memory-server'
 import path from 'path'
 import fs from 'fs'
 import os from 'node:os'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /**
- * MongoDB Memory Server data directory.
+ * MongoDB Memory Server data directory (QD-P style: stable path so dev data survives restarts).
  *
- * Default: unique folder under the OS temp dir each run → no stale `mongod.lock`
- * when a previous Node process died or when two terminals tried the same path.
+ * Resolution order:
+ * 1. MONGO_MEMORY_EPHEMERAL=true — fresh OS temp dir each run (CI / throwaway DB).
+ * 2. MONGO_MEMORY_PERSIST_PATH set — path relative to process.cwd() (usually apps/cms).
+ * 3. Default — apps/cms/bin/storage next to this script (works even if cwd differs).
  *
- * Optional: set `MONGO_MEMORY_PERSIST_PATH` (path relative to `apps/cms` cwd, e.g.
- * `bin/storage`) to reuse one DB folder. Use a single dev instance only; run
- * with `CLEAN_DB=true` if the lock file is stuck after a crash.
+ * CLEAN_DB=true — delete the chosen storage directory before start (recover from corrupt lock).
  */
+const ephemeral = process.env.MONGO_MEMORY_EPHEMERAL === 'true'
 const persistPath = (process.env.MONGO_MEMORY_PERSIST_PATH || '').trim()
+
 let storageDir
-if (persistPath) {
+if (ephemeral) {
+  storageDir = fs.mkdtempSync(path.join(os.tmpdir(), 'deelbaar-cms-mongo-'))
+  console.log('Ephemeral MongoDB data directory:', storageDir)
+} else if (persistPath) {
   storageDir = path.resolve(process.cwd(), persistPath)
   if (process.env.CLEAN_DB === 'true' && fs.existsSync(storageDir)) {
     try {
@@ -29,8 +37,19 @@ if (persistPath) {
   }
   fs.mkdirSync(storageDir, { recursive: true })
 } else {
-  storageDir = fs.mkdtempSync(path.join(os.tmpdir(), 'deelbaar-cms-mongo-'))
-  console.log('Ephemeral MongoDB data directory:', storageDir)
+  storageDir = path.join(__dirname, 'storage')
+  if (process.env.CLEAN_DB === 'true' && fs.existsSync(storageDir)) {
+    try {
+      console.log('Cleaning MongoDB storage directory...')
+      fs.rmSync(storageDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 1000 })
+      console.log('Storage directory cleaned')
+    } catch (error) {
+      console.warn('Warning: Failed to clean storage directory:', error.message)
+      console.warn('Attempting to start MongoDB anyway (will reuse existing data)')
+    }
+  }
+  fs.mkdirSync(storageDir, { recursive: true })
+  console.log('Persistent MongoDB data directory (default):', storageDir)
 }
 
 async function startMongoServer() {
@@ -47,8 +66,7 @@ async function startMongoServer() {
     const mongoUri = mongoServer.getUri()
     console.log('✓ MongoDB started successfully')
     console.log('MongoDB URI:', mongoUri)
-    
-    // Graceful shutdown
+
     process.on('SIGINT', async () => {
       console.log('\nShutting down MongoDB...')
       await mongoServer.stop()

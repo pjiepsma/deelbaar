@@ -29,6 +29,11 @@ const nextConfig = {
   serverRuntimeConfig: {
     PORT: 4000,
   },
+  serverExternalPackages: [
+    'mongoose',
+    'mongodb',
+    '@payloadcms/db-mongodb',
+  ],
 }
 
 // Wrap with Sentry only if org and project are provided (optional)

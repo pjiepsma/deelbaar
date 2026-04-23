@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { payloadClient } from '../api/PayloadClient'
+import { getPayloadSdk, payloadSdkTry } from '../api/payloadSdk'
 import { useAuth } from '../providers/AuthProvider'
 
 export interface Notification {
@@ -26,16 +26,19 @@ export function useNotifications() {
     queryFn: async () => {
       if (!user) return []
 
-      const { data, error } = await payloadClient.findMany('notifications', {
-        where: {
-          user: {
-            equals: user.id,
+      const { data, error } = await payloadSdkTry(() =>
+        getPayloadSdk().find({
+          collection: 'notifications',
+          where: {
+            user: {
+              equals: user.id,
+            },
           },
-        },
-        sort: '-createdAt',
-        limit: 100,
-        depth: 1,
-      })
+          sort: '-createdAt',
+          limit: 100,
+          depth: 1,
+        })
+      )
 
       if (error) {
         console.error('[useNotifications] Error fetching notifications:', error)
@@ -60,15 +63,18 @@ export function useUnreadCount() {
     queryFn: async () => {
       if (!user) return 0
 
-      const { data, error } = await payloadClient.findMany('notifications', {
-        where: {
-          and: [
-            { user: { equals: user.id } },
-            { read: { equals: false } },
-          ],
-        },
-        limit: 0, // We only need totalDocs
-      })
+      const { data, error } = await payloadSdkTry(() =>
+        getPayloadSdk().find({
+          collection: 'notifications',
+          where: {
+            and: [
+              { user: { equals: user.id } },
+              { read: { equals: false } },
+            ],
+          },
+          limit: 0, // We only need totalDocs
+        })
+      )
 
       if (error) {
         console.error('[useUnreadCount] Error fetching count:', error)
@@ -90,9 +96,13 @@ export function useMarkAsRead() {
 
   return useMutation({
     mutationFn: async (notificationId: string) => {
-      const { data, error } = await payloadClient.update('notifications', notificationId, {
-        read: true,
-      })
+      const { data, error } = await payloadSdkTry(() =>
+        getPayloadSdk().update({
+          collection: 'notifications',
+          id: notificationId,
+          data: { read: true },
+        })
+      )
 
       if (error) {
         throw new Error(error.message)
@@ -120,15 +130,18 @@ export function useMarkAllAsRead() {
       if (!user) throw new Error('Not authenticated')
 
       // Fetch all unread notifications
-      const { data, error } = await payloadClient.findMany('notifications', {
-        where: {
-          and: [
-            { user: { equals: user.id } },
-            { read: { equals: false } },
-          ],
-        },
-        limit: 1000,
-      })
+      const { data, error } = await payloadSdkTry(() =>
+        getPayloadSdk().find({
+          collection: 'notifications',
+          where: {
+            and: [
+              { user: { equals: user.id } },
+              { read: { equals: false } },
+            ],
+          },
+          limit: 1000,
+        })
+      )
 
       if (error) {
         throw new Error(error.message)
@@ -137,11 +150,16 @@ export function useMarkAllAsRead() {
       const unreadNotifications = data?.docs || []
 
       // Mark each as read
-      const updatePromises = unreadNotifications.map((notification: Notification) =>
-        payloadClient.update('notifications', notification.id, { read: true })
+      const sdk = getPayloadSdk()
+      await Promise.all(
+        unreadNotifications.map((notification: Notification) =>
+          sdk.update({
+            collection: 'notifications',
+            id: notification.id,
+            data: { read: true },
+          })
+        )
       )
-
-      await Promise.all(updatePromises)
 
       return unreadNotifications.length
     },
