@@ -6,9 +6,7 @@ import { Stepper } from 'heroui-native-pro';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { View } from 'react-native';
 
-Mapbox.setAccessToken(
-  'pk.eyJ1IjoicGllcnJpb3VzIiwiYSI6ImNtbjI3enA4eDAyZ28ycHF6MTUwcmEydDkifQ.IPJXZkse-z1uhz66afpuPA'
-);
+Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN ?? '');
 
 export default function App() {
   return (
