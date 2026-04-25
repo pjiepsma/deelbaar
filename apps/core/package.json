@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@payloadcms/sdk": "^3.84.1",
     "@expo/metro-runtime": "~55.0.10",
     "@gorhom/bottom-sheet": "^5.2.10",
     "@heroui-pro/react": "1.0.0-beta.2",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.14",
+    "payload": "3.81.0",
     "typescript": "~5.9.2"
   },
   "private": true

@@ -4,5 +4,35 @@
 @import 'heroui-native/styles';
 @import 'heroui-native-pro/styles';
 
+@layer theme {
+  @variant light {
+    --background: oklch(0.9702 0.0055 147.59);
+    --default: oklch(0.94 0.0055 147.59);
+    --accent: oklch(0.4928 0.0616 147.59);
+    --success: oklch(0.6221 0.1871 308.92);
+    --warning: oklch(0.5846 0.0748 330.55);
+    --danger: oklch(0.5801 0.0442 177.35);
+    --border: oklch(0.9 0.0055 147.59);
+    --separator: oklch(0.92 0.0055 147.59);
+    --radius: 0.125rem;
+    --field-radius: 0.125rem;
+    --spacing: 0.265625rem;
+  }
+
+  @variant dark {
+    --background: oklch(0.12 0.0055 147.59);
+    --default: oklch(0.274 0.0055 147.59);
+    --accent: oklch(0.4928 0.0616 147.59);
+    --success: oklch(0.6221 0.1871 308.92);
+    --warning: oklch(0.5846 0.0748 330.55);
+    --danger: oklch(0.5801 0.0442 177.35);
+    --border: oklch(0.28 0.0055 147.59);
+    --separator: oklch(0.25 0.0055 147.59);
+    --radius: 0.125rem;
+    --field-radius: 0.125rem;
+    --spacing: 0.265625rem;
+  }
+}
+
 @source '../../node_modules/heroui-native/lib';
 @source '../../node_modules/heroui-native-pro/lib';
