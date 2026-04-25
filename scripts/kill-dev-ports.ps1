@@ -1,6 +1,17 @@
-# Stops processes listening on common local dev ports (CMS Next + Mongo Memory Server).
+# Stops processes listening on common local dev ports
+# (Expo/Metro, CMS/Next, and supporting local services).
 param(
-    [int[]]$Ports = @(4000, 27017)
+    [int[]]$Ports = @(
+        3000,  # Next.js default
+        4000,  # CMS/dev API (project default)
+        5173,  # Vite default
+        8081,  # Metro / Expo
+        8082,  # Metro fallback
+        19000, # Expo dev tools / legacy
+        19001, # Expo LAN
+        19002, # Expo tunnel
+        27017  # MongoDB / mongodb-memory-server
+    )
 )
 
 $ErrorActionPreference = 'SilentlyContinue'
