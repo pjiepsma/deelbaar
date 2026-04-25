@@ -27,10 +27,7 @@
       "unrs-resolver",
       "heroui-pro",
       "heroui-native-pro"
-    ],
-    "overrides": {
-      "react-native-worklets": "~0.8.0"
-    }
+    ]
   },
   "version": "1.0.0"
 }
