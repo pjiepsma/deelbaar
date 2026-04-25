@@ -3,6 +3,7 @@
     "name": "core",
     "slug": "core",
     "version": "1.0.0",
+    "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "core",
