@@ -2,11 +2,18 @@
 
 import React, { useState } from 'react'
 import { Button } from '@payloadcms/ui/elements/Button'
+import {
+  MAP_PLACE_COLLECTION_SLUGS,
+  MAP_PLACE_LABEL_BY_COLLECTION,
+  MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION,
+  type MapPlaceCollectionSlug,
+} from '../../../constants/mapPlaces'
 
 export const KMLImport: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [category, setCategory] = useState('book')
+  const [collection, setCollection] = useState<MapPlaceCollectionSlug>('kiosks')
+  const [subtype, setSubtype] = useState<string>(MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION.kiosks[0].value)
   const [publishStatus, setPublishStatus] = useState('draft')
   const [statusMessage, setStatusMessage] = useState<string>('')
 
@@ -36,7 +43,8 @@ export const KMLImport: React.FC = () => {
     try {
       const formData = new FormData()
       formData.append('kmlFile', selectedFile)
-      formData.append('category', category)
+      formData.append('collection', collection)
+      formData.append('subtype', subtype)
       formData.append('publishStatus', publishStatus)
 
       const response = await fetch('/api/kml-import', {
@@ -90,18 +98,39 @@ export const KMLImport: React.FC = () => {
 
       <div style={{ marginBottom: '20px' }}>
         <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-          Category:
+          Collection:
         </label>
         <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          value={collection}
+          onChange={(e) => {
+            const nextCollection = e.target.value as MapPlaceCollectionSlug
+            setCollection(nextCollection)
+            setSubtype(MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION[nextCollection][0].value)
+          }}
           style={{ width: '200px', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
         >
-          <option value="book">Book</option>
-          <option value="food">Food</option>
-          <option value="hygiene">Hygiene</option>
-          <option value="community">Community</option>
-          <option value="other">Other</option>
+          {MAP_PLACE_COLLECTION_SLUGS.map((value) => (
+            <option key={value} value={value}>
+              {MAP_PLACE_LABEL_BY_COLLECTION[value]}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+          Subtype:
+        </label>
+        <select
+          value={subtype}
+          onChange={(e) => setSubtype(e.target.value)}
+          style={{ width: '200px', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+        >
+          {MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION[collection].map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </select>
       </div>
 

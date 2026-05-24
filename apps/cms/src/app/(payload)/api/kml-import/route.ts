@@ -5,6 +5,11 @@ import { writeFileSync, unlinkSync } from 'fs'
 import { join } from 'path'
 import { tmpdir } from 'os'
 import {
+  MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION,
+  MAP_PLACE_SUBTYPE_FIELD_BY_COLLECTION,
+  type MapPlaceCollectionSlug,
+} from '../../../../constants/mapPlaces'
+import {
   parseGoogleKML,
   cleanHtmlDescription,
   parseFacilitiesFromBijzonderheid,
@@ -36,10 +41,26 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Import logic here (similar to your existing script)
       const defaultOwnerEmail = process.env.DEFAULT_OWNER_EMAIL || 'info@deelbaar.com'
-      const defaultCategory = (formData.get('category') as string) || 'other'
       const defaultPublishStatus = (formData.get('publishStatus') as string) || 'draft'
+
+      const collection = formData.get('collection')
+      if (collection !== 'kiosks' && collection !== 'markets' && collection !== 'taps') {
+        return NextResponse.json({ error: 'Invalid collection.' }, { status: 400 })
+      }
+      const subtype = formData.get('subtype')
+      if (typeof subtype !== 'string' || subtype.trim().length === 0) {
+        return NextResponse.json({ error: 'Subtype is required.' }, { status: 400 })
+      }
+      const typedCollection = collection as MapPlaceCollectionSlug
+      const resolvedSubtype = subtype.trim()
+      const subtypeAllowed = MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION[typedCollection].some(
+        (option) => option.value === resolvedSubtype,
+      )
+      if (!subtypeAllowed) {
+        return NextResponse.json({ error: `Invalid subtype for ${typedCollection}.` }, { status: 400 })
+      }
+      const subtypeFieldName = MAP_PLACE_SUBTYPE_FIELD_BY_COLLECTION[typedCollection]
 
       // Get default owner
       let defaultOwner: string | number | null = null
@@ -101,7 +122,7 @@ export async function POST(request: NextRequest) {
         const listing: {
           name: string
           description: string
-          category: string
+          [key: string]: unknown
           publishStatus: string
           location: { address: string; coordinates: [number, number] }
           owner?: string | number
@@ -114,13 +135,13 @@ export async function POST(request: NextRequest) {
         } = {
           name: item.name,
           description: description.trim(),
-          category: defaultCategory,
           publishStatus: defaultPublishStatus,
           location: {
             address: fullAddress,
             coordinates: item.location?.coordinates as [number, number], // [longitude, latitude]
           },
         }
+        listing[subtypeFieldName] = resolvedSubtype
 
         if (defaultOwner) {
           listing.owner = defaultOwner
@@ -194,7 +215,7 @@ export async function POST(request: NextRequest) {
       for (const listingData of listingsData) {
         try {
           await payload.create({
-            collection: 'listings',
+            collection: typedCollection,
             data: listingData,
           })
           successCount++
@@ -206,7 +227,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        message: `Imported ${successCount} listings successfully${errors.length > 0 ? `, ${errors.length} failed` : ''}`,
+        message: `Imported ${successCount} places successfully${errors.length > 0 ? `, ${errors.length} failed` : ''}`,
         results: { success: successCount, errors },
       })
     } finally {

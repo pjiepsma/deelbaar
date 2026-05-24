@@ -1,3 +1,6 @@
+import { liveNonDeletedPlaceClauses } from '../constants/listingsPublicVisibility'
+import { MAP_PLACE_COLLECTION_SLUGS, type MapPlaceCollectionSlug } from '../constants/mapPlaces'
+import { getPlaceInteractionContract } from '../lib/placeInteractionScope'
 import { resolvePayload, type AppRouteRequest } from './resolvePayloadFromRequest'
 
 const json = (body: object, init?: ResponseInit): Response => {
@@ -34,6 +37,7 @@ export async function listingsNearby(req: AppRouteRequest): Promise<Response> {
     const radiusRaw = getQueryParam(req, 'radius') ?? '50000'
     const limitRaw = getQueryParam(req, 'limit') ?? '100'
     const scopeRaw = getQueryParam(req, 'scope') ?? 'city'
+    const collectionRaw = getQueryParam(req, 'collection')
 
     if (!latitude || !longitude) {
       return json(
@@ -49,29 +53,17 @@ export async function listingsNearby(req: AppRouteRequest): Promise<Response> {
     const maxDistance = parseInt(radiusRaw, 10)
     const maxResults = parseInt(limitRaw, 10)
     const requestedScope: SearchScope = normalizeScope(scopeRaw)
-    const authUser = req.user as
-      | {
-          id?: string
-          searchAccess?: { province?: boolean; country?: boolean; world?: boolean }
-        }
-      | undefined
-    const isLoggedIn = !!authUser?.id
-    const allowedScope = getAllowedScope(requestedScope, isLoggedIn, authUser?.searchAccess)
-
-    if (requestedScope !== allowedScope) {
+    const collections = normalizeCollections(collectionRaw)
+    if (!collections) {
       return json(
         {
-          error: 'Search scope is locked',
-          code: 'SEARCH_SCOPE_LOCKED',
-          requestedScope,
-          allowedScope,
-          requiresLogin: !isLoggedIn && requestedScope !== 'city',
+          error: 'Invalid collection',
+          message: `Use one of: ${MAP_PLACE_COLLECTION_SLUGS.join(', ')} or "all"`,
         },
-        { status: 403 },
+        { status: 400 },
       )
     }
-
-    const enforcedRadius = Math.min(maxDistance, radiusForScope(allowedScope))
+    const enforcedRadius = Math.min(maxDistance, radiusForScope(requestedScope))
 
     if (Number.isNaN(lat) || Number.isNaN(lon)) {
       return json(
@@ -82,52 +74,73 @@ export async function listingsNearby(req: AppRouteRequest): Promise<Response> {
       )
     }
 
-    /*
-     * Use $geoWithin + bounding box (same operator family as listings/bounds), not `near`.
-     * Payload + Mongo paths for `near` are brittle (aggregation vs find, index quirks) and
-     * were returning 500 in production here; box + haversine filter matches the circle well.
-     */
     const { swLat, swLon, neLat, neLon } = boundingBoxDegrees(lat, lon, enforcedRadius)
     const boxFetchLimit = Math.min(Math.max(maxResults * 25, maxResults), 1000)
 
     const payload = await resolvePayload(req)
-    const listings = await payload.find({
-      collection: 'listings',
-      req,
-      where: {
-        'location.coordinates': {
-          within: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [swLon, swLat],
-                [neLon, swLat],
-                [neLon, neLat],
-                [swLon, neLat],
-                [swLon, swLat],
-              ],
-            ],
-          },
+    const listingsDocs: Array<Record<string, unknown>> = []
+    for (const collection of collections) {
+      const result = await payload.find({
+        collection,
+        req,
+        where: {
+          and: [
+            ...liveNonDeletedPlaceClauses,
+            {
+              'location.latitude': {
+                greater_than_equal: swLat,
+              },
+            },
+            {
+              'location.latitude': {
+                less_than_equal: neLat,
+              },
+            },
+            {
+              'location.longitude': {
+                greater_than_equal: swLon,
+              },
+            },
+            {
+              'location.longitude': {
+                less_than_equal: neLon,
+              },
+            },
+          ],
         },
-      },
-      limit: boxFetchLimit,
-      depth: 0,
-    })
+        limit: boxFetchLimit,
+        depth: 0,
+      })
+      for (const placeDoc of result.docs as Record<string, unknown>[]) {
+        listingsDocs.push({
+          ...placeDoc,
+          mapPlaceCollection: collection,
+        })
+      }
+    }
 
     const radiusKm = enforcedRadius / 1000
-    const listingsWithDistance = listings.docs
+    const listingsWithDistance = listingsDocs
       .map((listing: Record<string, unknown>) => {
-        const loc = listing.location as { coordinates?: [number, number] } | undefined
-        if (!loc?.coordinates) return null
-        const [listingLon, listingLat] = loc.coordinates
+        const loc = listing.location as
+          | { coordinates?: [number, number]; latitude?: number; longitude?: number }
+          | undefined
+        const listingLat = loc?.latitude
+        const listingLon = loc?.longitude
+        if (typeof listingLat !== 'number' || typeof listingLon !== 'number') return null
         const distanceKm = calculateDistance(lat, lon, listingLat, listingLon)
         if (distanceKm > radiusKm) return null
+        const interactionPromise = getPlaceInteractionContract(
+          { payload, user: req.user ?? null },
+          listing,
+        )
         return {
           ...listing,
           distance: Math.round(distanceKm * 100) / 100,
+          _interactionPromise: interactionPromise,
         }
       })
-      .filter(Boolean) as Record<string, unknown>[]
+      .filter(Boolean) as Array<Record<string, unknown> & { _interactionPromise: Promise<unknown> }>
 
     listingsWithDistance.sort(
       (a: { distance?: number }, b: { distance?: number }) =>
@@ -135,14 +148,25 @@ export async function listingsNearby(req: AppRouteRequest): Promise<Response> {
     )
 
     const trimmed = listingsWithDistance.slice(0, maxResults)
+    const docsWithInteraction = await Promise.all(
+      trimmed.map(async (row) => {
+        const interaction = await row._interactionPromise
+        const { _interactionPromise, ...placeRow } = row
+        return {
+          ...placeRow,
+          interaction,
+        }
+      }),
+    )
 
     return json({
-      docs: trimmed,
-      totalDocs: trimmed.length,
+      docs: docsWithInteraction,
+      collections,
+      totalDocs: docsWithInteraction.length,
       limit: maxResults,
       page: 1,
       totalPages: 1,
-      scope: allowedScope,
+      scope: requestedScope,
       radius: enforcedRadius,
     })
   } catch (error) {
@@ -154,6 +178,17 @@ export async function listingsNearby(req: AppRouteRequest): Promise<Response> {
       { status: 500 },
     )
   }
+}
+
+function normalizeCollections(value: string | null): MapPlaceCollectionSlug[] | null {
+  if (!value || value.trim() === 'all') {
+    return [...MAP_PLACE_COLLECTION_SLUGS]
+  }
+  const candidate = value.trim() as MapPlaceCollectionSlug
+  if (!MAP_PLACE_COLLECTION_SLUGS.includes(candidate)) {
+    return null
+  }
+  return [candidate]
 }
 
 /** ~meters per degree latitude (WGS84, mid-latitudes) */
@@ -187,25 +222,6 @@ function radiusForScope(scope: SearchScope): number {
     case 'world':
       return 20000000
   }
-}
-
-function getAllowedScope(
-  requestedScope: SearchScope,
-  isLoggedIn: boolean,
-  searchAccess?: { province?: boolean; country?: boolean; world?: boolean },
-): SearchScope {
-  if (requestedScope === 'city') return 'city'
-  if (!isLoggedIn) return 'city'
-
-  if (requestedScope === 'province') {
-    return searchAccess?.province ? 'province' : 'city'
-  }
-
-  if (requestedScope === 'country') {
-    return searchAccess?.country ? 'country' : 'city'
-  }
-
-  return searchAccess?.world ? 'world' : 'city'
 }
 
 function calculateDistance(

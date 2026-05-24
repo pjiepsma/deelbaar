@@ -5,10 +5,9 @@ export const productionConfig = createConfig({
   secret: process.env.PAYLOAD_SECRET || '',
   url: process.env.BACKEND_URL || 'http://localhost:4000',
   databaseURI:
-    process.env.MONGODB_URI ||
-    process.env.DATABASE_URL ||
     process.env.DATABASE_URI ||
-    'mongodb://mongo:27017/payload',
+    process.env.DATABASE_URL ||
+    'postgresql://postgres:postgres@postgres:5432/payload',
   title: process.env.SITE_TITLE || 'Deelbaar API',
   corsCsrfUrls: [
     process.env.BACKEND_URL || 'http://localhost:4000',

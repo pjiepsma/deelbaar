@@ -7,17 +7,19 @@ import { buildApeldoornListingsSeed } from './seed-data/apeldoornListings'
 const payload = await getPayload({ config })
 
 /**
- * Clears listing-related rows and recreates Apeldoorn seed listings only.
+ * Clears place-related rows and recreates Apeldoorn seed places only.
  * Expects users to exist (run full `pnpm seed` once on an empty DB).
  */
 async function seedListings() {
-  console.log('🌱 Listings-only seed (Apeldoorn cluster)...')
+  console.log('🌱 Places-only seed (Apeldoorn cluster)...')
 
   try {
-    console.log('🗑️  Clearing reviews, claims, and listings...')
+    console.log('🗑️  Clearing reviews, claims, and places...')
     await payload.delete({ collection: 'requests', where: {} })
     await payload.delete({ collection: 'reviews', where: {} })
-    await payload.delete({ collection: 'listings', where: {} })
+    await payload.delete({ collection: 'kiosks', where: {} })
+    await payload.delete({ collection: 'markets', where: {} })
+    await payload.delete({ collection: 'taps', where: {} })
 
     const usersResult = await payload.find({
       collection: 'users',
@@ -36,20 +38,20 @@ async function seedListings() {
 
     const listingsData = buildApeldoornListingsSeed(ownerIds)
 
-    console.log('📦 Creating listings...')
-    const listings = []
-    for (const listingData of listingsData) {
-      const listing = await payload.create({
-        collection: 'listings',
-        data: listingData,
+    console.log('📦 Creating places...')
+    const places = []
+    for (const placeSeed of listingsData) {
+      const place = await payload.create({
+        collection: placeSeed.collection,
+        data: placeSeed.data,
       })
-      listings.push(listing)
-      console.log(`  ✅ Created listing: ${listingData.name}`)
+      places.push(place)
+      console.log(`  ✅ Created place: ${placeSeed.data.name} (${placeSeed.collection})`)
     }
 
-    console.log('\n✨ Listings-only seed completed successfully!\n')
+    console.log('\n✨ Places-only seed completed successfully!\n')
     console.log('📊 Summary:')
-    console.log(`   - ${listings.length} listings created (Apeldoorn area, all live)`)
+    console.log(`   - ${places.length} places created (Apeldoorn area, all live)`)
     console.log('   - Reviews and claims were cleared (re-run full seed if you need them)')
     console.log('   - Favorites skipped for now\n')
   } catch (error) {
@@ -60,4 +62,4 @@ async function seedListings() {
   exit(0)
 }
 
-seedListings()
+await seedListings()

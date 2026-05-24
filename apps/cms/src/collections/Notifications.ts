@@ -73,6 +73,9 @@ export const Notifications: CollectionConfig = {
         { label: 'New Favorite', value: 'favorite' },
         { label: 'Claim Approved', value: 'claim_approved' },
         { label: 'Claim Rejected', value: 'claim_rejected' },
+        { label: 'New Follower', value: 'new_follower' },
+        { label: 'Area Match', value: 'area_match' },
+        { label: 'Report Update', value: 'report_update' },
         { label: 'System', value: 'system' },
       ],
       admin: {

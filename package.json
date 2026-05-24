@@ -15,7 +15,7 @@
     "seed:listings": "pnpm --filter @deelbaar/cms seed:listings",
     "copy:payload-types": "node scripts/sync-payload-types.cjs",
     "lint": "pnpm --filter @deelbaar/core lint",
-    "format": "pnpm --filter @deelbaar/core format"
+    "format": "pnpm lint"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

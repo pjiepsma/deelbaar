@@ -1,6 +1,12 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { exit } from 'process'
+
+import {
+  MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION,
+  MAP_PLACE_SUBTYPE_FIELD_BY_COLLECTION,
+  type MapPlaceCollectionSlug,
+} from '../constants/mapPlaces'
 import { readFileSync, existsSync } from 'fs'
 import { DOMParser } from '@xmldom/xmldom'
 import path from 'path'
@@ -11,13 +17,30 @@ const payload = await getPayload({ config })
 const KML_FILE_PATH = process.env.KML_FILE_PATH || './data/import.kml'
 const BATCH_SIZE = parseInt(process.env.BATCH_SIZE || '50', 10)
 const DEFAULT_OWNER_EMAIL = process.env.DEFAULT_OWNER_EMAIL || 'info@deelbaar.com'
-const DEFAULT_CATEGORY = (process.env.DEFAULT_CATEGORY || 'other') as
-  | 'book'
-  | 'food'
-  | 'hygiene'
-  | 'community'
-  | 'farm'
-  | 'other'
+const DEFAULT_COLLECTION_ENV = process.env.DEFAULT_COLLECTION || 'kiosks'
+if (
+  DEFAULT_COLLECTION_ENV !== 'kiosks' &&
+  DEFAULT_COLLECTION_ENV !== 'markets' &&
+  DEFAULT_COLLECTION_ENV !== 'taps'
+) {
+  throw new Error('DEFAULT_COLLECTION must be kiosks, markets, or taps')
+}
+const DEFAULT_COLLECTION: MapPlaceCollectionSlug = DEFAULT_COLLECTION_ENV
+const DEFAULT_SUBTYPE = process.env.DEFAULT_SUBTYPE
+if (!DEFAULT_SUBTYPE || DEFAULT_SUBTYPE.trim().length === 0) {
+  throw new Error('DEFAULT_SUBTYPE must be configured')
+}
+const DEFAULT_SUBTYPE_FIELD = MAP_PLACE_SUBTYPE_FIELD_BY_COLLECTION[DEFAULT_COLLECTION]
+const DEFAULT_SUBTYPE_ALLOWED = MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION[DEFAULT_COLLECTION].some(
+  (option) => option.value === DEFAULT_SUBTYPE,
+)
+if (!DEFAULT_SUBTYPE_ALLOWED) {
+  throw new Error(
+    `DEFAULT_SUBTYPE must be one of: ${MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION[DEFAULT_COLLECTION]
+      .map((option) => option.value)
+      .join(', ')}`,
+  )
+}
 const DEFAULT_PUBLISH_STATUS = (process.env.DEFAULT_PUBLISH_STATUS || 'draft') as 'draft' | 'live'
 
 export interface ParsedPlacemark {
@@ -160,11 +183,11 @@ export function parseGoogleKML(filePath: string): ParsedPlacemark[] {
       }
     }
 
-    // Only add items with valid location data (Points only for now, as Listings uses point type)
+    // Only add items with valid location data (Points only for now, as map places use point type)
     if (item.location && item.location.type === 'Point') {
       data.push(item)
     } else if (item.location) {
-      console.log(`   ⚠️  Skipping ${item.name} - ${item.location.type} geometry not supported (only Points are supported for Listings)`)
+      console.log(`   ⚠️  Skipping ${item.name} - ${item.location.type} geometry not supported (only Points are supported for places)`)
     } else {
       console.log(`   ⚠️  Skipping ${item.name} - no valid coordinates found`)
     }
@@ -273,7 +296,7 @@ async function importKMLToPayload() {
           defaultOwner = users.docs[0].id
           console.log(`👤 Using owner: ${DEFAULT_OWNER_EMAIL}`)
         } else {
-          console.log(`⚠️  Warning: Owner email "${DEFAULT_OWNER_EMAIL}" not found. Listings will be created without owner.`)
+          console.log(`⚠️  Warning: Owner email "${DEFAULT_OWNER_EMAIL}" not found. Places will be created without owner.`)
         }
       } catch (error) {
         console.log(`⚠️  Warning: Could not find owner: ${error}`)
@@ -281,10 +304,11 @@ async function importKMLToPayload() {
     }
 
     console.log(`📦 Batch size: ${BATCH_SIZE}`)
-    console.log(`📂 Category: ${DEFAULT_CATEGORY}`)
+    console.log(`📂 Collection: ${DEFAULT_COLLECTION}`)
+    console.log(`📂 Subtype: ${DEFAULT_SUBTYPE}`)
     console.log(`📄 Publish status: ${DEFAULT_PUBLISH_STATUS}\n`)
 
-    // Transform data to Payload Listings format
+    // Transform data to Payload map-place format
     const listingsData = parsedData.map((item) => {
       const extendedData = item.extendedData || {}
       
@@ -329,13 +353,13 @@ async function importKMLToPayload() {
       const listing: any = {
         name: item.name,
         description: description.trim(),
-        category: DEFAULT_CATEGORY,
         publishStatus: DEFAULT_PUBLISH_STATUS,
         location: {
           address: fullAddress,
           coordinates: item.location?.coordinates as [number, number], // [longitude, latitude]
         },
       }
+      listing[DEFAULT_SUBTYPE_FIELD] = DEFAULT_SUBTYPE
 
       if (defaultOwner) {
         listing.owner = defaultOwner
@@ -400,7 +424,7 @@ async function importKMLToPayload() {
     let errorCount = 0
     const errors: Array<{ name: string; error: string }> = []
 
-    console.log('📥 Inserting listings in batches...\n')
+    console.log('📥 Inserting places in batches...\n')
 
     for (let i = 0; i < listingsData.length; i += BATCH_SIZE) {
       const batch = listingsData.slice(i, i + BATCH_SIZE)
@@ -413,7 +437,7 @@ async function importKMLToPayload() {
       for (const listingData of batch) {
         try {
           await payload.create({
-            collection: 'listings',
+            collection: DEFAULT_COLLECTION,
             data: listingData,
           })
           successCount++
@@ -432,8 +456,8 @@ async function importKMLToPayload() {
     console.log('\n' + '='.repeat(60))
     console.log('📊 Import Summary')
     console.log('='.repeat(60))
-    console.log(`✅ Successfully imported: ${successCount} listings`)
-    console.log(`❌ Failed: ${errorCount} listings`)
+    console.log(`✅ Successfully imported: ${successCount} places`)
+    console.log(`❌ Failed: ${errorCount} places`)
 
     if (errors.length > 0) {
       console.log('\n⚠️  Errors:')

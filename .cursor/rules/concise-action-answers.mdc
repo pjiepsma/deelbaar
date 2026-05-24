@@ -1,0 +1,15 @@
+---
+description: Default — short, direct answers to every question; no over-explaining unless asked
+globs: "**/*"
+alwaysApply: true
+---
+
+# Concise replies
+
+Treat **every** question as “answer tight first”: **short, direct**, minimal sentences, lead with the actual answer or steps.
+
+Do **not** over-explain, stack caveats, front-load context, or write tutorials unless the user asks for *why*, *explain*, *details*, *walk through*, *deep dive*, or similar.
+
+When something needs nuance, add **one** short clarifying sentence — not a paragraph.
+
+If they want more, they will ask; then expand, still scoped to what they asked.

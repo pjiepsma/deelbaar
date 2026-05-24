@@ -10,13 +10,7 @@ async function seed() {
   console.log('🌱 Starting database seed...')
 
   try {
-    // Clear existing data
-    console.log('🗑️  Clearing existing data...')
-    await payload.delete({ collection: 'requests', where: {} })
-    await payload.delete({ collection: 'reviews', where: {} })
-    await payload.delete({ collection: 'listings', where: {} })
-    await payload.delete({ collection: 'media', where: {} })
-    await payload.delete({ collection: 'users', where: {} })
+    console.log('ℹ️  Running seed without destructive cleanup')
 
     // Create Users
     console.log('👥 Creating users...')
@@ -126,19 +120,24 @@ async function seed() {
       console.log(`  ✅ Created user: ${userData.username}`)
     }
 
-    // Create Listings (Apeldoorn cluster — same data as `pnpm seed:listings`)
-    console.log('📦 Creating listings...')
+    // Create map places (Apeldoorn cluster — same data as `pnpm seed:listings`)
+    console.log('📦 Creating places...')
 
     const listingsData = buildApeldoornListingsSeed([adminUser.id, ...users.map((u) => u.id)])
 
-    const listings = []
-    for (const listingData of listingsData) {
-      const listing = await payload.create({
-        collection: 'listings',
-        data: listingData,
+    const places: Array<{ collection: 'kiosks' | 'markets' | 'taps'; id: string | number; name: string }> = []
+    for (const placeSeed of listingsData) {
+      const place = await payload.create({
+        collection: placeSeed.collection,
+        data: placeSeed.data,
+        overrideAccess: true,
       })
-      listings.push(listing)
-      console.log(`  ✅ Created listing: ${listingData.name}`)
+      places.push({
+        collection: placeSeed.collection,
+        id: place.id,
+        name: placeSeed.data.name,
+      })
+      console.log(`  ✅ Created place: ${placeSeed.data.name} (${placeSeed.collection})`)
     }
 
     // Create Reviews
@@ -146,42 +145,45 @@ async function seed() {
 
     const reviewsData = [
       {
-        listing: listings[0].id,
+        place: { relationTo: places[0]!.collection, value: places[0]!.id },
         created_by: users[1].id,
         rating: 5,
         description: 'Amazing selection of books! Found some great reads here.',
       },
       {
-        listing: listings[0].id,
+        place: { relationTo: places[0]!.collection, value: places[0]!.id },
         created_by: users[2].id,
         rating: 4,
         description: "Great concept! Would love to see more children's books.",
       },
       {
-        listing: listings[1].id,
+        place: { relationTo: places[1]!.collection, value: places[1]!.id },
         created_by: users[0].id,
         rating: 5,
         description: 'Saved me a trip to the hardware store! All tools are well-maintained.',
       },
       {
-        listing: listings[2].id,
+        place: { relationTo: places[2]!.collection, value: places[2]!.id },
         created_by: users[4].id,
         rating: 4,
         description: 'My kids love visiting! They enjoy swapping toys.',
       },
       {
-        listing: listings[3].id,
+        place: { relationTo: places[3]!.collection, value: places[3]!.id },
         created_by: users[0].id,
         rating: 5,
         description: 'What a brilliant idea! Got some tomato seeds and they grew beautifully.',
       },
     ]
 
+    const createdReviews = []
     for (const reviewData of reviewsData) {
-      await payload.create({
+      const review = await payload.create({
         collection: 'reviews',
         data: reviewData,
+        overrideAccess: true,
       })
+      createdReviews.push(review)
       console.log(`  ✅ Created review`)
     }
 
@@ -213,18 +215,18 @@ async function seed() {
       }
     }
 
-    console.log('📄 Creating listing claims...')
+    console.log('📄 Creating place claims...')
     const listingClaims = []
     const listingClaimSeeds = [
       {
-        listingIndex: 0,
+        placeIndex: 0,
         userIndex: 0,
         status: 'approved',
         distanceMeters: 75,
         notes: 'Approved automatically for neighbourhood steward.',
       },
       {
-        listingIndex: 2,
+        placeIndex: 2,
         userIndex: 4,
         status: 'pending',
         distanceMeters: 220,
@@ -233,40 +235,174 @@ async function seed() {
     ] as const
 
     for (const claimSeed of listingClaimSeeds) {
-      const listingDoc = listings[claimSeed.listingIndex]
+      const placeDoc = places[claimSeed.placeIndex]
       const userDoc = users[claimSeed.userIndex]
 
-      if (!listingDoc || !userDoc) {
-        console.warn('⚠️  Skipping claim seed due to missing listing or user', claimSeed)
+      if (!placeDoc || !userDoc) {
+        console.warn('⚠️  Skipping claim seed due to missing place or user', claimSeed)
         continue
       }
 
       const claim = await payload.create({
         collection: 'requests',
         data: {
-          listing: listingDoc.id,
+          place: { relationTo: placeDoc.collection, value: placeDoc.id },
           user: userDoc.id,
           status: claimSeed.status,
           distanceMeters: claimSeed.distanceMeters,
           addressSnapshot: cloneAddress(userDoc.address ?? userSeeds[claimSeed.userIndex]?.address),
           notes: claimSeed.notes,
         },
+        overrideAccess: true,
       })
 
       listingClaims.push(claim)
-      console.log(`  ✅ Created ${claimSeed.status} claim for ${listingDoc.name}`)
+      console.log(`  ✅ Created ${claimSeed.status} claim for ${placeDoc.name}`)
     }
 
-    // Favorites temporarily disabled - will be added back later
-    console.log('❤️  Favorites skipped for now')
+    // Create follows (place + area)
+    console.log('🔔 Creating follows...')
+    const followsSeed = [
+      {
+        user: users[0].id,
+        targetType: 'place',
+        place: { relationTo: places[0]!.collection, value: places[0]!.id },
+      },
+      {
+        user: users[1].id,
+        targetType: 'place',
+        place: { relationTo: places[1]!.collection, value: places[1]!.id },
+      },
+      {
+        user: users[2].id,
+        targetType: 'area',
+        area: {
+          name: 'Apeldoorn Centrum',
+          latitude: 52.2116,
+          longitude: 5.9699,
+          radiusMeters: 4000,
+        },
+      },
+    ] as const
+
+    for (const followData of followsSeed) {
+      await payload.create({
+        collection: 'follows',
+        data: {
+          ...followData,
+          active: true,
+        },
+        overrideAccess: true,
+      })
+      console.log(`  ✅ Created ${followData.targetType} follow`)
+    }
+
+    // Create entitlements
+    console.log('🧭 Creating entitlements...')
+    const entitlementSeeds = [
+      { user: users[0].id, scope: 'province', source: 'seed' },
+      { user: users[1].id, scope: 'country', source: 'seed' },
+      { user: users[2].id, scope: 'world', source: 'seed' },
+    ] as const
+
+    for (const entitlementData of entitlementSeeds) {
+      await payload.create({
+        collection: 'entitlements',
+        data: {
+          ...entitlementData,
+          status: 'active',
+          metadata: { seeded: true },
+        },
+        overrideAccess: true,
+      })
+      console.log(`  ✅ Created ${entitlementData.scope} entitlement`)
+    }
+
+    // Create wishes
+    console.log('🌟 Creating wishes...')
+    const wishesSeed = [
+      {
+        title: 'The Great Gatsby',
+        author: 'F. Scott Fitzgerald',
+        category: 'book',
+        description: 'Classic American novel about the Jazz Age',
+        created_by: users[0].id,
+        location: {
+          latitude: 52.3676,
+          longitude: 4.9041,
+          radius: 25,
+        },
+      },
+      {
+        title: 'Baby Diapers',
+        category: 'hygiene',
+        brand: 'Pampers',
+        description: 'Size 4 diapers preferred',
+        created_by: users[3].id,
+        location: {
+          latitude: 52.0705,
+          longitude: 4.3007,
+          radius: 15,
+        },
+      },
+    ] as const
+
+    for (const wishData of wishesSeed) {
+      await payload.create({
+        collection: 'wishes',
+        data: {
+          ...wishData,
+          status: 'active',
+        },
+        overrideAccess: true,
+      })
+      console.log(`  ✅ Created wish: ${wishData.title}`)
+    }
+
+    // Create reports
+    console.log('🚩 Creating reports...')
+    await payload.create({
+      collection: 'reports',
+      data: {
+        targetType: 'place',
+        place: { relationTo: places[0]!.collection, value: places[0]!.id },
+        reason: 'misleading',
+        details: 'Opening hours appear outdated in listing details.',
+        status: 'open',
+        createdBy: users[2].id,
+      },
+      overrideAccess: true,
+    })
+    const firstReview = createdReviews[0]
+    if (!firstReview) {
+      throw new Error('Seed invariant failed: expected at least one created review.')
+    }
+
+    await payload.create({
+      collection: 'reports',
+      data: {
+        targetType: 'review',
+        review: firstReview.id,
+        reason: 'spam',
+        details: 'Looks like promotional content.',
+        status: 'in_review',
+        createdBy: users[1].id,
+        reviewedBy: adminUser.id,
+      },
+      overrideAccess: true,
+    })
+    console.log('  ✅ Created reports')
 
     console.log('\n✨ Seed completed successfully!\n')
     console.log('📊 Summary:')
     console.log(`   - ${users.length + 1} users created`)
-    console.log(`   - ${listings.length} listings created`)
+    console.log(`   - ${places.length} places created`)
     console.log(`   - ${reviewsData.length} reviews created`)
-    console.log(`   - ${listingClaims.length} listing claims created`)
-    console.log(`   - Favorites and pictures temporarily disabled`)
+    console.log(`   - ${listingClaims.length} place claims created`)
+    console.log(`   - ${followsSeed.length} follows created`)
+    console.log(`   - ${entitlementSeeds.length} entitlements created`)
+    console.log(`   - ${wishesSeed.length} wishes created`)
+    console.log('   - 2 reports created')
     console.log('\n🔐 Login credentials:')
     console.log('   Admin: info@deelbaar.com / Test@123')
     console.log('   User: john.doe@example.com / password123\n')
@@ -278,4 +414,4 @@ async function seed() {
   exit(0)
 }
 
-seed()
+await seed()

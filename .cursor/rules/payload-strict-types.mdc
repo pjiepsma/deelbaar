@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## Sources of truth
 
-1. **`~/lib/types/payload-generated.ts`** (apps/core) — **never hand-edit**. Regenerate from CMS (`pnpm copy:payload-types` / `payload generate:types` in CMS, then sync script).
+1. **`apps/core/src/lib/types/payload-generated.ts`** — **never hand-edit**. Regenerate from CMS (`pnpm copy:payload-types` / `payload generate:types` in CMS, then sync script).
 2. **`Config`** and collection document types from that file (`User`, `Listing`, `Review`, …) for **everything** that is a stored document or partial update.
 3. **`payload`** package — **`apps/core`** lists **`payload`** aligned to **`@payloadcms/sdk`** as a **devDependency** for **type-only** imports (`import type { … } from 'payload'`). Use for **`Where`**, **`CollectionSlug`**, **`DataFromCollectionSlug`**, **`PaginatedDocs`**, **`ErrorResult`**, **`RequiredDataFromCollectionSlug`**, etc.
 

@@ -7,21 +7,26 @@ import {
 } from "@payloadcms/ui";
 import React, { useState } from "react";
 import { Option } from "@payloadcms/ui/elements/ReactSelect";
+import {
+  MAP_PLACE_COLLECTION_SLUGS,
+  MAP_PLACE_LABEL_BY_COLLECTION,
+  MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION,
+  type MapPlaceCollectionSlug,
+} from "../../../../constants/mapPlaces";
 
 export const ExportDashboard = () => {
     const [loading, setLoading] = useState(false);
-    const [category, setCategory] = useState<string | undefined>(undefined);
+    const [collection, setCollection] = useState<MapPlaceCollectionSlug | undefined>(undefined);
+    const [subtype, setSubtype] = useState<string | undefined>(undefined);
     const [publishStatus, setPublishStatus] = useState<string | undefined>(undefined);
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
 
-    const categoryOptions = [
-        { label: 'Alle categorieën', value: '' },
-        { label: 'Book', value: 'book' },
-        { label: 'Food', value: 'food' },
-        { label: 'Hygiene', value: 'hygiene' },
-        { label: 'Community', value: 'community' },
-        { label: 'Boerderijautomaat', value: 'farm' },
-        { label: 'Other', value: 'other' },
+    const collectionOptions = [
+        { label: 'Alle collecties', value: '' },
+        ...MAP_PLACE_COLLECTION_SLUGS.map((row) => ({
+          label: MAP_PLACE_LABEL_BY_COLLECTION[row],
+          value: row,
+        })),
     ];
 
     const statusOptions = [
@@ -41,7 +46,8 @@ export const ExportDashboard = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    category: category || undefined,
+                    collection: collection || undefined,
+                    subtype: subtype || undefined,
                     publishStatus: publishStatus || undefined,
                 }),
             });
@@ -52,25 +58,31 @@ export const ExportDashboard = () => {
                 const a = document.createElement("a");
 
                 a.href = url;
-                a.download = `listings-export-${Date.now()}.kml`;
+                a.download = `places-export-${Date.now()}.kml`;
                 a.click();
                 window.URL.revokeObjectURL(url);
             } else {
                 setErrorMessage(
-                    "Er is een fout opgetreden bij het exporteren van listings."
+                    "Er is een fout opgetreden bij het exporteren van places."
                 );
             }
-        } catch (error) {
+        } catch (_error) {
             setErrorMessage(
-                "Er is een fout opgetreden bij het exporteren van listings."
+                "Er is een fout opgetreden bij het exporteren van places."
             );
         }
 
         setLoading(false);
     }
 
-    const handleCategoryChange = (opt: Option) => {
-        setCategory(opt.value as string);
+    const handleCollectionChange = (opt: Option) => {
+        const nextCollection = (opt.value as MapPlaceCollectionSlug) || undefined;
+        setCollection(nextCollection);
+        setSubtype(undefined);
+    };
+
+    const handleSubtypeChange = (opt: Option) => {
+        setSubtype((opt.value as string) || undefined);
     };
 
     const handleStatusChange = (opt: Option) => {
@@ -80,24 +92,24 @@ export const ExportDashboard = () => {
     return (
         <Gutter>
             {loading && (
-                <LoadingOverlay loadingText="Listings aan het exporteren ..." />
+                <LoadingOverlay loadingText="Places aan het exporteren ..." />
             )}
-            <h1>Listings exporteren</h1>
+            <h1>Places exporteren</h1>
             
             <div style={{ marginBottom: "20px" }}>
-                <label htmlFor="category" style={{ 
-                    display: "block", 
+                <label htmlFor="collection" style={{
+                    display: "block",
                     marginBottom: "8px",
                     fontSize: "13px",
                     fontWeight: 600,
                     color: "var(--theme-elevation-900)"
                 }}>
-                    Filter op Categorie (optioneel)
+                    Filter op collectie (optioneel)
                 </label>
                 <Select
                     isClearable={true}
-                    options={categoryOptions}
-                    onChange={(e) => handleCategoryChange(e as Option)}
+                    options={collectionOptions}
+                    onChange={(e) => handleCollectionChange(e as Option)}
                 />
             </div>
 
@@ -117,6 +129,31 @@ export const ExportDashboard = () => {
                     onChange={(e) => handleStatusChange(e as Option)}
                 />
             </div>
+
+            {collection ? (
+                <div style={{ marginBottom: "20px" }}>
+                    <label htmlFor="subtype" style={{
+                        display: "block",
+                        marginBottom: "8px",
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        color: "var(--theme-elevation-900)"
+                    }}>
+                        Filter op subtype (optioneel)
+                    </label>
+                    <Select
+                        isClearable={true}
+                        options={[
+                            { label: "Alle subtypes", value: "" },
+                            ...MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION[collection].map((row) => ({
+                                label: row.label,
+                                value: row.value,
+                            })),
+                        ]}
+                        onChange={(e) => handleSubtypeChange(e as Option)}
+                    />
+                </div>
+            ) : null}
 
             {errorMessage && (
                 <div style={{ 

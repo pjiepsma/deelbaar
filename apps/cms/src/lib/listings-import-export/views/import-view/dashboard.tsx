@@ -7,6 +7,12 @@ import {
     Select,
 } from "@payloadcms/ui";
 import { Option } from "@payloadcms/ui/elements/ReactSelect";
+import {
+  MAP_PLACE_COLLECTION_SLUGS,
+  MAP_PLACE_LABEL_BY_COLLECTION,
+  MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION,
+  type MapPlaceCollectionSlug,
+} from "../../../../constants/mapPlaces";
 
 class ImportError extends Error {
     constructor(message: string) {
@@ -15,9 +21,19 @@ class ImportError extends Error {
     }
 }
 
+const COLLECTION_OPTIONS = MAP_PLACE_COLLECTION_SLUGS.map((collection) => ({
+  label: MAP_PLACE_LABEL_BY_COLLECTION[collection],
+  value: collection,
+}));
+
+function subtypeSelectOptions(collection: MapPlaceCollectionSlug) {
+  return MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION[collection];
+}
+
 export const ImportDashboard = () => {
   const [file, setFile] = useState<File | undefined>(undefined);
-  const [category, setCategory] = useState('book');
+  const [collection, setCollection] = useState<MapPlaceCollectionSlug>("kiosks");
+  const [subtype, setSubtype] = useState<string>("books");
   const [publishStatus, setPublishStatus] = useState('draft');
   const [ownerEmail, setOwnerEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,14 +41,21 @@ export const ImportDashboard = () => {
   const [message, setMessage] = useState<string | undefined>(undefined);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFile(file);
+    const next = e.target.files?.[0];
+    if (next) {
+      setFile(next);
     }
   };
 
-  const handleCategoryChange = (opt: Option) => {
-    setCategory(opt.value as string);
+  const handleCollectionChange = (opt: Option) => {
+    const nextType = opt.value as MapPlaceCollectionSlug;
+    setCollection(nextType);
+    const opts = subtypeSelectOptions(nextType);
+    setSubtype(String(opts[0].value));
+  };
+
+  const handleSubtypeChange = (opt: Option) => {
+    setSubtype(opt.value as string);
   };
 
   const handleStatusChange = (opt: Option) => {
@@ -52,10 +75,11 @@ export const ImportDashboard = () => {
 
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("_payload", JSON.stringify({ 
-        category, 
-        publishStatus, 
-        ownerEmail: ownerEmail || undefined 
+      formData.append("_payload", JSON.stringify({
+        collection,
+        subtype,
+        publishStatus,
+        ownerEmail: ownerEmail || undefined
       }));
 
       const response = await fetch('/api/listings-import-export/import', {
@@ -74,7 +98,7 @@ export const ImportDashboard = () => {
       }
 
       setMessage(
-        `Importeren gelukt\n${result.created} listings aangemaakt`
+        `Importeren gelukt\n${result.created} places aangemaakt`
       );
       setFile(undefined);
     } catch (e) {
@@ -82,7 +106,7 @@ export const ImportDashboard = () => {
         setErrorMessage(e.message);
       } else {
         setErrorMessage(
-          "Er is een onbekende fout opgetreden tijdens het importeren van de listings."
+          "Er is een onbekende fout opgetreden tijdens het importeren van places."
         );
       }
     }
@@ -90,14 +114,7 @@ export const ImportDashboard = () => {
     setLoading(false);
   };
 
-  const categoryOptions = [
-    { label: 'Book', value: 'book' },
-    { label: 'Food', value: 'food' },
-    { label: 'Hygiene', value: 'hygiene' },
-    { label: 'Community', value: 'community' },
-    { label: 'Boerderijautomaat', value: 'farm' },
-    { label: 'Other', value: 'other' },
-  ];
+  const subtypeOptions = [...subtypeSelectOptions(collection)];
 
   const statusOptions = [
     { label: 'Draft', value: 'draft' },
@@ -107,13 +124,13 @@ export const ImportDashboard = () => {
   return (
     <Gutter>
       {loading && (
-        <LoadingOverlay loadingText="Listings aan het importeren ..." />
+        <LoadingOverlay loadingText="Places aan het importeren ..." />
       )}
-      <h1>Listings importeren</h1>
+      <h1>Places importeren</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "20px" }}>
-          <label htmlFor="file" style={{ 
-            display: "block", 
+          <label htmlFor="file" style={{
+            display: "block",
             marginBottom: "8px",
             fontSize: "13px",
             fontWeight: 600,
@@ -138,37 +155,55 @@ export const ImportDashboard = () => {
             }}
           />
           {file && (
-            <div style={{ 
-              marginTop: "8px", 
-              fontSize: "12px", 
-              color: "var(--theme-elevation-600)" 
+            <div style={{
+              marginTop: "8px",
+              fontSize: "12px",
+              color: "var(--theme-elevation-600)"
             }}>
               Geselecteerd: {file.name}
             </div>
           )}
         </div>
-        
+
         <div style={{ marginBottom: "20px" }}>
-          <label htmlFor="category" style={{ 
-            display: "block", 
+          <label htmlFor="collection" style={{
+            display: "block",
             marginBottom: "8px",
             fontSize: "13px",
             fontWeight: 600,
             color: "var(--theme-elevation-900)"
           }}>
-            Categorie
+            Collectie
           </label>
           <Select
             isClearable={false}
-            options={categoryOptions}
-            value={categoryOptions.find(opt => opt.value === category)}
-            onChange={(e) => handleCategoryChange(e as Option)}
+            options={COLLECTION_OPTIONS}
+            value={COLLECTION_OPTIONS.find(opt => opt.value === collection)}
+            onChange={(e) => handleCollectionChange(e as Option)}
           />
         </div>
 
         <div style={{ marginBottom: "20px" }}>
-          <label htmlFor="publishStatus" style={{ 
-            display: "block", 
+          <label htmlFor="subtype" style={{
+            display: "block",
+            marginBottom: "8px",
+            fontSize: "13px",
+            fontWeight: 600,
+            color: "var(--theme-elevation-900)"
+          }}>
+            Subtype
+          </label>
+          <Select
+            isClearable={false}
+            options={subtypeOptions}
+            value={subtypeOptions.find(opt => opt.value === subtype)}
+            onChange={(e) => handleSubtypeChange(e as Option)}
+          />
+        </div>
+
+        <div style={{ marginBottom: "20px" }}>
+          <label htmlFor="publishStatus" style={{
+            display: "block",
             marginBottom: "8px",
             fontSize: "13px",
             fontWeight: 600,
@@ -185,8 +220,8 @@ export const ImportDashboard = () => {
         </div>
 
         <div style={{ marginBottom: "20px" }}>
-          <label htmlFor="ownerEmail" style={{ 
-            display: "block", 
+          <label htmlFor="ownerEmail" style={{
+            display: "block",
             marginBottom: "8px",
             fontSize: "13px",
             fontWeight: 600,
@@ -213,21 +248,21 @@ export const ImportDashboard = () => {
         </div>
 
         {(errorMessage || message) && (
-          <div style={{ 
+          <div style={{
             marginTop: "20px",
             padding: "12px 16px",
             borderRadius: "4px",
             backgroundColor: message ? "var(--theme-success-50)" : "var(--theme-error-50)",
             border: `1px solid ${message ? "var(--theme-success-500)" : "var(--theme-error-500)"}`
           }}>
-            <div style={{ 
-              fontWeight: 600, 
+            <div style={{
+              fontWeight: 600,
               marginBottom: "8px",
               color: message ? "var(--theme-success-900)" : "var(--theme-error-900)"
             }}>
               {message ? "✓ Succes" : "✗ Fout"}
             </div>
-            <pre style={{ 
+            <pre style={{
               margin: 0,
               whiteSpace: "pre-wrap",
               fontSize: "12px",
@@ -244,4 +279,3 @@ export const ImportDashboard = () => {
     </Gutter>
   );
 };
-

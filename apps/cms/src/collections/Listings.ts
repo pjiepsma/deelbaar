@@ -1,4 +1,13 @@
 import type { Access, AccessResult, CollectionConfig } from 'payload'
+
+import {
+  FARM_SUBTYPE_OPTIONS,
+  LITTLE_SUBTYPE_OPTIONS,
+  LISTING_TYPE_OPTIONS,
+  WATERPOINT_SUBTYPE_OPTIONS,
+  type ListingKindPayload,
+  normalizeListingKindFields,
+} from '../constants/listingTaxonomy'
 import NotificationService from '../lib/notificationService'
 
 export const Listings: CollectionConfig = {
@@ -11,41 +20,36 @@ export const Listings: CollectionConfig = {
   },
   access: {
     read: (({ req: { user } }): AccessResult => {
-      // If no user (public access), only show live listings
       if (!user) {
         return {
-          publishStatus: {
-            equals: 'live',
-          },
+          and: [
+            { publishStatus: { equals: 'live' } },
+            { deletedAt: { exists: false } },
+          ],
         } as AccessResult
       }
 
-      // Admins can see all listings
       if (user.role === 'admin') {
         return true
       }
 
-      // Authenticated users can see live listings + their own drafts
       return {
         or: [
           {
-            publishStatus: {
-              equals: 'live',
-            },
+            and: [
+              { publishStatus: { equals: 'live' } },
+              { deletedAt: { exists: false } },
+            ],
           },
           {
             and: [
-              {
-                owner: {
-                  equals: user.id,
-                },
-              },
-              {
-                publishStatus: {
-                  equals: 'draft',
-                },
-              },
+              { owner: { equals: user.id } },
+              { publishStatus: { equals: 'draft' } },
+              { deletedAt: { exists: false } },
             ],
+          },
+          {
+            and: [{ owner: { equals: user.id } }, { deletedAt: { exists: true } }],
           },
         ],
       } as AccessResult
@@ -53,26 +57,14 @@ export const Listings: CollectionConfig = {
     create: ({ req: { user } }) => !!user,
     update: ({ req: { user } }) => {
       if (!user) return false
-      // Admins can update any listing
       if (user.role === 'admin') return true
-      // Users can only update their own listings
       return {
         owner: {
           equals: user.id,
         },
       }
     },
-    delete: ({ req: { user } }) => {
-      if (!user) return false
-      // Admins can delete any listing
-      if (user.role === 'admin') return true
-      // Users can only delete their own listings
-      return {
-        owner: {
-          equals: user.id,
-        },
-      }
-    },
+    delete: ({ req: { user } }) => user?.role === 'admin',
   },
   fields: [
     {
@@ -92,18 +84,40 @@ export const Listings: CollectionConfig = {
               required: true,
             },
             {
-              name: 'category',
+              name: 'listingType',
               type: 'select',
-              options: [
-                { label: 'Book', value: 'book' },
-                { label: 'Food', value: 'food' },
-                { label: 'Hygiene', value: 'hygiene' },
-                { label: 'Community', value: 'community' },
-                { label: 'Boerderijautomaat', value: 'farm' },
-                { label: 'Other', value: 'other' },
-              ],
-              defaultValue: 'other',
+              label: 'Listing type',
+              options: [...LISTING_TYPE_OPTIONS],
+              defaultValue: 'little',
               required: true,
+            },
+            {
+              name: 'littleSubtype',
+              type: 'select',
+              label: 'Subtype (little listings)',
+              options: [...LITTLE_SUBTYPE_OPTIONS],
+              defaultValue: 'other',
+              admin: {
+                condition: (data) => data.listingType === 'little',
+              },
+            },
+            {
+              name: 'farmSubtype',
+              type: 'select',
+              label: 'Subtype (farm)',
+              options: [...FARM_SUBTYPE_OPTIONS],
+              admin: {
+                condition: (data) => data.listingType === 'farm',
+              },
+            },
+            {
+              name: 'waterpointSubtype',
+              type: 'select',
+              label: 'Subtype (waterpoints)',
+              options: [...WATERPOINT_SUBTYPE_OPTIONS],
+              admin: {
+                condition: (data) => data.listingType === 'waterpoint',
+              },
             },
             {
               name: 'publishStatus',
@@ -117,6 +131,15 @@ export const Listings: CollectionConfig = {
               required: true,
               admin: {
                 description: 'Whether this listing is visible to the public or still in draft mode',
+              },
+            },
+            {
+              name: 'deletedAt',
+              type: 'date',
+              admin: {
+                description:
+                  'Soft delete: set to hide from public map and search; clear to restore. Owners use the app or PATCH; hard remove is admin-only.',
+                position: 'sidebar',
               },
             },
             {
@@ -198,6 +221,22 @@ export const Listings: CollectionConfig = {
                   type: 'point',
                   label: 'Coordinates',
                   index: true,
+                },
+                {
+                  name: 'latitude',
+                  type: 'number',
+                  index: true,
+                  admin: {
+                    description: 'Canonical latitude for cross-database geo querying',
+                  },
+                },
+                {
+                  name: 'longitude',
+                  type: 'number',
+                  index: true,
+                  admin: {
+                    description: 'Canonical longitude for cross-database geo querying',
+                  },
                 },
               ],
             },
@@ -322,6 +361,54 @@ export const Listings: CollectionConfig = {
   ],
   timestamps: true,
   hooks: {
+    beforeChange: [
+      ({ data, operation, req }) => {
+        if (!data) return data
+        if (operation === 'create' && req.user?.role !== 'admin' && data.deletedAt) {
+          data.deletedAt = null
+        }
+        if (data.deletedAt && data.publishStatus === 'live') {
+          data.publishStatus = 'draft'
+        }
+        return data
+      },
+    ],
+    beforeValidate: [
+      ({ data, req, operation, originalDoc }) => {
+        if (!data) return data
+
+        if (operation === 'create' && req.user && !data.owner) {
+          data.owner = req.user.id
+        }
+
+        const effective =
+          operation === 'update' && originalDoc && typeof originalDoc === 'object'
+            ? { ...(originalDoc as Record<string, unknown>), ...(data as Record<string, unknown>) }
+            : { ...(data as Record<string, unknown>) }
+
+        normalizeListingKindFields(effective as ListingKindPayload)
+
+        const out = data as Record<string, unknown>
+        out.listingType = effective.listingType
+        out.littleSubtype = effective.littleSubtype
+        out.farmSubtype = effective.farmSubtype
+        out.waterpointSubtype = effective.waterpointSubtype
+        delete out.category
+
+        const coordinates = data.location?.coordinates
+        if (Array.isArray(coordinates) && coordinates.length === 2) {
+          data.location.longitude = coordinates[0]
+          data.location.latitude = coordinates[1]
+        } else if (
+          typeof data.location?.longitude === 'number' &&
+          typeof data.location?.latitude === 'number'
+        ) {
+          data.location.coordinates = [data.location.longitude, data.location.latitude]
+        }
+
+        return data
+      },
+    ],
     afterChange: [
       async ({ doc, req, operation, previousDoc }) => {
         try {

@@ -1,5 +1,7 @@
 # Local Cursor skills clone (separate git repo)
 .cursor/skills/agent-skills/
+# HeroUI Pro personal token (see heroui.pro/dashboard)
+.cursor/mcp.json
 
 node_modules/
 .expo/

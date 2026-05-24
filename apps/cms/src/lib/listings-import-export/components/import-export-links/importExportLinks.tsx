@@ -11,7 +11,7 @@ export const ListingsImportExportLinks = () => {
   } = useConfig()
 
   return (
-    <NavGroup label="Data">
+    <NavGroup label="Places Data">
       <NavLink href={`${adminRoute}/listings/import`} label="Importeren" />
       <NavLink href={`${adminRoute}/listings/export`} label="Exporteren" />
     </NavGroup>

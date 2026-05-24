@@ -1,6 +1,5 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { exit } from 'process'
 
 async function clean() {
   const payload = await getPayload({ config })
@@ -8,7 +7,19 @@ async function clean() {
   console.log('🗑️  Cleaning all data (keeping admin users only)...\n')
 
   // All collections to clean completely
-  const collectionsToWipe = ['requests', 'reviews', 'listings', 'wishes', 'media'] as const
+  const collectionsToWipe = [
+    'requests',
+    'reviews',
+    'follows',
+    'reports',
+    'entitlements',
+    'notifications',
+    'kiosks',
+    'markets',
+    'taps',
+    'wishes',
+    'media',
+  ] as const
 
   // Clean all collections completely
   for (const collection of collectionsToWipe) {

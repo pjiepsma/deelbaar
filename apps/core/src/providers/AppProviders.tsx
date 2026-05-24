@@ -2,7 +2,11 @@ import { HeroUINativeProvider } from 'heroui-native';
 import type { PropsWithChildren } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { payloadClient } from '../../lib/api/PayloadClient';
+import { AuthProvider } from '../context/AuthContext';
+import { DiscoveryAreaProvider } from '../context/DiscoveryAreaContext';
+import { LocaleProvider } from '../context/LocaleContext';
+import { ThemePreferenceProvider } from '../context/ThemePreferenceContext';
+import { payloadClient } from '../lib/api/PayloadClient';
 
 const PAYLOAD_SERVER_URL = process.env.EXPO_PUBLIC_PAYLOAD_SERVER_URL;
 
@@ -15,7 +19,15 @@ payloadClient.init({ serverURL: PAYLOAD_SERVER_URL });
 export function AppProviders({ children }: PropsWithChildren) {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <HeroUINativeProvider>{children}</HeroUINativeProvider>
+      <HeroUINativeProvider>
+        <ThemePreferenceProvider>
+          <LocaleProvider>
+            <AuthProvider>
+              <DiscoveryAreaProvider>{children}</DiscoveryAreaProvider>
+            </AuthProvider>
+          </LocaleProvider>
+        </ThemePreferenceProvider>
+      </HeroUINativeProvider>
     </GestureHandlerRootView>
   );
 }

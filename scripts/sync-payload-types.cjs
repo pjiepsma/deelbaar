@@ -6,9 +6,9 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const BACKEND_PATH = path.join(ROOT, 'apps', 'cms', 'src', 'payload-types.ts');
 
-/** Primary app is Core; mobile kept in sync until apps/mobile is removed. */
+/** Primary app is Core. */
 const TARGET_DIRS = [
-  path.join(ROOT, 'apps', 'core', 'lib', 'types'),
+  path.join(ROOT, 'apps', 'core', 'src', 'lib', 'types'),
   path.join(ROOT, 'apps', 'mobile', 'lib', 'types'),
 ];
 

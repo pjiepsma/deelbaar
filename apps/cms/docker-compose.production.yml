@@ -22,7 +22,7 @@ services:
     environment:
       - NODE_ENV=production
       - SELECTED_CONFIG=production
-      - MONGODB_URI=mongodb://mongo:27017/payload
+      - DATABASE_URI=postgresql://postgres:postgres@postgres:5432/payload
       - PAYLOAD_SECRET=${PAYLOAD_SECRET}
       - BACKEND_URL=${BACKEND_URL:-http://localhost:4000}
       - FRONTEND_URL=${FRONTEND_URL}
@@ -32,7 +32,7 @@ services:
       - SENTRY_ORG=${SENTRY_ORG}
       - SENTRY_PROJECT=${SENTRY_PROJECT}
     depends_on:
-      mongo:
+      postgres:
         condition: service_started
     networks:
       - deelbaar-network
@@ -43,33 +43,30 @@ services:
       retries: 3
       start_period: 60s
 
-  mongo:
-    image: mongo:7.0
-    container_name: deelbaar-mongo
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: deelbaar-postgres
     restart: unless-stopped
     ports:
-      - '27017:27017'
+      - '5432:5432'
     volumes:
-      - mongo_data:/data/db
-      - mongo_config:/data/configdb
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
     environment:
-      - MONGO_INITDB_DATABASE=payload
+      - POSTGRES_DB=payload
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     networks:
       - deelbaar-network
     healthcheck:
-      test: ['CMD-SHELL', 'mongosh --eval "db.adminCommand(\"ping\")" --quiet | grep -q "ok.*1" || exit 1']
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d payload']
       interval: 10s
-      timeout: 10s
+      timeout: 5s
       retries: 5
-      start_period: 90s
-    command:
-      - --storageEngine=wiredTiger
-      - --wiredTigerCacheSizeGB=1
+      start_period: 30s
 
 volumes:
-  mongo_data:
-    driver: local
-  mongo_config:
+  postgres_data:
     driver: local
   media_data:
     driver: local

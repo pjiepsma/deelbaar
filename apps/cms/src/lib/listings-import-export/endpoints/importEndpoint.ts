@@ -1,5 +1,10 @@
 import { addDataAndFileToRequest, Endpoint } from "payload";
-import { parseGoogleKML, cleanHtmlDescription, parseFacilitiesFromBijzonderheid } from "../utils/kmlParser";
+import {
+    MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION,
+    MAP_PLACE_SUBTYPE_FIELD_BY_COLLECTION,
+    type MapPlaceCollectionSlug,
+} from "../../../constants/mapPlaces";
+import { parseGoogleKML, parseFacilitiesFromBijzonderheid } from "../utils/kmlParser";
 import { parseDutchAddress } from "../utils/addressParser";
 import { writeFileSync, unlinkSync } from 'fs';
 import { join } from 'path';
@@ -43,8 +48,39 @@ export const importEndpoint: Endpoint = {
                 )
             }
 
-            // Get settings from request
-            const defaultCategory = (req.data?.category as string) || 'book';
+            const payloadData =
+                req.data && typeof req.data === "object"
+                    ? (req.data as Record<string, unknown>)
+                    : {};
+
+            const collection = payloadData.collection;
+            if (collection !== "kiosks" && collection !== "markets" && collection !== "taps") {
+                return Response.json(
+                    { message: "Invalid collection. Use kiosks, markets, or taps." },
+                    { status: 400 }
+                );
+            }
+            const typedCollection = collection as MapPlaceCollectionSlug;
+            const subtype = payloadData.subtype;
+            if (typeof subtype !== "string" || subtype.trim().length === 0) {
+                return Response.json(
+                    { message: "Subtype is required." },
+                    { status: 400 }
+                );
+            }
+            const subtypeOptions = MAP_PLACE_SUBTYPE_OPTIONS_BY_COLLECTION[typedCollection];
+            const resolvedSubtype = subtype.trim();
+            const subtypeAllowed = subtypeOptions.some((option) => option.value === resolvedSubtype);
+            if (!subtypeAllowed) {
+                return Response.json(
+                    {
+                        message: `Invalid subtype for ${typedCollection}. Use: ${subtypeOptions.map((row) => row.value).join(", ")}`,
+                    },
+                    { status: 400 }
+                );
+            }
+            const subtypeFieldName = MAP_PLACE_SUBTYPE_FIELD_BY_COLLECTION[typedCollection];
+
             const defaultPublishStatus = (req.data?.publishStatus as string) || 'draft';
             const defaultOwnerEmail = (req.data?.ownerEmail as string) || process.env.DEFAULT_OWNER_EMAIL;
 
@@ -60,7 +96,7 @@ export const importEndpoint: Endpoint = {
                     if (users.docs.length > 0) {
                         defaultOwner = users.docs[0].id;
                     }
-                } catch (error) {
+                } catch (_error) {
                     req.payload.logger.warn('Could not find default owner');
                 }
             }
@@ -107,10 +143,31 @@ export const importEndpoint: Endpoint = {
                     }
 
                     // Build listing object with structured address
-                    const listing: any = {
+                    const listing: {
+                        name: string;
+                        description: string;
+                        publishStatus: string;
+                        owner?: string | number;
+                        location: {
+                            street?: string;
+                            houseNumber?: string;
+                            zipCode?: string;
+                            city?: string;
+                            province?: string;
+                            country?: string;
+                            address?: string;
+                            coordinates?: [number, number];
+                        };
+                        facilities?: {
+                            facilities?: Array<{ facility: string }>;
+                            contactInfo?: string;
+                            rules?: string;
+                        };
+                        tags?: Array<{ tag: string }>;
+                        [key: string]: unknown;
+                    } = {
                         name: item.name,
                         description: description.trim(),
-                        category: defaultCategory,
                         publishStatus: defaultPublishStatus,
                         location: {
                             street: parsedAddress.street,
@@ -122,6 +179,7 @@ export const importEndpoint: Endpoint = {
                             address: parsedAddress.fullAddress,
                         },
                     };
+                    listing[subtypeFieldName] = resolvedSubtype;
 
                     // Add coordinates if available
                     if (item.location?.coordinates) {
@@ -170,23 +228,24 @@ export const importEndpoint: Endpoint = {
                         .filter(([, value]) => value && value.trim());
 
                     if (remainingData.length > 0) {
-                        listing.tags = [];
+                        const tags: Array<{ tag: string }> = [];
 
                         // Add other remaining fields as tags
                         remainingData.forEach(([key, value]) => {
-                            listing.tags.push({ tag: `${key}: ${value}` });
+                            tags.push({ tag: `${key}: ${value}` });
                         });
+                        listing.tags = tags;
                     }
 
                     // Create the listing
                     await req.payload.create({
-                        collection: 'listings',
-                        data: listing,
+                        collection: typedCollection,
+                        data: listing as never,
                     });
 
                     results.created++;
-                } catch (error: any) {
-                    const errorMsg = error?.message || String(error);
+                } catch (error: unknown) {
+                    const errorMsg = error instanceof Error ? error.message : String(error);
                     results.errors.push(`${item.name}: ${errorMsg}`);
                 }
             }
@@ -207,7 +266,7 @@ export const importEndpoint: Endpoint = {
                 try {
                     unlinkSync(tempPath);
                 } catch (error) {
-                    req.payload.logger.error('Failed to clean up temp file:', error);
+                    req.payload.logger.error(`Failed to clean up temp file: ${String(error)}`);
                 }
             }
         }

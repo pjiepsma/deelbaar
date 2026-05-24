@@ -1,4 +1,5 @@
 import type { TaskConfig } from 'payload'
+import { MAP_PLACE_COLLECTION_SLUGS, type MapPlaceCollectionSlug } from '../constants/mapPlaces'
 
 // Configuration - can be overridden via environment variables
 const BATCH_SIZE = parseInt(process.env.BATCH_SIZE || '50', 10)
@@ -58,48 +59,58 @@ export const geocodeListings: TaskConfig = {
   handler: async (args) => {
     const { req } = args
     const { payload } = req
+    const rawCollection = (args.input && typeof args.input === 'object'
+      ? (args.input as Record<string, unknown>).collection
+      : undefined) as unknown
+
+    const targetCollections = resolveCollections(rawCollection)
+    if (!targetCollections) {
+      return {
+        state: 'failed' as const,
+        errorMessage: `Invalid collection. Use one of: ${MAP_PLACE_COLLECTION_SLUGS.join(', ')}`,
+      }
+    }
     try {
       console.log('🗺️  Starting geocoding task...\n')
       console.log('📊 Configuration:')
       console.log(`   - Batch size: ${BATCH_SIZE}`)
       console.log(`   - Delay between requests: ${DELAY_BETWEEN_REQUESTS}ms`)
       console.log(`   - Max retries: ${MAX_RETRIES}`)
+      console.log(`   - Collections: ${targetCollections.join(', ')}`)
       console.log('')
 
-      // First, count total listings that need geocoding
-      const totalCount = await payload.count({
-        collection: 'listings',
-        where: {
-          and: [
-            {
-              'location.address': {
-                exists: true,
-              },
-            },
-            {
-              or: [
-                {
-                  'location.coordinates': {
-                    exists: false,
-                  },
-                },
-                {
-                  'location.coordinates': {
-                    equals: null,
-                  },
-                },
-              ],
-            },
-          ],
-        },
-      })
+      let totalCount = 0
+      const totalByCollection: Record<MapPlaceCollectionSlug, number> = {
+        kiosks: 0,
+        markets: 0,
+        taps: 0,
+      }
 
-      if (totalCount.totalDocs === 0) {
-        console.log('✅ No listings found that need geocoding')
+      for (const collection of targetCollections) {
+        const count = await payload.count({
+          collection,
+          where: {
+            and: [
+              { 'location.address': { exists: true } },
+              {
+                or: [
+                  { 'location.coordinates': { exists: false } },
+                  { 'location.coordinates': { equals: null } },
+                ],
+              },
+            ],
+          },
+        })
+        totalByCollection[collection] = count.totalDocs
+        totalCount += count.totalDocs
+      }
+
+      if (totalCount === 0) {
+        console.log('✅ No places found that need geocoding')
         return {
           output: {
             success: true,
-            message: 'No listings found that need geocoding',
+            message: 'No places found that need geocoding',
             totalProcessed: 0,
             totalSuccess: 0,
             totalFailed: 0,
@@ -107,151 +118,132 @@ export const geocodeListings: TaskConfig = {
         }
       }
 
-      console.log(`📋 Total listings to geocode: ${totalCount.totalDocs}`)
+      console.log(`📋 Total places to geocode: ${totalCount}`)
+      for (const collection of targetCollections) {
+        console.log(`   - ${collection}: ${totalByCollection[collection]}`)
+      }
       console.log(`📦 Processing in batches of ${BATCH_SIZE}`)
-      console.log(
-        `⏱️  Estimated time: ~${Math.ceil((totalCount.totalDocs * DELAY_BETWEEN_REQUESTS) / 1000)} seconds\n`,
-      )
+      console.log(`⏱️  Estimated time: ~${Math.ceil((totalCount * DELAY_BETWEEN_REQUESTS) / 1000)} seconds\n`)
 
       let totalProcessed = 0
       let totalSuccess = 0
       let totalFailed = 0
-      const allErrors: Array<{ id: string; name: string; error: string }> = []
-      let batchNumber = 0
+      const allErrors: Array<{ id: string; name: string; collection: MapPlaceCollectionSlug; error: string }> = []
 
-      // Process in batches
-      while (true) {
-        batchNumber++
+      for (const collection of targetCollections) {
+        let collectionBatchNumber = 0
 
-        // Find listings without coordinates but with addresses
-        const listingsWithoutCoords = await payload.find({
-          collection: 'listings',
-          where: {
-            and: [
-              {
-                'location.address': {
-                  exists: true,
+        while (true) {
+          collectionBatchNumber += 1
+          const placesWithoutCoords = await payload.find({
+            collection,
+            where: {
+              and: [
+                { 'location.address': { exists: true } },
+                {
+                  or: [
+                    { 'location.coordinates': { exists: false } },
+                    { 'location.coordinates': { equals: null } },
+                  ],
                 },
-              },
-              {
-                or: [
-                  {
-                    'location.coordinates': {
-                      exists: false,
-                    },
-                  },
-                  {
-                    'location.coordinates': {
-                      equals: null,
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-          limit: BATCH_SIZE,
-          depth: 0,
-        })
+              ],
+            },
+            limit: BATCH_SIZE,
+            depth: 0,
+          })
 
-        if (listingsWithoutCoords.docs.length === 0) {
-          break // No more listings to process
-        }
-
-        console.log(`\n📦 Batch ${batchNumber} (${listingsWithoutCoords.docs.length} listings)`)
-        console.log('─'.repeat(60))
-
-        let batchSuccess = 0
-        let batchFailed = 0
-
-        // Process each listing in this batch
-        for (let i = 0; i < listingsWithoutCoords.docs.length; i++) {
-          const listing = listingsWithoutCoords.docs[i]
-          const address = listing.location?.address
-
-          if (!address) {
-            batchFailed++
-            totalFailed++
-            const error = {
-              id: String(listing.id),
-              name: listing.name || 'Unknown',
-              error: 'No address found',
-            }
-            allErrors.push(error)
-            console.log(
-              `   ⚠️  [${i + 1}/${listingsWithoutCoords.docs.length}] Skipping "${listing.name}" - no address`,
-            )
-            continue
+          if (placesWithoutCoords.docs.length === 0) {
+            break
           }
 
-          try {
-            const progress = `[${totalProcessed + i + 1}/${totalCount.totalDocs}]`
-            process.stdout.write(`   ${progress} Geocoding "${listing.name.substring(0, 40)}"... `)
+          console.log(`\n📦 ${collection} batch ${collectionBatchNumber} (${placesWithoutCoords.docs.length} places)`)
+          console.log('─'.repeat(60))
 
-            const coordinates = await geocodeAddress(address)
+          let batchSuccess = 0
+          let batchFailed = 0
 
-            if (coordinates) {
-              // Update the listing with coordinates
-              await payload.update({
-                collection: 'listings',
-                id: listing.id,
-                data: {
-                  location: {
-                    ...listing.location,
-                    coordinates,
-                  },
-                },
+          for (let i = 0; i < placesWithoutCoords.docs.length; i++) {
+            const place = placesWithoutCoords.docs[i]
+            const placeName = place.name || 'Unknown'
+            const address = place.location?.address
+
+            if (!address) {
+              batchFailed += 1
+              totalFailed += 1
+              allErrors.push({
+                id: String(place.id),
+                name: placeName,
+                collection,
+                error: 'No address found',
               })
+              console.log(`   ⚠️  [${i + 1}/${placesWithoutCoords.docs.length}] Skipping "${placeName}" - no address`)
+              continue
+            }
 
-              batchSuccess++
-              totalSuccess++
-              console.log(`✅ [${coordinates[0].toFixed(6)}, ${coordinates[1].toFixed(6)}]`)
-            } else {
-              batchFailed++
-              totalFailed++
-              const error = {
-                id: String(listing.id),
-                name: listing.name || 'Unknown',
-                error: 'Could not geocode address',
+            try {
+              const progress = `[${totalProcessed + i + 1}/${totalCount}]`
+              process.stdout.write(`   ${progress} Geocoding "${String(placeName).substring(0, 40)}"... `)
+
+              const coordinates = await geocodeAddress(address)
+
+              if (coordinates) {
+                await payload.update({
+                  collection,
+                  id: place.id,
+                  data: {
+                    location: {
+                      ...place.location,
+                      coordinates,
+                    },
+                  },
+                })
+
+                batchSuccess += 1
+                totalSuccess += 1
+                console.log(`✅ [${coordinates[0].toFixed(6)}, ${coordinates[1].toFixed(6)}]`)
+              } else {
+                batchFailed += 1
+                totalFailed += 1
+                allErrors.push({
+                  id: String(place.id),
+                  name: placeName,
+                  collection,
+                  error: 'Could not geocode address',
+                })
+                console.log('❌ Failed')
               }
-              allErrors.push(error)
-              console.log(`❌ Failed`)
+            } catch (err: unknown) {
+              batchFailed += 1
+              totalFailed += 1
+              allErrors.push({
+                id: String(place.id),
+                name: placeName,
+                collection,
+                error: err instanceof Error ? err.message : String(err),
+              })
+              console.log(`❌ Error: ${err instanceof Error ? err.message : String(err)}`)
             }
-          } catch (err: unknown) {
-            batchFailed++
-            totalFailed++
-            const errorMessage = err instanceof Error ? err.message : String(err)
-            const errorInfo = {
-              id: String(listing.id),
-              name: listing.name || 'Unknown',
-              error: errorMessage,
-            }
-            allErrors.push(errorInfo)
-            console.log(`❌ Error: ${errorInfo.error}`)
           }
+
+          totalProcessed += placesWithoutCoords.docs.length
+
+          console.log(`\n   ✅ Batch completed: ${batchSuccess} succeeded, ${batchFailed} failed`)
+          console.log(`   📊 Overall progress: ${totalProcessed}/${totalCount} (${totalSuccess} succeeded, ${totalFailed} failed)`)
         }
-
-        totalProcessed += listingsWithoutCoords.docs.length
-
-        console.log(
-          `\n   ✅ Batch ${batchNumber} completed: ${batchSuccess} succeeded, ${batchFailed} failed`,
-        )
-        console.log(
-          `   📊 Overall progress: ${totalProcessed}/${totalCount.totalDocs} (${totalSuccess} succeeded, ${totalFailed} failed)`,
-        )
       }
 
       // Final Summary
       console.log('\n' + '='.repeat(60))
       console.log('📊 Final Geocoding Summary')
       console.log('='.repeat(60))
-      console.log(`✅ Successfully geocoded: ${totalSuccess} listings`)
-      console.log(`❌ Failed: ${totalFailed} listings`)
-      console.log(`📋 Total processed: ${totalProcessed} listings`)
+      console.log(`✅ Successfully geocoded: ${totalSuccess} places`)
+      console.log(`❌ Failed: ${totalFailed} places`)
+      console.log(`📋 Total processed: ${totalProcessed} places`)
 
       if (allErrors.length > 0) {
         console.log(`\n⚠️  Errors (showing first 20 of ${allErrors.length}):`)
-        allErrors.slice(0, 20).forEach(({ name, error }) => {
-          console.log(`   - ${name}: ${error}`)
+        allErrors.slice(0, 20).forEach(({ collection, name, error }) => {
+          console.log(`   - ${collection}/${name}: ${error}`)
         })
         if (allErrors.length > 20) {
           console.log(`   ... and ${allErrors.length - 20} more errors`)
@@ -267,6 +259,7 @@ export const geocodeListings: TaskConfig = {
           totalProcessed,
           totalSuccess,
           totalFailed,
+          collections: targetCollections,
         },
       }
     } catch (error: unknown) {
@@ -278,4 +271,18 @@ export const geocodeListings: TaskConfig = {
       }
     }
   },
+}
+
+function resolveCollections(rawCollection: unknown): MapPlaceCollectionSlug[] | null {
+  if (rawCollection === undefined || rawCollection === null || rawCollection === '') {
+    return [...MAP_PLACE_COLLECTION_SLUGS]
+  }
+  if (typeof rawCollection !== 'string') {
+    return null
+  }
+  const parsed = rawCollection.trim() as MapPlaceCollectionSlug
+  if (!MAP_PLACE_COLLECTION_SLUGS.includes(parsed)) {
+    return null
+  }
+  return [parsed]
 }

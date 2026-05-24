@@ -1,19 +1,11 @@
-import type { Listing as PayloadListing } from '../../../lib/types/payload-generated';
+import { buildMapPlaceKindLabel } from '../../lib/mapPlaces/mapPlaceTaxonomy';
 
 import { MAP_CENTER } from './map.constants';
-import type { MapListingCard } from './map.types';
+import type { MapListingCard, MapPlaceRecord } from './map.types';
 
 const EARTH_RADIUS_KM = 6371;
-const DEG_TO_RAD = Math.PI / 180;
 
-const PAYLOAD_CATEGORY_LABEL: Record<PayloadListing['category'], string> = {
-  book: 'Books',
-  food: 'Food',
-  hygiene: 'Hygiene',
-  community: 'Community',
-  farm: 'Farm',
-  other: 'Other',
-};
+const DEG_TO_RAD = Math.PI / 180;
 
 function resolveMediaUrl(serverOrigin: string, url?: string | null): string | undefined {
   if (!url) {
@@ -41,41 +33,47 @@ function haversineKm(a: [number, number], b: [number, number]): number {
   return EARTH_RADIUS_KM * c;
 }
 
-function pickImageUrl(listing: PayloadListing, serverOrigin: string): string | undefined {
-  const row = listing.pictures?.find((p) => p.status === 'approved') ?? listing.pictures?.[0];
+function pickImageUrl(place: MapPlaceRecord, serverOrigin: string): string | undefined {
+  const row = place.pictures?.find((p) => p.status === 'approved') ?? place.pictures?.[0];
   if (!row) {
     return undefined;
   }
   const photo = row.photo;
-  if (typeof photo === 'string') {
+  if (!photo || typeof photo === 'string' || typeof photo === 'number') {
     return undefined;
   }
   return resolveMediaUrl(serverOrigin, photo.url ?? photo.thumbnailURL);
 }
 
 export function mapPayloadListingToMapCard(
-  listing: PayloadListing,
+  doc: MapPlaceRecord,
   serverOrigin: string,
   referenceLngLat: [number, number],
 ): MapListingCard {
-  const coords = listing.location?.coordinates;
+  const coords = doc.location?.coordinates;
   const distanceKm =
     coords && coords.length === 2 ? haversineKm(referenceLngLat, coords) : undefined;
 
   return {
-    id: listing.id,
-    title: listing.name,
-    categorySlug: listing.category,
-    categoryLabel: PAYLOAD_CATEGORY_LABEL[listing.category],
+    id: doc.id,
+    mapPlaceCollection: doc.mapPlaceCollection,
+    title: doc.name,
+    kindLabel: buildMapPlaceKindLabel(doc),
     distanceKm,
-    imageUrl: pickImageUrl(listing, serverOrigin),
+    imageUrl: pickImageUrl(doc, serverOrigin),
     loved: false,
+    interaction: doc.interaction,
   };
 }
 
 export function mapPayloadListingsToMapCards(
-  listings: PayloadListing[],
+  listings: MapPlaceRecord[],
   serverOrigin: string,
+  referenceLngLat: [number, number] = MAP_CENTER,
 ): MapListingCard[] {
-  return listings.map((listing) => mapPayloadListingToMapCard(listing, serverOrigin, MAP_CENTER));
+  return listings.map((listing) => mapPayloadListingToMapCard(listing, serverOrigin, referenceLngLat));
+}
+
+export function sortMapCardsByDistance(cards: MapListingCard[]): MapListingCard[] {
+  return [...cards].sort((a, b) => (a.distanceKm ?? Number.POSITIVE_INFINITY) - (b.distanceKm ?? Number.POSITIVE_INFINITY));
 }

@@ -29,7 +29,7 @@ alwaysApply: false
 
 ## Payload: SDK + client (mandatory default)
 
-- **MUST** use **`getPayloadSdk()`** from `lib/api/payloadSdk.ts` for **collection / global** REST — typed with `Config` from `payload-generated.ts`. Slugs not in generated types: **`getPayloadSdkLoose()`** (same fetch, untyped collection). Export name is **`getPayloadSdk`** (camelCase).
+- **MUST** use **`getPayloadSdk()`** from `apps/core/src/lib/api/payloadSdk.ts` for **collection / global** REST — typed with `Config` from `payload-generated.ts`. Slugs not in generated types: **`getPayloadSdkLoose()`** (same fetch, untyped collection). Export name is **`getPayloadSdk`** (camelCase).
 - **`payloadClient.findMany` / `findById` / `create` / `update` / `delete`** — **removed**; do not reintroduce raw REST shims on the client.
 - **`payloadSdkTry`** — optional `{ data, error }` wrapper for hooks; otherwise **`PayloadSDKError`** + `try`/`catch`.
 - **Keep** `payloadClient.request('/api/…')` for **custom app routes** (e.g. `/api/listings/nearby`) until wrapped under `lib/api/<domain>/`.

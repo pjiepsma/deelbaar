@@ -1,8 +1,10 @@
 {
   "expo": {
-    "name": "core",
-    "slug": "core",
+    "name": "Deelbaar",
+    "slug": "deelbaar",
+    "scheme": "deelbaar",
     "version": "1.0.0",
+    "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -12,7 +14,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.deelbaar.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -27,7 +30,13 @@
     },
     "plugins": [
       "@rnmapbox/maps",
-      "react-native-google-auth"
+      "react-native-google-auth",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Deelbaar to center the map near your current location."
+        }
+      ]
     ]
   }
 }

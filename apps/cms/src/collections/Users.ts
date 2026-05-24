@@ -2,17 +2,31 @@ import type { CollectionConfig } from 'payload'
 import NotificationService from '../lib/notificationService'
 import { generateMail } from '../globals/Mail/utilities/sendMail'
 import { config } from '../config/config'
+import { MAP_PLACE_RELATION_TO } from '../constants/mapPlaces'
+import { findPlaceByReference, getPlaceCollection, getPlaceId } from '../lib/mapPlaces'
+import { assertPlaceInteractionAllowed } from '../lib/placeInteractionScope'
+import { emailLookupCollectionEndpoint } from '../endpoints/emailLookup'
+import { resendVerificationCodeEndpoint } from '../endpoints/resendVerificationCode'
+import { verifyEmailCodeEndpoint } from '../endpoints/verifyEmailCode'
+import { issueSignupOtpAndBuildVerificationEmail } from '../lib/signupVerificationEmailHtml'
 
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
     useAsTitle: 'email',
   },
+  endpoints: [emailLookupCollectionEndpoint, verifyEmailCodeEndpoint, resendVerificationCodeEndpoint],
   hooks: {
     beforeChange: [
-      ({ data, originalDoc }) => {
+      async ({ data, originalDoc, operation, req }) => {
         if (!data) {
           return data
+        }
+
+        const coordinates = data.address?.coordinates
+        if (Array.isArray(coordinates) && coordinates.length === 2) {
+          data.address.latitude = coordinates[1]
+          data.address.longitude = coordinates[0]
         }
 
         if (typeof data.pushToken === 'string') {
@@ -26,6 +40,25 @@ export const Users: CollectionConfig = {
 
           if (incomingToken !== previousToken) {
             data.pushTokenUpdatedAt = incomingToken ? new Date().toISOString() : null
+          }
+        }
+
+        const previousFavorites = Array.isArray(originalDoc?.favorites) ? originalDoc.favorites : []
+        const currentFavorites = Array.isArray(data.favorites) ? data.favorites : previousFavorites
+        const favoriteCandidates =
+          operation === 'create'
+            ? currentFavorites
+            : currentFavorites.filter((currentFav: any) => {
+                const currentPlaceKey = `${getPlaceCollection(currentFav.place)}:${getPlaceId(currentFav.place)}`
+                return !previousFavorites.some((prevFav: any) => {
+                  const prevPlaceKey = `${getPlaceCollection(prevFav.place)}:${getPlaceId(prevFav.place)}`
+                  return prevPlaceKey === currentPlaceKey
+                })
+              })
+
+        for (const favorite of favoriteCandidates) {
+          if (favorite?.place) {
+            await assertPlaceInteractionAllowed(req, favorite.place, 'favorite')
           }
         }
 
@@ -54,21 +87,23 @@ export const Users: CollectionConfig = {
 
             // Find newly added favorites
             const addedFavorites = currentFavorites.filter((currentFav: any) => {
-              const listingId =
-                typeof currentFav.listing === 'string' ? currentFav.listing : currentFav.listing?.id
+              const currentPlaceKey = `${getPlaceCollection(currentFav.place)}:${getPlaceId(currentFav.place)}`
               return !previousFavorites.some((prevFav: any) => {
-                const prevListingId =
-                  typeof prevFav.listing === 'string' ? prevFav.listing : prevFav.listing?.id
-                return prevListingId === listingId
+                const prevPlaceKey = `${getPlaceCollection(prevFav.place)}:${getPlaceId(prevFav.place)}`
+                return prevPlaceKey === currentPlaceKey
               })
             })
 
             // Send notifications for new favorites
             for (const favorite of addedFavorites) {
-              if (favorite.listing && typeof favorite.listing === 'object') {
-                const listing = favorite.listing as any
+              if (favorite.place) {
+                const place = await findPlaceByReference(req.payload, favorite.place)
                 const listingOwnerId =
-                  typeof listing.owner === 'string' ? listing.owner : listing.owner?.id
+                  typeof place.owner === 'string' || typeof place.owner === 'number'
+                    ? String(place.owner)
+                    : place.owner && typeof place.owner === 'object' && 'id' in place.owner
+                      ? String((place.owner as { id: string | number }).id)
+                      : null
 
                 if (listingOwnerId && listingOwnerId !== doc.id) {
                   // Don't notify if user favorites their own listing
@@ -77,7 +112,7 @@ export const Users: CollectionConfig = {
                   await notificationService.notifyFavorite(
                     listingOwnerId,
                     favoriterName,
-                    listing.name || 'Listing',
+                    String(place.name || 'Place'),
                   )
                 }
               }
@@ -96,17 +131,11 @@ export const Users: CollectionConfig = {
     tokenExpiration: 7200, // 2 hours
     verify: {
       generateEmailHTML: async ({ req, token, user }) => {
-        const { body } = await generateMail({
-          type: 'verify',
-          placeholders: {
-            userName:
-              user.name || user.surname ? `${user.name} ${user.surname}`.trim() : user.email,
-            verificationUrl: `${process.env.PAYLOAD_PUBLIC_SERVER_URL || config.publicServerUrl}/verify?token=${token}`,
-          },
+        return issueSignupOtpAndBuildVerificationEmail({
           req,
+          token,
+          user,
         })
-
-        return body
       },
       generateEmailSubject: async ({ req, token, user }) => {
         const { subject } = await generateMail({
@@ -218,6 +247,20 @@ export const Users: CollectionConfig = {
       },
     },
     {
+      name: 'signupOtpHash',
+      type: 'text',
+      admin: {
+        hidden: true,
+      },
+    },
+    {
+      name: 'signupOtpExpiresAt',
+      type: 'date',
+      admin: {
+        hidden: true,
+      },
+    },
+    {
       name: 'googleSub',
       type: 'text',
       unique: true,
@@ -289,19 +332,35 @@ export const Users: CollectionConfig = {
             description: 'Geographic coordinates (optional)',
           },
         },
+        {
+          name: 'latitude',
+          type: 'number',
+          admin: {
+            description: 'Canonical latitude derived from coordinates',
+            readOnly: true,
+          },
+        },
+        {
+          name: 'longitude',
+          type: 'number',
+          admin: {
+            description: 'Canonical longitude derived from coordinates',
+            readOnly: true,
+          },
+        },
       ],
     },
     {
       name: 'favorites',
       type: 'array',
       admin: {
-        description: "User's favorite listings",
+        description: "User's favorite places",
       },
       fields: [
         {
-          name: 'listing',
+          name: 'place',
           type: 'relationship',
-          relationTo: 'listings',
+          relationTo: MAP_PLACE_RELATION_TO,
           required: true,
         },
       ],
@@ -365,6 +424,34 @@ export const Users: CollectionConfig = {
           type: 'checkbox',
           label: 'World unlocked',
           defaultValue: false,
+        },
+      ],
+    },
+    {
+      name: 'homeArea',
+      type: 'group',
+      admin: {
+        description: 'Default home search area for entitlement checks',
+        position: 'sidebar',
+      },
+      fields: [
+        {
+          name: 'city',
+          type: 'text',
+        },
+        {
+          name: 'province',
+          type: 'text',
+        },
+        {
+          name: 'country',
+          type: 'text',
+          defaultValue: 'Netherlands',
+        },
+        {
+          name: 'radiusMeters',
+          type: 'number',
+          defaultValue: 15000,
         },
       ],
     },

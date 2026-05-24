@@ -1,5 +1,6 @@
+import 'dotenv/config'
 // storage-adapter-import-placeholder
-import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { postgresAdapter } from '@payloadcms/db-postgres'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { getSelectedEmailAdapter } from './lib/email-adapters/selectEmailAdapter'
@@ -11,11 +12,16 @@ import sharp from 'sharp'
 import { config } from './config/config'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
-import { Listings } from './collections/Listings'
+import { Kiosks } from './collections/Kiosks'
+import { Markets } from './collections/Markets'
+import { Taps } from './collections/Taps'
 import { Reviews } from './collections/Reviews'
 import { Requests } from './collections/Requests'
 import { Wishes } from './collections/Wishes'
 import { Notifications } from './collections/Notifications'
+import { Follows } from './collections/Follows'
+import { Entitlements } from './collections/Entitlements'
+import { Reports } from './collections/Reports'
 import { Mail } from './globals/Mail/mail'
 import { listingsNearby } from './endpoints/listingsNearby'
 import { listingsInBounds } from './endpoints/listingsInBounds'
@@ -36,7 +42,20 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Listings, Reviews, Requests, Wishes, Notifications],
+  collections: [
+    Users,
+    Media,
+    Kiosks,
+    Markets,
+    Taps,
+    Reviews,
+    Requests,
+    Wishes,
+    Notifications,
+    Follows,
+    Entitlements,
+    Reports,
+  ],
   globals: [Mail],
   cors: ['*'], // Allow all origins in development
   csrf: config.corsCsrfUrls.filter((url): url is string => typeof url === 'string'),
@@ -48,13 +67,14 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
     declare: false,
   },
-  db: mongooseAdapter({
-    url:
-      config.databaseURI ||
-      process.env.MONGODB_URI ||
-      process.env.DATABASE_URL ||
-      process.env.DATABASE_URI ||
-      false,
+  db: postgresAdapter({
+    pool: {
+      connectionString:
+        config.databaseURI ||
+        process.env.DATABASE_URI ||
+        process.env.DATABASE_URL ||
+        undefined,
+    },
   }),
   endpoints: [
     {

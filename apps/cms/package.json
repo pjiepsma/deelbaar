@@ -8,7 +8,7 @@
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
     "dev": "concurrently -n \"CMS,DB\" -c \"bgBlue.bold,bgMagenta.bold\" \"pnpm:dev:payload\" \"pnpm:dev:db\"",
     "dev:payload": "cross-env NODE_OPTIONS=--no-deprecation PORT=4000 next dev",
-    "dev:db": "node ./bin/memDb.js",
+    "dev:db": "docker compose up -d postgres",
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
@@ -25,7 +25,7 @@
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
   },
   "dependencies": {
-    "@payloadcms/db-mongodb": "3.81.0",
+    "@payloadcms/db-postgres": "3.81.0",
     "@payloadcms/email-resend": "3.81.0",
     "@payloadcms/next": "3.81.0",
     "@payloadcms/payload-cloud": "3.81.0",
@@ -55,7 +55,6 @@
     "eslint": "^9.16.0",
     "eslint-config-next": "15.4.11",
     "jsdom": "26.1.0",
-    "mongodb-memory-server": "^10.3.0",
     "playwright": "1.54.1",
     "playwright-core": "1.54.1",
     "prettier": "^3.4.2",

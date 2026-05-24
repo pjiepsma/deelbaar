@@ -7,12 +7,11 @@ const parseCsvEnv = (value: string | undefined): string[] =>
 export const defaultConfig = {
   secret: process.env.PAYLOAD_SECRET || '',
   url: 'http://localhost:4000',
-  // QD-P order: MONGODB_URI, DATABASE_URL; DATABASE_URI kept for backward compatibility
+  // Prefer explicit Postgres connection strings.
   databaseURI:
-    process.env.MONGODB_URI ||
-    process.env.DATABASE_URL ||
     process.env.DATABASE_URI ||
-    'mongodb://127.0.0.1:27017/payload',
+    process.env.DATABASE_URL ||
+    'postgresql://postgres:postgres@127.0.0.1:5432/payload',
   title: 'Title',
   googleClientIds: parseCsvEnv(process.env.GOOGLE_CLIENT_IDS),
   corsCsrfUrls: [

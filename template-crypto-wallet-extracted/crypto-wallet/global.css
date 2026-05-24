@@ -1,0 +1,24 @@
+@import 'tailwindcss';
+@import 'uniwind';
+
+@import 'heroui-native/styles';
+@import 'heroui-native-pro/styles';
+
+@source "./node_modules/heroui-native/lib";
+@source './node_modules/heroui-native-pro/lib';
+
+/*
+ * Override the font CSS variables that HeroUI Native uses so every component
+ * styled via `font-normal` / `font-medium` / `font-semibold` / `font-bold`
+ * automatically resolves to the matching Nunito weight. The PostScript names
+ * below match the keys passed to `useFonts` in `app/_layout.tsx`.
+ *
+ * See: https://heroui.com/docs/native/getting-started/theming#1-load-fonts-in-your-app
+ */
+@theme {
+  --font-light: 'Nunito_300Light';
+  --font-normal: 'Nunito_400Regular';
+  --font-medium: 'Nunito_500Medium';
+  --font-semibold: 'Nunito_600SemiBold';
+  --font-bold: 'Nunito_700Bold';
+}

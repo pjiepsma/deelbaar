@@ -3,12 +3,18 @@
  * Used by full `pnpm seed` and by `pnpm seed:listings` only.
  */
 
-export type ListingCategory = 'book' | 'food' | 'hygiene' | 'community' | 'farm' | 'other'
+type ListingType = 'little' | 'farm' | 'waterpoint'
+type LittleSubtype = 'books' | 'hygiene' | 'community' | 'other'
+type FarmSubtype = 'honey' | 'milk' | 'meat' | 'vegetables' | 'other'
+type WaterpointSubtype = 'indoor' | 'outdoor'
 
 export type ApeldoornListingTemplate = {
   name: string
   description: string
-  category: ListingCategory
+  listingType: ListingType
+  littleSubtype?: LittleSubtype | null
+  farmSubtype?: FarmSubtype | null
+  waterpointSubtype?: WaterpointSubtype | null
   location: {
     address: string
     coordinates: [number, number]
@@ -20,7 +26,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Minibieb Grote Kerkhof',
     description: 'Centrum: kinderboeken en romans. Neem mee, breng terug.',
-    category: 'book',
+    listingType: 'little',
+    littleSubtype: 'books',
     location: {
       address: 'Grote Kerkhof, Apeldoorn, Netherlands',
       coordinates: [5.9688, 52.2108],
@@ -30,7 +37,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Oranjepark minibieb',
     description: 'Kleine kast bij het park; vooral jeugd en strip.',
-    category: 'book',
+    listingType: 'little',
+    littleSubtype: 'books',
     location: {
       address: 'Oranjepark, Apeldoorn, Netherlands',
       coordinates: [5.9582, 52.2141],
@@ -40,7 +48,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Berg en Bos boekenhoek',
     description: 'Rustige plek nabij het bos; natuur- en wandelgidsen.',
-    category: 'book',
+    listingType: 'little',
+    littleSubtype: 'books',
     location: {
       address: 'Berg en Bos, Apeldoorn, Netherlands',
       coordinates: [5.9455, 52.2054],
@@ -50,7 +59,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Osseveld voedselkast',
     description: 'Blij inhoud: conserven, pasta, lang houdbaar.',
-    category: 'food',
+    listingType: 'farm',
+    farmSubtype: 'other',
     location: {
       address: 'Osseveld, Apeldoorn, Netherlands',
       coordinates: [5.982, 52.2183],
@@ -60,7 +70,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'De Maten ruilplank',
     description: 'Klein spul voor de buurt: gereedschap, spellen, boeken.',
-    category: 'community',
+    listingType: 'little',
+    littleSubtype: 'community',
     location: {
       address: 'De Maten, Apeldoorn, Netherlands',
       coordinates: [5.9885, 52.1982],
@@ -70,7 +81,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Kayersdijk kinderbieb',
     description: 'Prentenboeken en jeugdromans; ouders gezocht als vrijwilligers.',
-    category: 'book',
+    listingType: 'little',
+    littleSubtype: 'books',
     location: {
       address: 'Kayersdijk, Apeldoorn, Netherlands',
       coordinates: [5.9712, 52.2075],
@@ -80,7 +92,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Korenmolen buurtbieb',
     description: 'Historische romans en streekromanen.',
-    category: 'book',
+    listingType: 'little',
+    littleSubtype: 'books',
     location: {
       address: 'Korenmolenkwartier, Apeldoorn, Netherlands',
       coordinates: [5.9634, 52.213],
@@ -90,7 +103,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Julianapark hygiene-punt',
     description: 'Shampoo, zeep, maandverband — neem wat je nodig hebt.',
-    category: 'hygiene',
+    listingType: 'little',
+    littleSubtype: 'hygiene',
     location: {
       address: 'Julianapark, Apeldoorn, Netherlands',
       coordinates: [5.951, 52.2088],
@@ -100,7 +114,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Apeldoorn-Zuid boekenkast',
     description: 'Thriller en fantasy; ook Engelse titels.',
-    category: 'book',
+    listingType: 'little',
+    littleSubtype: 'books',
     location: {
       address: 'Apeldoorn-Zuid, Netherlands',
       coordinates: [5.9355, 52.1955],
@@ -110,7 +125,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Vogelkwartier zadenbieb',
     description: 'Groentezaden en kruidplantjes ruilen.',
-    category: 'food',
+    listingType: 'farm',
+    farmSubtype: 'vegetables',
     location: {
       address: 'Vogelkwartier, Apeldoorn, Netherlands',
       coordinates: [5.9765, 52.2248],
@@ -120,7 +136,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Station Apeldoorn minibieb',
     description: 'Reislectuur en korte verhalen voor pendelaars.',
-    category: 'book',
+    listingType: 'little',
+    littleSubtype: 'books',
     location: {
       address: 'Stationsplein, Apeldoorn, Netherlands',
       coordinates: [5.9697, 52.2084],
@@ -130,7 +147,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Hoofdstraat free little library',
     description: 'Klassiekers en non-fictie; Engels/Nederlands gemengd.',
-    category: 'book',
+    listingType: 'little',
+    littleSubtype: 'books',
     location: {
       address: 'Hoofdstraat, Apeldoorn, Netherlands',
       coordinates: [5.9655, 52.2112],
@@ -140,7 +158,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Eendrachtspark ruilkast',
     description: 'Bordspellen en puzzels voor buurtbewoners.',
-    category: 'other',
+    listingType: 'little',
+    littleSubtype: 'other',
     location: {
       address: 'Eendrachtspark, Apeldoorn, Netherlands',
       coordinates: [5.9382, 52.2025],
@@ -148,9 +167,10 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
     tags: [{ tag: 'games' }, { tag: 'community' }],
   },
   {
-    name: 'Zuidbroek boerderijautomaat (demo)',
-    description: 'Demo-locatie voor boerderijautomaat-producten in de buurt.',
-    category: 'farm',
+    name: 'Zuidbroek honingautomaat (demo)',
+    description: 'Demo-locatie voor lokale honing uit de regio.',
+    listingType: 'farm',
+    farmSubtype: 'honey',
     location: {
       address: 'Zuidbroek, Apeldoorn, Netherlands',
       coordinates: [5.9912, 52.1995],
@@ -160,7 +180,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Loolaan wijkbieb',
     description: 'Romans en feelgood; graag netjes terugzetten.',
-    category: 'book',
+    listingType: 'little',
+    littleSubtype: 'books',
     location: {
       address: 'Loolaan, Apeldoorn, Netherlands',
       coordinates: [5.9285, 52.2058],
@@ -170,7 +191,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Zevenhuizen community shelf',
     description: 'Huishoudspullen en kleine cadeaus voor wie het kan gebruiken.',
-    category: 'community',
+    listingType: 'little',
+    littleSubtype: 'community',
     location: {
       address: 'Zevenhuizen, Apeldoorn, Netherlands',
       coordinates: [5.9975, 52.1885],
@@ -180,7 +202,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Noorderpark kinderbieb',
     description: 'Peuters en kleuters; ook leesvoorbeelden voor ouders.',
-    category: 'book',
+    listingType: 'little',
+    littleSubtype: 'books',
     location: {
       address: 'Noorderpark, Apeldoorn, Netherlands',
       coordinates: [5.955, 52.2185],
@@ -190,7 +213,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Wilmerspark snack-ruil',
     description: 'Lang houdbaar eten en drinken voor de buurt.',
-    category: 'food',
+    listingType: 'farm',
+    farmSubtype: 'other',
     location: {
       address: 'Wilmerspark, Apeldoorn, Netherlands',
       coordinates: [5.9735, 52.216],
@@ -200,7 +224,8 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Componistenbuurt boekenrek',
     description: 'Biografieën en muziekboeken.',
-    category: 'book',
+    listingType: 'little',
+    littleSubtype: 'books',
     location: {
       address: 'Componistenbuurt, Apeldoorn, Netherlands',
       coordinates: [5.961, 52.199],
@@ -210,43 +235,103 @@ export const APELDOORN_LISTING_TEMPLATES: ApeldoornListingTemplate[] = [
   {
     name: 'Apeldoorn Centrum hygiene-kast',
     description: 'Tandenborstels, deodorant, basis hygiene — anoniem pakken.',
-    category: 'hygiene',
+    listingType: 'little',
+    littleSubtype: 'hygiene',
     location: {
       address: 'Marktplein, Apeldoorn, Netherlands',
       coordinates: [5.92699, 52.19895],
     },
     tags: [{ tag: 'hygiene' }, { tag: 'centrum' }],
   },
+  {
+    name: 'Stadhuis drinkwater (demo)',
+    description: 'Openbaar drinkwaterpunt binnen.',
+    listingType: 'waterpoint',
+    waterpointSubtype: 'indoor',
+    location: {
+      address: 'Marktplein, Apeldoorn, Netherlands',
+      coordinates: [5.9692, 52.211],
+    },
+    tags: [{ tag: 'water' }, { tag: 'demo' }],
+  },
+  {
+    name: 'Oranjepark fontein (demo)',
+    description: 'Buitenwatertappunt bij het park.',
+    listingType: 'waterpoint',
+    waterpointSubtype: 'outdoor',
+    location: {
+      address: 'Oranjepark, Apeldoorn, Netherlands',
+      coordinates: [5.9575, 52.2145],
+    },
+    tags: [{ tag: 'water' }, { tag: 'park' }],
+  },
 ]
 
-export type ListingCreatePayload = {
+type PlaceCreatePayload = {
   name: string
   publishStatus: 'live'
   description: string
-  category: ListingCategory
-  owner: string
+  owner: string | number
   location: {
     address: string
     coordinates: [number, number]
   }
   tags: { tag: string }[]
+  kioskSubtype?: string | null
+  marketSubtype?: string | null
+  tapSubtype?: string | null
 }
 
-/**
- * Assigns rotating owners from the given user ids (admin + seeded users, etc.).
- */
-export function buildApeldoornListingsSeed(ownerIds: string[]): ListingCreatePayload[] {
+export type ApeldoornPlaceSeedRow = {
+  collection: 'kiosks' | 'markets' | 'taps'
+  data: PlaceCreatePayload
+}
+
+function resolveCollectionAndSubtype(row: ApeldoornListingTemplate): {
+  collection: ApeldoornPlaceSeedRow['collection']
+  subtypeField: 'kioskSubtype' | 'marketSubtype' | 'tapSubtype'
+  subtypeValue: string
+} {
+  if (row.listingType === 'little') {
+    const subtype = row.littleSubtype
+    if (!subtype) {
+      throw new Error(`Missing littleSubtype for ${row.name}`)
+    }
+    return { collection: 'kiosks', subtypeField: 'kioskSubtype', subtypeValue: subtype }
+  }
+  if (row.listingType === 'farm') {
+    const subtype = row.farmSubtype
+    if (!subtype) {
+      throw new Error(`Missing farmSubtype for ${row.name}`)
+    }
+    return { collection: 'markets', subtypeField: 'marketSubtype', subtypeValue: subtype }
+  }
+  const subtype = row.waterpointSubtype
+  if (!subtype) {
+    throw new Error(`Missing waterpointSubtype for ${row.name}`)
+  }
+  return { collection: 'taps', subtypeField: 'tapSubtype', subtypeValue: subtype }
+}
+
+export function buildApeldoornListingsSeed(ownerIds: (string | number)[]): ApeldoornPlaceSeedRow[] {
   if (ownerIds.length === 0) {
     throw new Error('buildApeldoornListingsSeed: at least one owner id is required')
   }
 
-  return APELDOORN_LISTING_TEMPLATES.map((row, index) => ({
-    name: row.name,
-    publishStatus: 'live' as const,
-    description: row.description,
-    category: row.category,
-    owner: ownerIds[index % ownerIds.length]!,
-    location: row.location,
-    tags: row.tags,
-  }))
+  return APELDOORN_LISTING_TEMPLATES.map((row, index) => {
+    const kind = resolveCollectionAndSubtype(row)
+    const data: PlaceCreatePayload = {
+      name: row.name,
+      publishStatus: 'live',
+      description: row.description,
+      owner: ownerIds[index % ownerIds.length]!,
+      location: row.location,
+      tags: row.tags,
+      kioskSubtype: null,
+      marketSubtype: null,
+      tapSubtype: null,
+    }
+    data[kind.subtypeField] = kind.subtypeValue
+    return { collection: kind.collection, data }
+  })
 }

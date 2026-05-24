@@ -30,9 +30,8 @@ const nextConfig = {
     PORT: 4000,
   },
   serverExternalPackages: [
-    'mongoose',
-    'mongodb',
-    '@payloadcms/db-mongodb',
+    'pg',
+    '@payloadcms/db-postgres',
   ],
 }
 

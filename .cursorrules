@@ -4,7 +4,7 @@
 - **`apps/core`**: Primary Expo app (`@deelbaar/core`) — expo-router, `app/`, `lib/`, `components/`, `global.css`, `metro.config.js` (Uniwind), `eas.json`. Env: **`apps/core/.env`** (see `apps/core/env-example.txt`).
 - **`apps/mobile`**: **Migration-only** legacy Expo app; **delete the package** after Core matches **`apps/core/PARITY_CHECKLIST.md`**. Until then, use **`pnpm start:mobile`** / **`pnpm dev:mobile`** / etc. only when you must compare or port behavior — do not add new product features only to mobile.
 - **`apps/cms`**: Payload CMS + Next (`@deelbaar/cms`); dev server default port **4000**.
-- **Root**: `pnpm-workspace.yaml`, `pnpm copy:payload-types` → `scripts/sync-payload-types.cjs` (copies `apps/cms/src/payload-types.ts` → **`apps/core/lib/types/payload-generated.ts`** and `apps/mobile/lib/types/payload-generated.ts` until mobile is deleted).
+- **Root**: `pnpm-workspace.yaml`, `pnpm copy:payload-types` → `scripts/sync-payload-types.cjs` (copies `apps/cms/src/payload-types.ts` → **`apps/core/src/lib/types/payload-generated.ts`** and `apps/mobile/lib/types/payload-generated.ts` until mobile is deleted).
 - **Dev both**: `pnpm dev` — Payload/Next on **:4000** (`dev:cms`) + Core Expo dev client (`dev:core`), after `copy:payload-types`.
 - **Core only**: `pnpm start` or `pnpm dev:core`. CMS only: `pnpm dev:cms`. Native: `pnpm android` / `pnpm ios`.
 
@@ -28,6 +28,7 @@
 - See **`apps/core/PARITY_CHECKLIST.md`** for behavior parity vs legacy mobile.
 - Strict Payload / API typing: **`.cursor/rules/payload-strict-types.mdc`** (with **`deelbaar-api.mdc`**).
 - **Code style (agent):** **`.cursor/rules/agent-code-style.mdc`** — fail fast; no magic numbers/strings (named `const`); minimal comments; clarity via names and structure.
+- **Brevity:** **`.cursor/rules/concise-action-answers.mdc`** — short, direct answers by default for everything; no over-explaining unless they ask for depth.
 - Product vision: **`docs/PRODUCT_VISION.md`**.
 
 ## Skills

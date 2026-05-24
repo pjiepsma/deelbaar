@@ -1,5 +1,5 @@
 ---
-description: Fail-fast, no magic literals, minimal comments — names and named constants carry meaning
+description: Fail-fast; ask user before any fallback; ban bogus ?? / defaults on ids; name domain literals; minimal comments
 globs: apps/**/*.{ts,tsx,js,jsx},packages/**/*.{ts,tsx,js,jsx},scripts/**/*.{ts,tsx,js,jsx,mjs,cjs}
 alwaysApply: true
 ---
@@ -8,11 +8,42 @@ alwaysApply: true
 
 ## Fail fast — bogus “fallbacks” are errors
 
+**Default stance: do not add fallbacks.** If something might be missing, **surface it** (types, guards, error UI, throw) instead of substituting a fake value.
+
+**Mandatory — ask first:** Before implementing **any** fallback (including `??` / `||`, alternate implementations, substitute icons/assets, default env values, empty defaults for convenience, or catch-and-return-default), **stop and ask the user for approval** — **always**. Do not add the fallback silently and assume it is OK.
+
+Assume **most “fallbacks” are wrong**: they turn broken data into plausible-looking garbage and delay fixes. **Do not** default domain ids or payloads just to satisfy TypeScript or to dodge `undefined` — that **creates** bugs.
+
 When missing or invalid data means **the contract or invariant is broken**, do **not** mask it with a silent default that looks like success.
 
 - **Throw or reject** (with a clear message), or route to an **explicit error / empty-state** that says what went wrong — do not return fake empty objects, placeholder IDs, `0`, or `[]` as if nothing failed when the caller required real data.
 - Avoid **`catch { return default }`** that hides network/parsing failures unless the product spec truly defines degraded behaviour; if you degrade, log or surface it intentionally.
-- **`??` / `||`** are fine only where **absence is valid by design** (optional schema fields, user-tunable defaults documented in product, Mapbox APIs that require numeric literals, etc.). They are **not** for “we don’t know what happened, pretend it’s fine.”
+
+### Forbidden: coalescing required values into sentinels
+
+**Do not** paper over missing **identifiers, foreign keys, tokens, URLs, or required props** with empty string, zero, or empty collections:
+
+- **Wrong**: `user.id ?? ''`, `user?.id ?? ''`, `listingId ?? 0`, `token ?? ''`, `response.items ?? []` when downstream **needs real data** and would silently misbehave or corrupt requests.
+- **Wrong**: `name || 'Unknown'` / `'Guest'` for entities that **must** have an identity from the server — fix parsing or block the UI until data is valid.
+- **Right**: narrow types after validation (`if (!user?.id) { … error / return }`), early `return`, throw, or UI that says **why** data is missing.
+
+Use **`??` / `||`** only where **`undefined` / null / absent is explicitly allowed by design** and the default is **not** pretending you have a real id or record:
+
+- Optional **schema** fields the product truly treats as absent.
+- Form **reset** to `''` / cleared control values (local UI state, not faking API payloads).
+- APIs/SDKs that **document** a literal default you must pass.
+- Harmless display polish where **both branches are honest** (e.g. show surname if present, else given name — **both** are real user strings from data).
+
+If you are unsure whether the value is **required**, treat it as **required** and **fail visibly**.
+
+### No silent substitutes for required setup (env, branding, assets)
+
+Do **not** chain **alternate implementations** to hide misconfiguration: extra icons when the chosen asset is missing, placeholder logos, dummy base URLs when env is unset, or “try implementation A then B” when the product expects **one** correct source of truth.
+
+- **Missing / invalid env**, **missing branded asset**, **broken contract** → make it **visible**: fail fast in dev, explicit error UI or copy in product, or validation at install/build time — so people fix the root cause.
+- **Avoid “bridge” components** that silently swap vector vs SVG, CDN vs local file, etc.; they bury bugs.
+
+**OK “fallback”** only where the **domain is genuinely optional**: e.g. show **surname** when present, otherwise **given name** (both real user fields); optional schema fields; degraded behaviour **called out in product spec** (then surface or log it deliberately).
 
 ## Comments — almost none; never “AI narration”
 
@@ -21,14 +52,22 @@ When missing or invalid data means **the contract or invariant is broken**, do *
 - If readers need a long comment to understand the code, **prefer** clearer names, smaller functions, or stricter types so the code explains itself.
 - Allowed **short** comments: non-obvious **why** (business rule, spec link), **SDK / platform quirk** with a one-line pointer, or a **temporary** workaround with **ticket** / date to remove.
 
-## No magic numbers or strings
+## Name **domain** literals — not every numeric literal
 
-Any literal **number or string that carries domain meaning** (zoom, radius, timeouts, route keys, feature flags, copy keys, layout thresholds, magic query params) belongs in a **named `const`** (same file top, `constants/`, or colocated module) — not inlined where readers must guess.
+A **magic number/string** here means a literal whose meaning is **business, protocol, or product logic** — not obvious from syntax alone: timeouts, distances, conversion factors (`3600` seconds/hour), API/query keys, route **names**, feature-flag ids, pagination caps tied to backend contracts, etc. Those belong in a **named `const`** (file top, `constants/`, or config) so the **intent** is readable.
 
-- **Name the meaning**, not the value only: e.g. `NEARBY_LISTINGS_RADIUS_METERS`, not `x = 50000`.
-- **Shared** values live in one place; **local** values can stay at the top of the file as `const`.
-- **Tight exceptions** where a literal is universal and noise: `0`, `1`, `-1` for trivial index/math; `''` for reset; boolean toggles; standard enum-like literals already named by the type system.
+**Not** in that bucket (do **not** spam named constants or parallel TS “design token” files for):
+
+- **Pure UI/layout**: padding, gap, corner radius, common font steps — use **HeroUI + Uniwind / `className` / theme**; incidental literals there are fine.
+- **Obvious local geometry**: `flex: 1`, `height: 1` hairlines, keyboard offsets where the API expects a number — no ritual renaming.
+
+- **Shared domain** values live in **one** place (`config/`, `constants/`); **local** domain literals can stay as `const` at the top of one file.
+- **Tight exceptions**: `0`, `1`, `-1` for trivial index/math; `''` only for **local** UI reset / cleared inputs — **not** as a stand-in for missing server ids in URLs or API bodies; boolean toggles; literals already explained by **types** or **enums**.
+
+Strings: name **stable identifiers** (routes, flags, storage keys in config) — not every paragraph of UI copy.
 
 ## When unsure
 
 Prefer **one explicit path** (success vs error) over multiple silent branches that differ only by hidden defaults.
+
+If the reflex is **`?? ''`**, **`?? 0`**, **`|| []`** on an **id, key, token, or required field** — **do not**: validate, narrow the type, or show an error path instead.

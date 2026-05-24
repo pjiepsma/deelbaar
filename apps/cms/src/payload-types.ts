@@ -69,11 +69,16 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
-    listings: Listing;
+    kiosks: Kiosk;
+    markets: Market;
+    taps: Tap;
     reviews: Review;
     requests: Request;
     wishes: Wish;
     notifications: Notification;
+    follows: Follow;
+    entitlements: Entitlement;
+    reports: Report;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -84,11 +89,16 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    listings: ListingsSelect<false> | ListingsSelect<true>;
+    kiosks: KiosksSelect<false> | KiosksSelect<true>;
+    markets: MarketsSelect<false> | MarketsSelect<true>;
+    taps: TapsSelect<false> | TapsSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     requests: RequestsSelect<false> | RequestsSelect<true>;
     wishes: WishesSelect<false> | WishesSelect<true>;
     notifications: NotificationsSelect<false> | NotificationsSelect<true>;
+    follows: FollowsSelect<false> | FollowsSelect<true>;
+    entitlements: EntitlementsSelect<false> | EntitlementsSelect<true>;
+    reports: ReportsSelect<false> | ReportsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -96,7 +106,7 @@ export interface Config {
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   fallbackLocale: null;
   globals: {
@@ -144,7 +154,7 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
   /**
    * Whether this is an anonymous user account
    */
@@ -164,11 +174,13 @@ export interface User {
   /**
    * Profile picture
    */
-  avatar?: (string | null) | Media;
+  avatar?: (number | null) | Media;
   /**
    * User role
    */
   role: 'user' | 'admin';
+  signupOtpHash?: string | null;
+  signupOtpExpiresAt?: string | null;
   /**
    * Google account subject identifier
    */
@@ -208,13 +220,33 @@ export interface User {
      * @maxItems 2
      */
     coordinates?: [number, number] | null;
+    /**
+     * Canonical latitude derived from coordinates
+     */
+    latitude?: number | null;
+    /**
+     * Canonical longitude derived from coordinates
+     */
+    longitude?: number | null;
   };
   /**
-   * User's favorite listings
+   * User's favorite places
    */
   favorites?:
     | {
-        listing: string | Listing;
+        place:
+          | {
+              relationTo: 'kiosks';
+              value: number | Kiosk;
+            }
+          | {
+              relationTo: 'markets';
+              value: number | Market;
+            }
+          | {
+              relationTo: 'taps';
+              value: number | Tap;
+            };
         id?: string | null;
       }[]
     | null;
@@ -234,6 +266,15 @@ export interface User {
     province?: boolean | null;
     country?: boolean | null;
     world?: boolean | null;
+  };
+  /**
+   * Default home search area for entitlement checks
+   */
+  homeArea?: {
+    city?: string | null;
+    province?: string | null;
+    country?: string | null;
+    radiusMeters?: number | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -261,7 +302,7 @@ export interface User {
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -277,17 +318,18 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "listings".
+ * via the `definition` "kiosks".
  */
-export interface Listing {
-  id: string;
+export interface Kiosk {
+  id: number;
   name: string;
   description: string;
-  category: 'book' | 'food' | 'hygiene' | 'community' | 'farm' | 'other';
-  /**
-   * Whether this listing is visible to the public or still in draft mode
-   */
+  kioskSubtype: 'books' | 'hygiene' | 'community' | 'other';
   publishStatus: 'draft' | 'live';
+  /**
+   * Soft delete: set to hide from public map and search; clear to restore. Owners use the app or PATCH; hard remove is admin-only.
+   */
+  deletedAt?: string | null;
   tags?:
     | {
         tag?: string | null;
@@ -295,13 +337,13 @@ export interface Listing {
       }[]
     | null;
   /**
-   * The user who owns this listing
+   * Owner account for this kiosk
    */
-  owner?: (string | null) | User;
+  owner?: (number | null) | User;
   /**
-   * User who has submitted a claim for this listing
+   * User who has submitted a claim for this place
    */
-  pendingOwner?: (string | null) | User;
+  pendingOwner?: (number | null) | User;
   location?: {
     street?: string | null;
     houseNumber?: string | null;
@@ -318,11 +360,16 @@ export interface Listing {
      * @maxItems 2
      */
     coordinates?: [number, number] | null;
+    /**
+     * Canonical latitude for cross-database geo querying
+     */
+    latitude?: number | null;
+    /**
+     * Canonical longitude for cross-database geo querying
+     */
+    longitude?: number | null;
   };
   facilities?: {
-    /**
-     * When is this location accessible? E.g., "Mon-Fri 9-17, Sat 10-16"
-     */
     openingHours?: string | null;
     facilities?:
       | {
@@ -344,24 +391,15 @@ export interface Listing {
           id?: string | null;
         }[]
       | null;
-    /**
-     * Any special rules or guidelines for using this location
-     */
     rules?: string | null;
-    /**
-     * How can people get in touch if they need help?
-     */
     contactInfo?: string | null;
   };
-  /**
-   * Photos for this listing
-   */
   pictures?:
     | {
-        photo: string | Media;
-        created_by: string | User;
+        photo: number | Media;
+        created_by: number | User;
         status: 'pending' | 'approved' | 'rejected';
-        approved_by?: (string | null) | User;
+        approved_by?: (number | null) | User;
         approved_at?: string | null;
         rejection_reason?: string | null;
         id?: string | null;
@@ -373,14 +411,208 @@ export interface Listing {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "markets".
+ */
+export interface Market {
+  id: number;
+  name: string;
+  description: string;
+  marketSubtype: 'honey' | 'milk' | 'meat' | 'vegetables' | 'other';
+  publishStatus: 'draft' | 'live';
+  /**
+   * Soft delete: set to hide from public map and search; clear to restore. Owners use the app or PATCH; hard remove is admin-only.
+   */
+  deletedAt?: string | null;
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Owner account for this market
+   */
+  owner?: (number | null) | User;
+  /**
+   * User who has submitted a claim for this place
+   */
+  pendingOwner?: (number | null) | User;
+  location?: {
+    street?: string | null;
+    houseNumber?: string | null;
+    zipCode?: string | null;
+    city?: string | null;
+    province?: string | null;
+    country?: string | null;
+    /**
+     * Full address string for display and geocoding
+     */
+    address?: string | null;
+    /**
+     * @minItems 2
+     * @maxItems 2
+     */
+    coordinates?: [number, number] | null;
+    /**
+     * Canonical latitude for cross-database geo querying
+     */
+    latitude?: number | null;
+    /**
+     * Canonical longitude for cross-database geo querying
+     */
+    longitude?: number | null;
+  };
+  facilities?: {
+    openingHours?: string | null;
+    facilities?:
+      | {
+          facility?:
+            | (
+                | '24_7_access'
+                | 'wheelchair_accessible'
+                | 'parking'
+                | 'indoor'
+                | 'outdoor'
+                | 'sheltered'
+                | 'lighting'
+                | 'security_camera'
+                | 'contact_required'
+                | 'free_access'
+                | 'membership_required'
+              )
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    rules?: string | null;
+    contactInfo?: string | null;
+  };
+  pictures?:
+    | {
+        photo: number | Media;
+        created_by: number | User;
+        status: 'pending' | 'approved' | 'rejected';
+        approved_by?: (number | null) | User;
+        approved_at?: string | null;
+        rejection_reason?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "taps".
+ */
+export interface Tap {
+  id: number;
+  name: string;
+  description: string;
+  tapSubtype: 'indoor' | 'outdoor';
+  publishStatus: 'draft' | 'live';
+  /**
+   * Soft delete: set to hide from public map and search; clear to restore. Owners use the app or PATCH; hard remove is admin-only.
+   */
+  deletedAt?: string | null;
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Owner account for this tap
+   */
+  owner?: (number | null) | User;
+  /**
+   * User who has submitted a claim for this place
+   */
+  pendingOwner?: (number | null) | User;
+  location?: {
+    street?: string | null;
+    houseNumber?: string | null;
+    zipCode?: string | null;
+    city?: string | null;
+    province?: string | null;
+    country?: string | null;
+    /**
+     * Full address string for display and geocoding
+     */
+    address?: string | null;
+    /**
+     * @minItems 2
+     * @maxItems 2
+     */
+    coordinates?: [number, number] | null;
+    /**
+     * Canonical latitude for cross-database geo querying
+     */
+    latitude?: number | null;
+    /**
+     * Canonical longitude for cross-database geo querying
+     */
+    longitude?: number | null;
+  };
+  facilities?: {
+    openingHours?: string | null;
+    facilities?:
+      | {
+          facility?:
+            | (
+                | '24_7_access'
+                | 'wheelchair_accessible'
+                | 'parking'
+                | 'indoor'
+                | 'outdoor'
+                | 'sheltered'
+                | 'lighting'
+                | 'security_camera'
+                | 'contact_required'
+                | 'free_access'
+                | 'membership_required'
+              )
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    rules?: string | null;
+    contactInfo?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "reviews".
  */
 export interface Review {
-  id: string;
+  id: number;
   rating: number;
   description: string;
-  created_by: string | User;
-  listing: string | Listing;
+  photos?:
+    | {
+        photo: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  created_by: number | User;
+  place:
+    | {
+        relationTo: 'kiosks';
+        value: number | Kiosk;
+      }
+    | {
+        relationTo: 'markets';
+        value: number | Market;
+      }
+    | {
+        relationTo: 'taps';
+        value: number | Tap;
+      };
+  status: 'published' | 'hidden';
   updatedAt: string;
   createdAt: string;
 }
@@ -389,21 +621,33 @@ export interface Review {
  * via the `definition` "requests".
  */
 export interface Request {
-  id: string;
+  id: number;
   /**
-   * The listing being claimed
+   * The place being claimed
    */
-  listing: string | Listing;
+  place:
+    | {
+        relationTo: 'kiosks';
+        value: number | Kiosk;
+      }
+    | {
+        relationTo: 'markets';
+        value: number | Market;
+      }
+    | {
+        relationTo: 'taps';
+        value: number | Tap;
+      };
   /**
    * User submitting the claim
    */
-  user: string | User;
+  user: number | User;
   /**
    * Claim status
    */
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'under_review' | 'approved' | 'rejected';
   /**
-   * Distance in meters from user location to listing (for auto-approval)
+   * Distance in meters from user location to place (for auto-approval)
    */
   distanceMeters?: number | null;
   /**
@@ -419,6 +663,8 @@ export interface Request {
      * @maxItems 2
      */
     coordinates?: [number, number] | null;
+    latitude?: number | null;
+    longitude?: number | null;
   };
   /**
    * Additional notes from the user or admin
@@ -432,7 +678,7 @@ export interface Request {
  * via the `definition` "wishes".
  */
 export interface Wish {
-  id: string;
+  id: number;
   /**
    * What are you looking for? (e.g., "Tampons", "The Great Gatsby", "Drill")
    */
@@ -457,6 +703,7 @@ export interface Wish {
    * Additional details about what you're looking for
    */
   description?: string | null;
+  status: 'active' | 'fulfilled' | 'archived';
   location: {
     latitude: number;
     longitude: number;
@@ -464,8 +711,12 @@ export interface Wish {
      * Notification radius in kilometers
      */
     radius: number;
+    /**
+     * Canonical radius in meters
+     */
+    radiusMeters?: number | null;
   };
-  created_by: string | User;
+  created_by: number | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -474,11 +725,11 @@ export interface Wish {
  * via the `definition` "notifications".
  */
 export interface Notification {
-  id: string;
+  id: number;
   /**
    * User who receives this notification
    */
-  user: string | User;
+  user: number | User;
   /**
    * Type of notification
    */
@@ -490,6 +741,9 @@ export interface Notification {
     | 'favorite'
     | 'claim_approved'
     | 'claim_rejected'
+    | 'new_follower'
+    | 'area_match'
+    | 'report_update'
     | 'system';
   /**
    * Notification title
@@ -524,10 +778,97 @@ export interface Notification {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "follows".
+ */
+export interface Follow {
+  id: number;
+  user: number | User;
+  targetType: 'place' | 'area';
+  place?:
+    | ({
+        relationTo: 'kiosks';
+        value: number | Kiosk;
+      } | null)
+    | ({
+        relationTo: 'markets';
+        value: number | Market;
+      } | null)
+    | ({
+        relationTo: 'taps';
+        value: number | Tap;
+      } | null);
+  area?: {
+    name?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
+    radiusMeters?: number | null;
+  };
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "entitlements".
+ */
+export interface Entitlement {
+  id: number;
+  user: number | User;
+  scope: 'city' | 'province' | 'country' | 'world';
+  status: 'active' | 'expired' | 'revoked';
+  source: string;
+  /**
+   * Optional expiration. Empty means no expiry.
+   */
+  expiresAt?: string | null;
+  metadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reports".
+ */
+export interface Report {
+  id: number;
+  targetType: 'place' | 'review';
+  place?:
+    | ({
+        relationTo: 'kiosks';
+        value: number | Kiosk;
+      } | null)
+    | ({
+        relationTo: 'markets';
+        value: number | Market;
+      } | null)
+    | ({
+        relationTo: 'taps';
+        value: number | Tap;
+      } | null);
+  review?: (number | null) | Review;
+  reason: 'spam' | 'offensive' | 'misleading' | 'unsafe' | 'other';
+  details?: string | null;
+  status: 'open' | 'in_review' | 'resolved' | 'dismissed';
+  createdBy: number | User;
+  reviewedBy?: (number | null) | User;
+  resolutionNote?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -544,7 +885,7 @@ export interface PayloadKv {
  * via the `definition` "payload-jobs".
  */
 export interface PayloadJob {
-  id: string;
+  id: number;
   /**
    * Input data provided to the job
    */
@@ -636,40 +977,60 @@ export interface PayloadJob {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
       } | null)
     | ({
-        relationTo: 'listings';
-        value: string | Listing;
+        relationTo: 'kiosks';
+        value: number | Kiosk;
+      } | null)
+    | ({
+        relationTo: 'markets';
+        value: number | Market;
+      } | null)
+    | ({
+        relationTo: 'taps';
+        value: number | Tap;
       } | null)
     | ({
         relationTo: 'reviews';
-        value: string | Review;
+        value: number | Review;
       } | null)
     | ({
         relationTo: 'requests';
-        value: string | Request;
+        value: number | Request;
       } | null)
     | ({
         relationTo: 'wishes';
-        value: string | Wish;
+        value: number | Wish;
       } | null)
     | ({
         relationTo: 'notifications';
-        value: string | Notification;
+        value: number | Notification;
+      } | null)
+    | ({
+        relationTo: 'follows';
+        value: number | Follow;
+      } | null)
+    | ({
+        relationTo: 'entitlements';
+        value: number | Entitlement;
+      } | null)
+    | ({
+        relationTo: 'reports';
+        value: number | Report;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -679,10 +1040,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -702,7 +1063,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -719,6 +1080,8 @@ export interface UsersSelect<T extends boolean = true> {
   surname?: T;
   avatar?: T;
   role?: T;
+  signupOtpHash?: T;
+  signupOtpExpiresAt?: T;
   googleSub?: T;
   pushToken?: T;
   pushTokenUpdatedAt?: T;
@@ -730,11 +1093,13 @@ export interface UsersSelect<T extends boolean = true> {
         postalCode?: T;
         city?: T;
         coordinates?: T;
+        latitude?: T;
+        longitude?: T;
       };
   favorites?:
     | T
     | {
-        listing?: T;
+        place?: T;
         id?: T;
       };
   notificationSettings?:
@@ -751,6 +1116,14 @@ export interface UsersSelect<T extends boolean = true> {
         province?: T;
         country?: T;
         world?: T;
+      };
+  homeArea?:
+    | T
+    | {
+        city?: T;
+        province?: T;
+        country?: T;
+        radiusMeters?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -791,13 +1164,14 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "listings_select".
+ * via the `definition` "kiosks_select".
  */
-export interface ListingsSelect<T extends boolean = true> {
+export interface KiosksSelect<T extends boolean = true> {
   name?: T;
   description?: T;
-  category?: T;
+  kioskSubtype?: T;
   publishStatus?: T;
+  deletedAt?: T;
   tags?:
     | T
     | {
@@ -817,6 +1191,8 @@ export interface ListingsSelect<T extends boolean = true> {
         country?: T;
         address?: T;
         coordinates?: T;
+        latitude?: T;
+        longitude?: T;
       };
   facilities?:
     | T
@@ -848,13 +1224,129 @@ export interface ListingsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "markets_select".
+ */
+export interface MarketsSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  marketSubtype?: T;
+  publishStatus?: T;
+  deletedAt?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  owner?: T;
+  pendingOwner?: T;
+  location?:
+    | T
+    | {
+        street?: T;
+        houseNumber?: T;
+        zipCode?: T;
+        city?: T;
+        province?: T;
+        country?: T;
+        address?: T;
+        coordinates?: T;
+        latitude?: T;
+        longitude?: T;
+      };
+  facilities?:
+    | T
+    | {
+        openingHours?: T;
+        facilities?:
+          | T
+          | {
+              facility?: T;
+              id?: T;
+            };
+        rules?: T;
+        contactInfo?: T;
+      };
+  pictures?:
+    | T
+    | {
+        photo?: T;
+        created_by?: T;
+        status?: T;
+        approved_by?: T;
+        approved_at?: T;
+        rejection_reason?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "taps_select".
+ */
+export interface TapsSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  tapSubtype?: T;
+  publishStatus?: T;
+  deletedAt?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  owner?: T;
+  pendingOwner?: T;
+  location?:
+    | T
+    | {
+        street?: T;
+        houseNumber?: T;
+        zipCode?: T;
+        city?: T;
+        province?: T;
+        country?: T;
+        address?: T;
+        coordinates?: T;
+        latitude?: T;
+        longitude?: T;
+      };
+  facilities?:
+    | T
+    | {
+        openingHours?: T;
+        facilities?:
+          | T
+          | {
+              facility?: T;
+              id?: T;
+            };
+        rules?: T;
+        contactInfo?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "reviews_select".
  */
 export interface ReviewsSelect<T extends boolean = true> {
   rating?: T;
   description?: T;
+  photos?:
+    | T
+    | {
+        photo?: T;
+        id?: T;
+      };
   created_by?: T;
-  listing?: T;
+  place?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -863,7 +1355,7 @@ export interface ReviewsSelect<T extends boolean = true> {
  * via the `definition` "requests_select".
  */
 export interface RequestsSelect<T extends boolean = true> {
-  listing?: T;
+  place?: T;
   user?: T;
   status?: T;
   distanceMeters?: T;
@@ -875,6 +1367,8 @@ export interface RequestsSelect<T extends boolean = true> {
         postalCode?: T;
         city?: T;
         coordinates?: T;
+        latitude?: T;
+        longitude?: T;
       };
   notes?: T;
   updatedAt?: T;
@@ -891,12 +1385,14 @@ export interface WishesSelect<T extends boolean = true> {
   isbn?: T;
   brand?: T;
   description?: T;
+  status?: T;
   location?:
     | T
     | {
         latitude?: T;
         longitude?: T;
         radius?: T;
+        radiusMeters?: T;
       };
   created_by?: T;
   updatedAt?: T;
@@ -914,6 +1410,57 @@ export interface NotificationsSelect<T extends boolean = true> {
   read?: T;
   data?: T;
   actionUrl?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "follows_select".
+ */
+export interface FollowsSelect<T extends boolean = true> {
+  user?: T;
+  targetType?: T;
+  place?: T;
+  area?:
+    | T
+    | {
+        name?: T;
+        latitude?: T;
+        longitude?: T;
+        radiusMeters?: T;
+      };
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "entitlements_select".
+ */
+export interface EntitlementsSelect<T extends boolean = true> {
+  user?: T;
+  scope?: T;
+  status?: T;
+  source?: T;
+  expiresAt?: T;
+  metadata?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reports_select".
+ */
+export interface ReportsSelect<T extends boolean = true> {
+  targetType?: T;
+  place?: T;
+  review?: T;
+  reason?: T;
+  details?: T;
+  status?: T;
+  createdBy?: T;
+  reviewedBy?: T;
+  resolutionNote?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -993,9 +1540,9 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  * via the `definition` "mail".
  */
 export interface Mail {
-  id: string;
-  headerLogo: string | Media;
-  footerLogo: string | Media;
+  id: number;
+  headerLogo: number | Media;
+  footerLogo: number | Media;
   businessEmail: string;
   verify?: {
     /**

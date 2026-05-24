@@ -8,15 +8,19 @@ alwaysApply: false
 
 ## Docs for the AI
 
-1. **Local (recommended):** Run from repo root:  
+1. **HeroUI Native Pro MCP** (OSS + Pro): `.cursor/mcp.json` → `heroui-native-pro` at `https://native-mcp.heroui.pro/mcp`. Use `list_components`, `get_component_docs`, `get_docs`, `get_theme_variables`. Do **not** add a separate `@heroui/native-mcp` server.
+
+2. **Pro skills** (user install): `heroui-native-pro`, `heroui-pro-design-taste` under `~/.cursor/skills/`.
+
+3. **Local OSS mirror (optional):** Run from repo root:  
    `npx heroui-cli@latest agents-md --native --output AGENTS.md`  
-   Docs land in `.heroui-docs/native/` (gitignored); the machine-readable index is in **`AGENTS.md`** at repo root.
+   Docs land in `.heroui-docs/native/` (gitignored); index in **`AGENTS.md`**.
 
-2. **Cursor `@Docs`:** Attach **`https://heroui.com/native/llms-full.txt`** in chat for full upstream docs. Shorter index: **`https://heroui.com/native/llms.txt`**.
+4. **Cursor `@Docs`:** **`https://heroui.com/native/llms-full.txt`** for OSS when MCP is unavailable.
 
-3. **Semantics & hierarchy:** [Design Principles](https://heroui.com/docs/native/getting-started/design-principles) — variants (`primary` / `secondary` / `tertiary` / `danger`), compound components, progressive disclosure (`Button.Label` when enhancing).
+5. **Semantics & hierarchy:** [Design Principles](https://heroui.com/docs/native/getting-started/design-principles) — variants (`primary` / `secondary` / `tertiary` / `danger`), compound components, progressive disclosure (`Button.Label` when enhancing).
 
-4. Optional analytics opt-out for the CLI: `HEROUI_ANALYTICS_DISABLED=1`.
+6. Optional analytics opt-out for the CLI: `HEROUI_ANALYTICS_DISABLED=1`.
 
 ## This codebase
 

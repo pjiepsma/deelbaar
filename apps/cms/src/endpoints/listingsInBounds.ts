@@ -1,3 +1,6 @@
+import { liveNonDeletedPlaceClauses } from '../constants/listingsPublicVisibility'
+import { MAP_PLACE_COLLECTION_SLUGS, type MapPlaceCollectionSlug } from '../constants/mapPlaces'
+import { getPlaceInteractionContract } from '../lib/placeInteractionScope'
 import { resolvePayload, type AppRouteRequest, type QueryDictionary } from './resolvePayloadFromRequest'
 
 // Configuration constants
@@ -187,17 +190,30 @@ const parseLimit = (limitParam: string | null): number => {
   return Math.min(parsed, MAX_LIMIT)
 }
 
+const parseCollections = (collectionParam: string | null): MapPlaceCollectionSlug[] | null => {
+  if (!collectionParam || collectionParam.trim() === 'all') {
+    return [...MAP_PLACE_COLLECTION_SLUGS]
+  }
+  const candidate = collectionParam.trim() as MapPlaceCollectionSlug
+  if (!MAP_PLACE_COLLECTION_SLUGS.includes(candidate)) {
+    return null
+  }
+  return [candidate]
+}
+
 /**
  * Default projection for map bounds — must NOT expand `owner` → `users`.
  * `depth: 2` with a full document would populate other users’ profiles; the auth
  * `users` collection denies that → 403 "You are not allowed to perform this action."
  * The mobile client sends the same shape via `?select=`; we default to this if absent.
  */
-const DEFAULT_LISTINGS_BOUNDS_SELECT = {
+const DEFAULT_MAP_PLACES_BOUNDS_SELECT = {
   id: true,
   name: true,
   description: true,
-  category: true,
+  kioskSubtype: true,
+  marketSubtype: true,
+  tapSubtype: true,
   publishStatus: true,
   location: {
     coordinates: true,
@@ -243,6 +259,7 @@ export async function listingsInBounds(req: AppRouteRequest): Promise<Response> 
   const northEast = getParam('northEast')
   const southWest = getParam('southWest')
   const limitParam = getParam('limit')
+  const collectionParam = getParam('collection')
 
   if (!northEast || !southWest) {
     const errorResponse: ErrorResponse = {
@@ -265,10 +282,20 @@ export async function listingsInBounds(req: AppRouteRequest): Promise<Response> 
 
   const { neLat, neLon, swLat, swLon } = validation.coordinates
   const limit = parseLimit(limitParam)
+  const collections = parseCollections(collectionParam)
+  if (!collections) {
+    return toJsonResponse(
+      {
+        error: 'Invalid collection',
+        message: `Use one of: ${MAP_PLACE_COLLECTION_SLUGS.join(', ')} or "all"`,
+      },
+      { status: 400 },
+    )
+  }
 
   const selectParam = getParam('select')
   let resolvedSelect: Record<string, unknown> = {
-    ...DEFAULT_LISTINGS_BOUNDS_SELECT,
+    ...DEFAULT_MAP_PLACES_BOUNDS_SELECT,
   }
   if (selectParam) {
     try {
@@ -283,32 +310,55 @@ export async function listingsInBounds(req: AppRouteRequest): Promise<Response> 
 
   try {
     const payload = await resolvePayload(req)
-
-    const listings = await payload.find({
-      collection: 'listings',
-      where: {
-        'location.coordinates': {
-          within: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [swLon, swLat],
-                [neLon, swLat],
-                [neLon, neLat],
-                [swLon, neLat],
-                [swLon, swLat],
-              ],
-            ],
-          },
+    const docs: Record<string, unknown>[] = []
+    for (const collection of collections) {
+      const result = await payload.find({
+        collection,
+        where: {
+          and: [
+            ...liveNonDeletedPlaceClauses,
+            {
+              'location.latitude': {
+                greater_than_equal: swLat,
+              },
+            },
+            {
+              'location.latitude': {
+                less_than_equal: neLat,
+              },
+            },
+            {
+              'location.longitude': {
+                greater_than_equal: swLon,
+              },
+            },
+            {
+              'location.longitude': {
+                less_than_equal: neLon,
+              },
+            },
+          ],
         },
-      },
-      limit,
-      depth: 2,
-      select: resolvedSelect as never,
-    })
+        limit,
+        depth: 2,
+        select: resolvedSelect as never,
+      })
+      for (const placeDoc of result.docs as Record<string, unknown>[]) {
+        const interaction = await getPlaceInteractionContract(
+          { payload, user: req.user ?? null },
+          placeDoc,
+        )
+        docs.push({
+          ...placeDoc,
+          mapPlaceCollection: collection,
+          interaction,
+        })
+      }
+    }
 
-    const successResponse: SuccessResponse = {
-      docs: listings.docs,
+    const successResponse: SuccessResponse & { collections: MapPlaceCollectionSlug[] } = {
+      docs,
+      collections,
       bounds: {
         northEast: { lat: neLat, lon: neLon },
         southWest: { lat: swLat, lon: swLon },
@@ -321,6 +371,7 @@ export async function listingsInBounds(req: AppRouteRequest): Promise<Response> 
       error,
       bounds: { northEast, southWest },
       limit,
+      collections,
     })
     
     const errorResponse: ErrorResponse = {

@@ -80,6 +80,18 @@ export const Wishes: CollectionConfig = {
       },
     },
     {
+      name: 'status',
+      type: 'select',
+      required: true,
+      defaultValue: 'active',
+      options: [
+        { label: 'Active', value: 'active' },
+        { label: 'Fulfilled', value: 'fulfilled' },
+        { label: 'Archived', value: 'archived' },
+      ],
+      index: true,
+    },
+    {
       name: 'location',
       type: 'group',
       fields: [
@@ -97,9 +109,17 @@ export const Wishes: CollectionConfig = {
           name: 'radius',
           type: 'number',
           required: true,
-          defaultValue: 50, // km radius for notifications
+          defaultValue: 50,
           admin: {
             description: 'Notification radius in kilometers',
+          },
+        },
+        {
+          name: 'radiusMeters',
+          type: 'number',
+          admin: {
+            description: 'Canonical radius in meters',
+            readOnly: true,
           },
         },
       ],
@@ -121,6 +141,11 @@ export const Wishes: CollectionConfig = {
         if (operation === 'create' && req.user) {
           data.created_by = req.user.id
         }
+
+        if (data?.location && typeof data.location.radius === 'number') {
+          data.location.radiusMeters = Math.round(data.location.radius * 1000)
+        }
+
         return data
       },
     ],

@@ -1,10 +1,13 @@
 import type { CollectionConfig } from 'payload'
 import NotificationService from '../lib/notificationService'
+import { MAP_PLACE_RELATION_TO } from '../constants/mapPlaces'
+import { findPlaceByReference, getPlaceCollection, getPlaceId } from '../lib/mapPlaces'
+import { assertPlaceInteractionAllowed } from '../lib/placeInteractionScope'
 
 export const Requests: CollectionConfig = {
   slug: 'requests',
   admin: {
-    useAsTitle: 'listing',
+    useAsTitle: 'place',
     group: 'Admin',
   },
   access: {
@@ -37,12 +40,13 @@ export const Requests: CollectionConfig = {
   },
   fields: [
     {
-      name: 'listing',
+      name: 'place',
       type: 'relationship',
-      relationTo: 'listings',
+      relationTo: MAP_PLACE_RELATION_TO,
       required: true,
+      index: true,
       admin: {
-        description: 'The listing being claimed',
+        description: 'The place being claimed',
       },
     },
     {
@@ -50,6 +54,7 @@ export const Requests: CollectionConfig = {
       type: 'relationship',
       relationTo: 'users',
       required: true,
+      index: true,
       admin: {
         description: 'User submitting the claim',
       },
@@ -59,11 +64,13 @@ export const Requests: CollectionConfig = {
       type: 'select',
       options: [
         { label: 'Pending', value: 'pending' },
+        { label: 'Under Review', value: 'under_review' },
         { label: 'Approved', value: 'approved' },
         { label: 'Rejected', value: 'rejected' },
       ],
       defaultValue: 'pending',
       required: true,
+      index: true,
       admin: {
         description: 'Claim status',
       },
@@ -72,7 +79,7 @@ export const Requests: CollectionConfig = {
       name: 'distanceMeters',
       type: 'number',
       admin: {
-        description: 'Distance in meters from user location to listing (for auto-approval)',
+        description: 'Distance in meters from user location to place (for auto-approval)',
       },
     },
     {
@@ -103,6 +110,20 @@ export const Requests: CollectionConfig = {
           type: 'point',
           label: 'Location',
         },
+        {
+          name: 'latitude',
+          type: 'number',
+          admin: {
+            readOnly: true,
+          },
+        },
+        {
+          name: 'longitude',
+          type: 'number',
+          admin: {
+            readOnly: true,
+          },
+        },
       ],
     },
     {
@@ -115,6 +136,22 @@ export const Requests: CollectionConfig = {
   ],
   timestamps: true,
   hooks: {
+    beforeValidate: [
+      async ({ data, req, operation }) => {
+        if (!data) {
+          return data
+        }
+        const coordinates = data?.addressSnapshot?.coordinates
+        if (Array.isArray(coordinates) && coordinates.length === 2) {
+          data.addressSnapshot.latitude = coordinates[1]
+          data.addressSnapshot.longitude = coordinates[0]
+        }
+        if (operation === 'create' && data?.place) {
+          await assertPlaceInteractionAllowed(req, data.place, 'request')
+        }
+        return data
+      },
+    ],
     afterChange: [
       async ({ doc, req, operation, previousDoc }) => {
         // Only process on update operations when status changes
@@ -127,38 +164,38 @@ export const Requests: CollectionConfig = {
         try {
           // Handle approved claims
           if (doc.status === 'approved' && previousDoc.status !== 'approved') {
-            // Update the listing to set owner details
-            const listing = await req.payload.update({
-              collection: 'listings',
-              id: doc.listing,
+            const placeCollection = getPlaceCollection(doc.place)
+            const placeId = getPlaceId(doc.place)
+
+            // Update the place to set owner details
+            const place = await req.payload.update({
+              collection: placeCollection,
+              id: placeId,
               data: {
                 owner: doc.user,
                 pendingOwner: null,
               },
             })
 
-            // Get listing name for notification
-            const listingData = typeof listing === 'object' ? listing : await req.payload.findByID({
-              collection: 'listings',
-              id: doc.listing,
-            })
-
-            const listingName = listingData?.name || 'Unknown listing'
-            const listingId = typeof doc.listing === 'string' ? doc.listing : doc.listing.id
+            // Get place name for notification
+            const placeData = typeof place === 'object' ? place : await findPlaceByReference(req.payload, doc.place)
+            const placeName = String(placeData?.name || 'Unknown place')
+            const placeIdForLink = String(placeId)
 
             // Send approval notification to user
             await notificationService.notifyClaimApproved(
               typeof doc.user === 'string' ? doc.user : doc.user.id,
-              listingName,
-              listingId
+              placeName,
+              placeIdForLink
             )
 
-            // Update other pending claims for this listing to rejected
+            // Update other pending claims for this place to rejected
             const otherPendingClaims = await req.payload.find({
               collection: 'requests',
               where: {
                 and: [
-                  { listing: { equals: doc.listing } },
+                  { 'place.relationTo': { equals: placeCollection } },
+                  { 'place.value': { equals: placeId } },
                   { status: { equals: 'pending' } },
                   { id: { not_equals: doc.id } },
                 ],
@@ -172,33 +209,28 @@ export const Requests: CollectionConfig = {
                 id: claim.id,
                 data: {
                   status: 'rejected',
-                  notes: 'Another claim was approved for this listing',
+                  notes: 'Another claim was approved for this place',
                 },
               })
 
               // Send rejection notification
               await notificationService.notifyClaimRejected(
                 typeof claim.user === 'string' ? claim.user : claim.user.id,
-                listingName,
-                'Another claim was approved for this listing'
+                placeName,
+                'Another claim was approved for this place'
               )
             }
           }
 
           // Handle rejected claims
           if (doc.status === 'rejected' && previousDoc.status !== 'rejected') {
-            // Get listing name for notification
-            const listingData = await req.payload.findByID({
-              collection: 'listings',
-              id: doc.listing,
-            })
-
-            const listingName = listingData?.name || 'Unknown listing'
+            const placeData = await findPlaceByReference(req.payload, doc.place)
+            const placeName = String(placeData?.name || 'Unknown place')
 
             // Send rejection notification to user
             await notificationService.notifyClaimRejected(
               typeof doc.user === 'string' ? doc.user : doc.user.id,
-              listingName,
+              placeName,
               doc.notes
             )
           }
