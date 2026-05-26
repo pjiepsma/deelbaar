@@ -1,24 +1,15 @@
-import type { NavigatorScreenParams } from '@react-navigation/native';
-
 import type { CmsLegalPage } from '../../lib/legal/cmsLegal.types';
 import type { MapPlaceCollection } from '../../lib/mapPlaces/mapPlaceTaxonomy';
 
-export type AuthStackParamList = {
-  AuthStart: undefined;
-  LoginEmail: { initialEmail?: string } | undefined;
-  SignUpEmailWizard: { initialEmail?: string } | undefined;
-  ForgotPassword: { initialEmail?: string } | undefined;
-  ForgotPasswordEmailSent: { email: string };
-  ResetPassword: undefined;
-  VerifyEmail: { email?: string; code?: string };
-  WelcomeSignedUp: undefined;
-  SignUpNotifications: { source: 'signup' | 'postLogin' };
-  AllowLocation: { source: 'signup' | 'postLogin' };
-};
-
-export type RootStackParamList = {
-  MainTabs: undefined;
-  Auth: NavigatorScreenParams<AuthStackParamList>;
-  ListingDetail: { collection: MapPlaceCollection; id: number };
-  LegalDocument: { page: CmsLegalPage };
+/** Legacy param shapes — routes live under `apps/core/app/`. */
+export type AuthRouteParams = {
+  loginEmail: { initialEmail?: string };
+  signUp: { initialEmail?: string };
+  forgotPassword: { initialEmail?: string };
+  forgotPasswordSent: { email: string };
+  verifyEmail: { email?: string; code?: string };
+  notifications: { source: 'signup' | 'postLogin' };
+  allowLocation: { source: 'signup' | 'postLogin' };
+  listing: { collection: MapPlaceCollection; id: number };
+  legal: { page: CmsLegalPage };
 };

@@ -1,12 +1,13 @@
-import { useNavigation, useRoute, type NavigationProp, type ParamListBase, type RouteProp } from '@react-navigation/native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import Mapbox from '@rnmapbox/maps';
-import { Button, Spinner } from 'heroui-native';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { Spinner } from 'heroui-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { RootStackParamList } from '../auth/auth.types';
 import { useAuth } from '../../context/AuthContext';
+import { firstRouteParam } from '../../navigation/routeParams';
+import type { MapPlaceCollection } from '../../lib/mapPlaces/mapPlaceTaxonomy';
 import { useLocale } from '../../context/LocaleContext';
 import { useDiscoveryArea } from '../../context/DiscoveryAreaContext';
 import { fetchPlaceReviews } from '../../lib/api/reviews/fetchPlaceReviews';
@@ -15,15 +16,15 @@ import { resolveDeviceLngLat } from '../../lib/location/resolveDeviceLngLat';
 import { runMapProtectedAction } from '../map/mapProtectedAction';
 import { mapPayloadListingToMapCard } from '../map/mapListing.mapper';
 import type { MapPlaceRecord } from '../map/map.types';
+import { Ionicons } from '@expo/vector-icons';
 import { PlaceDetailContent } from './PlaceDetailContent';
+import { HeroChromeButton } from './HeroChromeButton';
 import type { PlaceDetailHeroMode } from './PlaceDetailHero';
 import { resolveHeroPhotoUrls, resolvePlaceLngLat } from './placeDetail.model';
 import { mapReviewsToPlaceDetailRows } from './placeDetailReviews.model';
 import { showPlaceDetailContributorComingSoon } from './placeDetailActions';
 import type { PlaceDetailReviewRow } from './placeDetailReviews.model';
 import { PLACE_DETAIL_BG } from './placeDetail.constants';
-
-type Route = RouteProp<RootStackParamList, 'ListingDetail'>;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -39,16 +40,27 @@ function toMapPlaceRecord(doc: unknown, collection: MapPlaceRecord['mapPlaceColl
   };
 }
 
+function parseListingId(raw: string | undefined): number {
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed)) {
+    throw new Error(`ListingDetailScreen requires numeric id, got: ${raw ?? 'undefined'}`);
+  }
+  return parsed;
+}
+
 export function ListingDetailScreen() {
-  const route = useRoute<Route>();
-  const navigation = useNavigation<NavigationProp<ParamListBase>>();
+  const router = useRouter();
+  const params = useLocalSearchParams<{ collection?: string | string[]; id?: string | string[] }>();
+  const collection = firstRouteParam(params.collection) as MapPlaceCollection | undefined;
+  const id = parseListingId(firstRouteParam(params.id));
+  if (!collection) {
+    throw new Error('ListingDetailScreen requires collection route param');
+  }
   const { user } = useAuth();
   const { t, locale } = useLocale();
   const { referenceLngLat } = useDiscoveryArea();
   const serverOrigin = process.env.EXPO_PUBLIC_PAYLOAD_SERVER_URL;
   const mapboxAccessToken = process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN;
-
-  const { collection, id } = route.params;
 
   const [place, setPlace] = useState<MapPlaceRecord | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,10 +69,6 @@ export function ListingDetailScreen() {
   const [userLngLat, setUserLngLat] = useState<[number, number] | null>(null);
   const [reviews, setReviews] = useState<PlaceDetailReviewRow[]>([]);
   const insets = useSafeAreaInsets();
-
-  useLayoutEffect(() => {
-    navigation.setOptions({ headerShown: false });
-  }, [navigation]);
 
   useEffect(() => {
     if (!mapboxAccessToken) {
@@ -152,11 +160,10 @@ export function ListingDetailScreen() {
     }
     runMapProtectedAction({
       user,
-      navigation,
       allowed: !!place.interaction?.canFavorite,
       t,
     });
-  }, [navigation, place, t, user]);
+  }, [place, t, user]);
 
   if (loading) {
     return (
@@ -176,9 +183,9 @@ export function ListingDetailScreen() {
           paddingHorizontal: 20,
         }}
       >
-        <Button variant="ghost" onPress={() => navigation.goBack()}>
-          <Button.Label>{t('listing.back')}</Button.Label>
-        </Button>
+        <HeroChromeButton onPress={() => router.back()} accessibilityLabel={t('listing.back')}>
+          <Ionicons name="arrow-back" size={22} color="#1A1A1A" />
+        </HeroChromeButton>
         <Text className="text-foreground mt-4 text-lg font-semibold">{t('listing.unavailableTitle')}</Text>
         <Text className="text-muted mt-2 text-base">{error ?? t('listing.unknownError')}</Text>
       </View>
@@ -195,7 +202,7 @@ export function ListingDetailScreen() {
       mapboxAccessToken={mapboxAccessToken}
       heroMode={heroMode}
       onHeroModeChange={setHeroMode}
-      onBack={() => navigation.goBack()}
+      onBack={() => router.back()}
       onSavePress={onSavePress}
       loved={card.loved ?? false}
       reviews={reviews}

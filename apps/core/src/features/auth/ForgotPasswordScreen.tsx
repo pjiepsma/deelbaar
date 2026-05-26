@@ -1,18 +1,19 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, Button, FieldError, Input, Label, TextField } from 'heroui-native';
 import { useMemo, useState } from 'react';
 
 import { useLocale } from '../../context/LocaleContext';
 import { requestPasswordReset } from '../../lib/api/auth/authClient';
 import { AuthScreenShell } from '../../components/shared';
-import type { AuthStackParamList } from './auth.types';
+import { authForgotPasswordSentHref, authReplace } from '../../navigation/authPaths';
+import { firstRouteParam } from '../../navigation/routeParams';
 import { isEmailValid, normalizeEmail, normalizeError } from './auth.validation';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'ForgotPassword'>;
-
-export function ForgotPasswordScreen({ navigation, route }: Props) {
+export function ForgotPasswordScreen() {
+  const router = useRouter();
+  const params = useLocalSearchParams<{ initialEmail?: string | string[] }>();
   const { t } = useLocale();
-  const [email, setEmail] = useState(route.params?.initialEmail ?? '');
+  const [email, setEmail] = useState(firstRouteParam(params.initialEmail) ?? '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -25,7 +26,7 @@ export function ForgotPasswordScreen({ navigation, route }: Props) {
     try {
       const normalizedEmail = normalizeEmail(email);
       await requestPasswordReset({ email: normalizedEmail });
-      navigation.replace('ForgotPasswordEmailSent', { email: normalizedEmail });
+      authReplace(authForgotPasswordSentHref(normalizedEmail));
     } catch (error) {
       setErrorMessage(normalizeError(error));
     } finally {
@@ -34,7 +35,12 @@ export function ForgotPasswordScreen({ navigation, route }: Props) {
   };
 
   return (
-    <AuthScreenShell title={t('auth.forgotPasswordTitle')} description={t('auth.forgotPasswordDescription')}>
+    <AuthScreenShell
+      title={t('auth.forgotPasswordTitle')}
+      description={t('auth.forgotPasswordDescription')}
+      onBack={() => router.back()}
+      backAccessibilityLabel={t('listing.back')}
+    >
       <TextField isInvalid={hasEmailError}>
         <Label>{t('auth.emailLabel')}</Label>
         <Input

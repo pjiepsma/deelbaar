@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, type NavigationProp, type ParamListBase } from '@react-navigation/native';
 import { View } from 'react-native';
 
 import { Surface, useThemeColor } from 'heroui-native';
@@ -13,7 +12,7 @@ import {
   TabScreenHeader,
 } from '../../components/shared';
 import { useLocale } from '../../context/LocaleContext';
-import { navigateToAuthModal } from '../../navigation/rootNavigation';
+import { navigateToAuthStart } from '../../navigation/rootNavigation';
 import {
   LanguagePreferenceControl,
   ThemePreferenceControl,
@@ -25,7 +24,6 @@ import {
 import { ProfileLegalSection } from './ProfileLegalSection';
 
 export function ProfileGuestScreen() {
-  const navigation = useNavigation() as NavigationProp<ParamListBase>;
   const { t } = useLocale();
   const muted = useThemeColor('muted');
 
@@ -47,7 +45,7 @@ export function ProfileGuestScreen() {
           headline={t('profile.guestSignInTitle')}
           description={t('profile.guestSignInDescription')}
           ctaLabel={t('auth.loginOrSignUp')}
-          onPress={() => navigateToAuthModal(navigation)}
+          onPress={() => navigateToAuthStart()}
         />
 
         <View>

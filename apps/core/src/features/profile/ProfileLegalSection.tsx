@@ -1,6 +1,5 @@
 import type { ComponentProps } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, type NavigationProp, type ParamListBase } from '@react-navigation/native';
 import { Fragment } from 'react';
 import { View } from 'react-native';
 
@@ -25,7 +24,6 @@ export interface ProfileLegalSectionProps {
 }
 
 export function ProfileLegalSection({ compact = false }: ProfileLegalSectionProps) {
-  const navigation = useNavigation() as NavigationProp<ParamListBase>;
   const { t } = useLocale();
   const [foreground, muted] = useThemeColor(['foreground', 'muted']);
 
@@ -38,7 +36,7 @@ export function ProfileLegalSection({ compact = false }: ProfileLegalSectionProp
         {LEGAL_ROWS.map((row, index) => (
           <Fragment key={row.page}>
             {index > 0 ? <Separator className="mx-4" /> : null}
-            <ListGroup.Item onPress={() => navigateToLegalDocument(navigation, { page: row.page })}>
+            <ListGroup.Item onPress={() => navigateToLegalDocument({ page: row.page })}>
               <ListGroup.ItemPrefix>
                 <Ionicons name={row.icon} size={iconSize} color={foreground} />
               </ListGroup.ItemPrefix>

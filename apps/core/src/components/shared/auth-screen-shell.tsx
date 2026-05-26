@@ -5,12 +5,17 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { twMerge } from 'tailwind-merge';
 
+import { PLACE_DETAIL_HORIZONTAL_PADDING } from '../../features/listings/placeDetail.constants';
+import { ScreenBackChrome } from './screen-back-chrome';
+
 type AuthScreenShellProps = PropsWithChildren<{
   title: string;
   description?: string;
   footer?: ReactNode;
   layout?: 'default' | 'centered';
   leading?: ReactNode;
+  onBack?: () => void;
+  backAccessibilityLabel?: string;
   titlePresentation?: 'card' | 'plain';
   titleAlign?: 'center' | 'left';
 }>;
@@ -22,6 +27,8 @@ export function AuthScreenShell({
   children,
   layout = 'default',
   leading,
+  onBack,
+  backAccessibilityLabel = 'Back',
   titlePresentation = 'card',
   titleAlign = 'left',
 }: AuthScreenShellProps) {
@@ -30,12 +37,15 @@ export function AuthScreenShell({
   const columnGapClass = titlePresentation === 'plain' ? 'gap-0' : 'gap-4';
   const centeredColumnWidth = isCentered ? 'w-full max-w-[420px] self-center' : 'w-full';
 
-  const paddingTop = Math.max(insets.top, 12);
   const footerPaddingBottom = Math.max(insets.bottom, 20);
   const footerBottomOffset = footer ? footerPaddingBottom : 0;
+  const scrollPaddingTop = onBack ? 0 : Math.max(insets.top, 12);
 
   return (
     <View className="flex-1 bg-background">
+      {onBack ? (
+        <ScreenBackChrome onBack={onBack} accessibilityLabel={backAccessibilityLabel} />
+      ) : null}
       <KeyboardAwareScrollView
         className="flex-1"
         bottomOffset={footerBottomOffset}
@@ -44,17 +54,21 @@ export function AuthScreenShell({
         contentContainerStyle={{
           flexGrow: 1,
           justifyContent: isCentered ? 'center' : 'flex-start',
-          paddingTop,
+          paddingTop: scrollPaddingTop,
           paddingBottom: footer ? 0 : footerPaddingBottom,
         }}
       >
-        <View className={twMerge('px-5', centeredColumnWidth, columnGapClass)}>
+        <View
+          className={twMerge(centeredColumnWidth, columnGapClass)}
+          style={{ paddingHorizontal: PLACE_DETAIL_HORIZONTAL_PADDING }}
+        >
           {leading}
           {titlePresentation === 'plain' ? (
             <Text
               className={twMerge(
-                'mb-5 font-bold text-[26px] text-foreground',
+                'font-bold text-[26px] text-foreground',
                 titleAlign === 'center' ? 'text-center' : 'text-left',
+                leading ? '' : 'mb-5',
               )}
             >
               {title}
@@ -71,7 +85,7 @@ export function AuthScreenShell({
         </View>
       </KeyboardAwareScrollView>
       {footer ? (
-        <View className="px-5" style={{ paddingBottom: footerPaddingBottom }}>
+        <View style={{ paddingHorizontal: PLACE_DETAIL_HORIZONTAL_PADDING, paddingBottom: footerPaddingBottom }}>
           {footer}
         </View>
       ) : null}

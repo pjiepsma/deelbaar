@@ -1,7 +1,7 @@
 {
   "name": "@deelbaar/core",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "expo-router/entry",
   "scripts": {
     "dev": "expo start --dev-client",
     "start": "expo start --dev-client",
@@ -33,6 +33,7 @@
     "expo-localization": "~55.0.15",
     "expo-location": "^55.1.10",
     "expo-notifications": "^55.0.23",
+    "expo-router": "~55.0.16",
     "expo-secure-store": "^55.0.14",
     "expo-splash-screen": "~55.0.21",
     "expo-status-bar": "~55.0.6",

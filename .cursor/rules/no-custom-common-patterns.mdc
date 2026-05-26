@@ -1,0 +1,29 @@
+---
+description: Use established app patterns for common UX (navigation, back, sheets) — no one-off fixes
+alwaysApply: true
+---
+
+# No custom fixes for common patterns
+
+Before implementing **common** mobile behavior (auth flow, back/dismiss, modals/sheets, tab chrome, protected actions, i18n strings):
+
+## 1. Find the existing pattern first
+
+- **Root stack pushes** — Expo Router file routes + [`FULL_BLEED_SCREEN_OPTIONS`](../../apps/core/src/navigation/screenOptions.ts) (`headerShown: false`, `gestureEnabled: true`). Contract: [`navigation-contract.md`](../../docs/design/navigation-contract.md).
+- **Back on pushed full-bleed screens** — `headerShown: false` + listing [`HeroChromeButton`](../../apps/core/src/features/listings/HeroChromeButton.tsx) (`arrow-back`, white circle) + `navigation.goBack()`. Auth uses the same component via `AuthScreenShell`; do not use native nav header back on auth.
+- **Leave a multi-step flow after success** — [`dismissAuthFlow`](../../apps/core/src/features/auth/auth.navigation.ts) (`router.replace('/(tabs)/map')`), not ad-hoc close buttons.
+- **Imperative navigation** — [`rootNavigation.ts`](../../apps/core/src/navigation/rootNavigation.ts) + [`authPaths.ts`](../../apps/core/src/navigation/authPaths.ts); no `getRootStackNavigator` parent walks.
+- **Design system** — HeroUI + [`apps/core/src/components/shared/`](../../apps/core/src/components/shared/); see `design-component-library-first.mdc`.
+
+## 2. Forbidden without explicit user approval
+
+- Nested navigator inside `formSheet` / `fitToContents` / custom modal wrappers when root stack already works.
+- Custom close/back rows, duplicate headers, or “auth-only” chrome that listing/detail does not use.
+- `presentation: 'formSheet'` + nested `Stack.Navigator` + `flex: 1` (known blank-sheet failure).
+- A third parallel implementation of the same feature (e.g. shell back + native header + custom ×).
+
+## 3. When something is missing
+
+Extend the **shared** primitive (e.g. register another root screen, reuse `ScreenBackButton`) — do not bolt on a feature-local workaround.
+
+If no pattern exists, say so and propose **one** approach aligned with root stack + shared components before coding.

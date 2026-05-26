@@ -14,12 +14,12 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { HeroChromeButton } from './HeroChromeButton';
 import { useThemePreference } from '../../context/ThemePreferenceContext';
 import { MAPBOX_STYLE_DARK, MAPBOX_STYLE_STREETS } from '../map/map.constants';
 import {
   PLACE_DETAIL_ACCENT,
   PLACE_DETAIL_CTA_SECONDARY,
-  PLACE_DETAIL_HERO_CHROME_SIZE,
   PLACE_DETAIL_HERO_PLACEHOLDER,
   PLACE_DETAIL_HERO_DISABLED_OPACITY,
   PLACE_DETAIL_HORIZONTAL_PADDING,
@@ -217,11 +217,18 @@ export function PlaceDetailHero({
       style={{
         height: heroHeight,
         width: '100%',
-        overflow: 'hidden',
         backgroundColor: '#000',
       }}
     >
-      <View style={{ height: heroHeight, width: '100%' }}>{renderHeroMedia()}</View>
+      <View
+        style={{
+          height: heroHeight,
+          width: '100%',
+          overflow: 'hidden',
+        }}
+      >
+        {renderHeroMedia()}
+      </View>
 
       <View
         pointerEvents="box-none"
@@ -456,38 +463,6 @@ function HeroOverlayPill({
     >
       {children}
     </View>
-  );
-}
-
-function HeroChromeButton({
-  children,
-  onPress,
-  accessibilityLabel,
-}: {
-  children: ReactNode;
-  onPress: () => void;
-  accessibilityLabel: string;
-}) {
-  return (
-    <PressableFeedback onPress={onPress} accessibilityLabel={accessibilityLabel}>
-      <View
-        style={{
-          width: PLACE_DETAIL_HERO_CHROME_SIZE,
-          height: PLACE_DETAIL_HERO_CHROME_SIZE,
-          borderRadius: PLACE_DETAIL_HERO_CHROME_SIZE / 2,
-          backgroundColor: '#fff',
-          alignItems: 'center',
-          justifyContent: 'center',
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.15,
-          shadowRadius: 4,
-          elevation: 3,
-        }}
-      >
-        {children}
-      </View>
-    </PressableFeedback>
   );
 }
 

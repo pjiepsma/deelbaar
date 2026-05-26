@@ -1,22 +1,26 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useRouter } from 'expo-router';
 import { Button, Card } from 'heroui-native';
 import { View } from 'react-native';
 
 import { useLocale } from '../../context/LocaleContext';
-import type { AuthStackParamList } from './auth.types';
+import { authNotificationsHref, authPush } from '../../navigation/authPaths';
 import { AuthScreenShell } from '../../components/shared';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'WelcomeSignedUp'>;
-
-export function WelcomeSignedUpScreen({ navigation }: Props) {
+export function WelcomeSignedUpScreen() {
+  const router = useRouter();
   const { t } = useLocale();
 
   const goNext = (): void => {
-    navigation.navigate('SignUpNotifications', { source: 'signup' });
+    authPush(authNotificationsHref('signup'));
   };
 
   return (
-    <AuthScreenShell title={t('auth.welcomeTitle')} description={t('auth.welcomeDescription')}>
+    <AuthScreenShell
+      title={t('auth.welcomeTitle')}
+      description={t('auth.welcomeDescription')}
+      onBack={() => router.back()}
+      backAccessibilityLabel={t('listing.back')}
+    >
       <Card>
         <Card.Body>
           <Card.Description>{t('auth.deviceSettingsFootnote')}</Card.Description>

@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useNavigation, type NavigationProp, type ParamListBase } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Alert, Card, Skeleton, useThemeColor } from 'heroui-native';
 import { useCallback, useMemo, useState } from 'react';
 import { Image, ScrollView, View } from 'react-native';
@@ -18,7 +18,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useDiscoveryArea } from '../../context/DiscoveryAreaContext';
 import { useLocale } from '../../context/LocaleContext';
 import { fetchCurrentUserFull } from '../../lib/api/users/fetchCurrentUserFull';
-import { navigateToAuthModal } from '../../navigation/rootNavigation';
+import { navigateToAuthStart } from '../../navigation/rootNavigation';
 import type { User } from '../../lib/types/payload-generated';
 import { buildMapPlaceKindLabel } from '../../lib/mapPlaces/mapPlaceTaxonomy';
 import { CARD_IMAGE_HEIGHT } from '../map/map.constants';
@@ -73,7 +73,6 @@ function listingsFromFavorites(user: User): MapPlaceRecord[] {
 }
 
 export function SavedScreen() {
-  const navigation = useNavigation() as NavigationProp<ParamListBase>;
   const { referenceLngLat } = useDiscoveryArea();
   const { user } = useAuth();
   const { t } = useLocale();
@@ -158,7 +157,7 @@ export function SavedScreen() {
             headline={t('favorites.signInTitle')}
             description={t('favorites.signInDescription')}
             ctaLabel={t('favorites.signInCta')}
-            onPress={() => navigateToAuthModal(navigation)}
+            onPress={() => navigateToAuthStart()}
           />
         </ScrollView>
       </Screen>

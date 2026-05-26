@@ -1,0 +1,27 @@
+name: Core navigation smoke
+
+on:
+  pull_request:
+    paths:
+      - 'apps/core/**'
+      - 'docs/design/navigation-contract.md'
+      - 'docs/design/navigation-verification-matrix.md'
+      - '.github/workflows/core-navigation-smoke.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/core/**'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @deelbaar/core lint

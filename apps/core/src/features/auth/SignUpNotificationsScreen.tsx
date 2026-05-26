@@ -1,16 +1,22 @@
 import * as Notifications from 'expo-notifications';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, Button, Card } from 'heroui-native';
 import { useMemo, useState } from 'react';
 
 import { useAuth } from '../../context/AuthContext';
 import { useLocale } from '../../context/LocaleContext';
 import { updateUser } from '../../lib/api/auth/authClient';
-import type { AuthStackParamList } from './auth.types';
+import { authAllowLocationHref, authPush } from '../../navigation/authPaths';
+import { firstRouteParam } from '../../navigation/routeParams';
 import { normalizeError } from './auth.validation';
 import { AuthScreenShell } from '../../components/shared';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'SignUpNotifications'>;
+function authOnboardingSource(value: string | undefined): 'signup' | 'postLogin' {
+  if (value === 'signup' || value === 'postLogin') {
+    return value;
+  }
+  throw new Error(`SignUpNotificationsScreen requires source param, got: ${value ?? 'undefined'}`);
+}
 
 function pushTokenToString(value: unknown): string | null {
   if (typeof value === 'string') {
@@ -25,22 +31,25 @@ function pushTokenToString(value: unknown): string | null {
   return null;
 }
 
-export function SignUpNotificationsScreen({ navigation, route }: Props) {
+export function SignUpNotificationsScreen() {
+  const router = useRouter();
+  const params = useLocalSearchParams<{ source?: string | string[] }>();
+  const source = authOnboardingSource(firstRouteParam(params.source));
   const { t } = useLocale();
   const { user, clearPendingNotificationsAfterLogin } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const screenDescription = useMemo(() => {
-    if (route.params.source === 'postLogin') {
+    if (source === 'postLogin') {
       return t('auth.notificationsDescriptionPostLogin');
     }
     return t('auth.notificationsDescriptionSignup');
-  }, [route.params.source, t]);
+  }, [source, t]);
 
   const proceedAfterNotifications = async (): Promise<void> => {
     await clearPendingNotificationsAfterLogin();
-    navigation.navigate('AllowLocation', { source: route.params.source });
+    authPush(authAllowLocationHref(source));
   };
 
   const onAllow = async (): Promise<void> => {
@@ -84,7 +93,12 @@ export function SignUpNotificationsScreen({ navigation, route }: Props) {
   };
 
   return (
-    <AuthScreenShell title={t('auth.notificationsTitle')} description={screenDescription}>
+    <AuthScreenShell
+      title={t('auth.notificationsTitle')}
+      description={screenDescription}
+      onBack={() => router.back()}
+      backAccessibilityLabel={t('listing.back')}
+    >
       <Card>
         <Card.Body>
           <Card.Description>{t('auth.notificationsFootnote')}</Card.Description>

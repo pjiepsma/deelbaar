@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useRouter } from 'expo-router';
 import { Alert, Button, FieldError, Input, TextField, useThemeColor } from 'heroui-native';
 import { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
@@ -9,13 +9,16 @@ import { useLocale } from '../../context/LocaleContext';
 import { loginWithGoogleIdToken, lookupEmailRegistered } from '../../lib/api/auth/authClient';
 import { getAuthOnboardingComplete } from '../../lib/auth/authOnboarding.storage';
 import { requestGoogleIdToken } from '../../lib/auth/googleSignIn';
+import {
+  authLoginEmailHref,
+  authNotificationsHref,
+  authPush,
+  authSignUpHref,
+} from '../../navigation/authPaths';
 import { dismissAuthFlow } from './auth.navigation';
-import type { AuthStackParamList } from './auth.types';
 import { AuthScreenShell } from '../../components/shared';
 import { isEmailValid, normalizeEmail, normalizeError } from './auth.validation';
 import { DeelbaarLogo } from './DeelbaarLogo';
-
-type Props = NativeStackScreenProps<AuthStackParamList, 'AuthStart'>;
 
 const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
 
@@ -32,7 +35,8 @@ function AuthStartDivider({ label }: { label: string }) {
   );
 }
 
-export function AuthStartScreen({ navigation }: Props) {
+export function AuthStartScreen() {
+  const router = useRouter();
   const { applyAuthResponse, pendingNotificationsAfterLogin } = useAuth();
   const { t } = useLocale();
   const logoColor = useThemeColor('foreground');
@@ -58,10 +62,10 @@ export function AuthStartScreen({ navigation }: Props) {
     try {
       const { exists } = await lookupEmailRegistered({ email: normalizedEmail });
       if (exists) {
-        navigation.navigate('LoginEmail', { initialEmail: normalizedEmail });
+        authPush(authLoginEmailHref(normalizedEmail));
         return;
       }
-      navigation.navigate('SignUpEmailWizard', { initialEmail: normalizedEmail });
+      authPush(authSignUpHref(normalizedEmail));
     } catch (error) {
       setErrorMessage(normalizeError(error));
     } finally {
@@ -82,15 +86,15 @@ export function AuthStartScreen({ navigation }: Props) {
       const response = await loginWithGoogleIdToken({ idToken });
       await applyAuthResponse(response);
       if (pendingNotificationsAfterLogin) {
-        navigation.navigate('SignUpNotifications', { source: 'postLogin' });
+        authPush(authNotificationsHref('postLogin'));
         return;
       }
       const onboardingDone = await getAuthOnboardingComplete();
       if (!onboardingDone) {
-        navigation.navigate('SignUpNotifications', { source: 'signup' });
+        authPush(authNotificationsHref('signup'));
         return;
       }
-      dismissAuthFlow(navigation);
+      dismissAuthFlow();
     } catch (error) {
       setErrorMessage(normalizeError(error));
     } finally {
@@ -104,6 +108,8 @@ export function AuthStartScreen({ navigation }: Props) {
       title={t('auth.loginOrSignUp')}
       titlePresentation="plain"
       titleAlign="center"
+      onBack={() => router.back()}
+      backAccessibilityLabel={t('listing.back')}
       leading={
         <View className="items-center pb-5">
           <DeelbaarLogo color={logoColor} />

@@ -1,24 +1,23 @@
 import { Ionicons } from '@expo/vector-icons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Tabs } from 'expo-router';
 import { useThemeColor } from 'heroui-native';
 
-import { useLocale } from '../context/LocaleContext';
-import { fireHaptic } from '../lib/utils/fire-haptic';
-import { HubTabScreen } from '../features/hub/HubTabScreen';
-import { MapScreen } from '../features/map/MapScreen';
-import { ProfileTabScreen } from '../features/profile/ProfileTabScreen';
-import { SavedScreen } from '../features/saved/SavedScreen';
+import { useLocale } from '../../src/context/LocaleContext';
+import { fireHaptic } from '../../src/lib/utils/fire-haptic';
 
-const Tab = createBottomTabNavigator();
 const TAB_LABEL_FONT_SIZE = 12;
 const TAB_ICON_SIZE = 24;
 
-export function RootTabs() {
+export const unstable_settings = {
+  initialRouteName: 'map',
+};
+
+export default function TabLayout() {
   const { t } = useLocale();
   const [tabBarActiveTintColor, tabBarInactiveTintColor] = useThemeColor(['accent', 'muted']);
 
   return (
-    <Tab.Navigator
+    <Tabs
       screenOptions={{
         headerShown: false,
         tabBarLabelStyle: { fontSize: TAB_LABEL_FONT_SIZE },
@@ -31,38 +30,34 @@ export function RootTabs() {
         },
       }}
     >
-      <Tab.Screen
-        name="Map"
-        component={MapScreen}
+      <Tabs.Screen
+        name="map"
         options={{
-          tabBarLabel: t('tabs.map'),
+          title: t('tabs.map'),
           tabBarIcon: ({ color }) => <Ionicons name="search-outline" size={TAB_ICON_SIZE} color={color} />,
         }}
       />
-      <Tab.Screen
-        name="Favorites"
-        component={SavedScreen}
+      <Tabs.Screen
+        name="favorites"
         options={{
-          tabBarLabel: t('tabs.favorites'),
+          title: t('tabs.favorites'),
           tabBarIcon: ({ color }) => <Ionicons name="heart-outline" size={TAB_ICON_SIZE} color={color} />,
         }}
       />
-      <Tab.Screen
-        name="Hub"
-        component={HubTabScreen}
+      <Tabs.Screen
+        name="hub"
         options={{
-          tabBarLabel: t('tabs.hub'),
+          title: t('tabs.hub'),
           tabBarIcon: ({ color }) => <Ionicons name="albums-outline" size={TAB_ICON_SIZE} color={color} />,
         }}
       />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileTabScreen}
+      <Tabs.Screen
+        name="profile"
         options={{
-          tabBarLabel: t('tabs.profile'),
+          title: t('tabs.profile'),
           tabBarIcon: ({ color }) => <Ionicons name="person-circle-outline" size={TAB_ICON_SIZE} color={color} />,
         }}
       />
-    </Tab.Navigator>
+    </Tabs>
   );
 }

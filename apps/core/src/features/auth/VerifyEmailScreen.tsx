@@ -1,4 +1,4 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, Button, FieldError, Input, Label, TextField } from 'heroui-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
@@ -8,22 +8,29 @@ import { useLocale } from '../../context/LocaleContext';
 import { resendVerificationCode, verifyEmailWithCode } from '../../lib/api/auth/authClient';
 import { useAuth } from '../../context/AuthContext';
 import { authConfig } from '../../config/auth.config';
-import type { AuthStackParamList } from './auth.types';
+import { AuthPath, authLoginEmailHref, authPush } from '../../navigation/authPaths';
+import { firstRouteParam } from '../../navigation/routeParams';
 import { isEmailValid, isPasswordValid, normalizeEmail, normalizeError } from './auth.validation';
 import { AuthScreenShell } from '../../components/shared';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'VerifyEmail'>;
-
 const normalizeCode = (raw: string): string => raw.replace(/\D/g, '').slice(0, 6);
 
-export function VerifyEmailScreen({ navigation, route }: Props) {
+function normalizeCallbackCode(value: string | undefined): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+  return normalizeCode(value);
+}
+
+export function VerifyEmailScreen() {
+  const router = useRouter();
+  const params = useLocalSearchParams<{ email?: string | string[]; code?: string | string[] }>();
+  const routeEmail = firstRouteParam(params.email);
+  const routeCode = normalizeCallbackCode(firstRouteParam(params.code));
   const { t } = useLocale();
   const { applyAuthResponse } = useAuth();
   const { credentials } = useSignupCredentials();
   const clearSignupCredentials = useClearSignupCredentials();
-
-  const routeEmail = route.params?.email;
-  const routeCode = route.params?.code;
 
   const [email, setEmail] = useState(routeEmail ?? credentials?.email ?? '');
   const [password, setPassword] = useState(credentials?.password ?? '');
@@ -40,7 +47,7 @@ export function VerifyEmailScreen({ navigation, route }: Props) {
 
   useEffect(() => {
     if (routeCode) {
-      setCode(normalizeCode(routeCode));
+      setCode(routeCode);
     }
   }, [routeCode]);
 
@@ -87,7 +94,7 @@ export function VerifyEmailScreen({ navigation, route }: Props) {
       });
       await applyAuthResponse(response);
       clearSignupCredentials();
-      navigation.navigate('WelcomeSignedUp');
+      authPush(AuthPath.welcome);
     } catch (error) {
       setErrorMessage(normalizeError(error));
     } finally {
@@ -113,11 +120,16 @@ export function VerifyEmailScreen({ navigation, route }: Props) {
   };
 
   const onOpenLogin = useCallback((): void => {
-    navigation.navigate('LoginEmail', { initialEmail: normalizeEmail(email) });
-  }, [email, navigation]);
+    authPush(authLoginEmailHref(normalizeEmail(email)));
+  }, [email]);
 
   return (
-    <AuthScreenShell title={t('auth.verifyTitle')} description={t('auth.verifyDescription')}>
+    <AuthScreenShell
+      title={t('auth.verifyTitle')}
+      description={t('auth.verifyDescription')}
+      onBack={() => router.back()}
+      backAccessibilityLabel={t('listing.back')}
+    >
       <TextField isInvalid={hasEmailError}>
         <Label>{t('auth.emailLabel')}</Label>
         <Input

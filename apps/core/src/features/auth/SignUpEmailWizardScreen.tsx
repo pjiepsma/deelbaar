@@ -1,27 +1,33 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, Button, Card, FieldError, Input, Label, TextField } from 'heroui-native';
 import { Stepper } from 'heroui-native-pro/stepper';
 import { useMemo, useState } from 'react';
-import { View } from 'react-native';
 
 import { registerWithEmail } from '../../lib/api/auth/authClient';
 import { useSignupCredentials } from '../../context/SignupCredentialsContext';
 import { useAuth } from '../../context/AuthContext';
 import { useLocale } from '../../context/LocaleContext';
 import { authConfig } from '../../config/auth.config';
-import type { AuthStackParamList } from './auth.types';
+import {
+  AuthPath,
+  authReplace,
+  authVerifyEmailHref,
+  authPush,
+} from '../../navigation/authPaths';
+import { firstRouteParam } from '../../navigation/routeParams';
 import { isEmailValid, isPasswordValid, normalizeEmail, normalizeError } from './auth.validation';
 import { AuthScreenShell } from '../../components/shared';
 import { fireHaptic } from '../../lib/utils/fire-haptic';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'SignUpEmailWizard'>;
-
-export function SignUpEmailWizardScreen({ navigation, route }: Props) {
+export function SignUpEmailWizardScreen() {
+  const router = useRouter();
+  const params = useLocalSearchParams<{ initialEmail?: string | string[] }>();
+  const initialEmail = firstRouteParam(params.initialEmail);
   const { applyAuthResponse } = useAuth();
   const { t } = useLocale();
   const { setSignupCredentials } = useSignupCredentials();
   const [currentStep, setCurrentStep] = useState(0);
-  const [email, setEmail] = useState(route.params?.initialEmail ?? '');
+  const [email, setEmail] = useState(initialEmail ?? '');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
@@ -33,7 +39,7 @@ export function SignUpEmailWizardScreen({ navigation, route }: Props) {
   const hasPasswordError = useMemo(() => password.length > 0 && !isPasswordValid(password), [password]);
   const hasConfirmError = useMemo(() => confirmPassword.length > 0 && confirmPassword !== password, [confirmPassword, password]);
 
-  const hasInitialEmail = Boolean(route.params?.initialEmail);
+  const hasInitialEmail = Boolean(initialEmail);
   const canContinueCredentialsStep =
     (hasInitialEmail || isEmailValid(email)) && isPasswordValid(password) && confirmPassword === password;
   const signUpSteps = useMemo(
@@ -66,12 +72,12 @@ export function SignUpEmailWizardScreen({ navigation, route }: Props) {
       });
       if (response.token && response.user) {
         await applyAuthResponse(response);
-        navigation.navigate('WelcomeSignedUp');
+        authPush(AuthPath.welcome);
         return;
       }
       const normalizedEmail = normalizeEmail(email);
       setSignupCredentials({ email: normalizedEmail, password });
-      navigation.navigate('VerifyEmail', { email: normalizedEmail });
+      authPush(authVerifyEmailHref(normalizedEmail));
     } catch (error) {
       setErrorMessage(normalizeError(error));
     } finally {
@@ -79,8 +85,21 @@ export function SignUpEmailWizardScreen({ navigation, route }: Props) {
     }
   };
 
+  const onBack = (): void => {
+    if (currentStep === 0) {
+      router.back();
+      return;
+    }
+    setCurrentStep((step) => Math.max(step - 1, 0));
+  };
+
   return (
-    <AuthScreenShell title={t('auth.createAccountTitle')} description={t('auth.createAccountDescription')}>
+    <AuthScreenShell
+      title={t('auth.createAccountTitle')}
+      description={t('auth.createAccountDescription')}
+      onBack={onBack}
+      backAccessibilityLabel={t('listing.back')}
+    >
       <Card>
         <Card.Body style={{ gap: 8 }}>
           <Stepper
@@ -110,7 +129,7 @@ export function SignUpEmailWizardScreen({ navigation, route }: Props) {
                 <Card.Title>{email}</Card.Title>
               </Card.Body>
               <Card.Footer>
-                <Button variant="outline" onPress={() => navigation.replace('AuthStart')} isDisabled={isSubmitting}>
+                <Button variant="outline" onPress={() => authReplace(AuthPath.start)} isDisabled={isSubmitting}>
                   {t('auth.useDifferentEmail')}
                 </Button>
               </Card.Footer>
@@ -174,24 +193,9 @@ export function SignUpEmailWizardScreen({ navigation, route }: Props) {
         </Alert>
       ) : null}
 
-      <View style={{ flexDirection: 'row', gap: 10 }}>
-        <Button
-          variant="outline"
-          onPress={() => {
-            if (currentStep === 0) {
-              navigation.goBack();
-              return;
-            }
-            setCurrentStep((step) => Math.max(step - 1, 0));
-          }}
-          isDisabled={isSubmitting}
-        >
-          {t('auth.back')}
-        </Button>
-        <Button variant="primary" onPress={onContinue} isDisabled={isSubmitting}>
-          {isSubmitting ? t('auth.creatingAccount') : isFinalStep ? t('auth.createAccount') : t('auth.continue')}
-        </Button>
-      </View>
+      <Button variant="primary" onPress={onContinue} isDisabled={isSubmitting}>
+        {isSubmitting ? t('auth.creatingAccount') : isFinalStep ? t('auth.createAccount') : t('auth.continue')}
+      </Button>
     </AuthScreenShell>
   );
 }

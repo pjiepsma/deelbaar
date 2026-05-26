@@ -1,21 +1,19 @@
-import type { NavigationProp, ParamListBase } from '@react-navigation/native';
 import { Alert } from 'react-native';
 
 import type { AuthUser } from '../../lib/api/auth/authClient';
-import { navigateToAuthModal } from '../../navigation/rootNavigation';
+import { navigateToAuthStart } from '../../navigation/rootNavigation';
 
 type TranslateFn = (path: string, vars?: Record<string, string>) => string;
 
 export function runMapProtectedAction(params: {
   user: AuthUser | null | undefined;
-  navigation: NavigationProp<ParamListBase>;
   allowed: boolean;
   t: TranslateFn;
   beforeAuth?: () => void;
 }): void {
   if (!params.user) {
     params.beforeAuth?.();
-    navigateToAuthModal(params.navigation);
+    navigateToAuthStart();
     return;
   }
   if (!params.allowed) {

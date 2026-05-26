@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, type NavigationProp, type ParamListBase } from '@react-navigation/native';
 import { useThemeColor } from 'heroui-native';
 import { ScrollView } from 'react-native';
 
@@ -13,10 +12,9 @@ import {
   TabScreenHeader,
 } from '../../components/shared';
 import { useLocale } from '../../context/LocaleContext';
-import { navigateToAuthModal } from '../../navigation/rootNavigation';
+import { navigateToAuthStart } from '../../navigation/rootNavigation';
 
 export function HubGuestScreen() {
-  const navigation = useNavigation() as NavigationProp<ParamListBase>;
   const { t } = useLocale();
   const muted = useThemeColor('muted');
 
@@ -39,7 +37,7 @@ export function HubGuestScreen() {
           headline={t('hub.guestSignInTitle')}
           description={t('hub.guestSignInDescription')}
           ctaLabel={t('auth.loginOrSignUp')}
-          onPress={() => navigateToAuthModal(navigation)}
+          onPress={() => navigateToAuthStart()}
         />
       </ScrollView>
     </Screen>

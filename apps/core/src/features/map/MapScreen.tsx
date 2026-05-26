@@ -1,4 +1,3 @@
-import { useNavigation, type NavigationProp, type ParamListBase } from '@react-navigation/native';
 import Mapbox from '@rnmapbox/maps';
 import { Button, Card, Chip, SearchField } from 'heroui-native';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -51,7 +50,6 @@ type CameraChangedPayload = {
 };
 
 export function MapScreen() {
-  const navigation = useNavigation() as NavigationProp<ParamListBase>;
   const { user } = useAuth();
   const { t } = useLocale();
   const [search, setSearch] = useState('');
@@ -272,24 +270,23 @@ export function MapScreen() {
         return;
       }
       setDetailVisitToken((token) => token + 1);
-      navigateToListingDetail(navigation, {
+      navigateToListingDetail({
         collection: card.mapPlaceCollection,
         id: cardId,
       });
     },
-    [navigation],
+    [],
   );
 
   const onHeartPress = useCallback(
     (card: MapListingCard) => {
       runMapProtectedAction({
         user,
-        navigation,
         allowed: !!card.interaction?.canFavorite,
         t,
       });
     },
-    [navigation, t, user],
+    [t, user],
   );
 
   const filteredListings = useMemo(() => {

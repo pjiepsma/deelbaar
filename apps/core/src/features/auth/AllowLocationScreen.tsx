@@ -1,4 +1,4 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useRouter } from 'expo-router';
 import { Alert, Button, Card } from 'heroui-native';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -8,14 +8,12 @@ import { useLocale } from '../../context/LocaleContext';
 import { setAuthOnboardingComplete } from '../../lib/auth/authOnboarding.storage';
 import { resolveDeviceLngLat } from '../../lib/location/resolveDeviceLngLat';
 import { getAuthFlowPresentation } from './authFlowPresentation';
-import type { AuthStackParamList } from './auth.types';
 import { dismissAuthFlow } from './auth.navigation';
 import { locationErrorMessage } from '../../lib/location/locationErrorMessage';
 import { AuthScreenShell } from '../../components/shared';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'AllowLocation'>;
-
-export function AllowLocationScreen({ navigation }: Props) {
+export function AllowLocationScreen() {
+  const router = useRouter();
   const { t } = useLocale();
   const { setReferenceLngLat } = useDiscoveryArea();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,10 +22,10 @@ export function AllowLocationScreen({ navigation }: Props) {
   const finishOnboarding = async (): Promise<void> => {
     await setAuthOnboardingComplete();
     if (getAuthFlowPresentation() === 'embedded') {
-      navigation.getParent()?.goBack();
+      router.back();
       return;
     }
-    dismissAuthFlow(navigation);
+    dismissAuthFlow();
   };
 
   const onAllow = async (): Promise<void> => {
@@ -58,7 +56,12 @@ export function AllowLocationScreen({ navigation }: Props) {
   };
 
   return (
-    <AuthScreenShell title={t('auth.locationTitle')} description={t('auth.locationDescription')}>
+    <AuthScreenShell
+      title={t('auth.locationTitle')}
+      description={t('auth.locationDescription')}
+      onBack={() => router.back()}
+      backAccessibilityLabel={t('listing.back')}
+    >
       <Card>
         <Card.Body>
           <Card.Description>{t('auth.deviceSettingsFootnote')}</Card.Description>

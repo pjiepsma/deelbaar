@@ -1,4 +1,4 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useRouter } from 'expo-router';
 import { Alert, Button, FieldError, Input, Label, TextField } from 'heroui-native';
 import { useMemo, useState } from 'react';
 
@@ -6,14 +6,13 @@ import { resetPassword } from '../../lib/api/auth/authClient';
 import { useAuth } from '../../context/AuthContext';
 import { useLocale } from '../../context/LocaleContext';
 import { authConfig } from '../../config/auth.config';
+import { AuthPath, authPush } from '../../navigation/authPaths';
 import { dismissAuthFlow } from './auth.navigation';
-import type { AuthStackParamList } from './auth.types';
 import { isPasswordValid, normalizeError } from './auth.validation';
 import { AuthScreenShell } from '../../components/shared';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'ResetPassword'>;
-
-export function ResetPasswordScreen({ navigation }: Props) {
+export function ResetPasswordScreen() {
+  const router = useRouter();
   const { applyAuthResponse } = useAuth();
   const { t } = useLocale();
   const [token, setToken] = useState('');
@@ -33,7 +32,7 @@ export function ResetPasswordScreen({ navigation }: Props) {
     try {
       const response = await resetPassword({ token: token.trim(), password });
       await applyAuthResponse(response);
-      dismissAuthFlow(navigation);
+      dismissAuthFlow();
     } catch (error) {
       setErrorMessage(normalizeError(error));
     } finally {
@@ -42,7 +41,12 @@ export function ResetPasswordScreen({ navigation }: Props) {
   };
 
   return (
-    <AuthScreenShell title={t('auth.resetPasswordTitle')} description={t('auth.resetPasswordDescription')}>
+    <AuthScreenShell
+      title={t('auth.resetPasswordTitle')}
+      description={t('auth.resetPasswordDescription')}
+      onBack={() => router.back()}
+      backAccessibilityLabel={t('listing.back')}
+    >
       <TextField>
         <Label>{t('auth.resetTokenLabel')}</Label>
         <Input placeholder={t('auth.resetTokenPlaceholder')} value={token} onChangeText={setToken} />
@@ -84,7 +88,7 @@ export function ResetPasswordScreen({ navigation }: Props) {
         </Alert>
       ) : null}
 
-      <Button variant="outline" onPress={() => navigation.navigate('ForgotPassword')} isDisabled={isSubmitting}>
+      <Button variant="outline" onPress={() => authPush(AuthPath.forgotPassword)} isDisabled={isSubmitting}>
         {t('auth.requestAnotherResetEmail')}
       </Button>
     </AuthScreenShell>
