@@ -1,4 +1,10 @@
 EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_token_here
 EXPO_PUBLIC_PAYLOAD_SERVER_URL=http://localhost:4000
 # Use CMS origin only (no /api); /api is appended in code. Including .../api once is also OK.
+# Profile legal pages load from CMS global "legal" via /api/globals/legal (in-app screen).
 EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=your-google-web-client-id.apps.googleusercontent.com
+
+# HeroUI Native Pro (postinstall downloads component dist). After pnpm install, if tsc fails on heroui-native-pro:
+#   npx heroui-pro login
+#   pnpm install
+# CI: set HEROUI_AUTH_TOKEN from https://heroui.pro/dashboard

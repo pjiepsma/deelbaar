@@ -22,6 +22,7 @@ import { Notifications } from './collections/Notifications'
 import { Follows } from './collections/Follows'
 import { Entitlements } from './collections/Entitlements'
 import { Reports } from './collections/Reports'
+import { Legal } from './globals/Legal/legal'
 import { Mail } from './globals/Mail/mail'
 import { listingsNearby } from './endpoints/listingsNearby'
 import { listingsInBounds } from './endpoints/listingsInBounds'
@@ -56,7 +57,7 @@ export default buildConfig({
     Entitlements,
     Reports,
   ],
-  globals: [Mail],
+  globals: [Mail, Legal],
   cors: ['*'], // Allow all origins in development
   csrf: config.corsCsrfUrls.filter((url): url is string => typeof url === 'string'),
   editor: lexicalEditor(),

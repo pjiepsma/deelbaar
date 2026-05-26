@@ -6,11 +6,7 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const BACKEND_PATH = path.join(ROOT, 'apps', 'cms', 'src', 'payload-types.ts');
 
-/** Primary app is Core. */
-const TARGET_DIRS = [
-  path.join(ROOT, 'apps', 'core', 'src', 'lib', 'types'),
-  path.join(ROOT, 'apps', 'mobile', 'lib', 'types'),
-];
+const TARGET_DIR = path.join(ROOT, 'apps', 'core', 'src', 'lib', 'types');
 
 function copyTypes() {
   if (!fs.existsSync(BACKEND_PATH)) {
@@ -28,14 +24,12 @@ function copyTypes() {
   const contents = fs.readFileSync(BACKEND_PATH, 'utf8');
   const output = `${banner}${contents}`;
 
-  for (const dir of TARGET_DIRS) {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    const file = path.join(dir, 'payload-generated.ts');
-    fs.writeFileSync(file, output, 'utf8');
-    console.log(`[sync-payload-types] Types gekopieerd naar ${path.relative(ROOT, file)}`);
+  if (!fs.existsSync(TARGET_DIR)) {
+    fs.mkdirSync(TARGET_DIR, { recursive: true });
   }
+  const file = path.join(TARGET_DIR, 'payload-generated.ts');
+  fs.writeFileSync(file, output, 'utf8');
+  console.log(`[sync-payload-types] Types gekopieerd naar ${path.relative(ROOT, file)}`);
 }
 
 copyTypes();

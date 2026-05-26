@@ -1,0 +1,48 @@
+---
+description: Check HeroUI Native and shared UI before building custom components
+alwaysApply: true
+---
+
+# Design component library first
+
+Before you add or extend **user-facing UI** in `apps/core`, confirm there is **no good existing match** in our design stack. Do **not** default to raw `View` / `Pressable` / `StyleSheet` shells when a library primitive fits.
+
+## Order of lookup (do this first)
+
+1. **HeroUI Native** — `list_components` / `get_component_docs` on the **HeroUI Native MCP** (`user-heroui-native`), or `.heroui-docs/native/` + **`AGENTS.md`** after `heroui agents-md --native --output AGENTS.md`.
+2. **Shared app components** — `apps/core/src/components/shared/` (e.g. `Screen`, `EmptyList`, `GuestAuthCard`, tab headers). Reuse or extend; do not duplicate.
+3. **Product UX** — `docs/design/mobile-ux-master.md` for layout and copy patterns (with **i18n** via `useLocale` / `catalog.ts`).
+
+Only after those fail to cover the need: compose from HeroUI compound parts (`Card.Body`, `Button`, `Chip`, `PressableFeedback`, …) with **`className`** / semantic variants — not a one-off “card” or “button” component.
+
+**Protected actions (map):** Save/favorite, follow, and alerts require a signed-in user. Guests get the auth modal via `runMapProtectedAction` — do not wire favorite toggles or API calls without that gate (see `.cursor/rules/deelbaar-mobile-ux.mdc`).
+
+## Good match → use it
+
+| Need | Prefer |
+|------|--------|
+| Tappable surface with feedback | `PressableFeedback` or `Button` |
+| Grouped content / list row | `Card` (+ `Card.Title` / `Card.Description`) or `Surface` |
+| Badge, filter chip | `Chip` |
+| Loading placeholder | `Skeleton` |
+| Form field | `TextField`, `SearchField`, … per doc |
+| Overlay / sheet | `BottomSheet`, `Dialog`, … per doc |
+
+Match **compound anatomy and variants** from the official doc for that component (see `.cursor/rules/greenfield-heroui-core.mdc`).
+
+## When custom RN is OK
+
+- **No HeroUI primitive** for the job (e.g. Mapbox `MapView`) — wrap with `withUniwind`, HeroUI for chrome around it.
+- **Layout-only** `View` wrappers inside an already doc-aligned HeroUI tree.
+- **SDK-required** `style` props (map logo position, etc.) — not as a substitute for Card/Button/Chip.
+
+## Anti-patterns (reject in review)
+
+- Custom card/button shells that duplicate `Card` / `Button` styling (manual shadows, hardcoded colors, raw `Text` for labels).
+- New `components/shared/*` that only re-wrap HeroUI without a clear, repeated product need.
+- Skipping MCP/docs because “I know what Card looks like” — APIs and compound parts change.
+
+## See also
+
+- `.cursor/rules/heroui-native.mdc` — MCP, Metro, provider wiring
+- `.cursor/rules/greenfield-heroui-core.mdc` — doc-faithful composition, proactive checklist

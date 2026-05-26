@@ -1,73 +1,93 @@
-export type MapPlaceCollection = 'kiosks' | 'markets' | 'taps'
+export type MapPlaceCollection = 'kiosks' | 'markets' | 'taps';
 
-export const MAP_PLACE_FILTERS: ReadonlyArray<{ value: 'All' | MapPlaceCollection; label: string }> = [
-  { value: 'All', label: 'All' },
-  { value: 'kiosks', label: 'Kiosks' },
-  { value: 'markets', label: 'Markets' },
-  { value: 'taps', label: 'Taps' },
-]
+export type MapPlaceFilterValue = 'All' | MapPlaceCollection;
 
-const KIOSK_SUBTYPE_LABEL: Record<string, string> = {
-  books: 'Books',
-  hygiene: 'Hygiene',
-  community: 'Community',
-  other: 'Other',
+export const MAP_PLACE_FILTER_VALUES: ReadonlyArray<MapPlaceFilterValue> = [
+  'All',
+  'kiosks',
+  'markets',
+  'taps',
+];
+
+export type TranslateFn = (path: string, vars?: Record<string, string>) => string;
+
+export function mapPlaceFilterLabel(value: MapPlaceFilterValue, t: TranslateFn): string {
+  switch (value) {
+    case 'All':
+      return t('placeKind.filterAll');
+    case 'kiosks':
+      return t('placeKind.filterKiosks');
+    case 'markets':
+      return t('placeKind.filterMarkets');
+    case 'taps':
+      return t('placeKind.filterTaps');
+    default: {
+      const _exhaustive: never = value;
+      return _exhaustive;
+    }
+  }
 }
 
-const MARKET_SUBTYPE_LABEL: Record<string, string> = {
-  honey: 'Honey',
-  milk: 'Milk',
-  meat: 'Meat',
-  vegetables: 'Vegetables',
-  other: 'Other',
-}
-
-const TAP_SUBTYPE_LABEL: Record<string, string> = {
-  indoor: 'Indoor',
-  outdoor: 'Outdoor',
-}
+const KIOSK_SUBTYPES = ['books', 'hygiene', 'community', 'other'] as const;
+const MARKET_SUBTYPES = ['honey', 'milk', 'meat', 'vegetables', 'other'] as const;
+const TAP_SUBTYPES = ['indoor', 'outdoor'] as const;
 
 export function subtypeOptionsForCollection(
   collection: MapPlaceCollection,
+  t: TranslateFn,
 ): ReadonlyArray<{ value: string; label: string }> {
-  if (collection === 'kiosks') {
-    return Object.entries(KIOSK_SUBTYPE_LABEL).map(([value, label]) => ({ value, label }))
-  }
-  if (collection === 'markets') {
-    return Object.entries(MARKET_SUBTYPE_LABEL).map(([value, label]) => ({ value, label }))
-  }
-  return Object.entries(TAP_SUBTYPE_LABEL).map(([value, label]) => ({ value, label }))
+  const values =
+    collection === 'kiosks' ? KIOSK_SUBTYPES : collection === 'markets' ? MARKET_SUBTYPES : TAP_SUBTYPES;
+  return values.map((value) => ({
+    value,
+    label: t(`placeKind.subtype.${value}`),
+  }));
 }
 
 export function defaultSubtypeForCollection(collection: MapPlaceCollection): string {
-  if (collection === 'kiosks') return 'other'
-  if (collection === 'markets') return 'other'
-  return 'outdoor'
+  if (collection === 'kiosks') return 'other';
+  if (collection === 'markets') return 'other';
+  return 'outdoor';
 }
 
-export function buildMapPlaceKindLabel(place: {
-  mapPlaceCollection: MapPlaceCollection
-  kioskSubtype?: string | null
-  marketSubtype?: string | null
-  tapSubtype?: string | null
+function resolveSubtype(place: {
+  mapPlaceCollection: MapPlaceCollection;
+  kioskSubtype?: string | null;
+  marketSubtype?: string | null;
+  tapSubtype?: string | null;
 }): string {
   if (place.mapPlaceCollection === 'kiosks') {
-    const subtype = place.kioskSubtype
+    const subtype = place.kioskSubtype;
     if (!subtype) {
-      throw new Error('kioskSubtype is required for kiosks')
+      throw new Error('kioskSubtype is required for kiosks');
     }
-    return `Kiosk · ${KIOSK_SUBTYPE_LABEL[subtype] ?? subtype}`
+    return subtype;
   }
   if (place.mapPlaceCollection === 'markets') {
-    const subtype = place.marketSubtype
+    const subtype = place.marketSubtype;
     if (!subtype) {
-      throw new Error('marketSubtype is required for markets')
+      throw new Error('marketSubtype is required for markets');
     }
-    return `Market · ${MARKET_SUBTYPE_LABEL[subtype] ?? subtype}`
+    return subtype;
   }
-  const subtype = place.tapSubtype
+  const subtype = place.tapSubtype;
   if (!subtype) {
-    throw new Error('tapSubtype is required for taps')
+    throw new Error('tapSubtype is required for taps');
   }
-  return `Tap · ${TAP_SUBTYPE_LABEL[subtype] ?? subtype}`
+  return subtype;
+}
+
+export function buildMapPlaceKindLabel(
+  place: {
+    mapPlaceCollection: MapPlaceCollection;
+    kioskSubtype?: string | null;
+    marketSubtype?: string | null;
+    tapSubtype?: string | null;
+  },
+  t: TranslateFn,
+): string {
+  const subtype = resolveSubtype(place);
+  const collection = t(`placeKind.collection.${place.mapPlaceCollection}`);
+  const subtypeLabel = t(`placeKind.subtype.${subtype}`);
+  return t('placeKind.kindLabel', { collection, subtype: subtypeLabel });
 }

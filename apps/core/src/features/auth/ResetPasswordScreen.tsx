@@ -4,16 +4,18 @@ import { useMemo, useState } from 'react';
 
 import { resetPassword } from '../../lib/api/auth/authClient';
 import { useAuth } from '../../context/AuthContext';
+import { useLocale } from '../../context/LocaleContext';
 import { authConfig } from '../../config/auth.config';
 import { dismissAuthFlow } from './auth.navigation';
 import type { AuthStackParamList } from './auth.types';
 import { isPasswordValid, normalizeError } from './auth.validation';
-import { AuthScreenShell } from './AuthScreenShell';
+import { AuthScreenShell } from '../../components/shared';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'ResetPassword'>;
 
 export function ResetPasswordScreen({ navigation }: Props) {
   const { applyAuthResponse } = useAuth();
+  const { t } = useLocale();
   const [token, setToken] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -40,34 +42,38 @@ export function ResetPasswordScreen({ navigation }: Props) {
   };
 
   return (
-    <AuthScreenShell
-      title="Reset password"
-      description="Paste the token from your reset email and choose a new password."
-    >
+    <AuthScreenShell title={t('auth.resetPasswordTitle')} description={t('auth.resetPasswordDescription')}>
       <TextField>
-        <Label>Reset token</Label>
-        <Input placeholder="Paste token from your email" value={token} onChangeText={setToken} />
+        <Label>{t('auth.resetTokenLabel')}</Label>
+        <Input placeholder={t('auth.resetTokenPlaceholder')} value={token} onChangeText={setToken} />
       </TextField>
 
       <TextField isInvalid={hasPasswordError}>
-        <Label>New password</Label>
+        <Label>{t('auth.newPasswordLabel')}</Label>
         <Input
-          placeholder={`At least ${authConfig.minPasswordLength} characters`}
+          placeholder={t('auth.passwordPlaceholder', { min: String(authConfig.minPasswordLength) })}
           secureTextEntry
           value={password}
           onChangeText={setPassword}
         />
-        {hasPasswordError ? <FieldError>Password must be at least {authConfig.minPasswordLength} characters.</FieldError> : null}
+        {hasPasswordError ? (
+          <FieldError>{t('auth.passwordMinError', { min: String(authConfig.minPasswordLength) })}</FieldError>
+        ) : null}
       </TextField>
 
       <TextField isInvalid={hasConfirmError}>
-        <Label>Confirm password</Label>
-        <Input placeholder="Repeat new password" secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword} />
-        {hasConfirmError ? <FieldError>Passwords do not match.</FieldError> : null}
+        <Label>{t('auth.confirmPasswordLabel')}</Label>
+        <Input
+          placeholder={t('auth.repeatNewPasswordPlaceholder')}
+          secureTextEntry
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+        />
+        {hasConfirmError ? <FieldError>{t('auth.passwordMismatch')}</FieldError> : null}
       </TextField>
 
       <Button variant="primary" onPress={onSubmit} isDisabled={isSubmitDisabled}>
-        {isSubmitting ? 'Resetting password...' : 'Reset password'}
+        {isSubmitting ? t('auth.resettingPassword') : t('auth.resetPassword')}
       </Button>
 
       {errorMessage ? (
@@ -79,7 +85,7 @@ export function ResetPasswordScreen({ navigation }: Props) {
       ) : null}
 
       <Button variant="outline" onPress={() => navigation.navigate('ForgotPassword')} isDisabled={isSubmitting}>
-        Request another reset email
+        {t('auth.requestAnotherResetEmail')}
       </Button>
     </AuthScreenShell>
   );

@@ -4,7 +4,7 @@ import { View } from 'react-native';
 
 import { useLocale } from '../../context/LocaleContext';
 import type { AuthStackParamList } from './auth.types';
-import { AuthScreenShell } from './AuthScreenShell';
+import { AuthScreenShell } from '../../components/shared';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'WelcomeSignedUp'>;
 

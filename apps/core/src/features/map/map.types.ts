@@ -22,10 +22,29 @@ export type MapPlaceRecord = {
   marketSubtype?: string | null;
   tapSubtype?: string | null;
   location?: {
+    street?: string | null;
+    houseNumber?: string | null;
+    zipCode?: string | null;
+    city?: string | null;
+    province?: string | null;
+    country?: string | null;
+    address?: string | null;
     coordinates?: [number, number] | null;
     latitude?: number | null;
     longitude?: number | null;
   };
+  facilities?: {
+    openingHours?: string | null;
+    rules?: string | null;
+    contactInfo?: string | null;
+    facilities?:
+      | Array<{
+          facility?: string | null;
+          id?: string | null;
+        }>
+      | null;
+  } | null;
+  tags?: Array<{ tag?: string | null; id?: string | null }> | null;
   pictures?: Array<{
     status?: 'pending' | 'approved' | 'rejected' | string;
     photo?:
@@ -43,7 +62,9 @@ export type MapListingCard = {
   id?: number | string;
   mapPlaceCollection: MapPlaceCollection;
   title: string;
-  kindLabel: string;
+  kioskSubtype?: string | null;
+  marketSubtype?: string | null;
+  tapSubtype?: string | null;
   distanceKm?: number;
   rating?: number;
   reviews?: number;

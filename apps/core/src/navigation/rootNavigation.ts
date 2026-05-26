@@ -1,6 +1,7 @@
 import type { NavigationProp, ParamListBase } from '@react-navigation/native';
 
 import type { RootStackParamList } from '../features/auth/auth.types';
+import type { CmsLegalPage } from '../lib/legal/cmsLegal.types';
 import type { MapPlaceCollection } from '../lib/mapPlaces/mapPlaceTaxonomy';
 
 export function getRootStackNavigator(
@@ -25,4 +26,12 @@ export function navigateToListingDetail(
 ): void {
   const root = getRootStackNavigator(navigation);
   root?.navigate('ListingDetail', params);
+}
+
+export function navigateToLegalDocument(
+  navigation: NavigationProp<ParamListBase>,
+  params: { page: CmsLegalPage },
+): void {
+  const root = getRootStackNavigator(navigation);
+  root?.navigate('LegalDocument', params);
 }

@@ -1,17 +1,27 @@
-import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
-import { Button, Card, Spinner, useThemeColor } from 'heroui-native';
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { Image, ScrollView, Text, View } from 'react-native';
+import { useNavigation, useRoute, type NavigationProp, type ParamListBase, type RouteProp } from '@react-navigation/native';
+import Mapbox from '@rnmapbox/maps';
+import { Button, Spinner } from 'heroui-native';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { RootStackParamList } from '../auth/auth.types';
 import { useAuth } from '../../context/AuthContext';
 import { useLocale } from '../../context/LocaleContext';
 import { useDiscoveryArea } from '../../context/DiscoveryAreaContext';
+import { fetchPlaceReviews } from '../../lib/api/reviews/fetchPlaceReviews';
 import { getPayloadSdk } from '../../lib/api/payloadSdk';
-import { buildMapPlaceKindLabel } from '../../lib/mapPlaces/mapPlaceTaxonomy';
+import { resolveDeviceLngLat } from '../../lib/location/resolveDeviceLngLat';
+import { runMapProtectedAction } from '../map/mapProtectedAction';
 import { mapPayloadListingToMapCard } from '../map/mapListing.mapper';
 import type { MapPlaceRecord } from '../map/map.types';
+import { PlaceDetailContent } from './PlaceDetailContent';
+import type { PlaceDetailHeroMode } from './PlaceDetailHero';
+import { resolveHeroPhotoUrls, resolvePlaceLngLat } from './placeDetail.model';
+import { mapReviewsToPlaceDetailRows } from './placeDetailReviews.model';
+import { showPlaceDetailContributorComingSoon } from './placeDetailActions';
+import type { PlaceDetailReviewRow } from './placeDetailReviews.model';
+import { PLACE_DETAIL_BG } from './placeDetail.constants';
 
 type Route = RouteProp<RootStackParamList, 'ListingDetail'>;
 
@@ -31,31 +41,42 @@ function toMapPlaceRecord(doc: unknown, collection: MapPlaceRecord['mapPlaceColl
 
 export function ListingDetailScreen() {
   const route = useRoute<Route>();
-  const navigation = useNavigation();
-  const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NavigationProp<ParamListBase>>();
   const { user } = useAuth();
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const { referenceLngLat } = useDiscoveryArea();
-  const muted = useThemeColor('muted');
   const serverOrigin = process.env.EXPO_PUBLIC_PAYLOAD_SERVER_URL;
+  const mapboxAccessToken = process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
   const { collection, id } = route.params;
 
   const [place, setPlace] = useState<MapPlaceRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [heroMode, setHeroMode] = useState<PlaceDetailHeroMode>('photos');
+  const [userLngLat, setUserLngLat] = useState<[number, number] | null>(null);
+  const [reviews, setReviews] = useState<PlaceDetailReviewRow[]>([]);
+  const insets = useSafeAreaInsets();
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: t('listing.detailTitle') });
-  }, [navigation, t]);
+    navigation.setOptions({ headerShown: false });
+  }, [navigation]);
 
-  const load = useCallback(async () => {
-    if (!user) {
-      setError(t('listing.signInToViewDetails'));
-      setPlace(null);
-      setLoading(false);
+  useEffect(() => {
+    if (!mapboxAccessToken) {
       return;
     }
+    Mapbox.setAccessToken(mapboxAccessToken);
+  }, [mapboxAccessToken]);
+
+  useEffect(() => {
+    void (async () => {
+      const lngLat = await resolveDeviceLngLat();
+      setUserLngLat(lngLat);
+    })();
+  }, []);
+
+  const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -63,7 +84,7 @@ export function ListingDetailScreen() {
       const doc = await sdk.findByID({
         collection,
         id,
-        depth: 1,
+        depth: 2,
       });
       const mapped = toMapPlaceRecord(doc, collection);
       if (!mapped) {
@@ -72,77 +93,116 @@ export function ListingDetailScreen() {
         return;
       }
       setPlace(mapped);
-    } catch (e) {
-      const message = e instanceof Error ? e.message : t('listing.couldNotLoad');
-      setError(message);
+      if (serverOrigin) {
+        try {
+          const reviewDocs = await fetchPlaceReviews(collection, id);
+          setReviews(mapReviewsToPlaceDetailRows(reviewDocs, serverOrigin, locale));
+        } catch {
+          setReviews([]);
+        }
+      } else {
+        setReviews([]);
+      }
+    } catch (_e) {
+      setError(t('listing.couldNotLoad'));
       setPlace(null);
+      setReviews([]);
     } finally {
       setLoading(false);
     }
-  }, [collection, id, user, t]);
+  }, [collection, id, locale, serverOrigin, t]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const imageUrl =
-    place && serverOrigin ? mapPayloadListingToMapCard(place, serverOrigin, referenceLngLat).imageUrl : undefined;
+  const card = useMemo(() => {
+    if (!place || !serverOrigin) {
+      return null;
+    }
+    return mapPayloadListingToMapCard(place, serverOrigin, referenceLngLat);
+  }, [place, referenceLngLat, serverOrigin]);
 
-  if (!user) {
-    return (
-      <View className="flex-1 bg-background" style={{ paddingTop: insets.top + 12, paddingHorizontal: 16 }}>
-        <Button variant="ghost" onPress={() => navigation.goBack()}>
-          <Button.Label>{t('listing.back')}</Button.Label>
-        </Button>
-        <Card className="mt-4">
-          <Card.Body>
-            <Card.Title>{t('listing.signInRequiredTitle')}</Card.Title>
-            <Card.Description>{t('listing.signInRequiredDescription')}</Card.Description>
-          </Card.Body>
-        </Card>
-      </View>
-    );
-  }
+  const photoUrls = useMemo(() => {
+    if (!place || !serverOrigin || !card) {
+      return [];
+    }
+    return resolveHeroPhotoUrls(place, serverOrigin, card.imageUrl);
+  }, [card, place, serverOrigin]);
+
+  const listingLngLat = place ? resolvePlaceLngLat(place) : null;
+
+  const onLeaveReviewPress = useCallback(() => {
+    if (!user) {
+      return;
+    }
+    showPlaceDetailContributorComingSoon(t);
+  }, [t, user]);
+
+  const onAddPhotoPress = useCallback(() => {
+    if (!user) {
+      return;
+    }
+    showPlaceDetailContributorComingSoon(t);
+  }, [t, user]);
+
+  const onSavePress = useCallback(() => {
+    if (!place) {
+      return;
+    }
+    runMapProtectedAction({
+      user,
+      navigation,
+      allowed: !!place.interaction?.canFavorite,
+      t,
+    });
+  }, [navigation, place, t, user]);
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-background">
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: PLACE_DETAIL_BG }}>
         <Spinner size="lg" />
       </View>
     );
   }
 
-  if (error || !place) {
+  if (error || !place || !card) {
     return (
-      <View className="flex-1 bg-background" style={{ paddingTop: insets.top + 12, paddingHorizontal: 16 }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: PLACE_DETAIL_BG,
+          paddingTop: insets.top + 16,
+          paddingHorizontal: 20,
+        }}
+      >
         <Button variant="ghost" onPress={() => navigation.goBack()}>
           <Button.Label>{t('listing.back')}</Button.Label>
         </Button>
-        <Card className="mt-4">
-          <Card.Body>
-            <Card.Title>{t('listing.unavailableTitle')}</Card.Title>
-            <Card.Description>{error ?? t('listing.unknownError')}</Card.Description>
-          </Card.Body>
-        </Card>
+        <Text className="text-foreground mt-4 text-lg font-semibold">{t('listing.unavailableTitle')}</Text>
+        <Text className="text-muted mt-2 text-base">{error ?? t('listing.unknownError')}</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerStyle={{ paddingTop: 12, paddingBottom: insets.bottom + 24, paddingHorizontal: 16 }}
-    >
-      {imageUrl ? (
-        <Image source={{ uri: imageUrl }} style={{ width: '100%', height: 220, borderRadius: 12 }} resizeMode="cover" />
-      ) : (
-        <View style={{ height: 220, borderRadius: 12, backgroundColor: muted }} />
-      )}
-
-      <Text className="text-foreground mt-4 text-2xl font-semibold">{place.name}</Text>
-      <Text className="text-muted mt-1 text-sm">{buildMapPlaceKindLabel(place)}</Text>
-
-      <Text className="text-foreground mt-4 text-base leading-6">{place.description}</Text>
-    </ScrollView>
+    <PlaceDetailContent
+      place={place}
+      card={card}
+      photoUrls={photoUrls}
+      listingLngLat={listingLngLat}
+      userLngLat={userLngLat}
+      mapboxAccessToken={mapboxAccessToken}
+      heroMode={heroMode}
+      onHeroModeChange={setHeroMode}
+      onBack={() => navigation.goBack()}
+      onSavePress={onSavePress}
+      loved={card.loved ?? false}
+      reviews={reviews}
+      user={user}
+      onLeaveReviewPress={onLeaveReviewPress}
+      onAddPhotoPress={onAddPhotoPress}
+      t={t}
+    />
   );
 }

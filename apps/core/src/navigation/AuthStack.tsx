@@ -2,7 +2,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View } from 'react-native';
 
 import { SignupCredentialsProvider } from '../context/SignupCredentialsContext';
-import { AuthFlowPresentation } from '../features/auth/authFlowPresentation';
 import { AllowLocationScreen } from '../features/auth/AllowLocationScreen';
 import { AuthStartScreen } from '../features/auth/AuthStartScreen';
 import { ForgotPasswordEmailSentScreen } from '../features/auth/ForgotPasswordEmailSentScreen';
@@ -41,17 +40,5 @@ export function AuthModalStack() {
         <AuthNavigatorTree />
       </SignupCredentialsProvider>
     </View>
-  );
-}
-
-export function ProfileGuestAuthStack() {
-  return (
-    <AuthFlowPresentation mode="embedded">
-      <View style={{ flex: 1 }}>
-        <SignupCredentialsProvider>
-          <AuthNavigatorTree />
-        </SignupCredentialsProvider>
-      </View>
-    </AuthFlowPresentation>
   );
 }

@@ -10,7 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 import { authConfig } from '../../config/auth.config';
 import type { AuthStackParamList } from './auth.types';
 import { isEmailValid, isPasswordValid, normalizeEmail, normalizeError } from './auth.validation';
-import { AuthScreenShell } from './AuthScreenShell';
+import { AuthScreenShell } from '../../components/shared';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'VerifyEmail'>;
 

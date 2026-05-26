@@ -2,22 +2,23 @@ import type { ComponentProps } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Fragment, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Avatar, Button, ListGroup, Separator, useThemeColor } from 'heroui-native';
 
+import { Screen, SectionHeader, TabScreenHeader } from '../../components/shared';
+import {
+  TAB_SCREEN_CONTENT_BOTTOM_PADDING,
+  TAB_SCREEN_HEADER_TOP_GAP,
+  TAB_SCREEN_HORIZONTAL_PADDING,
+  TAB_SCREEN_SECTION_GAP,
+} from '../../components/shared/tab-screen.constants';
 import { useAuth } from '../../context/AuthContext';
 import { useLocale } from '../../context/LocaleContext';
 import type { Messages } from '../../i18n/catalog';
 import type { AuthUser } from '../../lib/api/auth/authClient';
 import { AppearancePreferencesSection } from '../preferences/AppearancePreferencesSection';
-import {
-  PROFILE_BLOCK_GAP,
-  PROFILE_SCREEN_HORIZONTAL_PADDING,
-  PROFILE_SECTION_GAP,
-  PROFILE_SETTINGS_SECTION_FONT_SIZE,
-  PROFILE_TITLE_FONT_SIZE,
-} from './profile.constants';
+import { PROFILE_BLOCK_GAP } from './profile.constants';
+import { ProfileLegalSection } from './ProfileLegalSection';
 
 type IoniconName = ComponentProps<typeof Ionicons>['name'];
 type SettingsRowKey = keyof Messages['profile']['settingsRows'];
@@ -63,7 +64,6 @@ function initials(user: AuthUser): string {
 }
 
 export function ProfileSignedInScreen() {
-  const insets = useSafeAreaInsets();
   const { user, signOut } = useAuth();
   const { t } = useLocale();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,72 +85,67 @@ export function ProfileSignedInScreen() {
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerStyle={{
-        paddingTop: insets.top + 8,
-        paddingHorizontal: PROFILE_SCREEN_HORIZONTAL_PADDING,
-        paddingBottom: insets.bottom + PROFILE_SECTION_GAP,
-        gap: PROFILE_SECTION_GAP,
-      }}
-      keyboardShouldPersistTaps="handled"
-    >
-      <Text className="font-bold text-foreground" style={{ fontSize: PROFILE_TITLE_FONT_SIZE }}>
-        {t('profile.title')}
-      </Text>
+    <Screen withTabBarSpacing horizontalPadding={TAB_SCREEN_HORIZONTAL_PADDING}>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingTop: TAB_SCREEN_HEADER_TOP_GAP,
+          gap: TAB_SCREEN_SECTION_GAP,
+          paddingBottom: TAB_SCREEN_CONTENT_BOTTOM_PADDING,
+        }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <TabScreenHeader title={t('profile.title')} />
 
-      <View style={{ gap: PROFILE_BLOCK_GAP }}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Show profile"
-          onPress={settingsRowPress}
-          style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1 }]}
-        >
-          <View className="flex-row items-center" style={{ gap: 14 }}>
-            <Avatar size="lg" color="accent" variant="soft" alt={`${displayName(user)} avatar`}>
-              <Avatar.Fallback>{initials(user)}</Avatar.Fallback>
-            </Avatar>
-            <View className="min-w-0 flex-1" style={{ gap: 2 }}>
-              <Text className="font-bold text-foreground" style={{ fontSize: 22 }}>
-                {displayName(user)}
-              </Text>
-              <Text className="text-base text-muted">{t('profile.showProfile')}</Text>
+        <View style={{ gap: PROFILE_BLOCK_GAP }}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('profile.showProfile')}
+            onPress={settingsRowPress}
+            style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1 }]}
+          >
+            <View className="flex-row items-center" style={{ gap: 14 }}>
+              <Avatar size="lg" color="accent" variant="soft" alt={displayName(user)}>
+                <Avatar.Fallback>{initials(user)}</Avatar.Fallback>
+              </Avatar>
+              <View className="min-w-0 flex-1" style={{ gap: 2 }}>
+                <Text className="text-foreground text-xl font-bold">{displayName(user)}</Text>
+                <Text className="text-base text-muted">{t('profile.showProfile')}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={22} color={muted} />
             </View>
-            <Ionicons name="chevron-forward" size={22} color={muted} />
-          </View>
-        </Pressable>
-      </View>
+          </Pressable>
+        </View>
 
-      <View>
-        <Text
-          className="mb-2 font-bold text-foreground"
-          style={{ fontSize: PROFILE_SETTINGS_SECTION_FONT_SIZE }}
-        >
-          {t('profile.settings')}
-        </Text>
-        <ListGroup>
-          {PROFILE_SETTINGS_ROWS.map((row, index) => (
-            <Fragment key={row.labelKey}>
-              {index > 0 ? <Separator className="mx-4" /> : null}
-              <ListGroup.Item onPress={settingsRowPress}>
-                <ListGroup.ItemPrefix>
-                  <Ionicons name={row.icon} size={22} color={foreground} />
-                </ListGroup.ItemPrefix>
-                <ListGroup.ItemContent>
-                  <ListGroup.ItemTitle>{t(`profile.settingsRows.${row.labelKey}`)}</ListGroup.ItemTitle>
-                </ListGroup.ItemContent>
-                <ListGroup.ItemSuffix iconProps={{ size: 18, color: muted }} />
-              </ListGroup.Item>
-            </Fragment>
-          ))}
-        </ListGroup>
-      </View>
+        <View>
+          <SectionHeader title={t('profile.settings')} />
+          <ListGroup>
+            {PROFILE_SETTINGS_ROWS.map((row, index) => (
+              <Fragment key={row.labelKey}>
+                {index > 0 ? <Separator className="mx-4" /> : null}
+                <ListGroup.Item onPress={settingsRowPress}>
+                  <ListGroup.ItemPrefix>
+                    <Ionicons name={row.icon} size={22} color={foreground} />
+                  </ListGroup.ItemPrefix>
+                  <ListGroup.ItemContent>
+                    <ListGroup.ItemTitle>{t(`profile.settingsRows.${row.labelKey}`)}</ListGroup.ItemTitle>
+                  </ListGroup.ItemContent>
+                  <ListGroup.ItemSuffix iconProps={{ size: 18, color: muted }} />
+                </ListGroup.Item>
+              </Fragment>
+            ))}
+          </ListGroup>
+        </View>
 
-      <AppearancePreferencesSection />
+        <AppearancePreferencesSection splitSections />
 
-      <Button variant="danger" onPress={onLogout} isDisabled={isSubmitting} className="self-start">
-        {isSubmitting ? t('profile.loggingOut') : t('profile.logout')}
-      </Button>
-    </ScrollView>
+        <ProfileLegalSection />
+
+        <Button variant="danger" onPress={onLogout} isDisabled={isSubmitting} className="self-start">
+          {isSubmitting ? t('profile.loggingOut') : t('profile.logout')}
+        </Button>
+      </ScrollView>
+    </Screen>
   );
 }

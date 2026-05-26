@@ -1,5 +1,6 @@
 import type { NavigatorScreenParams } from '@react-navigation/native';
 
+import type { CmsLegalPage } from '../../lib/legal/cmsLegal.types';
 import type { MapPlaceCollection } from '../../lib/mapPlaces/mapPlaceTaxonomy';
 
 export type AuthStackParamList = {
@@ -19,4 +20,5 @@ export type RootStackParamList = {
   MainTabs: undefined;
   Auth: NavigatorScreenParams<AuthStackParamList>;
   ListingDetail: { collection: MapPlaceCollection; id: number };
+  LegalDocument: { page: CmsLegalPage };
 };

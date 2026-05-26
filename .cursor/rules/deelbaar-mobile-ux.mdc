@@ -1,0 +1,25 @@
+---
+description: Deelbaar core mobile UX — read before any UI work in apps/core
+globs: apps/core/**/*
+alwaysApply: false
+---
+
+# Deelbaar mobile UX
+
+**Read first:** [docs/design/mobile-ux-master.md](../../docs/design/mobile-ux-master.md)
+
+## Non-negotiable
+
+- **Never** show API or contract text in the UI (`auth_required`, `interaction.reason`, “Interaction locked”, raw enum names).
+- **Map cards:** no auth or entitlement labels; guests browse cards like everyone else.
+- **Gate on action:** guests who tap protected actions (save/favorite, follow, alerts, full listing when gated) get the sign-in modal; use human copy only. **Never** favorite, follow, or persist saved state while logged out — use `runMapProtectedAction` in `apps/core/src/features/map/mapProtectedAction.ts`.
+- **Tabs:** one shared guest layout for Hub and Favorites; Profile follows the Settings pattern (guest and signed-in share skeleton).
+- **i18n:** English and Dutch for all new user-visible strings.
+
+## When implementing
+
+Design from the master doc (user journeys and access layers), not by copying whatever the current screen does.
+
+Complete the checklist at the bottom of `mobile-ux-master.md` before finishing.
+
+**UI verification:** layout contract + **Layout proof** first; optional screenshot — `.cursor/rules/verify-ui-copy-with-screenshot.mdc`.

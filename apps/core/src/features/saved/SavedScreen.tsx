@@ -1,18 +1,31 @@
-import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect, useNavigation, type NavigationProp, type ParamListBase } from '@react-navigation/native';
 import { Alert, Card, Skeleton, useThemeColor } from 'heroui-native';
 import { useCallback, useMemo, useState } from 'react';
-import { Image, ScrollView, Text, View } from 'react-native';
+import { Image, ScrollView, View } from 'react-native';
 
-import type { User } from '../../lib/types/payload-generated';
-import { fetchCurrentUserFull } from '../../lib/api/users/fetchCurrentUserFull';
+import {
+  EmptyList,
+  GuestAuthCard,
+  Screen,
+  TAB_SCREEN_CONTENT_BOTTOM_PADDING,
+  TAB_SCREEN_HEADER_TOP_GAP,
+  TAB_SCREEN_HORIZONTAL_PADDING,
+  TAB_SCREEN_SECTION_GAP,
+  TabScreenHeader,
+} from '../../components/shared';
 import { useAuth } from '../../context/AuthContext';
-import { useLocale } from '../../context/LocaleContext';
 import { useDiscoveryArea } from '../../context/DiscoveryAreaContext';
+import { useLocale } from '../../context/LocaleContext';
+import { fetchCurrentUserFull } from '../../lib/api/users/fetchCurrentUserFull';
+import { navigateToAuthModal } from '../../navigation/rootNavigation';
+import type { User } from '../../lib/types/payload-generated';
+import { buildMapPlaceKindLabel } from '../../lib/mapPlaces/mapPlaceTaxonomy';
 import { CARD_IMAGE_HEIGHT } from '../map/map.constants';
 import { mapPayloadListingToMapCard, sortMapCardsByDistance } from '../map/mapListing.mapper';
 import type { MapPlaceRecord } from '../map/map.types';
 
-const SCREEN_PADDING = 16;
+const LIST_GAP = 12;
 
 function isMapPlaceRecord(value: unknown): value is MapPlaceRecord {
   return (
@@ -60,10 +73,12 @@ function listingsFromFavorites(user: User): MapPlaceRecord[] {
 }
 
 export function SavedScreen() {
+  const navigation = useNavigation() as NavigationProp<ParamListBase>;
   const { referenceLngLat } = useDiscoveryArea();
   const { user } = useAuth();
   const { t } = useLocale();
   const listingPlaceholderBg = useThemeColor('muted');
+  const muted = useThemeColor('muted');
   const serverOrigin = process.env.EXPO_PUBLIC_PAYLOAD_SERVER_URL;
   const [rawSaved, setRawSaved] = useState<MapPlaceRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,7 +116,7 @@ export function SavedScreen() {
       }
       setRawSaved(listingsFromFavorites(full));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t('favorites.errorFailedToLoad'));
+      setError(t('favorites.errorFailedToLoad'));
       setRawSaved([]);
     } finally {
       setLoading(false);
@@ -116,79 +131,107 @@ export function SavedScreen() {
 
   if (!serverOrigin) {
     return (
-      <View style={{ flex: 1, padding: SCREEN_PADDING }}>
-        <Card>
-          <Card.Body>
-            <Card.Title>{t('favorites.title')}</Card.Title>
-            <Card.Description>{t('favorites.missingEnvDescription')}</Card.Description>
-          </Card.Body>
-        </Card>
-      </View>
+      <Screen withTabBarSpacing horizontalPadding={TAB_SCREEN_HORIZONTAL_PADDING}>
+        <View style={{ paddingTop: TAB_SCREEN_HEADER_TOP_GAP }}>
+          <TabScreenHeader title={t('favorites.title')} subtitle={t('favorites.missingEnvDescription')} />
+        </View>
+      </Screen>
     );
   }
 
   if (!user) {
     return (
-      <View style={{ flex: 1, padding: SCREEN_PADDING }}>
-        <Card>
-          <Card.Body>
-            <Card.Title>{t('favorites.signInTitle')}</Card.Title>
-            <Card.Description>{t('favorites.signInDescription')}</Card.Description>
-          </Card.Body>
-        </Card>
-      </View>
+      <Screen withTabBarSpacing horizontalPadding={TAB_SCREEN_HORIZONTAL_PADDING}>
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingTop: TAB_SCREEN_HEADER_TOP_GAP,
+            gap: TAB_SCREEN_SECTION_GAP,
+            paddingBottom: TAB_SCREEN_CONTENT_BOTTOM_PADDING,
+          }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <TabScreenHeader title={t('favorites.title')} subtitle={t('favorites.subtitle')} />
+          <GuestAuthCard
+            icon={<Ionicons name="heart-outline" size={28} color={muted} />}
+            headline={t('favorites.signInTitle')}
+            description={t('favorites.signInDescription')}
+            ctaLabel={t('favorites.signInCta')}
+            onPress={() => navigateToAuthModal(navigation)}
+          />
+        </ScrollView>
+      </Screen>
     );
   }
 
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: SCREEN_PADDING, gap: 12 }}>
-      <Card>
-        <Card.Body>
-          <Card.Title>{t('favorites.title')}</Card.Title>
-          <Card.Description>{t('favorites.listDescription')}</Card.Description>
-        </Card.Body>
-      </Card>
+    <Screen withTabBarSpacing horizontalPadding={TAB_SCREEN_HORIZONTAL_PADDING}>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{
+          paddingTop: TAB_SCREEN_HEADER_TOP_GAP,
+          gap: LIST_GAP,
+          paddingBottom: TAB_SCREEN_CONTENT_BOTTOM_PADDING,
+        }}
+      >
+        <TabScreenHeader title={t('favorites.title')} subtitle={t('favorites.listDescription')} />
 
-      {error ? (
-        <Alert status="danger">
-          <Alert.Content>
-            <Alert.Description accessibilityLiveRegion="polite">{error}</Alert.Description>
-          </Alert.Content>
-        </Alert>
-      ) : null}
+        {error ? (
+          <Alert status="danger">
+            <Alert.Content>
+              <Alert.Description accessibilityLiveRegion="polite">{error}</Alert.Description>
+            </Alert.Content>
+          </Alert>
+        ) : null}
 
-      {loading ? (
-        <Card>
-          <Card.Body>
-            <Skeleton className="h-40 w-full rounded-lg" isLoading variant="pulse">
-              <Text> </Text>
-            </Skeleton>
-          </Card.Body>
-        </Card>
-      ) : cards.length === 0 ? (
-        <Card>
-          <Card.Body>
-            <Card.Description>{t('favorites.emptyDescription')}</Card.Description>
-          </Card.Body>
-        </Card>
-      ) : (
-        cards.map((item) => (
-          <Card key={item.id != null ? `${item.mapPlaceCollection}-${String(item.id)}` : item.title}>
-            <Card.Body style={{ gap: 8 }}>
-              {item.imageUrl ? (
-                <Image source={{ uri: item.imageUrl }} style={{ width: '100%', height: CARD_IMAGE_HEIGHT, borderRadius: 12 }} resizeMode="cover" />
-              ) : (
-                <View style={{ width: '100%', height: CARD_IMAGE_HEIGHT, borderRadius: 12, backgroundColor: listingPlaceholderBg }} />
-              )}
-              <Card.Title>{item.title}</Card.Title>
-              <Card.Description>{item.kindLabel}</Card.Description>
-              {item.distanceKm !== undefined ? (
-                <Card.Description>{t('favorites.distanceFromMap', { km: item.distanceKm.toFixed(1) })}</Card.Description>
-              ) : null}
+        {loading ? (
+          <Card>
+            <Card.Body>
+              <Skeleton className="h-40 w-full rounded-lg" isLoading variant="pulse">
+                <View />
+              </Skeleton>
             </Card.Body>
           </Card>
-        ))
-      )}
-    </ScrollView>
+        ) : cards.length === 0 ? (
+          <EmptyList
+            fill={false}
+            icon={<Ionicons name="heart-outline" size={28} color={muted} />}
+            title={t('favorites.emptyTitle')}
+            description={t('favorites.emptyDescription')}
+          />
+        ) : (
+          cards.map((item) => (
+            <Card key={item.id != null ? `${item.mapPlaceCollection}-${String(item.id)}` : item.title}>
+              <Card.Body style={{ gap: 8 }}>
+                {item.imageUrl ? (
+                  <Image
+                    source={{ uri: item.imageUrl }}
+                    style={{ width: '100%', height: CARD_IMAGE_HEIGHT, borderRadius: 12 }}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View
+                    style={{
+                      width: '100%',
+                      height: CARD_IMAGE_HEIGHT,
+                      borderRadius: 12,
+                      backgroundColor: listingPlaceholderBg,
+                    }}
+                  />
+                )}
+                <Card.Title>{item.title}</Card.Title>
+                <Card.Description>{buildMapPlaceKindLabel(item, t)}</Card.Description>
+                {item.distanceKm !== undefined ? (
+                  <Card.Description>
+                    {t('favorites.distanceFromMap', { km: item.distanceKm.toFixed(1) })}
+                  </Card.Description>
+                ) : null}
+              </Card.Body>
+            </Card>
+          ))
+        )}
+      </ScrollView>
+    </Screen>
   );
 }

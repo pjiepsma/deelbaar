@@ -1,15 +1,22 @@
 ---
-description: Default — short, direct answers to every question; no over-explaining unless asked
+description: Hard cap on reply length — short by default; expand only when asked
 globs: "**/*"
 alwaysApply: true
 ---
 
-# Concise replies
+# Concise replies (hard cap)
 
-Treat **every** question as “answer tight first”: **short, direct**, minimal sentences, lead with the actual answer or steps.
+**Default:** answer in **≤8 lines** (or ≤120 words). Lead with the answer or the fix.
 
-Do **not** over-explain, stack caveats, front-load context, or write tutorials unless the user asks for *why*, *explain*, *details*, *walk through*, *deep dive*, or similar.
+**Do not** unless the user asks (*explain*, *why*, *details*, *walk through*, *deep dive*):
 
-When something needs nuance, add **one** short clarifying sentence — not a paragraph.
+- Recap the conversation or restate their question
+- Multi-section essays, tables, or mermaid
+- Bullet lists longer than **5** items
+- “What went wrong” postmortems after they already understand
 
-If they want more, they will ask; then expand, still scoped to what they asked.
+**One** clarifying sentence max when needed.
+
+**Handoff / PR / done:** same cap unless they asked for a full write-up. Layout proof = **Layout proof** block (see `verify-ui-copy-with-screenshot.mdc`), not a narrative.
+
+If they say **SHORT**, **compact**, or **stop the essay**: next reply **≤4 lines**.

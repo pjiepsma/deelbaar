@@ -1,0 +1,48 @@
+---
+description: UI done = lint + layout contract math + optional screenshot; screenshot alone never passes layout
+globs: apps/core/**/*
+alwaysApply: true
+---
+
+# Verify UI (contract first)
+
+When you **finish** any `apps/core` screen, overlay, or flow with **layout or copy**:
+
+## 1. Always (blocks “done”)
+
+1. **`pnpm --filter @deelbaar/core lint`**
+2. **Metro** — no `ERROR` / redbox / `Missing i18n path`
+3. **i18n** — every `t('…')` in the diff exists in **`en`** and **`nl`** in `catalog.ts`
+
+## 2. Layout (blocks “done” — no screenshot required)
+
+4. Read the **layout contract** for that screen under `docs/design/layout-contracts/` (or formulas in the task). If none exists for a new screen, add one before handoff.
+5. **Prove invariants in code** — paste a **Layout proof** block (numbers from constants + `sheetTop` / `bottom` / heights). Example: `sheetTop = H - 24`; chrome `bottom` must be **≥ 24 + controlHeight + gap`; cite constant names.
+6. **One source of truth** — hero/sheet insets use shared derived constants, not conflicting magic numbers in the same feature.
+7. Check [mobile-ux-master.md](../../docs/design/mobile-ux-master.md) and any **pinned reference** image named in the task (`docs/design/*-reference.png`).
+
+**Forbidden for layout pass:** lint only, UI XML dump, file hash, “looks fine”, or screenshot without Layout proof.
+
+## 3. Screenshot (optional — does not replace §2)
+
+8. If a device is running and layout/copy is in scope: `./scripts/capture-ui-review.ps1 -Name <state>` → read `docs/design/review-<name>.png` in the same turn.
+9. If no device: say so; **do not** claim visual pass.
+
+```markdown
+### Layout proof
+- **Contract:** `docs/design/layout-contracts/<file>.md`
+- **Formulas:** (e.g. H, R, bottom inset, pass/fail per row)
+
+### Screenshot review (if captured)
+- **Captures:** `review-*.png` / `verify-*.png`
+- **State:** screen + guest/signed-in + mode
+- **Pass/fail:** one line per criterion
+```
+
+Re-capture after layout fixes if you use screenshots.
+
+## When this applies
+
+Screens, modals, sheets, carousels, auth, tab chrome, visible copy changes.
+
+**Not required:** logic-only, API, types, config with no UI surface.

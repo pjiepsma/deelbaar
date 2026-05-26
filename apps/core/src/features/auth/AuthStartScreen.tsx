@@ -11,7 +11,7 @@ import { getAuthOnboardingComplete } from '../../lib/auth/authOnboarding.storage
 import { requestGoogleIdToken } from '../../lib/auth/googleSignIn';
 import { dismissAuthFlow } from './auth.navigation';
 import type { AuthStackParamList } from './auth.types';
-import { AuthScreenShell } from './AuthScreenShell';
+import { AuthScreenShell } from '../../components/shared';
 import { isEmailValid, normalizeEmail, normalizeError } from './auth.validation';
 import { DeelbaarLogo } from './DeelbaarLogo';
 
@@ -123,7 +123,7 @@ export function AuthStartScreen({ navigation }: Props) {
               value={email}
               onChangeText={setEmail}
               returnKeyType="next"
-              accessibilityLabel="Email address"
+              accessibilityLabel={t('auth.emailLabel')}
               onSubmitEditing={() => {
                 if (!isContinueDisabled) {
                   void onContinue();
@@ -136,7 +136,7 @@ export function AuthStartScreen({ navigation }: Props) {
             variant="primary"
             onPress={onContinue}
             isDisabled={isContinueDisabled}
-            accessibilityLabel="Continue with email"
+            accessibilityLabel={t('auth.continue')}
           >
             {isCheckingEmail ? t('auth.checkingEmail') : t('auth.continue')}
           </Button>
@@ -148,7 +148,7 @@ export function AuthStartScreen({ navigation }: Props) {
             variant="outline"
             onPress={onContinueWithGoogle}
             isDisabled={isCheckingEmail || isGoogleSubmitting}
-            accessibilityLabel="Continue with Google"
+            accessibilityLabel={t('auth.continueWithGoogle')}
           >
             <Button.Label>
               <View className="flex-row items-center gap-3">

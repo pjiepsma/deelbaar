@@ -3,9 +3,11 @@ import { Button, Card, Chip, FieldError, Input, Label, TextField } from 'heroui-
 import { useCallback, useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 
+import { useLocale } from '../../context/LocaleContext';
 import {
-  MAP_PLACE_FILTERS,
+  MAP_PLACE_FILTER_VALUES,
   defaultSubtypeForCollection,
+  mapPlaceFilterLabel,
   subtypeOptionsForCollection,
   type MapPlaceCollection,
 } from '../../lib/mapPlaces/mapPlaceTaxonomy';
@@ -21,9 +23,7 @@ import type { MapPlaceRecord } from '../map/map.types';
 
 const SECTION_GAP = 12;
 
-const COLLECTION_ROW = MAP_PLACE_FILTERS.filter(
-  (row): row is { value: MapPlaceCollection; label: string } => row.value !== 'All',
-);
+const COLLECTION_ROW = MAP_PLACE_FILTER_VALUES.filter((value): value is MapPlaceCollection => value !== 'All');
 
 function kindFieldsForSave(
   collection: MapPlaceCollection,
@@ -65,6 +65,7 @@ type Props = {
 };
 
 export function MyListingsSection({ ownerId, serverOrigin }: Props) {
+  const { t } = useLocale();
   const { referenceLngLat } = useDiscoveryArea();
   const [rows, setRows] = useState<MapPlaceRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -242,16 +243,16 @@ export function MyListingsSection({ ownerId, serverOrigin }: Props) {
             <Text style={{ fontWeight: '600' }}>Collection</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-                {COLLECTION_ROW.map((row) => (
+                {COLLECTION_ROW.map((value) => (
                   <Chip
-                    key={row.value}
-                    variant={collection === row.value ? 'primary' : 'secondary'}
+                    key={value}
+                    variant={collection === value ? 'primary' : 'secondary'}
                     onPress={() => {
-                      setCollection(row.value);
-                      setSubtype(defaultSubtypeForCollection(row.value));
+                      setCollection(value);
+                      setSubtype(defaultSubtypeForCollection(value));
                     }}
                   >
-                    <Chip.Label>{row.label}</Chip.Label>
+                    <Chip.Label>{mapPlaceFilterLabel(value, t)}</Chip.Label>
                   </Chip>
                 ))}
               </View>
@@ -259,7 +260,7 @@ export function MyListingsSection({ ownerId, serverOrigin }: Props) {
             <Text style={{ fontWeight: '600' }}>Subtype</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-                {subtypeOptionsForCollection(collection).map((opt) => (
+                {subtypeOptionsForCollection(collection, t).map((opt) => (
                   <Chip
                     key={opt.value}
                     variant={subtype === opt.value ? 'primary' : 'secondary'}

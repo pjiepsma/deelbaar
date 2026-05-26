@@ -116,9 +116,11 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     mail: Mail;
+    legal: Legal;
   };
   globalsSelect: {
     mail: MailSelect<false> | MailSelect<true>;
+    legal: LegalSelect<false> | LegalSelect<true>;
   };
   locale: null;
   widgets: {
@@ -184,6 +186,8 @@ export interface User {
    * User role
    */
   role: 'user' | 'admin';
+  signupOtpHash?: string | null;
+  signupOtpExpiresAt?: string | null;
   /**
    * Google account subject identifier
    */
@@ -1083,6 +1087,8 @@ export interface UsersSelect<T extends boolean = true> {
   surname?: T;
   avatar?: T;
   role?: T;
+  signupOtpHash?: T;
+  signupOtpExpiresAt?: T;
   googleSub?: T;
   pushToken?: T;
   pushTokenUpdatedAt?: T;
@@ -1598,6 +1604,27 @@ export interface Mail {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal".
+ */
+export interface Legal {
+  id: number;
+  terms: {
+    title: string;
+    body: string;
+  };
+  privacy: {
+    title: string;
+    body: string;
+  };
+  about: {
+    title: string;
+    body: string;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "mail_select".
  */
 export interface MailSelect<T extends boolean = true> {
@@ -1615,6 +1642,33 @@ export interface MailSelect<T extends boolean = true> {
     | {
         subject?: T;
         content?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal_select".
+ */
+export interface LegalSelect<T extends boolean = true> {
+  terms?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+      };
+  privacy?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+      };
+  about?:
+    | T
+    | {
+        title?: T;
+        body?: T;
       };
   updatedAt?: T;
   createdAt?: T;

@@ -1,12 +1,12 @@
 import { useAuth } from '../../context/AuthContext';
-import { ProfileGuestAuthStack } from '../../navigation/AuthStack';
+import { ProfileGuestScreen } from './ProfileGuestScreen';
 import { ProfileSignedInScreen } from './ProfileSignedInScreen';
 
 export function ProfileTabScreen() {
   const { user } = useAuth();
 
   if (!user) {
-    return <ProfileGuestAuthStack />;
+    return <ProfileGuestScreen />;
   }
 
   return <ProfileSignedInScreen />;

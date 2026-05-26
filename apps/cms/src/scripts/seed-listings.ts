@@ -3,6 +3,7 @@ import config from '@payload-config'
 import { exit } from 'process'
 
 import { buildApeldoornListingsSeed } from './seed-data/apeldoornListings'
+import { clearSeedMedia, ensureSeedMediaPool } from './seed-data/seedPlacePhotos'
 
 const payload = await getPayload({ config })
 
@@ -27,16 +28,24 @@ async function seedListings() {
       depth: 0,
     })
 
-    const ownerIds = usersResult.docs
-      .filter((u) => u.role === 'admin' || u.role === 'user')
-      .map((u) => u.id)
+    const ownerUsers = usersResult.docs.filter((u) => u.role === 'admin' || u.role === 'user')
+    const ownerIds = ownerUsers.map((u) => u.id)
+    const adminUser = ownerUsers.find((u) => u.role === 'admin')
 
-    if (ownerIds.length === 0) {
+    if (ownerIds.length === 0 || !adminUser) {
       console.error('❌ No admin/user accounts found. Run full `pnpm seed` first.')
       exit(1)
     }
 
-    const listingsData = buildApeldoornListingsSeed(ownerIds)
+    console.log('🖼️  Refreshing seed media pool...')
+    await clearSeedMedia(payload)
+    const seedMediaIds = await ensureSeedMediaPool(payload)
+    console.log(`  ✅ Created ${seedMediaIds.length} seed media items`)
+
+    const listingsData = buildApeldoornListingsSeed(ownerIds, {
+      mediaIds: seedMediaIds,
+      adminId: adminUser.id,
+    })
 
     console.log('📦 Creating places...')
     const places = []

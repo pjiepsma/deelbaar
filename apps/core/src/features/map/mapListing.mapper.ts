@@ -1,5 +1,3 @@
-import { buildMapPlaceKindLabel } from '../../lib/mapPlaces/mapPlaceTaxonomy';
-
 import { MAP_CENTER } from './map.constants';
 import type { MapListingCard, MapPlaceRecord } from './map.types';
 
@@ -58,7 +56,9 @@ export function mapPayloadListingToMapCard(
     id: doc.id,
     mapPlaceCollection: doc.mapPlaceCollection,
     title: doc.name,
-    kindLabel: buildMapPlaceKindLabel(doc),
+    kioskSubtype: doc.kioskSubtype,
+    marketSubtype: doc.marketSubtype,
+    tapSubtype: doc.tapSubtype,
     distanceKm,
     imageUrl: pickImageUrl(doc, serverOrigin),
     loved: false,

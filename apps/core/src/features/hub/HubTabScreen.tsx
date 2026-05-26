@@ -1,44 +1,46 @@
-import { ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView, Text } from 'react-native';
 
+import {
+  Screen,
+  TAB_SCREEN_CONTENT_BOTTOM_PADDING,
+  TAB_SCREEN_HEADER_TOP_GAP,
+  TAB_SCREEN_HORIZONTAL_PADDING,
+  TAB_SCREEN_SECTION_GAP,
+  TabScreenHeader,
+} from '../../components/shared';
 import { useAuth } from '../../context/AuthContext';
 import { useLocale } from '../../context/LocaleContext';
-import { ProfileGuestAuthStack } from '../../navigation/AuthStack';
+import { HubGuestScreen } from './HubGuestScreen';
 import { MyListingsSection } from '../profile/MyListingsSection';
 
 const PAYLOAD_SERVER_ORIGIN = process.env.EXPO_PUBLIC_PAYLOAD_SERVER_URL;
 
-const HUB_HORIZONTAL_PADDING = 16;
-
 export function HubTabScreen() {
-  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { t } = useLocale();
 
   if (!user) {
-    return <ProfileGuestAuthStack />;
+    return <HubGuestScreen />;
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerStyle={{
-        paddingTop: insets.top + 16,
-        paddingBottom: insets.bottom + 24,
-        paddingHorizontal: HUB_HORIZONTAL_PADDING,
-        gap: 16,
-      }}
-    >
-      <View>
-        <Text className="text-foreground text-2xl font-bold">{t('hub.title')}</Text>
-        <Text className="text-muted mt-2 text-base leading-6">{t('hub.subtitle')}</Text>
-      </View>
+    <Screen withTabBarSpacing horizontalPadding={TAB_SCREEN_HORIZONTAL_PADDING}>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{
+          paddingTop: TAB_SCREEN_HEADER_TOP_GAP,
+          gap: TAB_SCREEN_SECTION_GAP,
+          paddingBottom: TAB_SCREEN_CONTENT_BOTTOM_PADDING,
+        }}
+      >
+        <TabScreenHeader title={t('hub.title')} subtitle={t('hub.subtitle')} />
 
-      {PAYLOAD_SERVER_ORIGIN ? (
-        <MyListingsSection ownerId={user.id} serverOrigin={PAYLOAD_SERVER_ORIGIN} />
-      ) : (
-        <Text className="text-muted">{t('hub.missingEnv')}</Text>
-      )}
-    </ScrollView>
+        {PAYLOAD_SERVER_ORIGIN ? (
+          <MyListingsSection ownerId={user.id} serverOrigin={PAYLOAD_SERVER_ORIGIN} />
+        ) : (
+          <Text className="text-muted text-base">{t('hub.missingEnv')}</Text>
+        )}
+      </ScrollView>
+    </Screen>
   );
 }

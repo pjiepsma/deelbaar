@@ -8,7 +8,10 @@ This repo uses **HeroUI CLI** to ship local, versioned docs for coding agents (`
 |------|-----|
 | **`@Docs https://heroui.com/native/llms-full.txt`** | Full upstream doc in Cursor chat context ([@Docs](https://docs.cursor.com/context/@-symbols/@-docs)). Use [`/native/llms.txt`](https://heroui.com/native/llms.txt) if you need a shorter index. |
 | **This repo’s `AGENTS.md`** | Points agents at `./.heroui-docs/native`; refresh after upgrades. |
-| **`apps/core`** | Primary app: **Uniwind** (`global.css`), **`withUniwindConfig`** in Metro, **`HeroUINativeProvider`** + `Uniwind.setTheme` in `app/_layout.tsx`. Legacy **`apps/mobile`** uses the same stack until removed. |
+| **`apps/core`** | Primary Expo app: **Uniwind** (`global.css`), **`withUniwindConfig`** in Metro, **`HeroUINativeProvider`** + `Uniwind.setTheme` in `app/_layout.tsx`. |
+| **`docs/design/mobile-ux-master.md`** | **Mobile UX source of truth** for `apps/core` — read before any tab/map/auth UI work. Cursor rule: `.cursor/rules/deelbaar-mobile-ux.mdc`. |
+| **Design library first** | Before custom UI in `apps/core`, check **HeroUI Native** (MCP / `.heroui-docs/native/`) and **`apps/core/src/components/shared/`**. Cursor rule: `.cursor/rules/design-component-library-first.mdc`. |
+| **Verify UI** | **Layout proof** (math + `docs/design/layout-contracts/`) before “done”; optional capture via `./scripts/capture-ui-review.ps1`. Rule: `.cursor/rules/verify-ui-copy-with-screenshot.mdc`. |
 
 ## Refresh local HeroUI docs (non-interactive)
 

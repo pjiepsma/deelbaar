@@ -1,6 +1,6 @@
 ---
 description: HeroUI Native — docs (@Docs, CLI) and Expo wiring for Core (and legacy mobile)
-globs: apps/core/**/*.{ts,tsx},apps/mobile/**/*.{ts,tsx}
+globs: apps/core/**/*.{ts,tsx}
 alwaysApply: false
 ---
 

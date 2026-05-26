@@ -1,0 +1,78 @@
+---
+description: Prefer flex column + negative margins over position absolute for RN screen layout in apps/core
+globs: apps/core/**/*
+alwaysApply: false
+---
+
+# Flex over absolute (apps/core layout)
+
+Prefer **document-flow flex** over `position: 'absolute'` for screen regions, hero chrome, sheets, and control rows.
+
+## Default stack
+
+1. **`flexDirection: 'column'`** on screen root (`flex: 1`).
+2. Full-bleed media fills its own explicit height — not `flex: 1` inside a column that also has chrome rows (that creates black bands).
+3. **Chrome overlay** = sibling `View` with `marginTop: -H` (same height as media) + `justifyContent: 'space-between'` — sits on the photo without a black band below it.
+4. **Sheet overlap** = `marginTop: -R` on the sheet sibling — never absolute `top: H - R`.
+5. **One flex row** per chrome band (e.g. pills | dots | thumb) — never separate layers per control group.
+
+## `zIndex` in React Native
+
+- `zIndex` only affects **siblings within the same parent** — not across branches.
+- **Later siblings paint over earlier siblings** by default — use tree order before zIndex.
+- **Android requires `elevation`** alongside `zIndex` for interactive views; `zIndex` alone often fails.
+- **Never put `zIndex` on a hero/card root** to make its chrome appear above a sibling sheet — it makes the whole hero paint over the sheet, killing any visual overlap effect (beige-over-blue, etc.).
+- Only set `zIndex` where siblings actually compete and you cannot fix it with tree order.
+
+## Constants: re-derive when layout model changes
+
+When switching from absolute positioning to flex/margin layout, **re-derive every `padding`, `bottom`, and inset constant**. Constants from the old model carry the wrong assumptions:
+
+- Old absolute sheet: `paddingBottom = R + pillHeight + gap` (to clear the sheet lip)
+- Flex `marginTop: -R` sheet: `paddingBottom = R + gap` (sheet lip is already below controls)
+
+**Never copy a constant from an old positioning model into a new one without re-deriving it.**
+
+## When absolute is OK
+
+- Native/SDK children that require explicit dimensions (Mapbox `MapView`, `FlatList` paging).
+- Portal overlays from the design system (`BottomSheet`, `Dialog`).
+- Fix the flex structure before reaching for absolute as a workaround.
+
+## Forbidden patterns
+
+- Multiple absolute siblings with different `bottom` / `top` magic numbers on the same screen.
+- `zIndex` on a container root to make its children appear above a sibling — use tree order or elevation instead.
+- Chrome rows as separate absolute layers (dots, pills, thumb each absolute) — one flex row.
+- Carrying `paddingBottom` / inset constants across a layout model change without re-deriving.
+
+## Canonical example (hero + overlapping sheet)
+
+```tsx
+<View style={{ flex: 1, backgroundColor: SHEET_BG }}>
+
+  {/* 1. Full-bleed media */}
+  <View style={{ height: H }}>
+    <FlatList ... /> {/* or MapView */}
+  </View>
+
+  {/* 2. Chrome overlay — sits ON the media, no black band */}
+  <View
+    pointerEvents="box-none"
+    style={{ marginTop: -H, height: H, justifyContent: 'space-between',
+             paddingTop: insets.top + 8, paddingBottom: R + gap,
+             paddingHorizontal: 20 }}
+  >
+    <TopChromeRow />
+    <BottomChromeRow /> {/* pills | dots | thumb — one flex row */}
+  </View>
+
+  {/* 3. Sheet overlaps bottom R px of hero */}
+  <View style={{ flex: 1, marginTop: -R, borderTopRadius: R }}>
+    <ScrollView />
+  </View>
+
+</View>
+```
+
+See `docs/design/layout-contracts/place-detail.md` for place-detail math.

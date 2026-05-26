@@ -8,7 +8,7 @@ import { useLocale } from '../../context/LocaleContext';
 import { updateUser } from '../../lib/api/auth/authClient';
 import type { AuthStackParamList } from './auth.types';
 import { normalizeError } from './auth.validation';
-import { AuthScreenShell } from './AuthScreenShell';
+import { AuthScreenShell } from '../../components/shared';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'SignUpNotifications'>;
 

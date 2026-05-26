@@ -3,6 +3,7 @@ import config from '@payload-config'
 import { exit } from 'process'
 
 import { buildApeldoornListingsSeed } from './seed-data/apeldoornListings'
+import { ensureSeedMediaPool } from './seed-data/seedPlacePhotos'
 
 const payload = await getPayload({ config })
 
@@ -123,7 +124,14 @@ async function seed() {
     // Create map places (Apeldoorn cluster — same data as `pnpm seed:listings`)
     console.log('📦 Creating places...')
 
-    const listingsData = buildApeldoornListingsSeed([adminUser.id, ...users.map((u) => u.id)])
+    console.log('🖼️  Creating seed media pool...')
+    const seedMediaIds = await ensureSeedMediaPool(payload)
+    console.log(`  ✅ Created ${seedMediaIds.length} seed media items`)
+
+    const listingsData = buildApeldoornListingsSeed([adminUser.id, ...users.map((u) => u.id)], {
+      mediaIds: seedMediaIds,
+      adminId: adminUser.id,
+    })
 
     const places: Array<{ collection: 'kiosks' | 'markets' | 'taps'; id: string | number; name: string }> = []
     for (const placeSeed of listingsData) {

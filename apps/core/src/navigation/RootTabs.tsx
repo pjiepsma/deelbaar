@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useThemeColor } from 'heroui-native';
 
 import { useLocale } from '../context/LocaleContext';
+import { fireHaptic } from '../lib/utils/fire-haptic';
 import { HubTabScreen } from '../features/hub/HubTabScreen';
 import { MapScreen } from '../features/map/MapScreen';
 import { ProfileTabScreen } from '../features/profile/ProfileTabScreen';
@@ -23,6 +24,11 @@ export function RootTabs() {
         tabBarLabelStyle: { fontSize: TAB_LABEL_FONT_SIZE },
         tabBarActiveTintColor,
         tabBarInactiveTintColor,
+      }}
+      screenListeners={{
+        tabPress: () => {
+          fireHaptic();
+        },
       }}
     >
       <Tab.Screen

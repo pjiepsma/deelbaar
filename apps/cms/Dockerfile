@@ -9,7 +9,6 @@ FROM base AS deps
 WORKDIR /app
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/cms/package.json ./apps/cms/
-COPY apps/mobile/package.json ./apps/mobile/
 RUN corepack enable pnpm && corepack prepare pnpm@10.33.0 --activate \
   && pnpm install --frozen-lockfile
 

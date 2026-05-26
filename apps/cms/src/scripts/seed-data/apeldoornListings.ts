@@ -3,6 +3,8 @@
  * Used by full `pnpm seed` and by `pnpm seed:listings` only.
  */
 
+import { buildApprovedPictures } from './seedPlacePhotos'
+
 type ListingType = 'little' | 'farm' | 'waterpoint'
 type LittleSubtype = 'books' | 'hygiene' | 'community' | 'other'
 type FarmSubtype = 'honey' | 'milk' | 'meat' | 'vegetables' | 'other'
@@ -280,6 +282,12 @@ type PlaceCreatePayload = {
   kioskSubtype?: string | null
   marketSubtype?: string | null
   tapSubtype?: string | null
+  pictures: ReturnType<typeof buildApprovedPictures>
+}
+
+export type ApeldoornPictureContext = {
+  mediaIds: number[]
+  adminId: string | number
 }
 
 export type ApeldoornPlaceSeedRow = {
@@ -313,23 +321,31 @@ function resolveCollectionAndSubtype(row: ApeldoornListingTemplate): {
   return { collection: 'taps', subtypeField: 'tapSubtype', subtypeValue: subtype }
 }
 
-export function buildApeldoornListingsSeed(ownerIds: (string | number)[]): ApeldoornPlaceSeedRow[] {
+export function buildApeldoornListingsSeed(
+  ownerIds: (string | number)[],
+  pictureContext: ApeldoornPictureContext,
+): ApeldoornPlaceSeedRow[] {
   if (ownerIds.length === 0) {
     throw new Error('buildApeldoornListingsSeed: at least one owner id is required')
+  }
+  if (pictureContext.mediaIds.length === 0) {
+    throw new Error('buildApeldoornListingsSeed: at least one seed media id is required')
   }
 
   return APELDOORN_LISTING_TEMPLATES.map((row, index) => {
     const kind = resolveCollectionAndSubtype(row)
+    const ownerId = ownerIds[index % ownerIds.length]!
     const data: PlaceCreatePayload = {
       name: row.name,
       publishStatus: 'live',
       description: row.description,
-      owner: ownerIds[index % ownerIds.length]!,
+      owner: ownerId,
       location: row.location,
       tags: row.tags,
       kioskSubtype: null,
       marketSubtype: null,
       tapSubtype: null,
+      pictures: buildApprovedPictures(pictureContext.mediaIds, ownerId, pictureContext.adminId),
     }
     data[kind.subtypeField] = kind.subtypeValue
     return { collection: kind.collection, data }

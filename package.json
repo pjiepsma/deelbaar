@@ -1,17 +1,17 @@
 {
   "name": "deelbaar-monorepo",
   "private": true,
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@11.3.0",
   "scripts": {
     "android": "pnpm --filter @deelbaar/core android",
     "ios": "pnpm --filter @deelbaar/core ios",
     "start": "pnpm --filter @deelbaar/core start",
-    "dev": "pnpm copy:payload-types && concurrently -n \"CMS,CORE\" -c \"bgBlue.bold,bgMagenta.bold\" \"pnpm dev:cms\" \"pnpm dev:core\"",
     "dev:core": "pnpm --filter @deelbaar/core dev",
     "dev:cms": "pnpm --filter @deelbaar/cms dev",
     "prebuild": "pnpm --filter @deelbaar/core prebuild",
     "eas": "pnpm --filter @deelbaar/core eas",
     "kill:dev-ports": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/kill-dev-ports.ps1",
+    "android:clean": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/android-clean-native.ps1",
     "seed:listings": "pnpm --filter @deelbaar/cms seed:listings",
     "copy:payload-types": "node scripts/sync-payload-types.cjs",
     "lint": "pnpm --filter @deelbaar/core lint",
@@ -19,15 +19,6 @@
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "sharp",
-      "esbuild",
-      "unrs-resolver",
-      "heroui-pro",
-      "heroui-native-pro"
-    ]
   },
   "version": "1.0.0"
 }

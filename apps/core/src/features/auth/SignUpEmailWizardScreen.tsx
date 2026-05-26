@@ -1,26 +1,24 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Alert, Button, Card, FieldError, Input, Label, TextField } from 'heroui-native';
-import { Stepper } from 'heroui-native-pro';
+import { Stepper } from 'heroui-native-pro/stepper';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
 import { registerWithEmail } from '../../lib/api/auth/authClient';
 import { useSignupCredentials } from '../../context/SignupCredentialsContext';
 import { useAuth } from '../../context/AuthContext';
+import { useLocale } from '../../context/LocaleContext';
 import { authConfig } from '../../config/auth.config';
 import type { AuthStackParamList } from './auth.types';
 import { isEmailValid, isPasswordValid, normalizeEmail, normalizeError } from './auth.validation';
-import { AuthScreenShell } from './AuthScreenShell';
+import { AuthScreenShell } from '../../components/shared';
+import { fireHaptic } from '../../lib/utils/fire-haptic';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'SignUpEmailWizard'>;
 
-const SIGNUP_STEPS = [
-  { title: 'Account', description: 'Credentials' },
-  { title: 'Profile', description: 'Optional details' },
-];
-
 export function SignUpEmailWizardScreen({ navigation, route }: Props) {
   const { applyAuthResponse } = useAuth();
+  const { t } = useLocale();
   const { setSignupCredentials } = useSignupCredentials();
   const [currentStep, setCurrentStep] = useState(0);
   const [email, setEmail] = useState(route.params?.initialEmail ?? '');
@@ -38,15 +36,23 @@ export function SignUpEmailWizardScreen({ navigation, route }: Props) {
   const hasInitialEmail = Boolean(route.params?.initialEmail);
   const canContinueCredentialsStep =
     (hasInitialEmail || isEmailValid(email)) && isPasswordValid(password) && confirmPassword === password;
-  const isFinalStep = currentStep === SIGNUP_STEPS.length - 1;
+  const signUpSteps = useMemo(
+    () => [
+      { title: t('auth.signUpStepAccountTitle'), description: t('auth.signUpStepAccountDescription') },
+      { title: t('auth.signUpStepProfileTitle'), description: t('auth.signUpStepProfileDescription') },
+    ],
+    [t],
+  );
+  const isFinalStep = currentStep === signUpSteps.length - 1;
 
   const onContinue = async (): Promise<void> => {
     setErrorMessage(null);
     if (!isFinalStep) {
       if (!canContinueCredentialsStep) {
-        setErrorMessage('Enter a valid email and matching password fields.');
+        setErrorMessage(t('auth.signUpCredentialsInvalid'));
         return;
       }
+      fireHaptic();
       setCurrentStep(1);
       return;
     }
@@ -74,15 +80,15 @@ export function SignUpEmailWizardScreen({ navigation, route }: Props) {
   };
 
   return (
-    <AuthScreenShell title="Create account" description="Complete the short setup journey to register.">
+    <AuthScreenShell title={t('auth.createAccountTitle')} description={t('auth.createAccountDescription')}>
       <Card>
         <Card.Body style={{ gap: 8 }}>
           <Stepper
             orientation="horizontal"
             currentStep={currentStep}
-            onStepChange={(step) => setCurrentStep(Math.min(step, currentStep))}
+            onStepChange={(step: number) => setCurrentStep(Math.min(step, currentStep))}
           >
-            {SIGNUP_STEPS.map((step) => (
+            {signUpSteps.map((step) => (
               <Stepper.Step key={step.title}>
                 <Stepper.Rail />
                 <Stepper.Content>
@@ -100,55 +106,62 @@ export function SignUpEmailWizardScreen({ navigation, route }: Props) {
           {hasInitialEmail ? (
             <Card>
               <Card.Body style={{ gap: 6 }}>
-                <Card.Description>Creating account for</Card.Description>
+                <Card.Description>{t('auth.creatingAccountFor')}</Card.Description>
                 <Card.Title>{email}</Card.Title>
               </Card.Body>
               <Card.Footer>
                 <Button variant="outline" onPress={() => navigation.replace('AuthStart')} isDisabled={isSubmitting}>
-                  Use a different email
+                  {t('auth.useDifferentEmail')}
                 </Button>
               </Card.Footer>
             </Card>
           ) : (
             <TextField isInvalid={hasEmailError}>
-              <Label>Email</Label>
+              <Label>{t('auth.emailLabel')}</Label>
               <Input
-                placeholder="you@example.com"
+                placeholder={t('auth.emailPlaceholder')}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 value={email}
                 onChangeText={setEmail}
               />
-              {hasEmailError ? <FieldError>Enter a valid email address.</FieldError> : null}
+              {hasEmailError ? <FieldError>{t('auth.validEmailFieldError')}</FieldError> : null}
             </TextField>
           )}
 
           <TextField isInvalid={hasPasswordError}>
-            <Label>Password</Label>
+            <Label>{t('auth.passwordLabel')}</Label>
             <Input
-              placeholder={`At least ${authConfig.minPasswordLength} characters`}
+              placeholder={t('auth.passwordPlaceholder', { min: String(authConfig.minPasswordLength) })}
               secureTextEntry
               value={password}
               onChangeText={setPassword}
             />
-            {hasPasswordError ? <FieldError>Password must be at least {authConfig.minPasswordLength} characters.</FieldError> : null}
+            {hasPasswordError ? (
+              <FieldError>{t('auth.passwordMinError', { min: String(authConfig.minPasswordLength) })}</FieldError>
+            ) : null}
           </TextField>
 
           <TextField isInvalid={hasConfirmError}>
-            <Label>Confirm password</Label>
-            <Input placeholder="Repeat password" secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword} />
-            {hasConfirmError ? <FieldError>Passwords do not match.</FieldError> : null}
+            <Label>{t('auth.confirmPasswordLabel')}</Label>
+            <Input
+              placeholder={t('auth.repeatPasswordPlaceholder')}
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+            {hasConfirmError ? <FieldError>{t('auth.passwordMismatch')}</FieldError> : null}
           </TextField>
         </>
       ) : (
         <>
           <TextField>
-            <Label>First name (optional)</Label>
-            <Input placeholder="First name" value={name} onChangeText={setName} />
+            <Label>{t('auth.firstNameOptionalLabel')}</Label>
+            <Input placeholder={t('auth.firstNamePlaceholder')} value={name} onChangeText={setName} />
           </TextField>
           <TextField>
-            <Label>Surname (optional)</Label>
-            <Input placeholder="Surname" value={surname} onChangeText={setSurname} />
+            <Label>{t('auth.surnameOptionalLabel')}</Label>
+            <Input placeholder={t('auth.surnamePlaceholder')} value={surname} onChangeText={setSurname} />
           </TextField>
         </>
       )}
@@ -173,10 +186,10 @@ export function SignUpEmailWizardScreen({ navigation, route }: Props) {
           }}
           isDisabled={isSubmitting}
         >
-          Back
+          {t('auth.back')}
         </Button>
         <Button variant="primary" onPress={onContinue} isDisabled={isSubmitting}>
-          {isSubmitting ? 'Creating account...' : isFinalStep ? 'Create account' : 'Continue'}
+          {isSubmitting ? t('auth.creatingAccount') : isFinalStep ? t('auth.createAccount') : t('auth.continue')}
         </Button>
       </View>
     </AuthScreenShell>
