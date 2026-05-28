@@ -57,6 +57,8 @@ Deelbaar is a **community app**: most people will open it **where they live**—
 
 **Other cities and wider regions are an extra:** useful for day-trippers, movers, or the curious, but **most users will not care about them at first**. Product and engineering should **optimise for the home map** (performance, copy, onboarding, free geography). Paid “unlock more area” is for the **minority** who want broader discovery—not a tax on normal neighbourhood use.
 
+**Performance as a USP:** Deelbaar wins on *responsiveness*—fetch only what you see (plus a small map buffer), keep panning smooth with background loads, and cap pins and payloads so the map tab stays usable on mid-range phones. Speed is product, not optional polish.
+
 ### Platform role (what we build)
 
 - **Discovery:** map, search, filters, categories, (later) geography-based access tiers.

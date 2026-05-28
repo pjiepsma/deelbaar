@@ -10,35 +10,27 @@ import { firstRouteParam } from '../../navigation/routeParams';
 import type { MapPlaceCollection } from '../../lib/mapPlaces/mapPlaceTaxonomy';
 import { useLocale } from '../../context/LocaleContext';
 import { useDiscoveryArea } from '../../context/DiscoveryAreaContext';
-import { fetchPlaceReviews } from '../../lib/api/reviews/fetchPlaceReviews';
-import { getPayloadSdk } from '../../lib/api/payloadSdk';
+import {
+  getCachedPlaceDetail,
+  isPlaceDetailCacheStale,
+  loadPlaceDetailWithReviews,
+  logPlaceDetailCacheAccess,
+  setCachedPlaceDetail,
+} from '../../lib/listings/placeDetailPrefetchCache';
+import { consumePlaceDetailShellSnapshot } from '../../lib/listings/placeDetailNavigationShell';
 import { resolveDeviceLngLat } from '../../lib/location/resolveDeviceLngLat';
 import { runMapProtectedAction } from '../map/mapProtectedAction';
 import { mapPayloadListingToMapCard } from '../map/mapListing.mapper';
 import type { MapPlaceRecord } from '../map/map.types';
 import { Ionicons } from '@expo/vector-icons';
 import { PlaceDetailContent } from './PlaceDetailContent';
+import { PlaceDetailLoadingShell } from './PlaceDetailLoadingShell';
 import { HeroChromeButton } from './HeroChromeButton';
 import type { PlaceDetailHeroMode } from './PlaceDetailHero';
 import { resolveHeroPhotoUrls, resolvePlaceLngLat } from './placeDetail.model';
-import { mapReviewsToPlaceDetailRows } from './placeDetailReviews.model';
-import { showPlaceDetailContributorComingSoon } from './placeDetailActions';
 import type { PlaceDetailReviewRow } from './placeDetailReviews.model';
+import { showPlaceDetailContributorComingSoon } from './placeDetailActions';
 import { PLACE_DETAIL_BG } from './placeDetail.constants';
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
-}
-
-function toMapPlaceRecord(doc: unknown, collection: MapPlaceRecord['mapPlaceCollection']): MapPlaceRecord | null {
-  if (!isRecord(doc) || typeof doc.id !== 'number') {
-    return null;
-  }
-  return {
-    ...(doc as Omit<MapPlaceRecord, 'mapPlaceCollection'>),
-    mapPlaceCollection: collection,
-  };
-}
 
 function parseListingId(raw: string | undefined): number {
   const parsed = Number(raw);
@@ -62,6 +54,11 @@ export function ListingDetailScreen() {
   const serverOrigin = process.env.EXPO_PUBLIC_PAYLOAD_SERVER_URL;
   const mapboxAccessToken = process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
+  const shellSnapshot = useMemo(
+    () => consumePlaceDetailShellSnapshot(collection, id),
+    [collection, id],
+  );
+
   const [place, setPlace] = useState<MapPlaceRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -84,41 +81,71 @@ export function ListingDetailScreen() {
     })();
   }, []);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const sdk = getPayloadSdk();
-      const doc = await sdk.findByID({
-        collection,
-        id,
-        depth: 2,
+  const applyLoaded = useCallback(
+    (loadedPlace: MapPlaceRecord, loadedReviews: PlaceDetailReviewRow[]) => {
+      setPlace(loadedPlace);
+      setReviews(loadedReviews);
+      setError(null);
+      setCachedPlaceDetail(collection, id, {
+        place: loadedPlace,
+        reviews: loadedReviews,
       });
-      const mapped = toMapPlaceRecord(doc, collection);
-      if (!mapped) {
-        setError(t('listing.notFound'));
-        setPlace(null);
-        return;
+    },
+    [collection, id],
+  );
+
+  const loadFresh = useCallback(
+    async (background: boolean) => {
+      if (!background) {
+        setLoading(true);
+        setError(null);
       }
-      setPlace(mapped);
-      if (serverOrigin) {
-        try {
-          const reviewDocs = await fetchPlaceReviews(collection, id);
-          setReviews(mapReviewsToPlaceDetailRows(reviewDocs, serverOrigin, locale));
-        } catch {
+      try {
+        const loaded = await loadPlaceDetailWithReviews({
+          collection,
+          id,
+          locale,
+          serverOrigin,
+        });
+        if (!loaded) {
+          if (!background) {
+            setError(t('listing.notFound'));
+            setPlace(null);
+            setReviews([]);
+          }
+          return;
+        }
+        applyLoaded(loaded.place, loaded.reviews);
+      } catch (_e) {
+        if (!background) {
+          setError(t('listing.couldNotLoad'));
+          setPlace(null);
           setReviews([]);
         }
-      } else {
-        setReviews([]);
+      } finally {
+        if (!background) {
+          setLoading(false);
+        }
       }
-    } catch (_e) {
-      setError(t('listing.couldNotLoad'));
-      setPlace(null);
-      setReviews([]);
-    } finally {
+    },
+    [applyLoaded, collection, id, locale, serverOrigin, t],
+  );
+
+  const load = useCallback(async () => {
+    const cached = getCachedPlaceDetail(collection, id);
+    if (cached) {
+      logPlaceDetailCacheAccess(collection, id, true);
+      applyLoaded(cached.place, cached.reviews);
       setLoading(false);
+      if (isPlaceDetailCacheStale(cached)) {
+        void loadFresh(true);
+      }
+      return;
     }
-  }, [collection, id, locale, serverOrigin, t]);
+
+    logPlaceDetailCacheAccess(collection, id, false);
+    await loadFresh(false);
+  }, [applyLoaded, collection, id, loadFresh]);
 
   useEffect(() => {
     void load();
@@ -133,10 +160,13 @@ export function ListingDetailScreen() {
 
   const photoUrls = useMemo(() => {
     if (!place || !serverOrigin || !card) {
+      if (shellSnapshot?.imageUrl) {
+        return [shellSnapshot.imageUrl];
+      }
       return [];
     }
     return resolveHeroPhotoUrls(place, serverOrigin, card.imageUrl);
-  }, [card, place, serverOrigin]);
+  }, [card, place, serverOrigin, shellSnapshot?.imageUrl]);
 
   const listingLngLat = place ? resolvePlaceLngLat(place) : null;
 
@@ -165,7 +195,17 @@ export function ListingDetailScreen() {
     });
   }, [place, t, user]);
 
-  if (loading) {
+  if (loading && !place) {
+    if (shellSnapshot) {
+      return (
+        <PlaceDetailLoadingShell
+          shell={shellSnapshot}
+          onBack={() => router.back()}
+          t={t}
+          topInset={insets.top}
+        />
+      );
+    }
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: PLACE_DETAIL_BG }}>
         <Spinner size="lg" />

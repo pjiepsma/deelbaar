@@ -26,6 +26,24 @@ Map-first neighbourhood app:
 3. **One visual system** — Same screen title scale, subtitle, horizontal inset, section spacing, list style, and button hierarchy on every tab and modal.
 4. **Explain at the moment of action** — Restrictions appear when the user tries something, in plain language with one clear next step (usually sign in).
 5. **Same skeleton when signed in** — Tabs keep the same layout; content fills in. The screen must not feel like a different product after login.
+6. **Performance is a product promise** — The app must feel fast on ordinary phones. Fetch only what the user is exploring; never block the map with full-screen reloads while panning; render pins and cards for the visible area, not the whole country.
+
+---
+
+## Performance (key USP)
+
+**Positioning:** *Fast local discovery — the map stays responsive while you explore.*
+
+| User feels | We deliver |
+|------------|------------|
+| Map never “loads the world” | Listings fetched for visible area + small buffer only |
+| Pan/zoom stays smooth | Background refresh keeps last pins/cards on screen |
+| Cards and pins stay in sync | One cache, viewport-filtered for carousel and markers |
+| Trust through speed | Skeletons only when cache is empty — never flash away good data |
+
+**Map tab rules (Milestone 1):** viewport-sized fetch with prefetch buffer; abort superseded network requests; cap payloads and rendered pins; native map layers preferred over many React marker views. **Discovery** responses carry card-only fields; **focus** (pin or carousel snap) prefetches full place detail so opening a card feels instant.
+
+Same principles apply later to Favorites lists, place detail media, and Hub — bounded fetch, render what is on screen, background refresh by default.
 
 ---
 
@@ -222,3 +240,4 @@ Before marking UX work done:
 | Date | Note |
 |------|------|
 | 2026-05-24 | Initial master doc — map browse open, no system language in UI, unified tabs |
+| 2026-05-28 | Performance USP — fetch/render what you see; map Milestone 1 rules |

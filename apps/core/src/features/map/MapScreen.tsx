@@ -1,29 +1,41 @@
 import Mapbox from '@rnmapbox/maps';
-import { Button, Card, Chip, SearchField } from 'heroui-native';
+import { Button, Card, Chip } from 'heroui-native';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { Alert, ScrollView, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '../../context/AuthContext';
 import { useDiscoveryArea } from '../../context/DiscoveryAreaContext';
 import { useLocale } from '../../context/LocaleContext';
 import { useThemePreference } from '../../context/ThemePreferenceContext';
-import { fetchLiveListings } from '../../lib/api/listings/fetchLiveListings';
+import { resolveDeviceLngLat } from '../../lib/location/resolveDeviceLngLat';
 import {
   MAP_PLACE_FILTER_VALUES,
   mapPlaceFilterLabel,
   type MapPlaceFilterValue,
 } from '../../lib/mapPlaces/mapPlaceTaxonomy';
+import { mapPlaceFilterChipColors } from '../../lib/mapPlaces/mapPlaceCategoryColors';
 import {
   CATEGORY_SCROLL_GAP,
   MAPBOX_STYLE_DARK,
   MAPBOX_STYLE_STREETS,
   MAP_CAMERA_DEBOUNCE_MS,
+  MAP_CAROUSEL_CAMERA_ANIMATION_MS,
+  MAP_CAROUSEL_CAMERA_NUDGE,
+  MAP_CAROUSEL_IN_VIEW_MARGIN,
+  MAP_CAROUSEL_SNAP_CAMERA_DEBOUNCE_MS,
+  MAP_CAROUSEL_VIEWPORT_MARGIN,
+  MAP_AREA_SEARCH_ZOOM,
+  MAP_CENTER,
   MAP_COACHMARK_OVERLAY_EXTRA_GAP,
   MAP_DEFAULT_ZOOM,
   MAP_LISTING_CAROUSEL_BOTTOM_PADDING,
+  MAP_MARKER_VIEWPORT_MARGIN,
+  MAP_MAX_RENDERED_PINS,
+  MAP_MY_LOCATION_BOTTOM_OFFSET,
   MAP_OVERLAY_HORIZONTAL_PADDING,
   MAP_OVERLAY_TOP_GAP,
+  MAP_ZOOM_STATE_THROTTLE_MS,
 } from './map.constants';
 import {
   getMapCoachmarkActivationDone,
@@ -33,38 +45,220 @@ import {
   setMapCoachmarkCardsDone,
   setMapCoachmarkExploreDone,
 } from '../onboarding/mapCoachmarks.storage';
-import { mapPayloadListingsToMapCards } from './mapListing.mapper';
-import { isDefaultMapCenter } from './mapCenter';
+import { mapPayloadListingsToMapCards, sortMapCardsByDistance } from './mapListing.mapper';
+import { coordinatesNear, normalizeMapZoom } from './mapCenter';
+import {
+  cameraCenterTowardListing,
+  filterListingsInMapViewport,
+  isListingInMapView,
+  listingMarkerKey,
+} from './mapViewport';
+import { setPlaceDetailShellSnapshot } from '../../lib/listings/placeDetailNavigationShell';
 import { navigateToListingDetail } from '../../navigation/rootNavigation';
+import { MapAreaSearchField } from './MapAreaSearchField';
 import { MapListingCarousel } from './MapListingCarousel';
+import { MapListingMarkers } from './MapListingMarkers';
+import { MapMyLocationButton } from './MapMyLocationButton';
 import { runMapProtectedAction } from './mapProtectedAction';
 import { useInitialMapCenterFromDevice } from './useInitialMapCenterFromDevice';
-import { type MapListingCard, type MapListingCardPlaceholder, type MapPlaceRecord } from './map.types';
+import { useMapListingsFetch } from './useMapListingsFetch';
+import { usePrefetchFocusedPlaceDetail } from './usePrefetchFocusedPlaceDetail';
+import { type MapListingCard, type MapListingCardPlaceholder } from './map.types';
 
 const PAYLOAD_SERVER_ORIGIN = process.env.EXPO_PUBLIC_PAYLOAD_SERVER_URL;
 
 type CameraChangedPayload = {
   properties?: {
     center?: number[];
+    zoom?: number;
   };
 };
 
 export function MapScreen() {
   const { user } = useAuth();
   const { t } = useLocale();
-  const [search, setSearch] = useState('');
   const [listingTypeFilter, setListingTypeFilter] = useState<MapPlaceFilterValue>('All');
-  const [rawListings, setRawListings] = useState<MapPlaceRecord[]>([]);
-  const [isFetching, setIsFetching] = useState(true);
-  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [focusedListing, setFocusedListing] = useState<MapListingCard | null>(null);
+  const [mapViewportCenter, setMapViewportCenter] = useState<[number, number]>(MAP_CENTER);
+  const [mapViewportZoom, setMapViewportZoom] = useState(MAP_DEFAULT_ZOOM);
   const insets = useSafeAreaInsets();
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const { referenceLngLat, setReferenceLngLat } = useDiscoveryArea();
-  useInitialMapCenterFromDevice(referenceLngLat, setReferenceLngLat);
-  const { resolvedScheme } = useThemePreference();
   const cameraDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const zoomThrottleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const carouselCameraDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cameraRef = useRef<Mapbox.Camera>(null);
-  const deviceCenteredRef = useRef(false);
+  const programmaticCameraRef = useRef(false);
+  const mapZoomRef = useRef(MAP_DEFAULT_ZOOM);
+  const mapViewportCenterRef = useRef<[number, number]>(MAP_CENTER);
+  const referenceLngLatRef = useRef(referenceLngLat);
+  referenceLngLatRef.current = referenceLngLat;
+  mapViewportCenterRef.current = mapViewportCenter;
   const mapboxAccessToken = process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN;
+  const viewportHalfPx = Math.max(screenWidth, screenHeight) / 2;
+  const listingsFetchEnabled = !!PAYLOAD_SERVER_ORIGIN;
+
+  const { rawListings, isFetching, fetchError, requestFetch, maybeRefetchForViewport } =
+    useMapListingsFetch({
+      center: mapViewportCenter,
+      zoom: mapViewportZoom,
+      viewportHalfPx,
+      collectionFilter: listingTypeFilter,
+      enabled: listingsFetchEnabled,
+      unavailableMessage: t('map.placesUnavailableDescription'),
+    });
+
+  usePrefetchFocusedPlaceDetail({
+    focusedListing,
+    enabled: listingsFetchEnabled,
+  });
+
+  const syncMapDiscoveryCenter = useCallback(
+    (lngLat: [number, number], zoom: number) => {
+      referenceLngLatRef.current = lngLat;
+      mapViewportCenterRef.current = lngLat;
+      mapZoomRef.current = zoom;
+      setReferenceLngLat(lngLat);
+      setMapViewportCenter(lngLat);
+      setMapViewportZoom(zoom);
+    },
+    [setReferenceLngLat],
+  );
+
+  const moveCameraToListing = useCallback(
+    (listing: MapListingCard) => {
+      if (!listing.lngLat || !mapboxAccessToken) {
+        return;
+      }
+
+      const currentCenter = mapViewportCenterRef.current;
+      const zoom = normalizeMapZoom(mapZoomRef.current, MAP_DEFAULT_ZOOM);
+      const inView = isListingInMapView(
+        listing.lngLat,
+        currentCenter,
+        zoom,
+        viewportHalfPx,
+        MAP_CAROUSEL_IN_VIEW_MARGIN,
+      );
+      const targetCenter = inView
+        ? cameraCenterTowardListing(currentCenter, listing.lngLat, MAP_CAROUSEL_CAMERA_NUDGE)
+        : listing.lngLat;
+
+      programmaticCameraRef.current = true;
+      cameraRef.current?.setCamera({
+        centerCoordinate: targetCenter,
+        zoomLevel: zoom,
+        animationDuration: MAP_CAROUSEL_CAMERA_ANIMATION_MS,
+      });
+      setTimeout(() => {
+        programmaticCameraRef.current = false;
+        setMapViewportCenter(targetCenter);
+      }, MAP_CAROUSEL_CAMERA_ANIMATION_MS + 100);
+    },
+    [mapboxAccessToken, viewportHalfPx],
+  );
+
+  const onFocusedListingChange = useCallback((listing: MapListingCard | null) => {
+    setFocusedListing(listing);
+  }, []);
+
+  const onCarouselSnap = useCallback(
+    (listing: MapListingCard) => {
+      if (carouselCameraDebounceRef.current) {
+        clearTimeout(carouselCameraDebounceRef.current);
+      }
+      carouselCameraDebounceRef.current = setTimeout(() => {
+        moveCameraToListing(listing);
+      }, MAP_CAROUSEL_SNAP_CAMERA_DEBOUNCE_MS);
+    },
+    [moveCameraToListing],
+  );
+
+  const onAreaSelect = useCallback(
+    (lngLat: [number, number]) => {
+      if (!mapboxAccessToken) {
+        return;
+      }
+      const zoom = MAP_AREA_SEARCH_ZOOM;
+      setFocusedListing(null);
+      syncMapDiscoveryCenter(lngLat, zoom);
+      requestFetch({
+        center: lngLat,
+        zoom,
+        mode: 'foreground',
+        collectionFilter: listingTypeFilter,
+      });
+      programmaticCameraRef.current = true;
+      cameraRef.current?.setCamera({
+        centerCoordinate: lngLat,
+        zoomLevel: zoom,
+        animationDuration: MAP_CAROUSEL_CAMERA_ANIMATION_MS,
+      });
+      setTimeout(() => {
+        programmaticCameraRef.current = false;
+      }, MAP_CAROUSEL_CAMERA_ANIMATION_MS + 100);
+    },
+    [listingTypeFilter, mapboxAccessToken, requestFetch, syncMapDiscoveryCenter],
+  );
+
+  const onDeviceLocationResolved = useCallback(
+    (lngLat: [number, number] | null) => {
+      if (!lngLat || !mapboxAccessToken) {
+        return;
+      }
+      if (coordinatesNear(lngLat, MAP_CENTER)) {
+        return;
+      }
+      programmaticCameraRef.current = true;
+      cameraRef.current?.setCamera({
+        centerCoordinate: lngLat,
+        zoomLevel: MAP_DEFAULT_ZOOM,
+        animationDuration: 600,
+      });
+      setTimeout(() => {
+        programmaticCameraRef.current = false;
+        syncMapDiscoveryCenter(lngLat, MAP_DEFAULT_ZOOM);
+        requestFetch({
+          center: lngLat,
+          zoom: MAP_DEFAULT_ZOOM,
+          mode: 'foreground',
+          collectionFilter: listingTypeFilter,
+        });
+      }, 700);
+    },
+    [listingTypeFilter, mapboxAccessToken, requestFetch, syncMapDiscoveryCenter],
+  );
+
+  const onMyLocationPress = useCallback(() => {
+    void (async () => {
+      const lngLat = await resolveDeviceLngLat();
+      if (!lngLat || !mapboxAccessToken) {
+        Alert.alert(t('map.myLocation'), t('map.myLocationUnavailable'));
+        return;
+      }
+      setFocusedListing(null);
+      syncMapDiscoveryCenter(lngLat, MAP_DEFAULT_ZOOM);
+      requestFetch({
+        center: lngLat,
+        zoom: MAP_DEFAULT_ZOOM,
+        mode: 'foreground',
+        collectionFilter: listingTypeFilter,
+      });
+      programmaticCameraRef.current = true;
+      cameraRef.current?.setCamera({
+        centerCoordinate: lngLat,
+        zoomLevel: MAP_DEFAULT_ZOOM,
+        animationDuration: MAP_CAROUSEL_CAMERA_ANIMATION_MS,
+      });
+      setTimeout(() => {
+        programmaticCameraRef.current = false;
+      }, MAP_CAROUSEL_CAMERA_ANIMATION_MS + 100);
+    })();
+  }, [listingTypeFilter, mapboxAccessToken, requestFetch, syncMapDiscoveryCenter, t]);
+
+  useInitialMapCenterFromDevice(setReferenceLngLat, onDeviceLocationResolved);
+
+  const { resolvedScheme } = useThemePreference();
 
   useLayoutEffect(() => {
     if (!mapboxAccessToken) {
@@ -72,45 +266,6 @@ export function MapScreen() {
     }
     Mapbox.setAccessToken(mapboxAccessToken);
   }, [mapboxAccessToken]);
-
-  useEffect(() => {
-    if (!mapboxAccessToken) {
-      return;
-    }
-    const animate = deviceCenteredRef.current;
-    cameraRef.current?.setCamera({
-      centerCoordinate: referenceLngLat,
-      zoomLevel: MAP_DEFAULT_ZOOM,
-      animationDuration: animate ? 600 : 0,
-    });
-    if (!isDefaultMapCenter(referenceLngLat)) {
-      deviceCenteredRef.current = true;
-    }
-  }, [mapboxAccessToken, referenceLngLat]);
-
-  const loadListings = useCallback(async () => {
-    if (!PAYLOAD_SERVER_ORIGIN) {
-      setFetchError(t('map.placesUnavailableDescription'));
-      setIsFetching(false);
-      return;
-    }
-
-    setIsFetching(true);
-    setFetchError(null);
-    try {
-      const docs = await fetchLiveListings();
-      setRawListings(docs);
-    } catch (_error) {
-      setFetchError(t('map.placesUnavailableDescription'));
-      setRawListings([]);
-    } finally {
-      setIsFetching(false);
-    }
-  }, [t]);
-
-  useEffect(() => {
-    void loadListings();
-  }, [loadListings]);
 
   const listings = useMemo(() => {
     if (!PAYLOAD_SERVER_ORIGIN) {
@@ -121,6 +276,9 @@ export function MapScreen() {
 
   const onCameraChanged = useCallback(
     (event: CameraChangedPayload) => {
+      if (programmaticCameraRef.current) {
+        return;
+      }
       const center = event.properties?.center;
       if (!Array.isArray(center) || center.length < 2) {
         return;
@@ -130,20 +288,45 @@ export function MapScreen() {
       if (typeof lng !== 'number' || typeof lat !== 'number' || Number.isNaN(lng) || Number.isNaN(lat)) {
         return;
       }
+      const zoom = event.properties?.zoom;
+      if (typeof zoom === 'number' && !Number.isNaN(zoom)) {
+        const normalizedZoom = normalizeMapZoom(zoom, MAP_DEFAULT_ZOOM);
+        mapZoomRef.current = normalizedZoom;
+        if (zoomThrottleRef.current) {
+          clearTimeout(zoomThrottleRef.current);
+        }
+        zoomThrottleRef.current = setTimeout(() => {
+          const nextZoom = mapZoomRef.current;
+          setMapViewportZoom(nextZoom);
+          maybeRefetchForViewport(mapViewportCenterRef.current, nextZoom);
+        }, MAP_ZOOM_STATE_THROTTLE_MS);
+      }
+      if (coordinatesNear([lng, lat], referenceLngLatRef.current)) {
+        return;
+      }
       if (cameraDebounceRef.current) {
         clearTimeout(cameraDebounceRef.current);
       }
       cameraDebounceRef.current = setTimeout(() => {
-        setReferenceLngLat([lng, lat]);
+        const nextCenter: [number, number] = [lng, lat];
+        setReferenceLngLat(nextCenter);
+        setMapViewportCenter(nextCenter);
+        maybeRefetchForViewport(nextCenter, mapZoomRef.current);
       }, MAP_CAMERA_DEBOUNCE_MS);
     },
-    [setReferenceLngLat],
+    [maybeRefetchForViewport, setReferenceLngLat],
   );
 
   useEffect(() => {
     return () => {
       if (cameraDebounceRef.current) {
         clearTimeout(cameraDebounceRef.current);
+      }
+      if (zoomThrottleRef.current) {
+        clearTimeout(zoomThrottleRef.current);
+      }
+      if (carouselCameraDebounceRef.current) {
+        clearTimeout(carouselCameraDebounceRef.current);
       }
     };
   }, []);
@@ -263,12 +446,21 @@ export function MapScreen() {
     t,
   ]);
 
+  const onSelectListingFromMap = useCallback(
+    (listing: MapListingCard) => {
+      setFocusedListing(listing);
+      moveCameraToListing(listing);
+    },
+    [moveCameraToListing],
+  );
+
   const openDetailForCard = useCallback(
     (card: MapListingCard) => {
       const cardId = typeof card.id === 'number' ? card.id : Number(card.id);
       if (Number.isNaN(cardId)) {
         return;
       }
+      setPlaceDetailShellSnapshot(card);
       setDetailVisitToken((token) => token + 1);
       navigateToListingDetail({
         collection: card.mapPlaceCollection,
@@ -291,20 +483,72 @@ export function MapScreen() {
 
   const filteredListings = useMemo(() => {
     return listings.filter((item) => {
-      const listingTypeMatch =
-        listingTypeFilter === 'All' || item.mapPlaceCollection === listingTypeFilter;
-      const searchTerm = search.trim().toLowerCase();
-      const searchMatch = item.title.toLowerCase().includes(searchTerm);
-      return listingTypeMatch && searchMatch;
+      return listingTypeFilter === 'All' || item.mapPlaceCollection === listingTypeFilter;
     });
-  }, [listingTypeFilter, listings, search]);
+  }, [listingTypeFilter, listings]);
+
+  const carouselFilterKey = listingTypeFilter;
+
+  const carouselListings = useMemo(() => {
+    const inViewport = filterListingsInMapViewport(
+      filteredListings,
+      mapViewportCenter,
+      mapViewportZoom,
+      viewportHalfPx,
+      MAP_CAROUSEL_VIEWPORT_MARGIN,
+    );
+
+    let merged = inViewport;
+    if (focusedListing) {
+      const focusedKey = listingMarkerKey(focusedListing);
+      if (focusedKey) {
+        const freshFocused =
+          filteredListings.find((item) => listingMarkerKey(item) === focusedKey) ?? focusedListing;
+        const alreadyIncluded = inViewport.some((item) => listingMarkerKey(item) === focusedKey);
+        if (!alreadyIncluded) {
+          merged = [...inViewport, freshFocused];
+        }
+      }
+    }
+
+    return sortMapCardsByDistance(merged);
+  }, [filteredListings, focusedListing, mapViewportCenter, mapViewportZoom, viewportHalfPx]);
+
+  const markerListings = useMemo(() => {
+    const inViewport = filterListingsInMapViewport(
+      filteredListings,
+      mapViewportCenter,
+      mapViewportZoom,
+      viewportHalfPx,
+      MAP_MARKER_VIEWPORT_MARGIN,
+    );
+
+    let merged = inViewport;
+    if (focusedListing) {
+      const focusedKey = listingMarkerKey(focusedListing);
+      if (focusedKey) {
+        const freshFocused =
+          filteredListings.find((item) => listingMarkerKey(item) === focusedKey) ?? focusedListing;
+        const alreadyIncluded = inViewport.some((item) => listingMarkerKey(item) === focusedKey);
+        if (!alreadyIncluded) {
+          merged = [...inViewport, freshFocused];
+        }
+      }
+    }
+
+    const sorted = sortMapCardsByDistance(merged);
+    if (sorted.length <= MAP_MAX_RENDERED_PINS) {
+      return sorted;
+    }
+    return sorted.slice(0, MAP_MAX_RENDERED_PINS);
+  }, [filteredListings, focusedListing, mapViewportCenter, mapViewportZoom, viewportHalfPx]);
 
   const listingsToRender: Array<MapListingCard | MapListingCardPlaceholder> =
-    isFetching && filteredListings.length === 0
+    isFetching && carouselListings.length === 0
       ? [{}, {}, {}]
-      : filteredListings.length > 0
-        ? filteredListings
-        : [{}];
+      : carouselListings;
+
+  const focusedListingKey = focusedListing ? listingMarkerKey(focusedListing) : null;
 
   const mapStyleURL = resolvedScheme === 'dark' ? MAPBOX_STYLE_DARK : MAPBOX_STYLE_STREETS;
 
@@ -342,9 +586,14 @@ export function MapScreen() {
         <Mapbox.Camera
           ref={cameraRef}
           defaultSettings={{
-            centerCoordinate: referenceLngLat,
+            centerCoordinate: MAP_CENTER,
             zoomLevel: MAP_DEFAULT_ZOOM,
           }}
+        />
+        <MapListingMarkers
+          listings={markerListings}
+          focusedListingKey={focusedListingKey}
+          onSelectListing={onSelectListingFromMap}
         />
       </Mapbox.MapView>
 
@@ -357,25 +606,27 @@ export function MapScreen() {
           gap: 10,
         }}
       >
-        <SearchField value={search} onChange={setSearch}>
-          <SearchField.Group>
-            <SearchField.SearchIcon />
-            <SearchField.Input placeholder={t('map.searchPlaceholder')} />
-            <SearchField.ClearButton />
-          </SearchField.Group>
-        </SearchField>
+        <MapAreaSearchField
+          accessToken={mapboxAccessToken}
+          proximityLngLat={mapViewportCenter}
+          onAreaSelect={onAreaSelect}
+        />
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={{ flexDirection: 'row', gap: CATEGORY_SCROLL_GAP, paddingRight: CATEGORY_SCROLL_GAP }}>
             {MAP_PLACE_FILTER_VALUES.map((value) => {
               const selected = value === listingTypeFilter;
+              const chipColors = mapPlaceFilterChipColors(value, selected);
               return (
                 <Chip
                   key={value}
-                  variant={selected ? 'primary' : 'secondary'}
+                  variant="secondary"
                   onPress={() => setListingTypeFilter(value)}
+                  style={{ backgroundColor: chipColors.backgroundColor }}
                 >
-                  <Chip.Label>{mapPlaceFilterLabel(value, t)}</Chip.Label>
+                  <Chip.Label style={{ color: chipColors.labelColor }}>
+                    {mapPlaceFilterLabel(value, t)}
+                  </Chip.Label>
                 </Chip>
               );
             })}
@@ -383,15 +634,32 @@ export function MapScreen() {
         </ScrollView>
       </View>
 
+      <View
+        pointerEvents="box-none"
+        style={{
+          position: 'absolute',
+          right: MAP_OVERLAY_HORIZONTAL_PADDING,
+          bottom: MAP_MY_LOCATION_BOTTOM_OFFSET,
+        }}
+      >
+        <MapMyLocationButton onPress={onMyLocationPress} accessibilityLabel={t('map.myLocation')} />
+      </View>
+
       <MapListingCarousel
         listings={listingsToRender}
+        focusedListingKey={focusedListingKey}
+        filterKey={carouselFilterKey}
         isFetching={isFetching}
         fetchError={fetchError}
         fetchErrorTitle={t('map.placesUnavailableTitle')}
         fetchErrorDescription={fetchError ?? ''}
+        emptyTitle={t('map.noPlacesInViewTitle')}
+        emptyDescription={t('map.noPlacesInViewDescription')}
         signedIn={!!user}
         onPressCard={openDetailForCard}
         onHeartPress={onHeartPress}
+        onFocusedListingChange={onFocusedListingChange}
+        onCarouselSnap={onCarouselSnap}
       />
 
       {coachBanner ? (

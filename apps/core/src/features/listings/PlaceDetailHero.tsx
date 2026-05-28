@@ -16,9 +16,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HeroChromeButton } from './HeroChromeButton';
 import { useThemePreference } from '../../context/ThemePreferenceContext';
+import type { MapPlaceCollection } from '../../lib/mapPlaces/mapPlaceTaxonomy';
+import { mapPlaceCategoryColors } from '../../lib/mapPlaces/mapPlaceCategoryColors';
 import { MAPBOX_STYLE_DARK, MAPBOX_STYLE_STREETS } from '../map/map.constants';
 import {
-  PLACE_DETAIL_ACCENT,
   PLACE_DETAIL_CTA_SECONDARY,
   PLACE_DETAIL_HERO_PLACEHOLDER,
   PLACE_DETAIL_HERO_DISABLED_OPACITY,
@@ -36,6 +37,7 @@ export type PlaceDetailHeroMode = 'photos' | 'map';
 type Props = {
   heroMode: PlaceDetailHeroMode;
   onHeroModeChange: (mode: PlaceDetailHeroMode) => void;
+  mapPlaceCollection: MapPlaceCollection;
   photoUrls: string[];
   listingLngLat: [number, number] | null;
   userLngLat: [number, number] | null;
@@ -59,6 +61,7 @@ const TOP_CHROME_PADDING = 8;
 export function PlaceDetailHero({
   heroMode,
   onHeroModeChange,
+  mapPlaceCollection,
   photoUrls,
   listingLngLat,
   userLngLat,
@@ -83,6 +86,7 @@ export function PlaceDetailHero({
   const mapCameraRef = useRef<Mapbox.Camera>(null);
 
   const mapStyleURL = resolvedScheme === 'dark' ? MAPBOX_STYLE_DARK : MAPBOX_STYLE_STREETS;
+  const listingPinColor = mapPlaceCategoryColors(mapPlaceCollection).pin;
 
   const cameraCenter = useMemo(() => {
     if (!listingLngLat) {
@@ -185,7 +189,7 @@ export function PlaceDetailHero({
                 width: 14,
                 height: 14,
                 borderRadius: 7,
-                backgroundColor: PLACE_DETAIL_ACCENT,
+                backgroundColor: listingPinColor,
                 borderWidth: 2,
                 borderColor: '#fff',
               }}
@@ -273,6 +277,7 @@ export function PlaceDetailHero({
           thumbPhotoUrl={thumbPhotoUrl}
           mapboxAccessToken={mapboxAccessToken}
           listingLngLat={listingLngLat}
+          listingPinColor={listingPinColor}
           mapStyleURL={mapStyleURL}
           onToggleToMap={toggleToMap}
           onToggleToPhotos={toggleToPhotos}
@@ -297,6 +302,7 @@ type HeroBottomControlsRowProps = {
   thumbPhotoUrl: string | undefined;
   mapboxAccessToken: string | undefined;
   listingLngLat: [number, number] | null;
+  listingPinColor: string;
   mapStyleURL: string;
   onToggleToMap: () => void;
   onToggleToPhotos: () => void;
@@ -317,6 +323,7 @@ function HeroBottomControlsRow({
   thumbPhotoUrl,
   mapboxAccessToken,
   listingLngLat,
+  listingPinColor,
   mapStyleURL,
   onToggleToMap,
   onToggleToPhotos,
@@ -392,6 +399,7 @@ function HeroBottomControlsRow({
           <MapModeThumb
             mapboxAccessToken={mapboxAccessToken}
             listingLngLat={listingLngLat}
+            listingPinColor={listingPinColor}
             mapStyleURL={mapStyleURL}
             onPress={onToggleToMap}
             accessibilityLabel={showMapAccessibilityLabel}
@@ -488,12 +496,14 @@ function ThumbFallback({ icon }: { icon: ComponentProps<typeof Ionicons>['name']
 function MapModeThumb({
   mapboxAccessToken,
   listingLngLat,
+  listingPinColor,
   mapStyleURL,
   onPress,
   accessibilityLabel,
 }: {
   mapboxAccessToken: string | undefined;
   listingLngLat: [number, number] | null;
+  listingPinColor: string;
   mapStyleURL: string;
   onPress: () => void;
   accessibilityLabel: string;
@@ -543,7 +553,7 @@ function MapModeThumb({
             }}
           />
           <Mapbox.PointAnnotation id="thumb-listing" coordinate={listingLngLat}>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: PLACE_DETAIL_ACCENT }} />
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: listingPinColor }} />
           </Mapbox.PointAnnotation>
         </Mapbox.MapView>
       </View>

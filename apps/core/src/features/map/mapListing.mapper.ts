@@ -43,14 +43,31 @@ function pickImageUrl(place: MapPlaceRecord, serverOrigin: string): string | und
   return resolveMediaUrl(serverOrigin, photo.url ?? photo.thumbnailURL);
 }
 
+function resolveListingLngLat(doc: MapPlaceRecord): [number, number] | undefined {
+  const coords = doc.location?.coordinates;
+  if (coords && coords.length === 2) {
+    const [lng, lat] = coords;
+    if (typeof lng === 'number' && typeof lat === 'number' && !Number.isNaN(lng) && !Number.isNaN(lat)) {
+      return [lng, lat];
+    }
+  }
+
+  const lat = doc.location?.latitude;
+  const lng = doc.location?.longitude;
+  if (typeof lat === 'number' && typeof lng === 'number' && !Number.isNaN(lat) && !Number.isNaN(lng)) {
+    return [lng, lat];
+  }
+
+  return undefined;
+}
+
 export function mapPayloadListingToMapCard(
   doc: MapPlaceRecord,
   serverOrigin: string,
   referenceLngLat: [number, number],
 ): MapListingCard {
-  const coords = doc.location?.coordinates;
-  const distanceKm =
-    coords && coords.length === 2 ? haversineKm(referenceLngLat, coords) : undefined;
+  const lngLat = resolveListingLngLat(doc);
+  const distanceKm = lngLat ? haversineKm(referenceLngLat, lngLat) : undefined;
 
   return {
     id: doc.id,
@@ -60,6 +77,7 @@ export function mapPayloadListingToMapCard(
     marketSubtype: doc.marketSubtype,
     tapSubtype: doc.tapSubtype,
     distanceKm,
+    lngLat,
     imageUrl: pickImageUrl(doc, serverOrigin),
     loved: false,
     interaction: doc.interaction,

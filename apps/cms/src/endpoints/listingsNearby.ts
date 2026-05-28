@@ -30,6 +30,39 @@ const getQueryParam = (req: AppRouteRequest, key: string): string | null => {
   return typeof v === 'string' ? v : null
 }
 
+const MAP_NEARBY_SELECT = {
+  id: true,
+  name: true,
+  kioskSubtype: true,
+  marketSubtype: true,
+  tapSubtype: true,
+  location: true,
+  pictures: {
+    status: true,
+    photo: true,
+  },
+} as const
+
+function trimPicturesForMapCard(
+  placeDoc: Record<string, unknown>,
+): Record<string, unknown> {
+  const pictures = placeDoc.pictures
+  if (!Array.isArray(pictures) || pictures.length === 0) {
+    return placeDoc
+  }
+  const approved = pictures.find(
+    (row) =>
+      row &&
+      typeof row === 'object' &&
+      (row as { status?: string }).status === 'approved',
+  )
+  const chosen = approved ?? pictures[0]
+  return {
+    ...placeDoc,
+    pictures: chosen ? [chosen] : [],
+  }
+}
+
 export async function listingsNearby(req: AppRouteRequest): Promise<Response> {
   try {
     const latitude = getQueryParam(req, 'latitude')
@@ -109,11 +142,12 @@ export async function listingsNearby(req: AppRouteRequest): Promise<Response> {
           ],
         },
         limit: boxFetchLimit,
-        depth: 0,
+        depth: 1,
+        select: MAP_NEARBY_SELECT as never,
       })
       for (const placeDoc of result.docs as Record<string, unknown>[]) {
         listingsDocs.push({
-          ...placeDoc,
+          ...trimPicturesForMapCard(placeDoc),
           mapPlaceCollection: collection,
         })
       }

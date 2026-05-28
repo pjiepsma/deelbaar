@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { TranslateFn } from '../../lib/mapPlaces/mapPlaceTaxonomy';
 import { mapPlaceFilterLabel } from '../../lib/mapPlaces/mapPlaceTaxonomy';
+import { mapPlaceCategoryColors } from '../../lib/mapPlaces/mapPlaceCategoryColors';
 import type { MapListingCard, MapPlaceRecord } from '../map/map.types';
 import {
   PLACE_DETAIL_BG,
@@ -14,8 +15,6 @@ import {
   PLACE_DETAIL_PANEL_RADIUS,
   PLACE_DETAIL_SECTION_GAP,
   PLACE_DETAIL_SURFACE,
-  PLACE_DETAIL_TAG_BG,
-  PLACE_DETAIL_TAG_TEXT,
   PLACE_DETAIL_TEXT_MUTED,
   PLACE_DETAIL_TEXT_PRIMARY,
   PLACE_DETAIL_ACCENT,
@@ -74,6 +73,7 @@ export function PlaceDetailContent({
   const infoCells = buildPlaceDetailInfoGrid(place, card, t, { omitDistance: distanceInMeta });
   const notices = buildPlaceDetailNotices(place, t);
   const kindPill = buildPlaceKindPillLabel(place, t);
+  const categoryColors = mapPlaceCategoryColors(place.mapPlaceCollection);
   const collectionLabel = mapPlaceFilterLabel(place.mapPlaceCollection, t);
   const subtypeLabel = buildPlaceSubtypeLabel(place, t);
 
@@ -96,6 +96,7 @@ export function PlaceDetailContent({
       <PlaceDetailHero
         heroMode={heroMode}
         onHeroModeChange={onHeroModeChange}
+        mapPlaceCollection={place.mapPlaceCollection}
         photoUrls={photoUrls}
         listingLngLat={listingLngLat}
         userLngLat={userLngLat}
@@ -136,13 +137,15 @@ export function PlaceDetailContent({
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
             <View
               style={{
-                backgroundColor: PLACE_DETAIL_TAG_BG,
+                backgroundColor: categoryColors.badgeBackground,
                 paddingHorizontal: 10,
                 paddingVertical: 4,
                 borderRadius: 12,
               }}
             >
-              <Text style={{ color: PLACE_DETAIL_TAG_TEXT, fontSize: 13, fontWeight: '600' }}>{kindPill}</Text>
+              <Text style={{ color: categoryColors.badgeForeground, fontSize: 13, fontWeight: '600' }}>
+                {kindPill}
+              </Text>
             </View>
             {showRating ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>

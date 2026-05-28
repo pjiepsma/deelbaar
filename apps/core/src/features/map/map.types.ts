@@ -66,6 +66,7 @@ export type MapListingCard = {
   marketSubtype?: string | null;
   tapSubtype?: string | null;
   distanceKm?: number;
+  lngLat?: [number, number];
   rating?: number;
   reviews?: number;
   imageUrl?: string;
@@ -75,6 +76,20 @@ export type MapListingCard = {
 
 /** Skeleton row before listing payload is available â€” must not be treated as a real card. */
 export type MapListingCardPlaceholder = Record<string, never>;
+
+/** Subset of map place fields returned by discovery `/listings/nearby`. */
+export type MapPlaceSummaryRecord = Pick<
+  MapPlaceRecord,
+  | 'id'
+  | 'name'
+  | 'mapPlaceCollection'
+  | 'kioskSubtype'
+  | 'marketSubtype'
+  | 'tapSubtype'
+  | 'location'
+  | 'pictures'
+  | 'interaction'
+>;
 
 export function isMapListingCard(row: MapListingCard | MapListingCardPlaceholder): row is MapListingCard {
   return 'title' in row && typeof row.title === 'string';

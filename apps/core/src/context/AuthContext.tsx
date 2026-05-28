@@ -9,6 +9,8 @@ import {
 } from 'react';
 
 import { getCurrentUser, logout, type AuthResponse, type AuthUser } from '../lib/api/auth/authClient';
+import { clearPlaceDetailPrefetchCache } from '../lib/listings/placeDetailPrefetchCache';
+import { clearPlaceDetailShellSnapshot } from '../lib/listings/placeDetailNavigationShell';
 import { payloadClient } from '../lib/api/PayloadClient';
 import { authConfig } from '../config/auth.config';
 
@@ -164,6 +166,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
     try {
       await logout();
     } finally {
+      clearPlaceDetailPrefetchCache();
+      clearPlaceDetailShellSnapshot();
       setUser(null);
       payloadClient.setToken(undefined);
       await Promise.all([persistToken(undefined), persistPendingNotificationsFlag(false)]);

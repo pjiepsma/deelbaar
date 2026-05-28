@@ -4,6 +4,7 @@ import { Image, type GestureResponderEvent, View } from 'react-native';
 
 import { useLocale } from '../../context/LocaleContext';
 import { buildMapPlaceKindLabel } from '../../lib/mapPlaces/mapPlaceTaxonomy';
+import { mapPlaceCategoryColors } from '../../lib/mapPlaces/mapPlaceCategoryColors';
 import {
   MAP_LISTING_CARD_HEIGHT,
   MAP_LISTING_CARD_INNER_GAP,
@@ -35,6 +36,7 @@ export function MapListingCarouselCard({
 
   const card = isMapListingCard(listing) ? listing : null;
   const kindLabel = card ? buildMapPlaceKindLabel(card, t) : null;
+  const categoryColors = card ? mapPlaceCategoryColors(card.mapPlaceCollection) : null;
   const showRating = card?.rating !== undefined && card.reviews !== undefined;
   const showDistance = card?.distanceKm !== undefined;
   const canFavorite = !!card?.interaction?.canFavorite;
@@ -108,10 +110,17 @@ export function MapListingCarouselCard({
         </View>
 
         <Card.Body className="min-w-0 flex-1 justify-center gap-0.5 px-0 py-0">
-          {kindLabel ? (
+          {kindLabel && categoryColors ? (
             <View className="self-start">
-              <Chip size="sm" variant="primary" className="max-w-full">
-                <Chip.Label numberOfLines={1}>{kindLabel}</Chip.Label>
+              <Chip
+                size="sm"
+                variant="secondary"
+                className="max-w-full"
+                style={{ backgroundColor: categoryColors.badgeBackground }}
+              >
+                <Chip.Label numberOfLines={1} style={{ color: categoryColors.badgeForeground }}>
+                  {kindLabel}
+                </Chip.Label>
               </Chip>
             </View>
           ) : isLoading ? (
