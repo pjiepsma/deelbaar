@@ -56,7 +56,13 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
+
+# Firebase service account (never commit)
+apps/cms/.secrets/
+deelbaar-*.json
+*-firebase-adminsdk*.json
 
 # typescript
 *.tsbuildinfo

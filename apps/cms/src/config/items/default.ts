@@ -32,5 +32,7 @@ export const defaultConfig = {
     project: process.env.SENTRY_PROJECT || '',
     environment: 'development',
   },
+  firebaseProjectId: process.env.FIREBASE_PROJECT_ID || '',
+  firebaseServiceAccountPath: process.env.FIREBASE_SERVICE_ACCOUNT_PATH || '',
 }
 

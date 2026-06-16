@@ -1,0 +1,54 @@
+---
+description: Deelbaar Payload CMS — repo paths, forbidden admin patterns, grep-first workflow
+globs: apps/cms/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Deelbaar Payload CMS (overlay)
+
+Read [`apps/cms/AGENTS.md`](../../apps/cms/AGENTS.md) first. Then the topic file under [`.cursor/rules/payload/`](payload/).
+
+Cross-links: [payload-strict-types.mdc](payload-strict-types.mdc) (Core SDK types), [deelbaar-api.mdc](deelbaar-api.mdc) (Core API layers).
+
+## Mandatory pre-flight
+
+Before changing any collection, field, hook, endpoint, or admin component:
+
+1. **Grep** `apps/cms/src/collections/` for the same pattern (`readOnly:`, `beforeChange`, `components.edit`, `endpoints`, `hooks:`).
+2. Read the matching rule in `.cursor/rules/payload/` (see task table in `AGENTS.md`).
+
+## Forbidden in field/collection config (client admin / RSC)
+
+Payload 3 admin runs in Next.js; config serializes to client components. See [payload/components.md](payload/components.md).
+
+- **No function `admin.readOnly`** — use `readOnly: true` for always-locked fields; conditional lock → collection **`beforeChange`** (+ optional `'use client'` Field with `useFormFields`).
+- **No new function patterns in `admin.*`** without checking upstream `components.md` and grepping this repo first.
+
+## Key paths
+
+| Area | Path |
+|------|------|
+| Config | `apps/cms/src/payload.config.ts` |
+| Collections | `apps/cms/src/collections/` |
+| Admin layout | `apps/cms/src/app/(payload)/layout.tsx` |
+| Admin components | `apps/cms/src/components/` |
+| Custom endpoints | `apps/cms/src/endpoints/` |
+| Jobs / tasks | `apps/cms/src/tasks/` |
+| Notifications | `apps/cms/src/lib/notifications/` (`dispatchNotification.ts`, `notificationService.ts`) |
+| Generated types | `apps/cms/src/payload-types.ts` → sync to Core via `pnpm copy:payload-types` |
+
+## Notifications platform (Deelbaar)
+
+| Piece | Slug / module |
+|-------|----------------|
+| Admin compose + send | `push-campaigns` — `PushCampaigns.ts`, `SendPushCampaignButton`, `POST /api/push-campaigns/:id/send` |
+| Delivery audit log | `notification-deliveries` |
+| User inbox | `notifications` |
+| Unified dispatch | `lib/notifications/dispatchNotification.ts` |
+| Campaign fan-out job | `tasks/sendPushCampaign.ts`, queue `push-campaigns` (`PUSH_CAMPAIGN_QUEUE`) |
+
+## Server-side vs admin UI
+
+- **Enforce business rules on save:** collection/field **`beforeChange`** / **`beforeValidate`** (server only).
+- **Custom admin UI:** component **path strings** (`src/components/Foo#Export`), never inline React in config.
+- **Local API with user:** `overrideAccess: false` when enforcing permissions — see [payload/security-critical.mdc](payload/security-critical.mdc).

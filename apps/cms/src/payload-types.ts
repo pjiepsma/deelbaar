@@ -75,7 +75,9 @@ export interface Config {
     reviews: Review;
     requests: Request;
     wishes: Wish;
+    'push-campaigns': PushCampaign;
     notifications: Notification;
+    'notification-deliveries': NotificationDelivery;
     follows: Follow;
     entitlements: Entitlement;
     reports: Report;
@@ -95,7 +97,9 @@ export interface Config {
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     requests: RequestsSelect<false> | RequestsSelect<true>;
     wishes: WishesSelect<false> | WishesSelect<true>;
+    'push-campaigns': PushCampaignsSelect<false> | PushCampaignsSelect<true>;
     notifications: NotificationsSelect<false> | NotificationsSelect<true>;
+    'notification-deliveries': NotificationDeliveriesSelect<false> | NotificationDeliveriesSelect<true>;
     follows: FollowsSelect<false> | FollowsSelect<true>;
     entitlements: EntitlementsSelect<false> | EntitlementsSelect<true>;
     reports: ReportsSelect<false> | ReportsSelect<true>;
@@ -125,6 +129,7 @@ export interface Config {
   jobs: {
     tasks: {
       geocodeListings: TaskGeocodeListings;
+      sendPushCampaign: TaskSendPushCampaign;
       inline: {
         input: unknown;
         output: unknown;
@@ -188,9 +193,13 @@ export interface User {
    */
   googleSub?: string | null;
   /**
-   * Expo push token voor dit account
+   * FCM/APNs device push token voor dit account
    */
   pushToken?: string | null;
+  /**
+   * Platform voor pushToken (android = FCM, ios = APNs)
+   */
+  pushPlatform?: ('android' | 'ios') | null;
   /**
    * Laatst bijgewerkte push token
    */
@@ -723,6 +732,39 @@ export interface Wish {
   createdAt: string;
 }
 /**
+ * Compose and send push announcements to app users. Save as draft, then Send campaign.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "push-campaigns".
+ */
+export interface PushCampaign {
+  id: number;
+  title: string;
+  message: string;
+  audience: 'single_user' | 'all_users';
+  /**
+   * Required when audience is Single user.
+   */
+  targetUser?: (number | null) | User;
+  /**
+   * Optional deep link (e.g. deelbaar://listing/kiosks/123)
+   */
+  actionUrl?: string | null;
+  status: 'draft' | 'queued' | 'sending' | 'completed' | 'failed';
+  sentBy?: (number | null) | User;
+  sentAt?: string | null;
+  targetCount?: number | null;
+  inboxCreated?: number | null;
+  pushAttempted?: number | null;
+  pushSent?: number | null;
+  pushFailed?: number | null;
+  skippedNoToken?: number | null;
+  skippedPreference?: number | null;
+  lastError?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "notifications".
  */
@@ -775,6 +817,40 @@ export interface Notification {
    * Deep link URL for mobile app (e.g., deelbaar://listing/123)
    */
   actionUrl?: string | null;
+  campaign?: (number | null) | PushCampaign;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Audit log of every notification delivery attempt (in-app and push).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notification-deliveries".
+ */
+export interface NotificationDelivery {
+  id: number;
+  source: 'campaign' | 'event';
+  campaign?: (number | null) | PushCampaign;
+  recipient: number | User;
+  inboxNotification?: (number | null) | Notification;
+  channel: 'in_app' | 'fcm_android';
+  status: 'sent' | 'failed' | 'skipped';
+  skipReason?: string | null;
+  errorMessage?: string | null;
+  titleSnapshot: string;
+  bodySnapshot: string;
+  eventType:
+    | 'photo_request'
+    | 'photo_approved'
+    | 'photo_rejected'
+    | 'review'
+    | 'favorite'
+    | 'claim_approved'
+    | 'claim_rejected'
+    | 'new_follower'
+    | 'area_match'
+    | 'report_update'
+    | 'system';
   updatedAt: string;
   createdAt: string;
 }
@@ -934,7 +1010,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'geocodeListings';
+        taskSlug: 'inline' | 'geocodeListings' | 'sendPushCampaign';
         taskID: string;
         input?:
           | {
@@ -967,7 +1043,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'geocodeListings') | null;
+  taskSlug?: ('inline' | 'geocodeListings' | 'sendPushCampaign') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1014,8 +1090,16 @@ export interface PayloadLockedDocument {
         value: number | Wish;
       } | null)
     | ({
+        relationTo: 'push-campaigns';
+        value: number | PushCampaign;
+      } | null)
+    | ({
         relationTo: 'notifications';
         value: number | Notification;
+      } | null)
+    | ({
+        relationTo: 'notification-deliveries';
+        value: number | NotificationDelivery;
       } | null)
     | ({
         relationTo: 'follows';
@@ -1086,6 +1170,7 @@ export interface UsersSelect<T extends boolean = true> {
   signupOtpExpiresAt?: T;
   googleSub?: T;
   pushToken?: T;
+  pushPlatform?: T;
   pushTokenUpdatedAt?: T;
   address?:
     | T
@@ -1402,6 +1487,30 @@ export interface WishesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "push-campaigns_select".
+ */
+export interface PushCampaignsSelect<T extends boolean = true> {
+  title?: T;
+  message?: T;
+  audience?: T;
+  targetUser?: T;
+  actionUrl?: T;
+  status?: T;
+  sentBy?: T;
+  sentAt?: T;
+  targetCount?: T;
+  inboxCreated?: T;
+  pushAttempted?: T;
+  pushSent?: T;
+  pushFailed?: T;
+  skippedNoToken?: T;
+  skippedPreference?: T;
+  lastError?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "notifications_select".
  */
 export interface NotificationsSelect<T extends boolean = true> {
@@ -1412,6 +1521,26 @@ export interface NotificationsSelect<T extends boolean = true> {
   read?: T;
   data?: T;
   actionUrl?: T;
+  campaign?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notification-deliveries_select".
+ */
+export interface NotificationDeliveriesSelect<T extends boolean = true> {
+  source?: T;
+  campaign?: T;
+  recipient?: T;
+  inboxNotification?: T;
+  channel?: T;
+  status?: T;
+  skipReason?: T;
+  errorMessage?: T;
+  titleSnapshot?: T;
+  bodySnapshot?: T;
+  eventType?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1684,6 +1813,14 @@ export interface CollectionsWidget {
  * via the `definition` "TaskGeocodeListings".
  */
 export interface TaskGeocodeListings {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSendPushCampaign".
+ */
+export interface TaskSendPushCampaign {
   input?: unknown;
   output?: unknown;
 }

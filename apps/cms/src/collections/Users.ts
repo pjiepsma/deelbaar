@@ -8,6 +8,7 @@ import { assertPlaceInteractionAllowed } from '../lib/placeInteractionScope'
 import { emailLookupCollectionEndpoint } from '../endpoints/emailLookup'
 import { resendVerificationCodeEndpoint } from '../endpoints/resendVerificationCode'
 import { verifyEmailCodeEndpoint } from '../endpoints/verifyEmailCode'
+import { googleAuthEndpoint } from '../endpoints/googleAuth'
 import { issueSignupOtpAndBuildVerificationEmail } from '../lib/signupVerificationEmailHtml'
 
 export const Users: CollectionConfig = {
@@ -15,7 +16,7 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
   },
-  endpoints: [emailLookupCollectionEndpoint, verifyEmailCodeEndpoint, resendVerificationCodeEndpoint],
+  endpoints: [emailLookupCollectionEndpoint, verifyEmailCodeEndpoint, resendVerificationCodeEndpoint, googleAuthEndpoint],
   hooks: {
     beforeChange: [
       async ({ data, originalDoc, operation, req }) => {
@@ -32,6 +33,24 @@ export const Users: CollectionConfig = {
         if (typeof data.pushToken === 'string') {
           const trimmed = data.pushToken.trim()
           data.pushToken = trimmed.length > 0 ? trimmed : null
+        }
+
+        if (typeof data.pushPlatform === 'string') {
+          const trimmedPlatform = data.pushPlatform.trim()
+          data.pushPlatform = trimmedPlatform.length > 0 ? trimmedPlatform : null
+        }
+
+        const incomingPushToken =
+          data.pushToken !== undefined ? data.pushToken : originalDoc?.pushToken ?? null
+        const incomingPushPlatform =
+          data.pushPlatform !== undefined ? data.pushPlatform : originalDoc?.pushPlatform ?? null
+
+        if (incomingPushToken) {
+          if (incomingPushPlatform !== 'android' && incomingPushPlatform !== 'ios') {
+            throw new Error('pushPlatform must be android or ios when pushToken is set.')
+          }
+        } else if (data.pushToken === null || data.pushToken === '') {
+          data.pushPlatform = null
         }
 
         if (data.pushToken !== undefined) {
@@ -275,7 +294,20 @@ export const Users: CollectionConfig = {
       name: 'pushToken',
       type: 'text',
       admin: {
-        description: 'Expo push token voor dit account',
+        description: 'FCM/APNs device push token voor dit account',
+        position: 'sidebar',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'pushPlatform',
+      type: 'select',
+      options: [
+        { label: 'Android', value: 'android' },
+        { label: 'iOS', value: 'ios' },
+      ],
+      admin: {
+        description: 'Platform voor pushToken (android = FCM, ios = APNs)',
         position: 'sidebar',
         readOnly: true,
       },

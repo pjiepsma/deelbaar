@@ -53,6 +53,7 @@ type GoogleAuthPayload = {
 
 type UserPatchPayload = {
   pushToken?: string | null;
+  pushPlatform?: 'android' | 'ios' | null;
 };
 
 type EmailLookupPayload = {

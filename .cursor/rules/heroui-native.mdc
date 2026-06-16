@@ -30,3 +30,10 @@ alwaysApply: false
 - Prefer **`heroui-native`** + Uniwind **`className`** everywhere user-facing UI is built. Use **`~/lib/theme`** (`useAppColors`) only for **vector icon color/size** or other RN bits **outside** HeroUI/Uniwind — not as the default styling path for new map shells, cards, or layouts.
 - **Third-party native views** — Mapbox `MapView`, etc.: **`withUniwind(NativeComponent)`** + **`className`** for layout; **HeroUI `Card` / `Surface`** for errors and config copy. See **`.cursor/rules/greenfield-heroui-core.mdc`** → *Third-party native views* and *Proactive checklist*.
 - **Reuse rule** — Any **existing** local component that imports HeroUI must match the **official doc** (compound parts, variants, `className` on the right slots). If it cannot, **refactor or delete** it; do not stack a second, non-doc styling layer on top (see **`.cursor/rules/greenfield-heroui-core.mdc`** → *Existing components that touch HeroUI*).
+
+## Granular imports (OSS + Pro)
+
+Per [HeroUI Native Quick Start — granular exports](https://heroui.com/docs/native/getting-started/quick-start): prefer subpath imports; **one barrel import breaks bundle optimization**.
+
+- **OSS:** `heroui-native/button`, `heroui-native/card`, … — not `from 'heroui-native'` unless many components.
+- **Pro:** `heroui-native-pro/stepper`, `heroui-native-pro/empty-state`, … — **never** `from 'heroui-native-pro'` in `@deelbaar/core` unless `@shopify/react-native-skia` is installed. The Pro barrel re-exports chart modules that hard-require Skia (optional peer for charts only).

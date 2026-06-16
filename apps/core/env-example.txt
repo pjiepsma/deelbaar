@@ -2,9 +2,26 @@ EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_token_here
 EXPO_PUBLIC_PAYLOAD_SERVER_URL=http://localhost:4000
 # Use CMS origin only (no /api); /api is appended in code. Including .../api once is also OK.
 # Profile legal pages load from CMS global "legal" via /api/globals/legal (in-app screen).
+# Web application OAuth client ID — use as androidClientId in GoogleAuth.configure (see react-native-google-auth README).
 EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=your-google-web-client-id.apps.googleusercontent.com
+EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID=your-google-ios-client-id.apps.googleusercontent.com
+# Google Cloud: Android OAuth client (package com.deelbaar.app) — add BOTH debug SHA-1 fingerprints:
+#   5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25  (apps/core/android/app/debug.keystore)
+#   F0:A2:67:89:B6:B9:58:35:CE:FF:03:2F:8F:5C:0C:EB:93:AF:C0:BD  (~/.android/debug.keystore)
+# OAuth consent screen: add your Google account under Test users while app is in Testing.
 
-# HeroUI Native Pro (postinstall downloads component dist). After pnpm install, if tsc fails on heroui-native-pro:
-#   npx heroui-pro login
-#   pnpm install
-# CI: set HEROUI_AUTH_TOKEN from https://heroui.pro/dashboard
+# Push notifications (Android FCM) — required for "Allow notifications" on auth onboarding:
+# 1. Firebase Console: project "deelbaar" with Android app package com.deelbaar.app
+# 2. Download google-services.json → apps/core/google-services.json (see app.json android.googleServicesFile)
+# 3. Rebuild native app: pnpm prebuild --platform android && pnpm android  (or EAS dev build)
+# 4. CMS sends via firebase-admin + service account (apps/cms/.env FIREBASE_*); app stores FCM device token + pushPlatform.
+
+# HeroUI Native Pro — monorepo setup (https://heroui.pro/docs/native/getting-started/installation)
+# 1. Local: npx heroui-pro login  (once; browser GitHub auth)
+# 2. From repo root: pnpm install  (pnpm-workspace.yaml dangerouslyAllowAllBuilds allows postinstall)
+# 3. If heroui-native-pro/lib/ missing after install (tsc/Metro can't resolve Pro):
+#      node node_modules/heroui-native-pro/dist/postinstall/index.js
+#    (heroui-pro install often fails in this workspace — manual postinstall is the fallback)
+# 4. CI/EAS: set HEROUI_AUTH_TOKEN from https://heroui.pro/dashboard (not personal token)
+# 5. Imports: use granular subpaths (heroui-native-pro/stepper, /empty-state, …) — not barrel
+#    from 'heroui-native-pro' unless @shopify/react-native-skia is installed (chart components).

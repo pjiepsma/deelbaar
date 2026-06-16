@@ -4,7 +4,9 @@ type GoogleAuthScopesShape = {
 };
 
 type GoogleAuthResponse = {
-  type?: 'success' | 'cancelled';
+  type?: 'success' | 'cancelled' | 'configuration_error';
+  message?: string;
+  errorCode?: string;
   data?: {
     idToken?: string;
   };
@@ -15,6 +17,7 @@ type GoogleAuthApi = {
     webClientId?: string;
     androidClientId?: string;
     iosClientId?: string;
+    credentialManagerMode?: 'silent' | 'interactive' | 'auto';
     scopes?: string[];
   }) => Promise<void>;
   signIn: () => Promise<GoogleAuthResponse>;
@@ -23,6 +26,12 @@ type GoogleAuthApi = {
 type GoogleAuthModuleShape = {
   GoogleAuth?: GoogleAuthApi;
   GoogleAuthScopes?: GoogleAuthScopesShape;
+};
+
+/** Matches react-native-google-auth README: androidClientId = Web OAuth client ID on Android. */
+export type GoogleSignInClientIds = {
+  iosClientId?: string;
+  androidClientId?: string;
 };
 
 let didConfigure = false;
@@ -35,7 +44,36 @@ function getGoogleAuthModule(): GoogleAuthModuleShape {
   }
 }
 
-export async function requestGoogleIdToken(webClientId: string): Promise<string> {
+function assertGoogleSignInResponse(response: GoogleAuthResponse | undefined): string {
+  if (response?.type === 'configuration_error') {
+    throw new Error(
+      response.message ??
+        'Google Sign-In is misconfigured. Check Web + Android OAuth clients and SHA-1 in Google Cloud Console.',
+    );
+  }
+
+  if (response?.type === 'cancelled') {
+    const detail = response.message ?? '';
+    if (detail.includes('reauth failed') || detail.includes('[16]')) {
+      throw new Error(
+        'Google could not verify this app. In Google Cloud Console: Android OAuth client with package com.deelbaar.app + debug SHA-1, and your Google account under OAuth consent screen → Test users.',
+      );
+    }
+    throw new Error(
+      detail ||
+        'Google Sign-In was cancelled. If you picked an account, check Android OAuth SHA-1 and test users on the consent screen.',
+    );
+  }
+
+  const idToken = response?.data?.idToken;
+  if (!idToken) {
+    throw new Error('Google Sign-In did not return an idToken');
+  }
+
+  return idToken;
+}
+
+export async function requestGoogleIdToken(clientIds: GoogleSignInClientIds): Promise<string> {
   const { GoogleAuth, GoogleAuthScopes } = getGoogleAuthModule();
 
   if (!GoogleAuth?.configure || !GoogleAuth?.signIn) {
@@ -55,22 +93,14 @@ export async function requestGoogleIdToken(webClientId: string): Promise<string>
     }
 
     await GoogleAuth.configure({
-      androidClientId: webClientId,
-      webClientId,
+      iosClientId: clientIds.iosClientId,
+      androidClientId: clientIds.androidClientId,
+      credentialManagerMode: 'interactive',
       scopes: [emailScope, profileScope],
     });
     didConfigure = true;
   }
 
   const response = await GoogleAuth.signIn();
-  if (response?.type === 'cancelled') {
-    throw new Error('Google sign-in was cancelled');
-  }
-
-  const idToken = response?.data?.idToken;
-  if (!idToken) {
-    throw new Error('Google Sign-In did not return an idToken');
-  }
-
-  return idToken;
+  return assertGoogleSignInResponse(response);
 }

@@ -1,0 +1,27 @@
+---
+description: User runs native/long builds manually — agent gives commands, does not execute
+alwaysApply: true
+---
+
+# User runs builds
+
+The user runs **long or native builds** themselves. Do **not** start them from the agent unless they explicitly ask you to run a specific build in that message.
+
+## Do not run (default)
+
+- `pnpm android` / `expo run:android`
+- `pnpm prebuild` / `expo prebuild`
+- Gradle (`gradlew`, `assembleDebug`, etc.)
+- EAS builds
+- Full monorepo `pnpm install` when only to “try” a fix (suggest command instead)
+- Any command expected to run **many minutes** for verification
+
+## Do instead
+
+- Give **exact commands** in order (copy-paste ready).
+- Say **what success looks like** (e.g. `:app:processDebugGoogleServices`, app on device).
+- Run **fast checks** only when useful: `tsc`, unit tests, grep, read files, small lint.
+
+## When agent may run a build
+
+Only if the user **explicitly** says to run it in that turn (e.g. “run prebuild for me”, “execute pnpm android”).

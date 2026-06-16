@@ -1,5 +1,6 @@
 import type { ComponentProps } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { Fragment, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -23,12 +24,13 @@ import { ProfileLegalSection } from './ProfileLegalSection';
 type IoniconName = ComponentProps<typeof Ionicons>['name'];
 type SettingsRowKey = keyof Messages['profile']['settingsRows'];
 
-const PROFILE_SETTINGS_ROWS: ReadonlyArray<{ labelKey: SettingsRowKey; icon: IoniconName }> = [
+const PROFILE_SETTINGS_ROWS: ReadonlyArray<{ labelKey: SettingsRowKey; icon: IoniconName; route?: string }> = [
   { labelKey: 'personalInformation', icon: 'person-outline' },
   { labelKey: 'paymentsAndPayouts', icon: 'wallet-outline' },
   { labelKey: 'taxes', icon: 'document-text-outline' },
   { labelKey: 'loginAndSecurity', icon: 'shield-checkmark-outline' },
   { labelKey: 'accessibility', icon: 'accessibility-outline' },
+  { labelKey: 'notifications', icon: 'notifications-outline', route: '/notifications' },
 ];
 
 function displayName(user: AuthUser): string {
@@ -66,6 +68,7 @@ function initials(user: AuthUser): string {
 export function ProfileSignedInScreen() {
   const { user, signOut } = useAuth();
   const { t } = useLocale();
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [foreground, muted] = useThemeColor(['foreground', 'muted']);
 
@@ -78,7 +81,11 @@ export function ProfileSignedInScreen() {
     }
   };
 
-  const settingsRowPress = (): void => undefined;
+  const onSettingsRowPress = (route?: string): void => {
+    if (route) {
+      router.push(route);
+    }
+  };
 
   if (!user) {
     return null;
@@ -102,7 +109,7 @@ export function ProfileSignedInScreen() {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t('profile.showProfile')}
-            onPress={settingsRowPress}
+            onPress={() => onSettingsRowPress()}
             style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1 }]}
           >
             <View className="flex-row items-center" style={{ gap: 14 }}>
@@ -124,7 +131,7 @@ export function ProfileSignedInScreen() {
             {PROFILE_SETTINGS_ROWS.map((row, index) => (
               <Fragment key={row.labelKey}>
                 {index > 0 ? <Separator className="mx-4" /> : null}
-                <ListGroup.Item onPress={settingsRowPress}>
+                <ListGroup.Item onPress={() => onSettingsRowPress(row.route)}>
                   <ListGroup.ItemPrefix>
                     <Ionicons name={row.icon} size={22} color={foreground} />
                   </ListGroup.ItemPrefix>

@@ -1,8 +1,9 @@
 import crypto from 'node:crypto'
-import type { Endpoint } from 'payload'
+import { addDataAndFileToRequest, APIError, type Endpoint } from 'payload'
 import { OAuth2Client } from 'google-auth-library'
 
 import { config } from '../config/config'
+import { readRequiredIdToken } from '../lib/readRequiredRequestField'
 
 const oAuthClient = new OAuth2Client()
 
@@ -74,54 +75,6 @@ const issueSessionForUser = async (
   })
 }
 
-type GoogleAuthRequestBody = {
-  idToken?: string
-}
-
-type RequestWithBody = {
-  body?: unknown
-  data?: unknown
-  json?: () => Promise<unknown>
-}
-
-const parseBody = async (req: RequestWithBody): Promise<GoogleAuthRequestBody | null> => {
-  const reqLike = req as {
-    body?: unknown
-    data?: unknown
-    json?: () => Promise<unknown>
-  }
-
-  const candidates: unknown[] = [reqLike.body, reqLike.data]
-
-  if (typeof reqLike.json === 'function') {
-    try {
-      candidates.push(await reqLike.json())
-    } catch {
-      // ignore JSON parsing errors here; we'll reject below
-    }
-  }
-
-  for (const candidate of candidates) {
-    if (!candidate) {
-      continue
-    }
-
-    if (typeof candidate === 'string') {
-      try {
-        return JSON.parse(candidate) as GoogleAuthRequestBody
-      } catch {
-        continue
-      }
-    }
-
-    if (typeof candidate === 'object') {
-      return candidate as GoogleAuthRequestBody
-    }
-  }
-
-  return null
-}
-
 const googleAuthHandler: Endpoint['handler'] = async (req) => {
   try {
     const googleClientIds = config.googleClientIds.filter(Boolean)
@@ -134,20 +87,22 @@ const googleAuthHandler: Endpoint['handler'] = async (req) => {
       )
     }
 
-    const body = await parseBody(req as RequestWithBody)
-    if (!body) {
-      return json({ error: 'Invalid request body.' }, { status: 400 })
-    }
+    await addDataAndFileToRequest(req)
 
-    const idToken = body?.idToken?.trim()
+    const idToken = readRequiredIdToken(req.data)
     if (!idToken) {
       return json({ error: 'Missing idToken.' }, { status: 400 })
     }
 
-    const ticket = await oAuthClient.verifyIdToken({
-      idToken,
-      audience: googleClientIds,
-    })
+    let ticket
+    try {
+      ticket = await oAuthClient.verifyIdToken({
+        idToken,
+        audience: googleClientIds,
+      })
+    } catch {
+      return json({ error: 'Invalid Google token.' }, { status: 401 })
+    }
 
     const claims = ticket.getPayload()
     if (!claims) {
@@ -239,6 +194,9 @@ const googleAuthHandler: Endpoint['handler'] = async (req) => {
     const loginResult = await issueSessionForUser(req, createdUser.id, email)
     return json(loginResult)
   } catch (error) {
+    if (error instanceof APIError) {
+      return json({ error: error.message }, { status: error.status })
+    }
     console.error('[googleAuthEndpoint] Failed to authenticate with Google:', error)
     return json(
       {
@@ -250,7 +208,7 @@ const googleAuthHandler: Endpoint['handler'] = async (req) => {
 }
 
 export const googleAuthEndpoint: Endpoint = {
-  path: '/users/google',
+  path: '/google',
   method: 'post',
   handler: googleAuthHandler,
 }

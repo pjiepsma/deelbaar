@@ -16,7 +16,6 @@ $paths = @(
   (Join-Path $Root 'apps\core\android\app\build'),
   (Join-Path $Root 'node_modules\expo-modules-core\android\.cxx'),
   (Join-Path $Root 'node_modules\expo-modules-core\android\build'),
-  (Join-Path $Root 'node_modules\@shopify\react-native-skia\android\build'),
   (Join-Path $Root 'node_modules\react-native-worklets\android\build')
 )
 

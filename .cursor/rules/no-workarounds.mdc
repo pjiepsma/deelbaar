@@ -1,0 +1,33 @@
+---
+description: Fix root cause — no workarounds, hacks, or deepening rabbit holes
+alwaysApply: true
+---
+
+# No workarounds
+
+Fix the **actual problem**. Do not pile hacks until the repo is worse.
+
+## Do
+
+- Find **why** it fails (missing script, wrong config, schema mismatch, env not loaded).
+- Apply the **smallest correct fix** at the source (package config, schema, env, official install path).
+- One clear path: fix → verify → done.
+
+## Do not
+
+- **Workarounds:** root `postinstall` hooks to paper over skipped package scripts, silent fallbacks, duplicate implementations, “bridge” components, task-scoped deflection (*skip X for now*).
+- **Deeper holes:** each “fix” that needs another fix — stop and fix upstream instead.
+- **Mask symptoms:** fake defaults, catch-and-ignore, alternate code paths that hide misconfiguration.
+- **Cargo-cult commands** (`pnpm rebuild`) without confirming they address the stated error.
+
+## When blocked
+
+Say **what is broken**, **root cause** (or what you still need to prove), and **one proper fix** — not a ladder of maybes.
+
+Fallbacks need explicit user approval (`agent-code-style.mdc`).
+
+## Example
+
+**Wrong:** Skia postinstall skipped → add monorepo `postinstall` to download Skia every install.
+
+**Right:** Skia postinstall skipped because pnpm blocked lifecycle → set `dangerouslyAllowAllBuilds: true` in `pnpm-workspace.yaml` (or explicit `allowBuilds` for that package), then `pnpm install` so the package's own `postinstall` runs.

@@ -4,13 +4,6 @@ packages:
 # Hoisted layout avoids Windows CMAKE_OBJECT_PATH_MAX failures (react-native-worklets / NDK).
 nodeLinker: hoisted
 
-allowBuilds:
-  "@heroui-pro/react": true
-  "@sentry/cli": true
-  "@shopify/react-native-skia": true
-  "@zowe/secrets-for-zowe-sdk": false
-  esbuild: true
-  heroui-native-pro: true
-  heroui-pro: true
-  sharp: true
-  unrs-resolver: true
+# Private monorepo: RN/native deps (Skia, sharp, esbuild, …) need install scripts.
+# Per-package allowBuilds lists rot — one switch for all dependency build scripts.
+dangerouslyAllowAllBuilds: true

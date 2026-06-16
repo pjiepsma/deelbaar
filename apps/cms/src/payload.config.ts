@@ -19,6 +19,8 @@ import { Reviews } from './collections/Reviews'
 import { Requests } from './collections/Requests'
 import { Wishes } from './collections/Wishes'
 import { Notifications } from './collections/Notifications'
+import { NotificationDeliveries } from './collections/NotificationDeliveries'
+import { PushCampaigns } from './collections/PushCampaigns'
 import { Follows } from './collections/Follows'
 import { Entitlements } from './collections/Entitlements'
 import { Reports } from './collections/Reports'
@@ -26,10 +28,11 @@ import { Legal } from './globals/Legal/legal'
 import { Mail } from './globals/Mail/mail'
 import { listingsNearby } from './endpoints/listingsNearby'
 import { listingsInBounds } from './endpoints/listingsInBounds'
-import { googleAuthEndpoint } from './endpoints/googleAuth'
 import { listingsImportExport } from './lib/listings-import-export'
 import { geocodeListingsEndpoint } from './endpoints/geocodeListings'
 import { geocodeListings } from './tasks/geocodeListings'
+import { sendPushCampaign } from './tasks/sendPushCampaign'
+import { PUSH_CAMPAIGN_QUEUE } from './lib/notifications/notificationTypes'
 import { unlockSearchScope } from './endpoints/unlockSearchScope'
 
 const filename = fileURLToPath(import.meta.url)
@@ -52,7 +55,9 @@ export default buildConfig({
     Reviews,
     Requests,
     Wishes,
+    PushCampaigns,
     Notifications,
+    NotificationDeliveries,
     Follows,
     Entitlements,
     Reports,
@@ -93,7 +98,6 @@ export default buildConfig({
       method: 'post',
       handler: unlockSearchScope,
     },
-    googleAuthEndpoint,
     geocodeListingsEndpoint,
   ],
   sharp,
@@ -103,7 +107,15 @@ export default buildConfig({
     // storage-adapter-placeholder
   ],
   jobs: {
-    tasks: [geocodeListings],
+    tasks: [geocodeListings, sendPushCampaign],
+    autoRun: [
+      {
+        cron: '* * * * *',
+        queue: PUSH_CAMPAIGN_QUEUE,
+        limit: 10,
+        disableScheduling: true,
+      },
+    ],
     schedules: [
       {
         cron: '0 2 * * *', // Run nightly at 02:00

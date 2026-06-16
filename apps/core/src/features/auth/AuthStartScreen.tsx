@@ -2,7 +2,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Alert, Button, FieldError, Input, TextField, useThemeColor } from 'heroui-native';
 import { useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 
 import { useAuth } from '../../context/AuthContext';
 import { useLocale } from '../../context/LocaleContext';
@@ -20,7 +20,18 @@ import { AuthScreenShell } from '../../components/shared';
 import { isEmailValid, normalizeEmail, normalizeError } from './auth.validation';
 import { DeelbaarLogo } from './DeelbaarLogo';
 
-const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
+
+function hasGoogleClientIdForPlatform(): boolean {
+  if (Platform.OS === 'ios') {
+    return Boolean(GOOGLE_IOS_CLIENT_ID);
+  }
+  if (Platform.OS === 'android') {
+    return Boolean(GOOGLE_WEB_CLIENT_ID);
+  }
+  return false;
+}
 
 function AuthStartDivider({ label }: { label: string }) {
   const lineColor = useThemeColor('separator');
@@ -75,14 +86,17 @@ export function AuthStartScreen() {
 
   const onContinueWithGoogle = async (): Promise<void> => {
     setErrorMessage(null);
-    if (!GOOGLE_CLIENT_ID) {
+    if (!hasGoogleClientIdForPlatform()) {
       setErrorMessage(t('auth.missingGoogleClient'));
       return;
     }
 
     setIsGoogleSubmitting(true);
     try {
-      const idToken = await requestGoogleIdToken(GOOGLE_CLIENT_ID);
+      const idToken = await requestGoogleIdToken({
+        iosClientId: GOOGLE_IOS_CLIENT_ID,
+        androidClientId: GOOGLE_WEB_CLIENT_ID,
+      });
       const response = await loginWithGoogleIdToken({ idToken });
       await applyAuthResponse(response);
       if (pendingNotificationsAfterLogin) {

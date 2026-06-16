@@ -1,5 +1,5 @@
 ---
-description: Fail-fast; ask user before any fallback; ban bogus ?? / defaults on ids; name domain literals; minimal comments
+description: Fail-fast; ask user before any fallback; ban bogus ?? / defaults on ids; name domain literals; minimal comments. See validate-dont-cast.mdc for no-as + body parsing.
 globs: apps/**/*.{ts,tsx,js,jsx},packages/**/*.{ts,tsx,js,jsx},scripts/**/*.{ts,tsx,js,jsx,mjs,cjs}
 alwaysApply: true
 ---
@@ -71,3 +71,7 @@ Strings: name **stable identifiers** (routes, flags, storage keys in config) —
 Prefer **one explicit path** (success vs error) over multiple silent branches that differ only by hidden defaults.
 
 If the reflex is **`?? ''`**, **`?? 0`**, **`|| []`** on an **id, key, token, or required field** — **do not**: validate, narrow the type, or show an error path instead.
+
+## See also
+
+- **`validate-dont-cast.mdc`** — no `as` on untrusted data; validate-then-narrow; one body-parse path; required fields fail visibly.

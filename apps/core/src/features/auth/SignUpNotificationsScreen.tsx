@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useLocale } from '../../context/LocaleContext';
 import { updateUser } from '../../lib/api/auth/authClient';
+import { fetchDevicePushTokenForPlatform } from '../../lib/notifications/devicePushToken';
 import { authAllowLocationHref, authPush } from '../../navigation/authPaths';
 import { firstRouteParam } from '../../navigation/routeParams';
 import { normalizeError } from './auth.validation';
@@ -16,19 +17,6 @@ function authOnboardingSource(value: string | undefined): 'signup' | 'postLogin'
     return value;
   }
   throw new Error(`SignUpNotificationsScreen requires source param, got: ${value ?? 'undefined'}`);
-}
-
-function pushTokenToString(value: unknown): string | null {
-  if (typeof value === 'string') {
-    return value;
-  }
-  if (value && typeof value === 'object' && 'token' in value) {
-    const token = (value as { token?: unknown }).token;
-    if (typeof token === 'string') {
-      return token;
-    }
-  }
-  return null;
 }
 
 export function SignUpNotificationsScreen() {
@@ -68,11 +56,8 @@ export function SignUpNotificationsScreen() {
       }
 
       if (user) {
-        const deviceToken = await Notifications.getDevicePushTokenAsync();
-        const serializedToken = pushTokenToString(deviceToken.data);
-        if (serializedToken) {
-          await updateUser(user.id, { pushToken: serializedToken });
-        }
+        const { platform, token } = await fetchDevicePushTokenForPlatform();
+        await updateUser(user.id, { pushToken: token, pushPlatform: platform });
       }
       await proceedAfterNotifications();
     } catch (error) {

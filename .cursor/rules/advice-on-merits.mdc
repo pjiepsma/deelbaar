@@ -1,0 +1,29 @@
+---
+description: When user asks for advice, answer on merits — not scoped to current task
+alwaysApply: true
+---
+
+# Advice on merits
+
+When the user asks for **advice**, a **recommendation**, **whether something is useful/important**, or **should I X** — answer **that question directly**.
+
+## Do
+
+- Judge the topic on its **own merits** (production fit, trade-offs, when to use, yes/no).
+- Give a **clear recommendation** when they want one.
+- Tie to current work **only if they ask** or it materially changes the answer.
+
+## Do not
+
+- Deflect with *"you don't need this for [current feature]"*, *"skip for now while doing push/login"*, or *"not related to what you're working on"* as the main answer.
+- Refuse to advise because the topic is off-task — **still advise**.
+
+## Example
+
+**User (while working on login):** *Is contracts important?*
+
+**Wrong:** *Not for login — skip contracts for now.*
+
+**Right:** *Yes, if you mean API/layout contracts — they keep screens consistent and catch regressions. Worth keeping even during login work.*
+
+Same pattern for tooling, packages, architecture, process: answer what they asked, not what task is open in the editor.

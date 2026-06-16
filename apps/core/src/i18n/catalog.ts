@@ -126,12 +126,21 @@ export const en = {
       taxes: 'Taxes',
       loginAndSecurity: 'Login and security',
       accessibility: 'Accessibility',
+      notifications: 'Notifications',
     },
     legalRows: {
       terms: 'Terms of service',
       privacy: 'Privacy policy',
       about: 'About Deelbaar',
     },
+  },
+  notifications: {
+    title: 'Notifications',
+    emptyTitle: 'No notifications yet',
+    emptyDescription: 'Updates about your listings, favorites, and activity will show up here.',
+    loadFailed: 'Notifications could not be loaded right now. Please try again soon.',
+    guestTitle: 'Sign in to see notifications',
+    guestDescription: 'Log in to view updates about your listings, favorites, and activity.',
   },
   hub: {
     title: 'Hub',
@@ -397,12 +406,21 @@ export const nl: Messages = {
       taxes: 'Belastingen',
       loginAndSecurity: 'Inloggen en beveiliging',
       accessibility: 'Toegankelijkheid',
+      notifications: 'Meldingen',
     },
     legalRows: {
       terms: 'Gebruiksvoorwaarden',
       privacy: 'Privacybeleid',
       about: 'Over Deelbaar',
     },
+  },
+  notifications: {
+    title: 'Meldingen',
+    emptyTitle: 'Nog geen meldingen',
+    emptyDescription: 'Updates over je vermeldingen, favorieten en activiteit verschijnen hier.',
+    loadFailed: 'Meldingen konden nu niet worden geladen. Probeer het later opnieuw.',
+    guestTitle: 'Log in om meldingen te zien',
+    guestDescription: 'Log in om updates over je vermeldingen, favorieten en activiteit te bekijken.',
   },
   hub: {
     title: 'Hub',

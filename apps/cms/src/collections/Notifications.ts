@@ -25,11 +25,7 @@ export const Notifications: CollectionConfig = {
         },
       }
     },
-    create: ({ req: { user } }) => {
-      // Only admins can manually create notifications
-      // System creates them via hooks
-      return user?.role === 'admin'
-    },
+    create: () => false,
     update: ({ req: { user } }) => {
       if (!user) return false
       // Users can only update their own notifications (to mark as read)
@@ -119,6 +115,14 @@ export const Notifications: CollectionConfig = {
       type: 'text',
       admin: {
         description: 'Deep link URL for mobile app (e.g., deelbaar://listing/123)',
+      },
+    },
+    {
+      name: 'campaign',
+      type: 'relationship',
+      relationTo: 'push-campaigns',
+      admin: {
+        readOnly: true,
       },
     },
   ],

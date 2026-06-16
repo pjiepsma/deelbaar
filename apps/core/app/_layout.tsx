@@ -22,6 +22,7 @@ function RootStack() {
         <Stack.Screen name="auth" options={FULL_BLEED_SCREEN_OPTIONS} />
         <Stack.Screen name="listing" options={FULL_BLEED_SCREEN_OPTIONS} />
         <Stack.Screen name="legal/[page]" options={FULL_BLEED_SCREEN_OPTIONS} />
+        <Stack.Screen name="notifications" options={FULL_BLEED_SCREEN_OPTIONS} />
       </Stack>
     </ThemeProvider>
   );

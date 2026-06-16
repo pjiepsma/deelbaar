@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "519241694058",
+    "project_id": "deelbaar",
+    "storage_bucket": "deelbaar.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:519241694058:android:c512644a8bb5895d178313",
+        "android_client_info": {
+          "package_name": "com.deelbaar.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "519241694058-qjtrjgg2cicd334hs4go126dp35mt8je.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.deelbaar.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "519241694058-p47gb08gqueldnebthr5qob17pig2fqj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvocXfHDHwpYv-RgzWB2HotwK5xNchRFQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "519241694058-p47gb08gqueldnebthr5qob17pig2fqj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "519241694058-7noudk2ikjnc10rhld1jumrdspuqua0t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.deelbaar.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

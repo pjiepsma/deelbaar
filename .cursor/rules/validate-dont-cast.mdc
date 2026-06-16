@@ -1,0 +1,50 @@
+---
+description: No type assertions on untrusted data; validate then narrow; required fields fail visibly — never coerce to sentinels
+globs: apps/**/*.{ts,tsx,js,jsx},packages/**/*.{ts,tsx,js,jsx},scripts/**/*.{ts,tsx,js,jsx,mjs,cjs}
+alwaysApply: true
+---
+
+# Validate, don't cast
+
+## No type assertions on untrusted data
+
+Treat as **untrusted** until validated: JSON bodies, `req.data`, fetch responses, runtime env, parser output, third-party SDK payloads.
+
+**Forbidden:** `as Foo`, `as unknown as Foo`, `JSON.parse(x) as Foo`, `(await req.json()) as Foo`, `candidate as Body` in a parse loop.
+
+**Required:** accept **`unknown`**, run **runtime checks** (`typeof`, `in`, `Array.isArray`, small type guards), then use the narrowed value — or **throw / return explicit error**.
+
+**Allowed `as` (narrow):** DOM/React platform mismatches; `as const`; tests/mocks with a one-line why. Never on request/API/auth payloads.
+
+## Required data — error, not fallback
+
+If a field is **required by contract** (ids, tokens, foreign keys, credentials, required POST fields):
+
+- **Do:** guard → `throw`, `return Response.json({ error }, { status: 4xx })`, or UI that states what's missing.
+- **Do not:** `value ?? ''`, `value ?? 0`, `value || []`, `catch { return {} }`, first-truthy-object parsers, fake `'Unknown'` identities.
+
+If unsure optional vs required → **required**, fail visibly. Fallback approval: **`agent-code-style.mdc`**.
+
+## Request body parsing (API handlers)
+
+One read path: `await req.json()`, `req.text()` + `JSON.parse`, or `await addDataAndFileToRequest(req)` — then **one validator** on `unknown`.
+
+**Never** treat `req.body` (Fetch **ReadableStream**) as parsed JSON. **Never** chain `[req.body, req.data, req.json()]` and return the first truthy object.
+
+## Examples
+
+```ts
+// Wrong
+const body = (await req.json()) as { idToken?: string }
+const idToken = body?.idToken?.trim() ?? ''
+
+// Right
+function readRequiredIdToken(data: unknown): string | null {
+  if (data === null || typeof data !== 'object') return null
+  if (!('idToken' in data) || typeof data.idToken !== 'string') return null
+  const trimmed = data.idToken.trim()
+  return trimmed.length > 0 ? trimmed : null
+}
+const idToken = readRequiredIdToken(await req.json())
+if (!idToken) return json({ error: 'Missing idToken.' }, { status: 400 })
+```

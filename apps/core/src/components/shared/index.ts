@@ -1,6 +1,7 @@
 export { AuthScreenShell } from './auth-screen-shell';
 export { EmptyList } from './empty-list';
 export { GuestAuthCard } from './guest-auth-card';
+export { ScreenBackChrome } from './screen-back-chrome';
 export { Screen } from './screen';
 export { SectionHeader } from './section-header';
 export {

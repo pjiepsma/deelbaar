@@ -7,7 +7,6 @@
     "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -23,7 +22,12 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.deelbaar.app",
-      "predictiveBackGestureEnabled": false
+      "googleServicesFile": "./google-services.json",
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -31,7 +35,13 @@
     "plugins": [
       "expo-router",
       "@rnmapbox/maps",
-      "react-native-google-auth",
+      [
+        "react-native-google-auth",
+        {
+          "androidClientId": "519241694058-p47gb08gqueldnebthr5qob17pig2fqj.apps.googleusercontent.com",
+          "iosClientId": "519241694058-7noudk2ikjnc10rhld1jumrdspuqua0t.apps.googleusercontent.com"
+        }
+      ],
       [
         "expo-location",
         {
@@ -52,7 +62,19 @@
         }
       ],
       "expo-localization",
-      "expo-secure-store"
-    ]
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "defaultChannel": "default"
+        }
+      ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "de8a44a5-2432-4b69-8dcb-22b1ef299d63"
+      }
+    }
   }
 }
