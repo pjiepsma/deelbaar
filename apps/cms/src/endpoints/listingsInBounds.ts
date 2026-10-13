@@ -4,7 +4,12 @@ import {
   buildInteractionContext,
   placeInteractionFromContext,
 } from '../lib/placeInteractionScope'
-import { resolvePayload, type AppRouteRequest, type QueryDictionary } from './resolvePayloadFromRequest'
+import {
+  resolvePayload,
+  resolveRequestUser,
+  type AppRouteRequest,
+  type QueryDictionary,
+} from './resolvePayloadFromRequest'
 
 // Configuration constants
 const DEFAULT_LIMIT = 100
@@ -313,9 +318,10 @@ export async function listingsInBounds(req: AppRouteRequest): Promise<Response> 
 
   try {
     const payload = await resolvePayload(req)
+    const user = await resolveRequestUser(req, payload)
     const interactionContext = await buildInteractionContext({
       payload,
-      user: req.user ?? null,
+      user,
     })
     const collectionResults = await Promise.all(
       collections.map((collection) =>

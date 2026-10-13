@@ -10,6 +10,7 @@ import {
   PLACE_DETAIL_LINK,
   PLACE_DETAIL_SECTION_GAP,
   PLACE_DETAIL_SURFACE,
+  PLACE_DETAIL_TEXT_BODY,
   PLACE_DETAIL_TEXT_MUTED,
   PLACE_DETAIL_TEXT_PRIMARY,
 } from './placeDetail.constants';
@@ -76,7 +77,7 @@ function ReviewCard({ review }: { review: PlaceDetailReviewRow }) {
         <Text style={{ color: PLACE_DETAIL_TEXT_MUTED, fontSize: 13 }}>{review.dateLabel}</Text>
       </View>
       <Text style={{ color: PLACE_DETAIL_TEXT_PRIMARY, fontSize: 15, fontWeight: '600' }}>{review.authorLabel}</Text>
-      <Text style={{ color: PLACE_DETAIL_TEXT_MUTED, fontSize: 15, lineHeight: 22 }}>{review.description}</Text>
+      <Text style={{ color: PLACE_DETAIL_TEXT_BODY, fontSize: 15, lineHeight: 24 }}>{review.description}</Text>
       {review.photoUrls.length > 0 ? (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} nestedScrollEnabled>
           <View style={{ flexDirection: 'row', gap: 8 }}>

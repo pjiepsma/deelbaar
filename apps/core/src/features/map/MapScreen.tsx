@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useDiscoveryArea } from '../../context/DiscoveryAreaContext';
 import { useLocale } from '../../context/LocaleContext';
 import { useThemePreference } from '../../context/ThemePreferenceContext';
+import { toggleFavoritePlace } from '../../lib/api/favorites/toggleFavorite';
 import { resolveDeviceLngLat } from '../../lib/location/resolveDeviceLngLat';
 import { type MapPlaceFilterValue } from '../../lib/mapPlaces/mapPlaceTaxonomy';
 import {
@@ -501,22 +502,59 @@ export function MapScreen() {
     [],
   );
 
+  const [lovedOverrides, setLovedOverrides] = useState<Record<string, boolean>>({});
+
   const onHeartPress = useCallback(
     (card: MapListingCard) => {
+      if (card.id === undefined) {
+        return;
+      }
+      const placeId = typeof card.id === 'number' ? card.id : Number(card.id);
+      if (!Number.isFinite(placeId)) {
+        return;
+      }
+      const markerKey = listingMarkerKey(card);
       runMapProtectedAction({
         user,
         allowed: !!card.interaction?.canFavorite,
         t,
+        onAllowed: () => {
+          if (!user || !markerKey) {
+            return;
+          }
+          void (async () => {
+            try {
+              const result = await toggleFavoritePlace({
+                userId: user.id,
+                collection: card.mapPlaceCollection,
+                placeId,
+              });
+              setLovedOverrides((previous) => ({ ...previous, [markerKey]: result.loved }));
+            } catch {
+              Alert.alert(t('listing.saveFailedTitle'), t('listing.saveFailedDescription'));
+            }
+          })();
+        },
       });
     },
     [t, user],
   );
 
+  const listingsWithLoved = useMemo(() => {
+    return listings.map((item) => {
+      const key = listingMarkerKey(item);
+      if (!key || lovedOverrides[key] === undefined) {
+        return item;
+      }
+      return { ...item, loved: lovedOverrides[key] };
+    });
+  }, [listings, lovedOverrides]);
+
   const filteredListings = useMemo(() => {
-    return listings.filter((item) => {
+    return listingsWithLoved.filter((item) => {
       return listingTypeFilter === 'All' || item.mapPlaceCollection === listingTypeFilter;
     });
-  }, [listingTypeFilter, listings]);
+  }, [listingTypeFilter, listingsWithLoved]);
 
   const carouselFilterKey = listingTypeFilter;
 

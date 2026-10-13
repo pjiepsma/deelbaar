@@ -10,6 +10,8 @@ export function runMapProtectedAction(params: {
   allowed: boolean;
   t: TranslateFn;
   beforeAuth?: () => void;
+  /** Runs when signed-in and allowed. Required for real actions (Save, etc.). */
+  onAllowed: () => void;
 }): void {
   if (!params.user) {
     params.beforeAuth?.();
@@ -23,8 +25,5 @@ export function runMapProtectedAction(params: {
     );
     return;
   }
-  Alert.alert(
-    params.t('map.previewActionComingSoonTitle'),
-    params.t('map.previewActionComingSoonDescription'),
-  );
+  params.onAllowed();
 }

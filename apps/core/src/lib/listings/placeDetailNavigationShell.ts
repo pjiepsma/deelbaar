@@ -1,4 +1,4 @@
-import type { MapListingCard } from '../../features/map/map.types';
+import type { MapListingCard, PlaceInteractionContract } from '../../features/map/map.types';
 import type { MapPlaceCollection } from '../mapPlaces/mapPlaceTaxonomy';
 
 export type PlaceDetailShellSnapshot = {
@@ -10,6 +10,7 @@ export type PlaceDetailShellSnapshot = {
   kioskSubtype?: string | null;
   marketSubtype?: string | null;
   tapSubtype?: string | null;
+  interaction?: PlaceInteractionContract;
 };
 
 let pendingShell: PlaceDetailShellSnapshot | null = null;
@@ -28,6 +29,7 @@ export function setPlaceDetailShellSnapshot(card: MapListingCard): void {
     kioskSubtype: card.kioskSubtype,
     marketSubtype: card.marketSubtype,
     tapSubtype: card.tapSubtype,
+    interaction: card.interaction,
   };
 }
 

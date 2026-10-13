@@ -30,3 +30,15 @@ export async function resolvePayload(req: AppRouteRequest): Promise<Payload> {
   const config = await loadPayloadConfig()
   return getPayload({ config: config as never })
 }
+
+/** Next App Router routes skip Payload REST auth — resolve JWT/cookie user here. */
+export async function resolveRequestUser(
+  req: AppRouteRequest,
+  payload: Payload,
+): Promise<PayloadRequest['user'] | null> {
+  if (req.user) {
+    return req.user
+  }
+  const { user } = await payload.auth({ headers: req.headers })
+  return user
+}

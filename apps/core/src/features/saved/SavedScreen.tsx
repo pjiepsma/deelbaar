@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
-import { Alert, Card, Skeleton, useThemeColor } from 'heroui-native';
+import { Alert, Button, Card, PressableFeedback, Skeleton, useThemeColor } from 'heroui-native';
 import { useCallback, useMemo, useState } from 'react';
-import { Image, ScrollView, View } from 'react-native';
+import { Alert as NativeAlert, Image, ScrollView, View, type GestureResponderEvent } from 'react-native';
 
 import {
   EmptyList,
@@ -17,14 +17,20 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useDiscoveryArea } from '../../context/DiscoveryAreaContext';
 import { useLocale } from '../../context/LocaleContext';
+import { toggleFavoritePlace } from '../../lib/api/favorites/toggleFavorite';
 import { fetchCurrentUserFull } from '../../lib/api/users/fetchCurrentUserFull';
-import { navigateToAuthStart } from '../../navigation/rootNavigation';
+import { setPlaceDetailShellSnapshot } from '../../lib/listings/placeDetailNavigationShell';
 import type { User } from '../../lib/types/payload-generated';
 import { buildMapPlaceKindLabel } from '../../lib/mapPlaces/mapPlaceTaxonomy';
+import { navigateToAuthStart, navigateToListingDetail } from '../../navigation/rootNavigation';
 import { TestId } from '../../testing/testIds';
-import { CARD_IMAGE_HEIGHT } from '../map/map.constants';
+import {
+  CARD_IMAGE_HEIGHT,
+  MAP_LISTING_HEART_SIZE,
+  MAP_LISTING_THUMB_OVERLAY_INSET,
+} from '../map/map.constants';
 import { mapPayloadListingToMapCard, sortMapCardsByDistance } from '../map/mapListing.mapper';
-import type { MapPlaceRecord } from '../map/map.types';
+import type { MapListingCard, MapPlaceRecord } from '../map/map.types';
 
 const LIST_GAP = 12;
 
@@ -73,23 +79,33 @@ function listingsFromFavorites(user: User): MapPlaceRecord[] {
   return out;
 }
 
+function cardListKey(card: MapListingCard): string | null {
+  if (card.id == null) {
+    return null;
+  }
+  return `${card.mapPlaceCollection}-${String(card.id)}`;
+}
+
 export function SavedScreen() {
   const { referenceLngLat } = useDiscoveryArea();
   const { user } = useAuth();
   const { t } = useLocale();
-  const listingPlaceholderBg = useThemeColor('muted');
-  const muted = useThemeColor('muted');
+  const [foregroundColor, muted] = useThemeColor(['foreground', 'muted']);
+  const listingPlaceholderBg = muted;
   const serverOrigin = process.env.EXPO_PUBLIC_PAYLOAD_SERVER_URL;
   const [rawSaved, setRawSaved] = useState<MapPlaceRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [removingKey, setRemovingKey] = useState<string | null>(null);
 
   const cards = useMemo(() => {
     if (!serverOrigin) {
       return [];
     }
-    const mapped = rawSaved.map((listing) => mapPayloadListingToMapCard(listing, serverOrigin, referenceLngLat));
-    return sortMapCardsByDistance(mapped);
+    const mapped = rawSaved.map((listing) =>
+      mapPayloadListingToMapCard(listing, serverOrigin, referenceLngLat),
+    );
+    return sortMapCardsByDistance(mapped).map((card) => ({ ...card, loved: true }));
   }, [rawSaved, serverOrigin, referenceLngLat]);
 
   const load = useCallback(async () => {
@@ -115,7 +131,7 @@ export function SavedScreen() {
         return;
       }
       setRawSaved(listingsFromFavorites(full));
-    } catch (e) {
+    } catch {
       setError(t('favorites.errorFailedToLoad'));
       setRawSaved([]);
     } finally {
@@ -127,6 +143,56 @@ export function SavedScreen() {
     useCallback(() => {
       void load();
     }, [load]),
+  );
+
+  const openDetail = useCallback((card: MapListingCard) => {
+    const cardId = typeof card.id === 'number' ? card.id : Number(card.id);
+    if (!Number.isFinite(cardId)) {
+      return;
+    }
+    setPlaceDetailShellSnapshot(card);
+    navigateToListingDetail({
+      collection: card.mapPlaceCollection,
+      id: cardId,
+    });
+  }, []);
+
+  const removeFavorite = useCallback(
+    (card: MapListingCard) => {
+      if (!user) {
+        return;
+      }
+      const placeId = typeof card.id === 'number' ? card.id : Number(card.id);
+      if (!Number.isFinite(placeId)) {
+        return;
+      }
+      const key = cardListKey(card);
+      if (!key || removingKey === key) {
+        return;
+      }
+      setRemovingKey(key);
+      void (async () => {
+        try {
+          const result = await toggleFavoritePlace({
+            userId: user.id,
+            collection: card.mapPlaceCollection,
+            placeId,
+          });
+          if (!result.loved) {
+            setRawSaved((previous) =>
+              previous.filter(
+                (row) => !(row.mapPlaceCollection === card.mapPlaceCollection && row.id === placeId),
+              ),
+            );
+          }
+        } catch {
+          NativeAlert.alert(t('listing.saveFailedTitle'), t('listing.saveFailedDescription'));
+        } finally {
+          setRemovingKey(null);
+        }
+      })();
+    },
+    [removingKey, t, user],
   );
 
   if (!serverOrigin) {
@@ -209,35 +275,67 @@ export function SavedScreen() {
             description={t('favorites.emptyDescription')}
           />
         ) : (
-          cards.map((item) => (
-            <Card key={item.id != null ? `${item.mapPlaceCollection}-${String(item.id)}` : item.title}>
-              <Card.Body style={{ gap: 8 }}>
-                {item.imageUrl ? (
-                  <Image
-                    source={{ uri: item.imageUrl }}
-                    style={{ width: '100%', height: CARD_IMAGE_HEIGHT, borderRadius: 12 }}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <View
-                    style={{
-                      width: '100%',
-                      height: CARD_IMAGE_HEIGHT,
-                      borderRadius: 12,
-                      backgroundColor: listingPlaceholderBg,
-                    }}
-                  />
-                )}
-                <Card.Title>{item.title}</Card.Title>
-                <Card.Description>{buildMapPlaceKindLabel(item, t)}</Card.Description>
-                {item.distanceKm !== undefined ? (
-                  <Card.Description>
-                    {t('favorites.distanceFromMap', { km: item.distanceKm.toFixed(1) })}
-                  </Card.Description>
-                ) : null}
-              </Card.Body>
-            </Card>
-          ))
+          cards.map((item) => {
+            const key = cardListKey(item) ?? item.title;
+            const isRemoving = removingKey === cardListKey(item);
+            return (
+              <PressableFeedback key={key} onPress={() => openDetail(item)}>
+                <Card className="overflow-hidden p-0">
+                  <View className="relative w-full" style={{ height: CARD_IMAGE_HEIGHT }}>
+                    {item.imageUrl ? (
+                      <Image
+                        source={{ uri: item.imageUrl }}
+                        style={{ width: '100%', height: CARD_IMAGE_HEIGHT }}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View
+                        style={{
+                          width: '100%',
+                          height: CARD_IMAGE_HEIGHT,
+                          backgroundColor: listingPlaceholderBg,
+                        }}
+                      />
+                    )}
+                    <View
+                      style={{
+                        position: 'absolute',
+                        top: MAP_LISTING_THUMB_OVERLAY_INSET,
+                        right: MAP_LISTING_THUMB_OVERLAY_INSET,
+                        width: MAP_LISTING_HEART_SIZE,
+                        height: MAP_LISTING_HEART_SIZE,
+                      }}
+                    >
+                      <Button
+                        testID={TestId.btnFavoriteRemove}
+                        size="sm"
+                        variant="secondary"
+                        isIconOnly
+                        isDisabled={isRemoving}
+                        onPress={(event: GestureResponderEvent) => {
+                          event.stopPropagation();
+                          removeFavorite(item);
+                        }}
+                        accessibilityLabel={t('map.favoriteRemove')}
+                        className="size-8"
+                      >
+                        <Ionicons name="heart" size={16} color={foregroundColor} />
+                      </Button>
+                    </View>
+                  </View>
+                  <Card.Body style={{ gap: 8 }} className="px-3 py-2.5">
+                    <Card.Title>{item.title}</Card.Title>
+                    <Card.Description>{buildMapPlaceKindLabel(item, t)}</Card.Description>
+                    {item.distanceKm !== undefined ? (
+                      <Card.Description>
+                        {t('favorites.distanceFromMap', { km: item.distanceKm.toFixed(1) })}
+                      </Card.Description>
+                    ) : null}
+                  </Card.Body>
+                </Card>
+              </PressableFeedback>
+            );
+          })
         )}
       </ScrollView>
     </Screen>

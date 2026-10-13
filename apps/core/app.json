@@ -48,6 +48,12 @@
           "locationWhenInUsePermission": "Allow Deelbaar to center the map near your current location."
         }
       ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Deelbaar to upload a photo for this place."
+        }
+      ],
       "expo-font",
       [
         "expo-splash-screen",

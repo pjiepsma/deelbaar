@@ -194,21 +194,28 @@ function requiredScopeForPlace(
   placeLocation: PlaceLocation | undefined,
   homeArea: InteractionContext['homeArea'],
 ): InteractionScope {
-  if (!homeArea) {
-    return 'world'
+  // No home area yet (onboarding) — default city unlock is enough to save nearby places.
+  if (!homeArea?.city && !homeArea?.province && !homeArea?.country) {
+    return 'city'
   }
 
   const placeCountry = normalizeText(placeLocation?.country)
   const placeProvince = normalizeText(placeLocation?.province)
   const placeCity = normalizeText(placeLocation?.city)
 
-  if (!homeArea.country || !placeCountry || placeCountry !== homeArea.country) {
+  // Only escalate when both sides have a value and they disagree.
+  // Missing province/city on home or place must not force country/province unlock
+  // (demo taps often ship country-only; many users have country-only homeArea).
+  if (homeArea.country && placeCountry && placeCountry !== homeArea.country) {
     return 'world'
   }
-  if (!homeArea.province || !placeProvince || placeProvince !== homeArea.province) {
+  if (homeArea.country && !placeCountry) {
+    return 'world'
+  }
+  if (homeArea.province && placeProvince && placeProvince !== homeArea.province) {
     return 'country'
   }
-  if (!homeArea.city || !placeCity || placeCity !== homeArea.city) {
+  if (homeArea.city && placeCity && placeCity !== homeArea.city) {
     return 'province'
   }
   return 'city'

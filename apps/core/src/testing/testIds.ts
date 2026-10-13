@@ -33,6 +33,7 @@ export const TestId = {
 
   btnBack: 'btn-back',
   btnMyLocation: 'btn-my-location',
+  btnFavoriteRemove: 'btn-favorite-remove',
   btnAccountSignUp: 'btn-account-sign-up',
   btnAccountLogin: 'btn-account-login',
   btnAuthContinue: 'btn-auth-continue',

@@ -26,6 +26,7 @@ import { Entitlements } from './collections/Entitlements'
 import { Reports } from './collections/Reports'
 import { Legal } from './globals/Legal/legal'
 import { Mail } from './globals/Mail/mail'
+import { contributePlacePhoto } from './endpoints/contributePlacePhoto'
 import { listingsNearby } from './endpoints/listingsNearby'
 import { listingsInBounds } from './endpoints/listingsInBounds'
 import { listingsImportExport } from './lib/listings-import-export'
@@ -97,6 +98,11 @@ export default buildConfig({
       path: '/search-access/unlock',
       method: 'post',
       handler: unlockSearchScope,
+    },
+    {
+      path: '/listings/contribute-photo',
+      method: 'post',
+      handler: contributePlacePhoto,
     },
     geocodeListingsEndpoint,
   ],

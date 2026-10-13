@@ -4,7 +4,11 @@ import {
   buildInteractionContext,
   placeInteractionFromContext,
 } from '../lib/placeInteractionScope'
-import { resolvePayload, type AppRouteRequest } from './resolvePayloadFromRequest'
+import {
+  resolvePayload,
+  resolveRequestUser,
+  type AppRouteRequest,
+} from './resolvePayloadFromRequest'
 
 const json = (body: object, init?: ResponseInit): Response => {
   const headers = new Headers(init?.headers)
@@ -128,9 +132,10 @@ export async function listingsNearby(req: AppRouteRequest): Promise<Response> {
     )
 
     const payload = await resolvePayload(req)
+    const user = await resolveRequestUser(req, payload)
     const interactionContext = await buildInteractionContext({
       payload,
-      user: req.user ?? null,
+      user,
     })
 
     const collectionResults = await Promise.all(

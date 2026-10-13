@@ -1,6 +1,7 @@
 import type { Access, AccessResult, CollectionConfig, Field } from 'payload'
 import NotificationService from '../../lib/notificationService'
 import type { MapPlaceCollectionSlug } from '../../constants/mapPlaces'
+import { getPlaceInteractionContract } from '../../lib/placeInteractionScope'
 
 const FACILITY_OPTIONS = [
   { label: '24/7 Access', value: '24_7_access' },
@@ -310,6 +311,23 @@ export function buildMapPlaceCollection({
             data.location.coordinates = [data.location.longitude, data.location.latitude]
           }
           return data
+        },
+      ],
+      afterRead: [
+        async ({ doc, req }) => {
+          if (!doc || typeof doc !== 'object') {
+            return doc
+          }
+          try {
+            const interaction = await getPlaceInteractionContract(req, doc as Record<string, unknown>)
+            return {
+              ...(doc as Record<string, unknown>),
+              interaction,
+            }
+          } catch (error) {
+            console.error('Failed to attach place interaction', error)
+            return doc
+          }
         },
       ],
       afterChange: allowPhotos

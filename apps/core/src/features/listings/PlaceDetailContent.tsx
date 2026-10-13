@@ -9,15 +9,19 @@ import { mapPlaceFilterLabel } from '../../lib/mapPlaces/mapPlaceTaxonomy';
 import { mapPlaceCategoryColors } from '../../lib/mapPlaces/mapPlaceCategoryColors';
 import type { MapListingCard, MapPlaceRecord } from '../map/map.types';
 import {
+  PLACE_DETAIL_ACCENT,
   PLACE_DETAIL_BG,
+  PLACE_DETAIL_BLOCK_GAP,
+  PLACE_DETAIL_FACT_ROW_GAP,
   PLACE_DETAIL_HORIZONTAL_PADDING,
   PLACE_DETAIL_LINK,
   PLACE_DETAIL_PANEL_RADIUS,
   PLACE_DETAIL_SECTION_GAP,
   PLACE_DETAIL_SURFACE,
+  PLACE_DETAIL_TEXT_BODY,
   PLACE_DETAIL_TEXT_MUTED,
   PLACE_DETAIL_TEXT_PRIMARY,
-  PLACE_DETAIL_ACCENT,
+  PLACE_DETAIL_TITLE_META_GAP,
 } from './placeDetail.constants';
 import {
   buildPlaceDetailInfoGrid,
@@ -41,12 +45,17 @@ type Props = {
   heroMode: PlaceDetailHeroMode;
   onHeroModeChange: (mode: PlaceDetailHeroMode) => void;
   onBack: () => void;
+  onSharePress: () => void;
   onSavePress: () => void;
   loved: boolean;
   reviews: PlaceDetailReviewRow[];
   user: AuthUser | null | undefined;
   onLeaveReviewPress: () => void;
+  canAddPhoto: boolean;
+  addPhotoEnabled: boolean;
   onAddPhotoPress: () => void;
+  onNoticePress: (noticeId: string) => void;
+  onSeeAllNoticesPress: () => void;
   t: TranslateFn;
 };
 
@@ -60,12 +69,17 @@ export function PlaceDetailContent({
   heroMode,
   onHeroModeChange,
   onBack,
+  onSharePress,
   onSavePress,
   loved,
   reviews,
   user,
   onLeaveReviewPress,
+  canAddPhoto,
+  addPhotoEnabled,
   onAddPhotoPress,
+  onNoticePress,
+  onSeeAllNoticesPress,
   t,
 }: Props) {
   const insets = useSafeAreaInsets();
@@ -106,12 +120,15 @@ export function PlaceDetailContent({
         showPhotosLabel={t('listing.showPhotos')}
         showMapAccessibilityLabel={t('listing.showMap')}
         onBack={onBack}
+        onSharePress={onSharePress}
+        shareAccessibilityLabel={t('listing.share')}
         onSavePress={onSavePress}
         loved={loved}
         saveAccessibilityLabel={saveAccessibilityLabel}
         addPhotoLabel={t('listing.addPhotoShort')}
         addPhotoAccessibilityLabel={t('listing.addPhoto')}
-        signedIn={!!user}
+        canAddPhoto={canAddPhoto}
+        addPhotoEnabled={addPhotoEnabled}
         onAddPhotoPress={onAddPhotoPress}
       />
 
@@ -131,74 +148,84 @@ export function PlaceDetailContent({
             paddingHorizontal: PLACE_DETAIL_HORIZONTAL_PADDING,
             paddingTop: PLACE_DETAIL_SECTION_GAP,
             paddingBottom: insets.bottom + PLACE_DETAIL_SECTION_GAP,
-            gap: PLACE_DETAIL_SECTION_GAP,
+            gap: PLACE_DETAIL_BLOCK_GAP,
           }}
           showsVerticalScrollIndicator={false}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <View
+          <View style={{ gap: PLACE_DETAIL_TITLE_META_GAP }}>
+            <Text
               style={{
-                backgroundColor: categoryColors.badgeBackground,
-                paddingHorizontal: 10,
-                paddingVertical: 4,
-                borderRadius: 12,
+                color: PLACE_DETAIL_TEXT_PRIMARY,
+                fontSize: 26,
+                fontWeight: '700',
+                lineHeight: 32,
               }}
             >
-              <Text style={{ color: categoryColors.badgeForeground, fontSize: 13, fontWeight: '600' }}>
-                {kindPill}
-              </Text>
-            </View>
-            {showRating ? (
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                <Ionicons name="star" size={16} color={PLACE_DETAIL_ACCENT} />
-                <Text style={{ color: PLACE_DETAIL_TEXT_PRIMARY, fontSize: 14, fontWeight: '600' }}>
-                  {card.rating!.toFixed(1)}
-                </Text>
-                <Text style={{ color: PLACE_DETAIL_TEXT_MUTED, fontSize: 14 }}>
-                  ({String(card.reviews)})
+              {place.name}
+            </Text>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <View
+                style={{
+                  backgroundColor: categoryColors.badgeBackground,
+                  paddingHorizontal: 10,
+                  paddingVertical: 4,
+                  borderRadius: 12,
+                }}
+              >
+                <Text style={{ color: categoryColors.badgeForeground, fontSize: 13, fontWeight: '600' }}>
+                  {kindPill}
                 </Text>
               </View>
-            ) : null}
-            {distanceInMeta ? (
-              <Text style={{ color: PLACE_DETAIL_TEXT_MUTED, fontSize: 14 }}>
-                {t('map.distanceAway', { km: card.distanceKm!.toFixed(1) })}
-              </Text>
-            ) : null}
-          </View>
+              {showRating ? (
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <Ionicons name="star" size={16} color={PLACE_DETAIL_ACCENT} />
+                  <Text style={{ color: PLACE_DETAIL_TEXT_PRIMARY, fontSize: 14, fontWeight: '600' }}>
+                    {card.rating!.toFixed(1)}
+                  </Text>
+                  <Text style={{ color: PLACE_DETAIL_TEXT_MUTED, fontSize: 14 }}>
+                    ({String(card.reviews)})
+                  </Text>
+                </View>
+              ) : null}
+              {distanceInMeta ? (
+                <Text style={{ color: PLACE_DETAIL_TEXT_MUTED, fontSize: 14 }}>
+                  {t('map.distanceAway', { km: card.distanceKm!.toFixed(1) })}
+                </Text>
+              ) : null}
+            </View>
 
-          <Text
-            style={{
-              color: PLACE_DETAIL_TEXT_PRIMARY,
-              fontSize: 26,
-              fontWeight: '700',
-              lineHeight: 32,
-            }}
-          >
-            {place.name}
-          </Text>
-
-          <View style={{ flexDirection: 'row', gap: 20 }}>
-            <AttributePair icon="storefront-outline" label={collectionLabel} />
-            <AttributePair icon="pricetag-outline" label={subtypeLabel} />
+            <View style={{ flexDirection: 'row', gap: 20 }}>
+              <AttributePair icon="storefront-outline" label={collectionLabel} />
+              <AttributePair icon="pricetag-outline" label={subtypeLabel} />
+            </View>
           </View>
 
           {place.description.trim().length > 0 ? (
-            <Text style={{ color: PLACE_DETAIL_TEXT_MUTED, fontSize: 15, lineHeight: 22 }}>
+            <Text style={{ color: PLACE_DETAIL_TEXT_BODY, fontSize: 15, lineHeight: 24 }}>
               {place.description.trim()}
             </Text>
           ) : null}
 
           {infoRows.length > 0 ? (
-            <View style={{ gap: PLACE_DETAIL_SECTION_GAP }}>
+            <View style={{ gap: PLACE_DETAIL_FACT_ROW_GAP }}>
               {infoRows.map((row, rowIndex) => (
                 <View key={rowIndex} style={{ flexDirection: 'row', gap: 16 }}>
                   {row.map((cell) => (
                     <View key={cell.labelKey} style={{ flex: 1 }}>
-                      <Text style={{ color: PLACE_DETAIL_TEXT_MUTED, fontSize: 13 }}>{t(cell.labelKey)}</Text>
+                      <Text
+                        style={{
+                          color: PLACE_DETAIL_TEXT_MUTED,
+                          fontSize: 12,
+                          fontWeight: '600',
+                        }}
+                      >
+                        {t(cell.labelKey)}
+                      </Text>
                       <Text
                         style={{
                           color: PLACE_DETAIL_TEXT_PRIMARY,
-                          fontSize: 18,
+                          fontSize: 17,
                           fontWeight: '600',
                           marginTop: 4,
                         }}
@@ -217,49 +244,54 @@ export function PlaceDetailContent({
             <ScrollView horizontal showsHorizontalScrollIndicator={false} nestedScrollEnabled>
               <View style={{ flexDirection: 'row', gap: 12 }}>
                 {notices.map((notice) => (
-                  <View
+                  <PressableFeedback
                     key={notice.id}
-                    style={{
-                      width: 280,
-                      backgroundColor: PLACE_DETAIL_SURFACE,
-                      borderRadius: 12,
-                      padding: 14,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 12,
-                    }}
+                    onPress={() => onNoticePress(notice.id)}
+                    accessibilityLabel={notice.title}
                   >
-                    <View style={{ flex: 1, gap: 4 }}>
-                      <Text style={{ color: PLACE_DETAIL_TEXT_PRIMARY, fontSize: 15, fontWeight: '600' }}>
-                        {notice.title}
-                      </Text>
-                      {notice.detail ? (
-                        <Text style={{ color: PLACE_DETAIL_TEXT_MUTED, fontSize: 13 }} numberOfLines={2}>
-                          {notice.detail}
-                        </Text>
-                      ) : null}
-                    </View>
                     <View
                       style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 8,
-                        backgroundColor: PLACE_DETAIL_ACCENT,
+                        width: 280,
+                        backgroundColor: PLACE_DETAIL_SURFACE,
+                        borderRadius: 12,
+                        padding: 14,
+                        flexDirection: 'row',
                         alignItems: 'center',
-                        justifyContent: 'center',
+                        gap: 12,
                       }}
                     >
-                      <Ionicons name="information" size={22} color="#fff" />
+                      <View style={{ flex: 1, gap: 4 }}>
+                        <Text style={{ color: PLACE_DETAIL_TEXT_PRIMARY, fontSize: 15, fontWeight: '600' }}>
+                          {notice.title}
+                        </Text>
+                        {notice.detail ? (
+                          <Text style={{ color: PLACE_DETAIL_TEXT_BODY, fontSize: 13 }} numberOfLines={2}>
+                            {notice.detail}
+                          </Text>
+                        ) : null}
+                      </View>
+                      <View
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 8,
+                          backgroundColor: PLACE_DETAIL_ACCENT,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Ionicons name="information" size={22} color="#fff" />
+                      </View>
+                      <Ionicons name="chevron-forward" size={18} color={PLACE_DETAIL_TEXT_MUTED} />
                     </View>
-                    <Ionicons name="chevron-forward" size={18} color={PLACE_DETAIL_TEXT_MUTED} />
-                  </View>
+                  </PressableFeedback>
                 ))}
               </View>
             </ScrollView>
           ) : null}
 
           {notices.length > 1 ? (
-            <PressableFeedback onPress={() => undefined}>
+            <PressableFeedback onPress={onSeeAllNoticesPress}>
               <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 4 }}>
                 <Text style={{ color: PLACE_DETAIL_LINK, fontSize: 15, fontWeight: '600' }}>
                   {t('listing.seeAllNotices')}

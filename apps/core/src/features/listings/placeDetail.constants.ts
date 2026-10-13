@@ -1,13 +1,19 @@
 import { Dimensions } from 'react-native';
 
+import { DEELBAAR_INK, DEELBAAR_MOSS } from '../../branding/colors';
+
 export const PLACE_DETAIL_BG = '#F2EDE8';
 export const PLACE_DETAIL_SURFACE = '#EAE4DC';
-export const PLACE_DETAIL_TEXT_PRIMARY = '#1A1A1A';
-export const PLACE_DETAIL_TEXT_MUTED = '#8A8070';
-export const PLACE_DETAIL_ACCENT = '#E07B2A';
+export const PLACE_DETAIL_TEXT_PRIMARY = DEELBAAR_INK;
+/** Main reading text (description, review body) — AA on beige/surface. */
+export const PLACE_DETAIL_TEXT_BODY = '#2C2820';
+/** Labels / meta — AA on beige and surface. */
+export const PLACE_DETAIL_TEXT_MUTED = '#5C5346';
+/** Stars + notice info chip — muted clay (matches kiosk pin). */
+export const PLACE_DETAIL_ACCENT = '#9A6240';
 export const PLACE_DETAIL_TAG_BG = '#2C2C2C';
 export const PLACE_DETAIL_TAG_TEXT = '#FFFFFF';
-export const PLACE_DETAIL_LINK = '#C4622A';
+export const PLACE_DETAIL_LINK = DEELBAAR_MOSS;
 export const PLACE_DETAIL_CTA_SECONDARY = '#D9CEBC';
 export const PLACE_DETAIL_HERO_PLACEHOLDER = '#4a4540';
 
@@ -16,6 +22,11 @@ export const PLACE_DETAIL_HERO_OVERLAY_Z_INDEX = 30;
 export const PLACE_DETAIL_PANEL_RADIUS = 24;
 export const PLACE_DETAIL_HORIZONTAL_PADDING = 20;
 export const PLACE_DETAIL_SECTION_GAP = 16;
+/** Title → meta row. */
+export const PLACE_DETAIL_TITLE_META_GAP = 8;
+/** Gap between major sheet blocks (description / facts / notices / reviews). */
+export const PLACE_DETAIL_BLOCK_GAP = 20;
+export const PLACE_DETAIL_FACT_ROW_GAP = 12;
 
 export const PLACE_DETAIL_HERO_CHROME_SIZE = 40;
 export const PLACE_DETAIL_MAP_THUMB_SIZE = 80;

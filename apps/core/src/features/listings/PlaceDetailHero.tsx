@@ -47,12 +47,17 @@ type Props = {
   showPhotosLabel: string;
   showMapAccessibilityLabel: string;
   onBack: () => void;
+  onSharePress: () => void;
+  shareAccessibilityLabel: string;
   onSavePress: () => void;
   loved: boolean;
   saveAccessibilityLabel: string;
   addPhotoLabel: string;
   addPhotoAccessibilityLabel: string;
-  signedIn: boolean;
+  /** False when place type has no community photo field (e.g. taps). Hide control. */
+  canAddPhoto: boolean;
+  /** Signed-in + in unlocked scope. Guest/out-of-scope → dim + disabled. */
+  addPhotoEnabled: boolean;
   onAddPhotoPress: () => void;
 };
 
@@ -71,12 +76,15 @@ export function PlaceDetailHero({
   showPhotosLabel,
   showMapAccessibilityLabel,
   onBack,
+  onSharePress,
+  shareAccessibilityLabel,
   onSavePress,
   loved,
   saveAccessibilityLabel,
   addPhotoLabel,
   addPhotoAccessibilityLabel,
-  signedIn,
+  canAddPhoto,
+  addPhotoEnabled,
   onAddPhotoPress,
 }: Props) {
   const insets = useSafeAreaInsets();
@@ -255,7 +263,7 @@ export function PlaceDetailHero({
             <Ionicons name="arrow-back" size={22} color="#1A1A1A" />
           </HeroChromeButton>
           <View style={{ flexDirection: 'row', gap: 8 }}>
-            <HeroChromeButton onPress={() => undefined} accessibilityLabel="Share">
+            <HeroChromeButton onPress={onSharePress} accessibilityLabel={shareAccessibilityLabel}>
               <Ionicons name="share-outline" size={20} color="#1A1A1A" />
             </HeroChromeButton>
             <HeroChromeButton onPress={onSavePress} accessibilityLabel={saveAccessibilityLabel}>
@@ -273,7 +281,8 @@ export function PlaceDetailHero({
           showMapAccessibilityLabel={showMapAccessibilityLabel}
           addPhotoLabel={addPhotoLabel}
           addPhotoAccessibilityLabel={addPhotoAccessibilityLabel}
-          signedIn={signedIn}
+          canAddPhoto={canAddPhoto}
+          addPhotoEnabled={addPhotoEnabled}
           canShowMap={canShowMap}
           thumbPhotoUrl={thumbPhotoUrl}
           mapboxAccessToken={mapboxAccessToken}
@@ -298,7 +307,8 @@ type HeroBottomControlsRowProps = {
   showMapAccessibilityLabel: string;
   addPhotoLabel: string;
   addPhotoAccessibilityLabel: string;
-  signedIn: boolean;
+  canAddPhoto: boolean;
+  addPhotoEnabled: boolean;
   canShowMap: boolean;
   thumbPhotoUrl: string | undefined;
   mapboxAccessToken: string | undefined;
@@ -319,7 +329,8 @@ function HeroBottomControlsRow({
   showMapAccessibilityLabel,
   addPhotoLabel,
   addPhotoAccessibilityLabel,
-  signedIn,
+  canAddPhoto,
+  addPhotoEnabled,
   canShowMap,
   thumbPhotoUrl,
   mapboxAccessToken,
@@ -331,17 +342,18 @@ function HeroBottomControlsRow({
   onAddPhotoPress,
 }: HeroBottomControlsRowProps) {
   const showDots = heroMode === 'photos' && photoUrls.length > 1;
+  const showAddPhoto = heroMode === 'photos' && canAddPhoto;
 
   return (
     <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
       <View style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 6 }}>
-        {heroMode === 'photos' ? (
+        {showAddPhoto ? (
           <PressableFeedback
             onPress={onAddPhotoPress}
             accessibilityLabel={addPhotoAccessibilityLabel}
-            isDisabled={!signedIn}
+            isDisabled={!addPhotoEnabled}
           >
-            <HeroOverlayPill opacity={signedIn ? 1 : PLACE_DETAIL_HERO_DISABLED_OPACITY}>
+            <HeroOverlayPill opacity={addPhotoEnabled ? 1 : PLACE_DETAIL_HERO_DISABLED_OPACITY}>
               <Ionicons name="camera-outline" size={16} color={PLACE_DETAIL_TAG_TEXT} />
               <Text style={{ color: PLACE_DETAIL_TAG_TEXT, fontSize: 13, fontWeight: '600' }}>
                 {addPhotoLabel}
