@@ -67,7 +67,9 @@ function isEntitlementActive(entitlement: Record<string, unknown>, now: Date): b
   return parsed.getTime() > now.getTime()
 }
 
-async function buildInteractionContext(req: InteractionRequestWithOptionalUser): Promise<InteractionContext> {
+export async function buildInteractionContext(
+  req: InteractionRequestWithOptionalUser,
+): Promise<InteractionContext> {
   if (!req.user) {
     return {
       isAuthenticated: false,
@@ -84,12 +86,16 @@ async function buildInteractionContext(req: InteractionRequestWithOptionalUser):
     }
   }
 
-  const userDoc = await req.payload.findByID({
+  const userDoc = (await req.payload.findByID({
     collection: 'users',
     id: req.user.id,
     depth: 0,
     overrideAccess: true,
-  }) as {
+    select: {
+      searchAccess: true,
+      homeArea: true,
+    },
+  })) as {
     searchAccess?: { province?: boolean | null; country?: boolean | null; world?: boolean | null }
     homeArea?: { city?: string | null; province?: string | null; country?: string | null }
   }
@@ -108,13 +114,19 @@ async function buildInteractionContext(req: InteractionRequestWithOptionalUser):
   const activeEntitlements = await req.payload.find({
     collection: 'entitlements',
     where: {
-      user: {
-        equals: req.user.id,
-      },
+      and: [
+        { user: { equals: req.user.id } },
+        { status: { equals: 'active' } },
+      ],
     },
     depth: 0,
-    limit: 100,
+    limit: 50,
     overrideAccess: true,
+    select: {
+      scope: true,
+      status: true,
+      expiresAt: true,
+    },
   })
 
   const now = new Date()
@@ -136,6 +148,45 @@ async function buildInteractionContext(req: InteractionRequestWithOptionalUser):
       province: normalizeText(userDoc.homeArea?.province),
       country: normalizeText(userDoc.homeArea?.country),
     },
+  }
+}
+
+export function placeInteractionFromContext(
+  context: InteractionContext,
+  place: Record<string, unknown>,
+): PlaceInteractionContract {
+  if (!context.isAuthenticated || !context.maxUnlockedScope) {
+    return {
+      canInteract: false,
+      canOpenDetails: false,
+      canFavorite: false,
+      canFollow: false,
+      canRequest: false,
+      canReceiveNotifications: false,
+      reason: 'auth_required',
+      maxUnlockedScope: context.maxUnlockedScope,
+      requiredScope: null,
+    }
+  }
+
+  const requiredScope = requiredScopeForPlace(
+    (place.location && typeof place.location === 'object' ? place.location : undefined) as
+      | PlaceLocation
+      | undefined,
+    context.homeArea,
+  )
+  const canInteract = SCOPE_ORDER[context.maxUnlockedScope] >= SCOPE_ORDER[requiredScope]
+
+  return {
+    canInteract,
+    canOpenDetails: canInteract,
+    canFavorite: canInteract,
+    canFollow: canInteract,
+    canRequest: canInteract,
+    canReceiveNotifications: canInteract,
+    reason: canInteract ? 'ok' : 'outside_unlocked_scope',
+    maxUnlockedScope: context.maxUnlockedScope,
+    requiredScope,
   }
 }
 
@@ -180,38 +231,7 @@ export async function getPlaceInteractionContract(
   place: Record<string, unknown>,
 ): Promise<PlaceInteractionContract> {
   const context = await buildInteractionContext(req)
-
-  if (!context.isAuthenticated || !context.maxUnlockedScope) {
-    return {
-      canInteract: false,
-      canOpenDetails: false,
-      canFavorite: false,
-      canFollow: false,
-      canRequest: false,
-      canReceiveNotifications: false,
-      reason: 'auth_required',
-      maxUnlockedScope: context.maxUnlockedScope,
-      requiredScope: null,
-    }
-  }
-
-  const requiredScope = requiredScopeForPlace(
-    (place.location && typeof place.location === 'object' ? place.location : undefined) as PlaceLocation | undefined,
-    context.homeArea,
-  )
-  const canInteract = SCOPE_ORDER[context.maxUnlockedScope] >= SCOPE_ORDER[requiredScope]
-
-  return {
-    canInteract,
-    canOpenDetails: canInteract,
-    canFavorite: canInteract,
-    canFollow: canInteract,
-    canRequest: canInteract,
-    canReceiveNotifications: canInteract,
-    reason: canInteract ? 'ok' : 'outside_unlocked_scope',
-    maxUnlockedScope: context.maxUnlockedScope,
-    requiredScope,
-  }
+  return placeInteractionFromContext(context, place)
 }
 
 export async function assertPlaceInteractionAllowed(

@@ -168,6 +168,7 @@ export function buildMapPlaceCollection({
       type: 'select',
       label: 'Publish Status',
       defaultValue: 'draft',
+      index: true,
       options: [
         { label: 'Draft', value: 'draft' },
         { label: 'Live', value: 'live' },
@@ -177,6 +178,7 @@ export function buildMapPlaceCollection({
     {
       name: 'deletedAt',
       type: 'date',
+      index: true,
       admin: {
         description:
           'Soft delete: set to hide from public map and search; clear to restore. Owners use the app or PATCH; hard remove is admin-only.',

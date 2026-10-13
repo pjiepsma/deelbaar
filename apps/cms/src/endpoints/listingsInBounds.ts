@@ -1,6 +1,9 @@
 import { liveNonDeletedPlaceClauses } from '../constants/listingsPublicVisibility'
 import { MAP_PLACE_COLLECTION_SLUGS, type MapPlaceCollectionSlug } from '../constants/mapPlaces'
-import { getPlaceInteractionContract } from '../lib/placeInteractionScope'
+import {
+  buildInteractionContext,
+  placeInteractionFromContext,
+} from '../lib/placeInteractionScope'
 import { resolvePayload, type AppRouteRequest, type QueryDictionary } from './resolvePayloadFromRequest'
 
 // Configuration constants
@@ -310,48 +313,54 @@ export async function listingsInBounds(req: AppRouteRequest): Promise<Response> 
 
   try {
     const payload = await resolvePayload(req)
+    const interactionContext = await buildInteractionContext({
+      payload,
+      user: req.user ?? null,
+    })
+    const collectionResults = await Promise.all(
+      collections.map((collection) =>
+        payload.find({
+          collection,
+          where: {
+            and: [
+              ...liveNonDeletedPlaceClauses,
+              {
+                'location.latitude': {
+                  greater_than_equal: swLat,
+                },
+              },
+              {
+                'location.latitude': {
+                  less_than_equal: neLat,
+                },
+              },
+              {
+                'location.longitude': {
+                  greater_than_equal: swLon,
+                },
+              },
+              {
+                'location.longitude': {
+                  less_than_equal: neLon,
+                },
+              },
+            ],
+          },
+          limit,
+          depth: 1,
+          select: resolvedSelect as never,
+        }),
+      ),
+    )
     const docs: Record<string, unknown>[] = []
-    for (const collection of collections) {
-      const result = await payload.find({
-        collection,
-        where: {
-          and: [
-            ...liveNonDeletedPlaceClauses,
-            {
-              'location.latitude': {
-                greater_than_equal: swLat,
-              },
-            },
-            {
-              'location.latitude': {
-                less_than_equal: neLat,
-              },
-            },
-            {
-              'location.longitude': {
-                greater_than_equal: swLon,
-              },
-            },
-            {
-              'location.longitude': {
-                less_than_equal: neLon,
-              },
-            },
-          ],
-        },
-        limit,
-        depth: 2,
-        select: resolvedSelect as never,
-      })
+    for (let i = 0; i < collections.length; i++) {
+      const collection = collections[i]
+      const result = collectionResults[i]
       for (const placeDoc of result.docs as Record<string, unknown>[]) {
-        const interaction = await getPlaceInteractionContract(
-          { payload, user: req.user ?? null },
-          placeDoc,
-        )
         docs.push({
           ...placeDoc,
           mapPlaceCollection: collection,
-          interaction,
+          interaction: placeInteractionFromContext(interactionContext, placeDoc),
         })
       }
     }

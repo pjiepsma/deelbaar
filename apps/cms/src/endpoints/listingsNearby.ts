@@ -1,6 +1,9 @@
 import { liveNonDeletedPlaceClauses } from '../constants/listingsPublicVisibility'
 import { MAP_PLACE_COLLECTION_SLUGS, type MapPlaceCollectionSlug } from '../constants/mapPlaces'
-import { getPlaceInteractionContract } from '../lib/placeInteractionScope'
+import {
+  buildInteractionContext,
+  placeInteractionFromContext,
+} from '../lib/placeInteractionScope'
 import { resolvePayload, type AppRouteRequest } from './resolvePayloadFromRequest'
 
 const json = (body: object, init?: ResponseInit): Response => {
@@ -13,6 +16,10 @@ const json = (body: object, init?: ResponseInit): Response => {
 
 type QueryBag = Record<string, string | string[] | undefined>
 type SearchScope = 'city' | 'province' | 'country' | 'world'
+
+/** Overfetch vs limit: bbox is square over circle (~1.27×) + density headroom. */
+const BOX_FETCH_OVERFETCH = 3
+const BOX_FETCH_HARD_CAP = 400
 
 const getQueryParam = (req: AppRouteRequest, key: string): string | null => {
   if (typeof req.url === 'string' && req.url.length > 0) {
@@ -36,7 +43,14 @@ const MAP_NEARBY_SELECT = {
   kioskSubtype: true,
   marketSubtype: true,
   tapSubtype: true,
-  location: true,
+  location: {
+    latitude: true,
+    longitude: true,
+    coordinates: true,
+    city: true,
+    province: true,
+    country: true,
+  },
   pictures: {
     status: true,
     photo: true,
@@ -108,43 +122,58 @@ export async function listingsNearby(req: AppRouteRequest): Promise<Response> {
     }
 
     const { swLat, swLon, neLat, neLon } = boundingBoxDegrees(lat, lon, enforcedRadius)
-    const boxFetchLimit = Math.min(Math.max(maxResults * 25, maxResults), 1000)
+    const boxFetchLimit = Math.min(
+      Math.max(maxResults * BOX_FETCH_OVERFETCH, maxResults),
+      BOX_FETCH_HARD_CAP,
+    )
 
     const payload = await resolvePayload(req)
+    const interactionContext = await buildInteractionContext({
+      payload,
+      user: req.user ?? null,
+    })
+
+    const collectionResults = await Promise.all(
+      collections.map((collection) =>
+        payload.find({
+          collection,
+          req,
+          where: {
+            and: [
+              ...liveNonDeletedPlaceClauses,
+              {
+                'location.latitude': {
+                  greater_than_equal: swLat,
+                },
+              },
+              {
+                'location.latitude': {
+                  less_than_equal: neLat,
+                },
+              },
+              {
+                'location.longitude': {
+                  greater_than_equal: swLon,
+                },
+              },
+              {
+                'location.longitude': {
+                  less_than_equal: neLon,
+                },
+              },
+            ],
+          },
+          limit: boxFetchLimit,
+          depth: 1,
+          select: MAP_NEARBY_SELECT as never,
+        }),
+      ),
+    )
+
     const listingsDocs: Array<Record<string, unknown>> = []
-    for (const collection of collections) {
-      const result = await payload.find({
-        collection,
-        req,
-        where: {
-          and: [
-            ...liveNonDeletedPlaceClauses,
-            {
-              'location.latitude': {
-                greater_than_equal: swLat,
-              },
-            },
-            {
-              'location.latitude': {
-                less_than_equal: neLat,
-              },
-            },
-            {
-              'location.longitude': {
-                greater_than_equal: swLon,
-              },
-            },
-            {
-              'location.longitude': {
-                less_than_equal: neLon,
-              },
-            },
-          ],
-        },
-        limit: boxFetchLimit,
-        depth: 1,
-        select: MAP_NEARBY_SELECT as never,
-      })
+    for (let i = 0; i < collections.length; i++) {
+      const collection = collections[i]
+      const result = collectionResults[i]
       for (const placeDoc of result.docs as Record<string, unknown>[]) {
         listingsDocs.push({
           ...trimPicturesForMapCard(placeDoc),
@@ -164,34 +193,19 @@ export async function listingsNearby(req: AppRouteRequest): Promise<Response> {
         if (typeof listingLat !== 'number' || typeof listingLon !== 'number') return null
         const distanceKm = calculateDistance(lat, lon, listingLat, listingLon)
         if (distanceKm > radiusKm) return null
-        const interactionPromise = getPlaceInteractionContract(
-          { payload, user: req.user ?? null },
-          listing,
-        )
         return {
           ...listing,
           distance: Math.round(distanceKm * 100) / 100,
-          _interactionPromise: interactionPromise,
         }
       })
-      .filter(Boolean) as Array<Record<string, unknown> & { _interactionPromise: Promise<unknown> }>
+      .filter(Boolean) as Array<Record<string, unknown> & { distance: number }>
 
-    listingsWithDistance.sort(
-      (a: { distance?: number }, b: { distance?: number }) =>
-        (a.distance ?? Infinity) - (b.distance ?? Infinity),
-    )
+    listingsWithDistance.sort((a, b) => a.distance - b.distance)
 
-    const trimmed = listingsWithDistance.slice(0, maxResults)
-    const docsWithInteraction = await Promise.all(
-      trimmed.map(async (row) => {
-        const interaction = await row._interactionPromise
-        const { _interactionPromise, ...placeRow } = row
-        return {
-          ...placeRow,
-          interaction,
-        }
-      }),
-    )
+    const docsWithInteraction = listingsWithDistance.slice(0, maxResults).map((placeRow) => ({
+      ...placeRow,
+      interaction: placeInteractionFromContext(interactionContext, placeRow),
+    }))
 
     return json({
       docs: docsWithInteraction,
@@ -228,7 +242,7 @@ function normalizeCollections(value: string | null): MapPlaceCollectionSlug[] | 
 /** ~meters per degree latitude (WGS84, mid-latitudes) */
 const METERS_PER_DEG_LAT = 111_320
 
-/** Axis-aligned square around (lat, lon) containing a circle of radiusMeters (for $geoWithin). */
+/** Axis-aligned square around (lat, lon) containing a circle of radiusMeters. */
 function boundingBoxDegrees(lat: number, lon: number, radiusMeters: number) {
   const dLat = radiusMeters / METERS_PER_DEG_LAT
   const cosLat = Math.cos((lat * Math.PI) / 180)
