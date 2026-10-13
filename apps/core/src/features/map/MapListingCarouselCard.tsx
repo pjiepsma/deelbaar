@@ -6,10 +6,10 @@ import { useLocale } from '../../context/LocaleContext';
 import { buildMapPlaceKindLabel } from '../../lib/mapPlaces/mapPlaceTaxonomy';
 import { mapPlaceCategoryColors } from '../../lib/mapPlaces/mapPlaceCategoryColors';
 import {
+  MAP_LISTING_CARD_BODY_HEIGHT,
   MAP_LISTING_CARD_HEIGHT,
-  MAP_LISTING_CARD_INNER_GAP,
   MAP_LISTING_HEART_SIZE,
-  MAP_LISTING_IMAGE_SIZE,
+  MAP_LISTING_IMAGE_HEIGHT,
   MAP_LISTING_THUMB_OVERLAY_INSET,
 } from './map.constants';
 import { isMapListingCard, type MapListingCard, type MapListingCardPlaceholder } from './map.types';
@@ -55,28 +55,24 @@ export function MapListingCarouselCard({
   return (
     <PressableFeedback onPress={onPress} isDisabled={!card}>
       <Card
-        className="flex-row items-center overflow-hidden p-2.5"
-        style={{ width: cardWidth, height: MAP_LISTING_CARD_HEIGHT, gap: MAP_LISTING_CARD_INNER_GAP }}
+        className="overflow-hidden p-0"
+        style={{ width: cardWidth, height: MAP_LISTING_CARD_HEIGHT }}
       >
-        <View className="relative" style={{ width: MAP_LISTING_IMAGE_SIZE, height: MAP_LISTING_IMAGE_SIZE }}>
+        <View className="relative w-full" style={{ height: MAP_LISTING_IMAGE_HEIGHT }}>
           <Skeleton
             isLoading={isLoading || !card?.imageUrl}
-            className="rounded-lg"
-            style={{ width: MAP_LISTING_IMAGE_SIZE, height: MAP_LISTING_IMAGE_SIZE }}
+            className="h-full w-full"
             variant="pulse"
           >
             {card?.imageUrl ? (
               <Image
                 source={{ uri: card.imageUrl }}
-                className="rounded-lg"
-                style={{ width: MAP_LISTING_IMAGE_SIZE, height: MAP_LISTING_IMAGE_SIZE }}
+                className="h-full w-full"
+                style={{ width: cardWidth, height: MAP_LISTING_IMAGE_HEIGHT }}
                 resizeMode="cover"
               />
             ) : (
-              <View
-                className="rounded-lg bg-muted"
-                style={{ width: MAP_LISTING_IMAGE_SIZE, height: MAP_LISTING_IMAGE_SIZE }}
-              />
+              <View className="h-full w-full bg-muted" style={{ height: MAP_LISTING_IMAGE_HEIGHT }} />
             )}
           </Skeleton>
 
@@ -107,14 +103,19 @@ export function MapListingCarouselCard({
               </Button>
             </View>
           ) : null}
-        </View>
 
-        <Card.Body className="min-w-0 flex-1 justify-center gap-0.5 px-0 py-0">
           {kindLabel && categoryColors ? (
-            <View className="self-start">
+            <View
+              className="absolute max-w-full"
+              style={{
+                left: MAP_LISTING_THUMB_OVERLAY_INSET,
+                bottom: MAP_LISTING_THUMB_OVERLAY_INSET,
+                right: MAP_LISTING_HEART_SIZE + MAP_LISTING_THUMB_OVERLAY_INSET,
+              }}
+            >
               <Chip
                 size="sm"
-                variant="secondary"
+                variant="soft"
                 className="max-w-full"
                 style={{ backgroundColor: categoryColors.badgeBackground }}
               >
@@ -124,8 +125,31 @@ export function MapListingCarouselCard({
               </Chip>
             </View>
           ) : isLoading ? (
-            <Skeleton className="h-5 w-20 rounded-full" isLoading variant="pulse" />
+            <View
+              className="absolute"
+              style={{
+                left: MAP_LISTING_THUMB_OVERLAY_INSET,
+                bottom: MAP_LISTING_THUMB_OVERLAY_INSET,
+              }}
+            >
+              <Skeleton className="h-5 w-16 rounded-full" isLoading variant="pulse" />
+            </View>
           ) : null}
+        </View>
+
+        <Card.Body
+          className="justify-center gap-1 px-3 py-2.5"
+          style={{ height: MAP_LISTING_CARD_BODY_HEIGHT }}
+        >
+          <Skeleton isLoading={isLoading || !card?.title} className="rounded-md" variant="pulse">
+            {card?.title ? (
+              <Card.Title className="text-base leading-5" numberOfLines={2}>
+                {card.title}
+              </Card.Title>
+            ) : (
+              <View />
+            )}
+          </Skeleton>
 
           {showRating ? (
             <View className="flex-row items-center gap-1">
@@ -141,22 +165,12 @@ export function MapListingCarouselCard({
             <Skeleton className="h-3.5 w-20 rounded-md" isLoading variant="pulse" />
           ) : null}
 
-          <Skeleton isLoading={isLoading || !card?.title} className="rounded-md" variant="pulse">
-            {card?.title ? (
-              <Card.Title className="text-sm leading-[18px]" numberOfLines={2}>
-                {card.title}
-              </Card.Title>
-            ) : (
-              <View />
-            )}
-          </Skeleton>
-
           {showDistance ? (
             <Card.Description className="text-xs" numberOfLines={1}>
               {t('map.distanceAway', { km: card.distanceKm!.toFixed(1) })}
             </Card.Description>
           ) : isLoading ? (
-            <Skeleton className="mt-0.5 h-3 w-24 rounded-md" isLoading variant="pulse" />
+            <Skeleton className="h-3 w-24 rounded-md" isLoading variant="pulse" />
           ) : null}
         </Card.Body>
       </Card>

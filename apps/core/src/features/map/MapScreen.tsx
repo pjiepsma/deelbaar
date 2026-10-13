@@ -1,7 +1,7 @@
 import Mapbox from '@rnmapbox/maps';
-import { Button, Card, Chip } from 'heroui-native';
+import { Button, Card } from 'heroui-native';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Alert, ScrollView, useWindowDimensions, View } from 'react-native';
+import { Alert, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '../../context/AuthContext';
@@ -9,14 +9,8 @@ import { useDiscoveryArea } from '../../context/DiscoveryAreaContext';
 import { useLocale } from '../../context/LocaleContext';
 import { useThemePreference } from '../../context/ThemePreferenceContext';
 import { resolveDeviceLngLat } from '../../lib/location/resolveDeviceLngLat';
+import { type MapPlaceFilterValue } from '../../lib/mapPlaces/mapPlaceTaxonomy';
 import {
-  MAP_PLACE_FILTER_VALUES,
-  mapPlaceFilterLabel,
-  type MapPlaceFilterValue,
-} from '../../lib/mapPlaces/mapPlaceTaxonomy';
-import { mapPlaceFilterChipColors } from '../../lib/mapPlaces/mapPlaceCategoryColors';
-import {
-  CATEGORY_SCROLL_GAP,
   MAPBOX_STYLE_DARK,
   MAPBOX_STYLE_STREETS,
   MAP_CAMERA_DEBOUNCE_MS,
@@ -57,9 +51,12 @@ import {
 import { setPlaceDetailShellSnapshot } from '../../lib/listings/placeDetailNavigationShell';
 import { navigateToListingDetail } from '../../navigation/rootNavigation';
 import { MapAreaSearchField } from './MapAreaSearchField';
+import { MapCategoryFilter } from './MapCategoryFilter';
 import { MapListingCarousel } from './MapListingCarousel';
 import { MapListingMarkers } from './MapListingMarkers';
 import { MapMyLocationButton } from './MapMyLocationButton';
+import { MapResultCount } from './MapResultCount';
+import { MapTopChrome } from './MapTopChrome';
 import { runMapProtectedAction } from './mapProtectedAction';
 import { useInitialMapCenterFromDevice } from './useInitialMapCenterFromDevice';
 import { useMapListingsFetch } from './useMapListingsFetch';
@@ -600,40 +597,27 @@ export function MapScreen() {
       </Mapbox.MapView>
 
       <View
+        pointerEvents="box-none"
         style={{
           position: 'absolute',
           top: insets.top + MAP_OVERLAY_TOP_GAP,
           left: MAP_OVERLAY_HORIZONTAL_PADDING,
           right: MAP_OVERLAY_HORIZONTAL_PADDING,
-          gap: 10,
+          zIndex: 30,
         }}
       >
-        <MapAreaSearchField
-          accessToken={mapboxAccessToken}
-          proximityLngLat={mapViewportCenter}
-          onAreaSelect={onAreaSelect}
-        />
-
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View style={{ flexDirection: 'row', gap: CATEGORY_SCROLL_GAP, paddingRight: CATEGORY_SCROLL_GAP }}>
-            {MAP_PLACE_FILTER_VALUES.map((value) => {
-              const selected = value === listingTypeFilter;
-              const chipColors = mapPlaceFilterChipColors(value, selected);
-              return (
-                <Chip
-                  key={value}
-                  variant="secondary"
-                  onPress={() => setListingTypeFilter(value)}
-                  style={{ backgroundColor: chipColors.backgroundColor }}
-                >
-                  <Chip.Label style={{ color: chipColors.labelColor }}>
-                    {mapPlaceFilterLabel(value, t)}
-                  </Chip.Label>
-                </Chip>
-              );
-            })}
-          </View>
-        </ScrollView>
+        <MapTopChrome>
+          <MapAreaSearchField
+            accessToken={mapboxAccessToken}
+            proximityLngLat={mapViewportCenter}
+            onAreaSelect={onAreaSelect}
+          />
+          <MapCategoryFilter value={listingTypeFilter} onChange={setListingTypeFilter} />
+          <MapResultCount
+            count={carouselListings.length}
+            isFetching={isFetching}
+          />
+        </MapTopChrome>
       </View>
 
       <View

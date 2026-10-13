@@ -28,8 +28,10 @@ Let `C = tabBarOverlayClearance(insets.bottom)`.
 | Chrome | Formula |
 |--------|---------|
 | Carousel | `C + MAP_LISTING_CAROUSEL_BOTTOM_PADDING` (12) |
-| My location | carousel bottom + `MAP_LISTING_CARD_HEIGHT` (104) + 12 |
+| My location | carousel bottom + `MAP_LISTING_CARD_HEIGHT` (224) + 12 |
 | Coachmark | carousel bottom + card height + 16 |
+
+Top map chrome (search / category Tabs / count): see [map-home.md](./map-home.md).
 
 ## Tab list screens (`Screen` + `withTabBarSpacing`)
 

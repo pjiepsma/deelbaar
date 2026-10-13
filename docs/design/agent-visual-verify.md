@@ -26,6 +26,7 @@ Prefer `id=<value>` over i18n labels. Source of truth: `TestId`.
 | Auth screens | `screen-auth-start`, `screen-auth-login-email`, `screen-auth-sign-up`, `screen-auth-forgot-password`, `screen-auth-forgot-password-sent`, `screen-auth-reset-password`, `screen-auth-verify-email`, `screen-auth-welcome`, `screen-auth-notifications`, `screen-auth-allow-location` |
 | Account stack | `screen-account-language`, `theme`, `location`, `help`, `data`, `rules`, `home-base`, `reach`, `alerts`, `identity`, `listings`, `listing-wizard` (see `TestId`) |
 | Chrome / CTAs | `btn-back`, `btn-my-location`, `btn-account-sign-up`, `btn-account-login`, `btn-auth-continue`, `btn-auth-google`, `btn-auth-login` |
+| Map home | `map-top-chrome`, `map-search-field`, `map-result-count`, `filter-map-all\|kiosks\|markets\|taps` |
 | Auth fields | `field-auth-email`, `field-auth-password` |
 
 ## Install (host)

@@ -42,5 +42,11 @@ export const TestId = {
   fieldAuthEmail: 'field-auth-email',
   fieldAuthPassword: 'field-auth-password',
 
+  mapTopChrome: 'map-top-chrome',
+  mapResultCount: 'map-result-count',
+  mapSearchField: 'map-search-field',
+  filterMap: (value: 'All' | 'kiosks' | 'markets' | 'taps') =>
+    `filter-map-${value === 'All' ? 'all' : value}` as const,
+
   tab: (name: 'map' | 'favorites' | 'account') => `tab-${name}` as const,
 } as const;

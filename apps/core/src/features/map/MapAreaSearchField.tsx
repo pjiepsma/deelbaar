@@ -1,6 +1,6 @@
-import { Card, PressableFeedback, SearchField, Spinner } from 'heroui-native';
+import { Card, PressableFeedback, SearchField, Spinner, Surface } from 'heroui-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { useLocale } from '../../context/LocaleContext';
 import {
@@ -8,6 +8,7 @@ import {
   forwardGeocode,
   type GeocodeSuggestion,
 } from '../../lib/mapbox/forwardGeocode';
+import { TestId } from '../../testing/testIds';
 
 const GEOCODE_DEBOUNCE_MS = 300;
 
@@ -20,6 +21,7 @@ type Props = {
 export function MapAreaSearchField({ accessToken, proximityLngLat, onAreaSelect }: Props) {
   const { t } = useLocale();
   const [query, setQuery] = useState('');
+  const [areaLabel, setAreaLabel] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<GeocodeSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchFailed, setFetchFailed] = useState(false);
@@ -69,6 +71,7 @@ export function MapAreaSearchField({ accessToken, proximityLngLat, onAreaSelect 
   const onQueryChange = useCallback(
     (value: string) => {
       setQuery(value);
+      setAreaLabel(null);
 
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
@@ -96,6 +99,7 @@ export function MapAreaSearchField({ accessToken, proximityLngLat, onAreaSelect 
       clearTimeout(debounceRef.current);
     }
     setQuery('');
+    setAreaLabel(null);
     setSuggestions([]);
     setIsLoading(false);
     setFetchFailed(false);
@@ -105,6 +109,7 @@ export function MapAreaSearchField({ accessToken, proximityLngLat, onAreaSelect 
   const onSelectSuggestion = useCallback(
     (suggestion: GeocodeSuggestion) => {
       setQuery(suggestion.label);
+      setAreaLabel(suggestion.label);
       setSuggestions([]);
       setDropdownOpen(false);
       setFetchFailed(false);
@@ -114,17 +119,27 @@ export function MapAreaSearchField({ accessToken, proximityLngLat, onAreaSelect 
   );
 
   const showDropdown =
-    dropdownOpen && query.trim().length >= FORWARD_GEOCODE_MIN_QUERY_LENGTH && (isLoading || fetchFailed || suggestions.length > 0);
+    dropdownOpen &&
+    query.trim().length >= FORWARD_GEOCODE_MIN_QUERY_LENGTH &&
+    (isLoading || fetchFailed || suggestions.length > 0);
 
   return (
-    <View style={{ zIndex: 50 }}>
-      <SearchField value={query} onChange={onQueryChange}>
-        <SearchField.Group>
-          <SearchField.SearchIcon />
-          <SearchField.Input placeholder={t('map.searchPlaceholder')} />
-          <SearchField.ClearButton onPress={onClear} />
-        </SearchField.Group>
-      </SearchField>
+    <View testID={TestId.mapSearchField} style={{ zIndex: 50 }}>
+      <Surface variant="default" className="overflow-hidden rounded-2xl p-0.5">
+        <SearchField value={query} onChange={onQueryChange}>
+          <SearchField.Group>
+            <SearchField.SearchIcon />
+            <SearchField.Input placeholder={t('map.searchPlaceholder')} />
+            <SearchField.ClearButton onPress={onClear} />
+          </SearchField.Group>
+        </SearchField>
+      </Surface>
+
+      {areaLabel && !showDropdown ? (
+        <Text className="text-muted mt-1 px-1 text-xs" numberOfLines={1}>
+          {t('map.lookingAt', { area: areaLabel })}
+        </Text>
+      ) : null}
 
       {showDropdown ? (
         <Card className="mt-1 overflow-hidden" style={{ elevation: 8 }}>

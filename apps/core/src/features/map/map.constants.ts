@@ -18,8 +18,8 @@ export const MAP_CAROUSEL_VIEWPORT_MARGIN = 1.15;
 export const MAP_CAROUSEL_SNAP_CAMERA_DEBOUNCE_MS = 180;
 
 /** Mapbox GL style URLs (basemap); paired with app light/dark. */
-export const MAPBOX_STYLE_STREETS = 'mapbox://styles/mapbox/streets-v12';
-export const MAPBOX_STYLE_DARK = 'mapbox://styles/mapbox/dark-v11';
+export const MAPBOX_STYLE_STREETS = 'mapbox://styles/pierrious/cmv73ledg00w901s051ire8pn';
+export const MAPBOX_STYLE_DARK = 'mapbox://styles/pierrious/cmv73ledg00w901s051ire8pn';
 
 /** How long to wait after the last camera event before updating shared discovery coordinates. */
 export const MAP_CAMERA_DEBOUNCE_MS = 450;
@@ -56,13 +56,14 @@ export const MAP_OVERLAY_TOP_GAP = 8;
 /** Gap between carousel and tab chrome (floating pill or native tab top). */
 export const MAP_LISTING_CAROUSEL_BOTTOM_PADDING = 12;
 export const MAP_LISTING_CARD_GAP = 10;
-export const MAP_LISTING_IMAGE_SIZE = 92;
-export const MAP_LISTING_CARD_HEIGHT = 104;
+/** Full-bleed photo band on vertical carousel cards. */
+export const MAP_LISTING_IMAGE_HEIGHT = 140;
+/** Title + rating + distance under the photo. */
+export const MAP_LISTING_CARD_BODY_HEIGHT = 84;
+export const MAP_LISTING_CARD_HEIGHT = MAP_LISTING_IMAGE_HEIGHT + MAP_LISTING_CARD_BODY_HEIGHT;
 export const MAP_LISTING_CARD_PEEK = 28;
-export const MAP_LISTING_CARD_RADIUS = 14;
-export const MAP_LISTING_CARD_INNER_GAP = 10;
 export const MAP_LISTING_HEART_SIZE = 32;
-export const MAP_LISTING_THUMB_OVERLAY_INSET = 6;
+export const MAP_LISTING_THUMB_OVERLAY_INSET = 8;
 export const MAP_MY_LOCATION_ABOVE_CAROUSEL_GAP = 12;
 export const MAP_COACHMARK_ABOVE_CAROUSEL_GAP = 16;
 
@@ -93,4 +94,4 @@ export function mapCoachmarkBottom(tabBarOverlayClearance: number): number {
   );
 }
 
-export const CATEGORY_SCROLL_GAP = 8;
+export const MAP_TOP_CHROME_INNER_GAP = 8;

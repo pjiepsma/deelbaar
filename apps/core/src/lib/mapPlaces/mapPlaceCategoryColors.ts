@@ -1,3 +1,4 @@
+import { DEELBAAR_MOSS, DEELBAAR_MOSS_SOFT } from '../../branding/colors';
 import type { MapPlaceCollection, MapPlaceFilterValue } from './mapPlaceTaxonomy';
 
 export type MapPlaceCategoryColors = {
@@ -12,40 +13,66 @@ export type MapPlaceFilterChipColors = {
   labelColor: string;
 };
 
+/** Muted clay / umber — warm but not candy orange. */
+const KIOSK_PIN = '#9A6240';
+const KIOSK_PIN_FOCUSED = '#7A4A2E';
+const KIOSK_BADGE_BG = '#F0E6DC';
+const KIOSK_BADGE_FG = '#5C3A24';
+
+/** Slate-teal — water cue without bright UI blue. */
+const TAP_PIN = '#3F6F7C';
+const TAP_PIN_FOCUSED = '#2E5560';
+const TAP_BADGE_BG = '#E4EEF1';
+const TAP_BADGE_FG = '#243F48';
+
+const MARKET_PIN_FOCUSED = '#234D2A';
+const MARKET_BADGE_FG = '#1A3D22';
+
+const FILTER_ALL_UNSELECTED_BG = '#EBE6E0';
+const FILTER_ALL_UNSELECTED_FG = '#5C5346';
+
 const MAP_FILTER_ALL_CHIP_COLORS: Record<'selected' | 'unselected', MapPlaceFilterChipColors> = {
   selected: {
-    backgroundColor: '#4A6054',
+    backgroundColor: DEELBAAR_MOSS,
     labelColor: '#FFFFFF',
   },
   unselected: {
-    backgroundColor: '#EBE6E0',
-    labelColor: '#5C5346',
+    backgroundColor: FILTER_ALL_UNSELECTED_BG,
+    labelColor: FILTER_ALL_UNSELECTED_FG,
   },
 };
 
 export const MAP_PLACE_CATEGORY_COLORS: Record<MapPlaceCollection, MapPlaceCategoryColors> = {
   kiosks: {
-    pin: '#E07B2A',
-    pinFocused: '#B85A12',
-    badgeBackground: '#FCE8D6',
-    badgeForeground: '#8B4512',
+    pin: KIOSK_PIN,
+    pinFocused: KIOSK_PIN_FOCUSED,
+    badgeBackground: KIOSK_BADGE_BG,
+    badgeForeground: KIOSK_BADGE_FG,
   },
   markets: {
-    pin: '#3B9362',
-    pinFocused: '#2A7349',
-    badgeBackground: '#DDF3E4',
-    badgeForeground: '#1F5C38',
+    pin: DEELBAAR_MOSS,
+    pinFocused: MARKET_PIN_FOCUSED,
+    badgeBackground: DEELBAAR_MOSS_SOFT,
+    badgeForeground: MARKET_BADGE_FG,
   },
   taps: {
-    pin: '#3B82F6',
-    pinFocused: '#1D4ED8',
-    badgeBackground: '#DBEAFE',
-    badgeForeground: '#1E40AF',
+    pin: TAP_PIN,
+    pinFocused: TAP_PIN_FOCUSED,
+    badgeBackground: TAP_BADGE_BG,
+    badgeForeground: TAP_BADGE_FG,
   },
 };
 
 export function mapPlaceCategoryColors(collection: MapPlaceCollection): MapPlaceCategoryColors {
   return MAP_PLACE_CATEGORY_COLORS[collection];
+}
+
+/** Filter-row icon tint — same hex as map pin for each place kind. */
+export function mapPlaceFilterIconColor(value: MapPlaceFilterValue): string {
+  if (value === 'All') {
+    return MAP_FILTER_ALL_CHIP_COLORS.selected.backgroundColor;
+  }
+  return mapPlaceCategoryColors(value).pin;
 }
 
 export function mapPlaceFilterChipColors(

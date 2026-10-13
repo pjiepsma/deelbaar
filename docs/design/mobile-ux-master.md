@@ -65,7 +65,7 @@ Backend `interaction` fields (`canFavorite`, `reason`, etc.) are **implementatio
 
 ### Horizontal listing cards
 
-**Layout:** Komoot-style snap carousel flush above the tab bar (bottom padding only). Each card is a compact **row**: thumbnail left, text right, white surface with light shadow on the map. **Type** appears as a badge on the thumbnail (not a separate count strip above the carousel).
+**Layout:** Komoot-style snap carousel flush above the tab bar (bottom padding only). Each card is a compact **column**: full-bleed photo on top, title/meta below, white surface with light shadow on the map. **Type** appears as a badge on the photo (not a separate count strip above the carousel).
 
 **Show:** image, name, type badge, distance, rating/review count when available.
 
@@ -95,6 +95,7 @@ Cards look **equally tappable** for everyone. Tapping opens the **full-screen pl
 
 ### Map chrome (search, coachmarks)
 
+- **Top chrome:** pill `SearchField` + HeroUI `Tabs` (primary) for All / Kiosks / Markets / Taps (icon + label) + soft count chip — no big wrapping card over the map. Contract: [layout-contracts/map-home.md](layout-contracts/map-home.md).
 - Coachmarks: short, sequential, dismissible — teach pan/zoom, cards, opening a place.
 - Tone: encouraging, not salesy.
 
