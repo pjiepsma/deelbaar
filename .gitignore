@@ -70,3 +70,13 @@ deelbaar-*.json
 # @end expo-cli
 # heroui-agents-md
 .heroui-docs/
+
+# Agent / local scratch (never commit)
+.cursor/debug-*.log
+.tmp-*/
+.tmp-settings.json
+apps/core/.tmp-*/
+docs/design/review-*.png
+docs/design/verify-*.png
+/open-doodles*.zip
+/template-*.zip
