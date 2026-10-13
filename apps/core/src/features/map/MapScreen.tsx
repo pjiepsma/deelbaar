@@ -26,6 +26,8 @@ import {
   MAP_MAX_RENDERED_PINS,
   MAP_OVERLAY_HORIZONTAL_PADDING,
   MAP_OVERLAY_TOP_GAP,
+  MAP_VIEWPORT_BOTTOM_CHROME_ESTIMATE_PX,
+  MAP_VIEWPORT_TOP_CHROME_ESTIMATE_PX,
   MAP_ZOOM_STATE_THROTTLE_MS,
   mapCoachmarkBottom,
   mapMyLocationBottom,
@@ -90,18 +92,30 @@ export function MapScreen() {
   const programmaticCameraRef = useRef(false);
   const mapZoomRef = useRef(MAP_DEFAULT_ZOOM);
   const mapViewportCenterRef = useRef<[number, number]>(MAP_CENTER);
+  const pendingCameraCenterRef = useRef<[number, number]>(MAP_CENTER);
   const referenceLngLatRef = useRef(referenceLngLat);
   referenceLngLatRef.current = referenceLngLat;
   mapViewportCenterRef.current = mapViewportCenter;
   const mapboxAccessToken = process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN;
-  const viewportHalfPx = Math.max(screenWidth, screenHeight) / 2;
+  /** Prefetch buffer uses longer screen half; in-view filter uses readable map band. */
+  const fetchViewportHalfPx = Math.max(screenWidth, screenHeight) / 2;
+  const mapViewportSize = useMemo(() => {
+    const visibleMapHeight = Math.max(
+      screenHeight * 0.35,
+      screenHeight - MAP_VIEWPORT_TOP_CHROME_ESTIMATE_PX - MAP_VIEWPORT_BOTTOM_CHROME_ESTIMATE_PX,
+    );
+    return {
+      halfWidthPx: screenWidth / 2,
+      halfHeightPx: visibleMapHeight / 2,
+    };
+  }, [screenHeight, screenWidth]);
   const listingsFetchEnabled = !!PAYLOAD_SERVER_ORIGIN;
 
   const { rawListings, isFetching, fetchError, requestFetch, maybeRefetchForViewport } =
     useMapListingsFetch({
       center: mapViewportCenter,
       zoom: mapViewportZoom,
-      viewportHalfPx,
+      viewportHalfPx: fetchViewportHalfPx,
       collectionFilter: listingTypeFilter,
       enabled: listingsFetchEnabled,
       unavailableMessage: t('map.placesUnavailableDescription'),
@@ -136,7 +150,7 @@ export function MapScreen() {
         listing.lngLat,
         currentCenter,
         zoom,
-        viewportHalfPx,
+        mapViewportSize,
         MAP_CAROUSEL_IN_VIEW_MARGIN,
       );
       const targetCenter = inView
@@ -154,7 +168,7 @@ export function MapScreen() {
         setMapViewportCenter(targetCenter);
       }, MAP_CAROUSEL_CAMERA_ANIMATION_MS + 100);
     },
-    [mapboxAccessToken, viewportHalfPx],
+    [mapViewportSize, mapboxAccessToken],
   );
 
   const onFocusedListingChange = useCallback((listing: MapListingCard | null) => {
@@ -287,33 +301,51 @@ export function MapScreen() {
       if (typeof lng !== 'number' || typeof lat !== 'number' || Number.isNaN(lng) || Number.isNaN(lat)) {
         return;
       }
+      const nextCenter: [number, number] = [lng, lat];
+      pendingCameraCenterRef.current = nextCenter;
       const zoom = event.properties?.zoom;
       if (typeof zoom === 'number' && !Number.isNaN(zoom)) {
-        const normalizedZoom = normalizeMapZoom(zoom, MAP_DEFAULT_ZOOM);
-        mapZoomRef.current = normalizedZoom;
-        if (zoomThrottleRef.current) {
-          clearTimeout(zoomThrottleRef.current);
-        }
-        zoomThrottleRef.current = setTimeout(() => {
-          const nextZoom = mapZoomRef.current;
-          setMapViewportZoom(nextZoom);
-          maybeRefetchForViewport(mapViewportCenterRef.current, nextZoom);
-        }, MAP_ZOOM_STATE_THROTTLE_MS);
+        mapZoomRef.current = normalizeMapZoom(zoom, MAP_DEFAULT_ZOOM);
       }
-      if (coordinatesNear([lng, lat], referenceLngLatRef.current)) {
+
+      if (zoomThrottleRef.current) {
+        clearTimeout(zoomThrottleRef.current);
+      }
+      zoomThrottleRef.current = setTimeout(() => {
+        const uiCenter = pendingCameraCenterRef.current;
+        const uiZoom = mapZoomRef.current;
+        mapViewportCenterRef.current = uiCenter;
+        setMapViewportCenter(uiCenter);
+        setMapViewportZoom(uiZoom);
+        setFocusedListing((current) => {
+          if (!current?.lngLat) {
+            return current;
+          }
+          return isListingInMapView(
+            current.lngLat,
+            uiCenter,
+            uiZoom,
+            mapViewportSize,
+            MAP_CAROUSEL_VIEWPORT_MARGIN,
+          )
+            ? current
+            : null;
+        });
+      }, MAP_ZOOM_STATE_THROTTLE_MS);
+
+      if (coordinatesNear(nextCenter, referenceLngLatRef.current)) {
         return;
       }
       if (cameraDebounceRef.current) {
         clearTimeout(cameraDebounceRef.current);
       }
       cameraDebounceRef.current = setTimeout(() => {
-        const nextCenter: [number, number] = [lng, lat];
-        setReferenceLngLat(nextCenter);
-        setMapViewportCenter(nextCenter);
-        maybeRefetchForViewport(nextCenter, mapZoomRef.current);
+        const discoveryCenter = pendingCameraCenterRef.current;
+        setReferenceLngLat(discoveryCenter);
+        maybeRefetchForViewport(discoveryCenter, mapZoomRef.current);
       }, MAP_CAMERA_DEBOUNCE_MS);
     },
-    [maybeRefetchForViewport, setReferenceLngLat],
+    [mapViewportSize, maybeRefetchForViewport, setReferenceLngLat],
   );
 
   useEffect(() => {
@@ -493,37 +525,23 @@ export function MapScreen() {
       filteredListings,
       mapViewportCenter,
       mapViewportZoom,
-      viewportHalfPx,
+      mapViewportSize,
       MAP_CAROUSEL_VIEWPORT_MARGIN,
     );
-
-    let merged = inViewport;
-    if (focusedListing) {
-      const focusedKey = listingMarkerKey(focusedListing);
-      if (focusedKey) {
-        const freshFocused =
-          filteredListings.find((item) => listingMarkerKey(item) === focusedKey) ?? focusedListing;
-        const alreadyIncluded = inViewport.some((item) => listingMarkerKey(item) === focusedKey);
-        if (!alreadyIncluded) {
-          merged = [...inViewport, freshFocused];
-        }
-      }
-    }
-
-    return sortMapCardsByDistance(merged);
-  }, [filteredListings, focusedListing, mapViewportCenter, mapViewportZoom, viewportHalfPx]);
+    return sortMapCardsByDistance(inViewport);
+  }, [filteredListings, mapViewportCenter, mapViewportSize, mapViewportZoom]);
 
   const markerListings = useMemo(() => {
     const inViewport = filterListingsInMapViewport(
       filteredListings,
       mapViewportCenter,
       mapViewportZoom,
-      viewportHalfPx,
+      mapViewportSize,
       MAP_MARKER_VIEWPORT_MARGIN,
     );
 
     let merged = inViewport;
-    if (focusedListing) {
+    if (focusedListing?.lngLat) {
       const focusedKey = listingMarkerKey(focusedListing);
       if (focusedKey) {
         const freshFocused =
@@ -540,7 +558,7 @@ export function MapScreen() {
       return sorted;
     }
     return sorted.slice(0, MAP_MAX_RENDERED_PINS);
-  }, [filteredListings, focusedListing, mapViewportCenter, mapViewportZoom, viewportHalfPx]);
+  }, [filteredListings, focusedListing, mapViewportCenter, mapViewportSize, mapViewportZoom]);
 
   const listingsToRender: Array<MapListingCard | MapListingCardPlaceholder> =
     isFetching && carouselListings.length === 0

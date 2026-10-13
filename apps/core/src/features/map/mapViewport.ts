@@ -1,9 +1,15 @@
 import type { MapListingCard } from './map.types';
 
 const EARTH_RADIUS_KM = 6371;
+const EARTH_RADIUS_M = EARTH_RADIUS_KM * 1000;
 const DEG_TO_RAD = Math.PI / 180;
 const WEB_MERCATOR_CIRCUMFERENCE_M = 40075016.686;
 const TILE_SIZE = 256;
+
+export type MapViewportSizePx = {
+  halfWidthPx: number;
+  halfHeightPx: number;
+};
 
 export function haversineKm(a: [number, number], b: [number, number]): number {
   const [lng1, lat1] = a;
@@ -19,21 +25,39 @@ export function haversineKm(a: [number, number], b: [number, number]): number {
   return EARTH_RADIUS_KM * c;
 }
 
-export function visibleRadiusKm(zoom: number, latitude: number, viewportHalfPx: number): number {
-  const metersPerPixel =
-    (WEB_MERCATOR_CIRCUMFERENCE_M * Math.cos(latitude * DEG_TO_RAD)) / (TILE_SIZE * 2 ** zoom);
-  return (metersPerPixel * viewportHalfPx) / 1000;
+export function metersPerPixelAtZoom(zoom: number, latitude: number): number {
+  return (WEB_MERCATOR_CIRCUMFERENCE_M * Math.cos(latitude * DEG_TO_RAD)) / (TILE_SIZE * 2 ** zoom);
 }
 
+/** Prefetch radius from longer screen half (legacy circular fetch buffer). */
+export function visibleRadiusKm(zoom: number, latitude: number, viewportHalfPx: number): number {
+  return (metersPerPixelAtZoom(zoom, latitude) * viewportHalfPx) / 1000;
+}
+
+function offsetMetersFromCenter(
+  listingLngLat: [number, number],
+  mapCenterLngLat: [number, number],
+): { eastM: number; northM: number } {
+  const [lng, lat] = listingLngLat;
+  const [centerLng, centerLat] = mapCenterLngLat;
+  const northM = (lat - centerLat) * DEG_TO_RAD * EARTH_RADIUS_M;
+  const eastM = (lng - centerLng) * DEG_TO_RAD * EARTH_RADIUS_M * Math.cos(centerLat * DEG_TO_RAD);
+  return { eastM, northM };
+}
+
+/** True when listing sits inside the visible map rectangle (+ margin past the edges). */
 export function isListingInMapView(
   listingLngLat: [number, number],
   mapCenterLngLat: [number, number],
   zoom: number,
-  viewportHalfPx: number,
+  viewport: MapViewportSizePx,
   inViewMargin: number,
 ): boolean {
-  const radiusKm = visibleRadiusKm(zoom, mapCenterLngLat[1], viewportHalfPx);
-  return haversineKm(mapCenterLngLat, listingLngLat) <= radiusKm * inViewMargin;
+  const mpp = metersPerPixelAtZoom(zoom, mapCenterLngLat[1]);
+  const halfWidthM = mpp * viewport.halfWidthPx * inViewMargin;
+  const halfHeightM = mpp * viewport.halfHeightPx * inViewMargin;
+  const { eastM, northM } = offsetMetersFromCenter(listingLngLat, mapCenterLngLat);
+  return Math.abs(eastM) <= halfWidthM && Math.abs(northM) <= halfHeightM;
 }
 
 export function cameraCenterTowardListing(
@@ -51,14 +75,14 @@ export function filterListingsInMapViewport(
   listings: MapListingCard[],
   mapCenterLngLat: [number, number],
   zoom: number,
-  viewportHalfPx: number,
+  viewport: MapViewportSizePx,
   viewportMargin: number,
 ): MapListingCard[] {
   return listings.filter((item) => {
     if (!item.lngLat) {
       return false;
     }
-    return isListingInMapView(item.lngLat, mapCenterLngLat, zoom, viewportHalfPx, viewportMargin);
+    return isListingInMapView(item.lngLat, mapCenterLngLat, zoom, viewport, viewportMargin);
   });
 }
 

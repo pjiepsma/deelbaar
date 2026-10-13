@@ -10,10 +10,16 @@ export const MAP_LISTING_PIN_FOCUSED_SIZE = 18;
 /** Carousel focus → map camera: nudge strength when pin already in view (0–1). */
 export const MAP_CAROUSEL_CAMERA_NUDGE = 0.25;
 export const MAP_CAROUSEL_CAMERA_ANIMATION_MS = 400;
-/** Fraction of visible radius treated as “in view” for carousel camera nudge vs fly-to. */
-export const MAP_CAROUSEL_IN_VIEW_MARGIN = 0.8;
-/** Carousel lists places inside the map view plus a thin ring just outside (1 = edge). */
-export const MAP_CAROUSEL_VIEWPORT_MARGIN = 1.15;
+/** Fraction of visible rect treated as “in view” for carousel camera nudge vs fly-to. */
+export const MAP_CAROUSEL_IN_VIEW_MARGIN = 0.85;
+/** Carousel / count: visible map rect plus a thin ring past the edges (1 = exact). */
+export const MAP_CAROUSEL_VIEWPORT_MARGIN = 1.12;
+/**
+ * Overlay bands that cover the MapView (search/tabs/count + carousel/tab).
+ * In-view filter uses the remaining middle band, not the full screen height.
+ */
+export const MAP_VIEWPORT_TOP_CHROME_ESTIMATE_PX = 150;
+export const MAP_VIEWPORT_BOTTOM_CHROME_ESTIMATE_PX = 280;
 /** Delay camera follow until carousel snap settles after a swipe. */
 export const MAP_CAROUSEL_SNAP_CAMERA_DEBOUNCE_MS = 180;
 
@@ -37,11 +43,11 @@ export const MAP_FETCH_REFETCH_TILE_FRACTION = 1 / 3;
 export const MAP_FETCH_LISTING_LIMIT = 200;
 /** Zoom ref change beyond this fraction triggers refetch. */
 export const MAP_FETCH_RADIUS_CHANGE_THRESHOLD = 0.25;
-/** Pin layer uses a slightly wider viewport than the carousel. */
-export const MAP_MARKER_VIEWPORT_MARGIN = 1.1;
+/** Pin layer uses a slightly wider rect than the carousel. */
+export const MAP_MARKER_VIEWPORT_MARGIN = 1.2;
 /** Hard cap on PointAnnotation count in viewport. */
 export const MAP_MAX_RENDERED_PINS = 80;
-/** Throttle zoom-driven React state while panning. */
+/** Throttle viewport center/zoom React state while panning (carousel + count). */
 export const MAP_ZOOM_STATE_THROTTLE_MS = 150;
 
 /** Debounce before prefetching place detail when carousel/pin focus changes. */
