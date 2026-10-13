@@ -17,6 +17,7 @@ import {
 import { firstRouteParam } from '../../navigation/routeParams';
 import { isEmailValid, isPasswordValid, normalizeEmail, normalizeError } from './auth.validation';
 import { AuthScreenShell } from '../../components/shared';
+import { TestId } from '../../testing/testIds';
 import { fireHaptic } from '../../lib/utils/fire-haptic';
 
 export function SignUpEmailWizardScreen() {
@@ -95,6 +96,7 @@ export function SignUpEmailWizardScreen() {
 
   return (
     <AuthScreenShell
+      testID={TestId.screenAuthSignUp}
       title={t('auth.createAccountTitle')}
       description={t('auth.createAccountDescription')}
       onBack={onBack}

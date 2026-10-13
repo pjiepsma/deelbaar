@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import { useLocale } from '../../context/LocaleContext';
 import { authNotificationsHref, authPush } from '../../navigation/authPaths';
 import { AuthScreenShell } from '../../components/shared';
+import { TestId } from '../../testing/testIds';
 
 export function WelcomeSignedUpScreen() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export function WelcomeSignedUpScreen() {
 
   return (
     <AuthScreenShell
+      testID={TestId.screenAuthWelcome}
       title={t('auth.welcomeTitle')}
       description={t('auth.welcomeDescription')}
       onBack={() => router.back()}

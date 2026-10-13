@@ -14,7 +14,7 @@ Workflow: `.github/workflows/core-navigation-smoke.yml`
 
 | # | Flow | Steps | Pass |
 |---|------|-------|------|
-| 1 | Guest → auth | Profile / Favorites / Hub / Map protected action → `/auth` | Back returns to prior tab |
+| 1 | Guest → auth | Account / Favorites / Map protected action → `/auth` | Back returns to prior tab |
 | 2 | Auth back chrome | Auth start shows `HeroChromeButton` top-left; swipe back works | Matches listing circle back |
 | 3 | Auth email path | Enter email → login or sign-up → back through stack | No duplicate back rows |
 | 4 | Listing detail | Map card → `/listing/:collection/:id` → back | Hero back + gesture |

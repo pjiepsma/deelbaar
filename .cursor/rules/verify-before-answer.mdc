@@ -1,0 +1,37 @@
+---
+description: No guessing hedges — verify before answering; never pad with "likely"
+alwaysApply: true
+---
+
+# Verify before you speak
+
+## Rule
+
+If you are **not sure**, **do not answer yet**. Read code, check docs, run a tool, or **agent-device a11y snapshot** on the live app. Then answer with what you **found**.
+
+Guessing wastes the user’s time. Words like *likely*, *probably*, *might*, *could be*, *seems*, *appears to*, *I think*, *maybe* used as a substitute for checking are **forbidden**.
+
+**UI / layout bugs:** do **not** patch from the user’s description alone. Reach the screen with `agent-device`, snapshot (labels + rects), prove the cause in code, then fix. No screenshot/capture pipeline.
+
+## Do
+
+1. Open the relevant file / component / CSS / layout.
+2. For on-screen issues: agent-device snapshot → match node + size/order to the complaint.
+3. Confirm the fact (same token? same wrapper? wrong `size`?).
+4. Answer with the proven result. Fix if broken. Re-snapshot after.
+
+## Do not
+
+- Claim “same as X” without reading both call sites.
+- Soften uncertainty: *likely the Pressable wrapper…*, *probably a shadow issue…*
+- Ship a speculative UI fix while narrating guesses.
+- Use PNG capture scripts as the verify path.
+
+## When you still cannot prove it
+
+Say **what you checked**, **what is still unknown**, and **one next check**. No hedge filler.
+
+```text
+Wrong: Shadow is likely clipped by PressableFeedback.
+Right: (read GuestAccountScreen) Help Card is inside PressableFeedback; Join Card is not. Shadow on Help was clipped. Moving press inside Card.
+```

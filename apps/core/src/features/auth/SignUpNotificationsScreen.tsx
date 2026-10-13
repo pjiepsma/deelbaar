@@ -11,6 +11,7 @@ import { authAllowLocationHref, authPush } from '../../navigation/authPaths';
 import { firstRouteParam } from '../../navigation/routeParams';
 import { normalizeError } from './auth.validation';
 import { AuthScreenShell } from '../../components/shared';
+import { TestId } from '../../testing/testIds';
 
 function authOnboardingSource(value: string | undefined): 'signup' | 'postLogin' {
   if (value === 'signup' || value === 'postLogin') {
@@ -79,6 +80,7 @@ export function SignUpNotificationsScreen() {
 
   return (
     <AuthScreenShell
+      testID={TestId.screenAuthNotifications}
       title={t('auth.notificationsTitle')}
       description={screenDescription}
       onBack={() => router.back()}

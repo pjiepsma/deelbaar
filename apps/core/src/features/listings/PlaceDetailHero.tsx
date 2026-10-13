@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HeroChromeButton } from './HeroChromeButton';
 import { useThemePreference } from '../../context/ThemePreferenceContext';
+import { TestId } from '../../testing/testIds';
 import type { MapPlaceCollection } from '../../lib/mapPlaces/mapPlaceTaxonomy';
 import { mapPlaceCategoryColors } from '../../lib/mapPlaces/mapPlaceCategoryColors';
 import { MAPBOX_STYLE_DARK, MAPBOX_STYLE_STREETS } from '../map/map.constants';
@@ -250,7 +251,7 @@ export function PlaceDetailHero({
           pointerEvents="box-none"
           style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
         >
-          <HeroChromeButton onPress={onBack} accessibilityLabel="Back">
+          <HeroChromeButton testID={TestId.btnBack} onPress={onBack} accessibilityLabel="Back">
             <Ionicons name="arrow-back" size={22} color="#1A1A1A" />
           </HeroChromeButton>
           <View style={{ flexDirection: 'row', gap: 8 }}>

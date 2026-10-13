@@ -39,6 +39,7 @@ import { dismissAuthFlow } from './auth.navigation';
 import { isEmailValid, isPasswordValid, normalizeEmail, normalizeError } from './auth.validation';
 
 import { AuthScreenShell } from '../../components/shared';
+import { TestId } from '../../testing/testIds';
 
 import { fireHaptic } from '../../lib/utils/fire-haptic';
 
@@ -128,6 +129,8 @@ export function LoginEmailScreen() {
 
     <AuthScreenShell
 
+      testID={TestId.screenAuthLoginEmail}
+
       title={t('auth.loginWithEmailTitle')}
 
       description={t('auth.loginWithEmailDescription')}
@@ -170,6 +173,8 @@ export function LoginEmailScreen() {
 
           <Input
 
+            testID={TestId.fieldAuthEmail}
+
             placeholder={t('auth.emailPlaceholder')}
 
             keyboardType="email-address"
@@ -196,6 +201,8 @@ export function LoginEmailScreen() {
 
         <Input
 
+          testID={TestId.fieldAuthPassword}
+
           placeholder={t('auth.passwordPlaceholder', { min: String(authConfig.minPasswordLength) })}
 
           secureTextEntry
@@ -218,7 +225,7 @@ export function LoginEmailScreen() {
 
       <View style={{ gap: 10 }}>
 
-        <Button variant="primary" onPress={onSubmit} isDisabled={isSubmitDisabled}>
+        <Button testID={TestId.btnAuthLogin} variant="primary" onPress={onSubmit} isDisabled={isSubmitDisabled}>
 
           {isSubmitting ? t('auth.loggingIn') : t('auth.login')}
 

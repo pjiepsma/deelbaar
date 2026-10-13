@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { useLocale } from '../../context/LocaleContext';
 import { requestPasswordReset } from '../../lib/api/auth/authClient';
 import { AuthScreenShell } from '../../components/shared';
+import { TestId } from '../../testing/testIds';
 import { authForgotPasswordSentHref, authReplace } from '../../navigation/authPaths';
 import { firstRouteParam } from '../../navigation/routeParams';
 import { isEmailValid, normalizeEmail, normalizeError } from './auth.validation';
@@ -36,6 +37,7 @@ export function ForgotPasswordScreen() {
 
   return (
     <AuthScreenShell
+      testID={TestId.screenAuthForgotPassword}
       title={t('auth.forgotPasswordTitle')}
       description={t('auth.forgotPasswordDescription')}
       onBack={() => router.back()}

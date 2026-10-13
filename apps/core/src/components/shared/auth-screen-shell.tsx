@@ -18,6 +18,7 @@ type AuthScreenShellProps = PropsWithChildren<{
   backAccessibilityLabel?: string;
   titlePresentation?: 'card' | 'plain';
   titleAlign?: 'center' | 'left';
+  testID?: string;
 }>;
 
 export function AuthScreenShell({
@@ -31,6 +32,7 @@ export function AuthScreenShell({
   backAccessibilityLabel = 'Back',
   titlePresentation = 'card',
   titleAlign = 'left',
+  testID,
 }: AuthScreenShellProps) {
   const insets = useSafeAreaInsets();
   const isCentered = layout === 'centered';
@@ -42,7 +44,7 @@ export function AuthScreenShell({
   const scrollPaddingTop = onBack ? 0 : Math.max(insets.top, 12);
 
   return (
-    <View className="flex-1 bg-background">
+    <View testID={testID} className="flex-1 bg-background">
       {onBack ? (
         <ScreenBackChrome onBack={onBack} accessibilityLabel={backAccessibilityLabel} />
       ) : null}

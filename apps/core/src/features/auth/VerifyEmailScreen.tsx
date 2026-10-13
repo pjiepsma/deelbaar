@@ -12,6 +12,7 @@ import { AuthPath, authLoginEmailHref, authPush } from '../../navigation/authPat
 import { firstRouteParam } from '../../navigation/routeParams';
 import { isEmailValid, isPasswordValid, normalizeEmail, normalizeError } from './auth.validation';
 import { AuthScreenShell } from '../../components/shared';
+import { TestId } from '../../testing/testIds';
 
 const normalizeCode = (raw: string): string => raw.replace(/\D/g, '').slice(0, 6);
 
@@ -125,6 +126,7 @@ export function VerifyEmailScreen() {
 
   return (
     <AuthScreenShell
+      testID={TestId.screenAuthVerifyEmail}
       title={t('auth.verifyTitle')}
       description={t('auth.verifyDescription')}
       onBack={() => router.back()}

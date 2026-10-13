@@ -1,12 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useThemeColor } from 'heroui-native';
+import { Platform } from 'react-native';
 
+import { FloatingTabBar } from '../../src/components/navigation/FloatingTabBar';
 import { useLocale } from '../../src/context/LocaleContext';
-import { fireHaptic } from '../../src/lib/utils/fire-haptic';
-
-const TAB_LABEL_FONT_SIZE = 12;
-const TAB_ICON_SIZE = 24;
+import { TABS } from '../../src/navigation/tabs';
 
 export const unstable_settings = {
   initialRouteName: 'map',
@@ -14,50 +14,39 @@ export const unstable_settings = {
 
 export default function TabLayout() {
   const { t } = useLocale();
-  const [tabBarActiveTintColor, tabBarInactiveTintColor] = useThemeColor(['accent', 'muted']);
+  const [accentColor, mutedColor] = useThemeColor(['accent', 'muted']);
+
+  if (Platform.OS === 'ios') {
+    return (
+      <NativeTabs tintColor={accentColor} iconColor={mutedColor}>
+        {TABS.map((tab) => (
+          <NativeTabs.Trigger key={tab.name} name={tab.name}>
+            <NativeTabs.Trigger.Label>{t(tab.labelKey)}</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Icon
+              src={<NativeTabs.Trigger.VectorIcon family={Ionicons} name={tab.ionicon} />}
+            />
+          </NativeTabs.Trigger>
+        ))}
+      </NativeTabs>
+    );
+  }
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarLabelStyle: { fontSize: TAB_LABEL_FONT_SIZE },
-        tabBarActiveTintColor,
-        tabBarInactiveTintColor,
-      }}
-      screenListeners={{
-        tabPress: () => {
-          fireHaptic();
+        tabBarStyle: {
+          position: 'absolute',
+          backgroundColor: 'transparent',
+          borderTopWidth: 0,
+          elevation: 0,
         },
       }}
+      tabBar={(props) => <FloatingTabBar {...props} />}
     >
-      <Tabs.Screen
-        name="map"
-        options={{
-          title: t('tabs.map'),
-          tabBarIcon: ({ color }) => <Ionicons name="search-outline" size={TAB_ICON_SIZE} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="favorites"
-        options={{
-          title: t('tabs.favorites'),
-          tabBarIcon: ({ color }) => <Ionicons name="heart-outline" size={TAB_ICON_SIZE} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="hub"
-        options={{
-          title: t('tabs.hub'),
-          tabBarIcon: ({ color }) => <Ionicons name="albums-outline" size={TAB_ICON_SIZE} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: t('tabs.profile'),
-          tabBarIcon: ({ color }) => <Ionicons name="person-circle-outline" size={TAB_ICON_SIZE} color={color} />,
-        }}
-      />
+      {TABS.map((tab) => (
+        <Tabs.Screen key={tab.name} name={tab.name} options={{ title: t(tab.labelKey) }} />
+      ))}
     </Tabs>
   );
 }

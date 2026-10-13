@@ -53,7 +53,7 @@ export const CARD_IMAGE_HEIGHT = 190;
 export const MAP_OVERLAY_HORIZONTAL_PADDING = 16;
 export const MAP_OVERLAY_TOP_GAP = 8;
 
-/** Komoot-style horizontal listing carousel at the bottom of the map. */
+/** Gap between carousel and tab chrome (floating pill or native tab top). */
 export const MAP_LISTING_CAROUSEL_BOTTOM_PADDING = 12;
 export const MAP_LISTING_CARD_GAP = 10;
 export const MAP_LISTING_IMAGE_SIZE = 92;
@@ -63,17 +63,34 @@ export const MAP_LISTING_CARD_RADIUS = 14;
 export const MAP_LISTING_CARD_INNER_GAP = 10;
 export const MAP_LISTING_HEART_SIZE = 32;
 export const MAP_LISTING_THUMB_OVERLAY_INSET = 6;
+export const MAP_MY_LOCATION_ABOVE_CAROUSEL_GAP = 12;
+export const MAP_COACHMARK_ABOVE_CAROUSEL_GAP = 16;
 
 export function mapListingCarouselCardWidth(screenWidth: number): number {
   return screenWidth - MAP_OVERLAY_HORIZONTAL_PADDING * 2 - MAP_LISTING_CARD_PEEK;
 }
 
+/** Carousel `bottom` — `tabBarOverlayClearance` is 0 on iOS, pill stack on Android. */
+export function mapListingCarouselBottom(tabBarOverlayClearance: number): number {
+  return tabBarOverlayClearance + MAP_LISTING_CAROUSEL_BOTTOM_PADDING;
+}
+
 /** My-location control sits above the carousel, right inset. */
-export const MAP_MY_LOCATION_BOTTOM_OFFSET =
-  MAP_LISTING_CAROUSEL_BOTTOM_PADDING + MAP_LISTING_CARD_HEIGHT + 12;
+export function mapMyLocationBottom(tabBarOverlayClearance: number): number {
+  return (
+    mapListingCarouselBottom(tabBarOverlayClearance) +
+    MAP_LISTING_CARD_HEIGHT +
+    MAP_MY_LOCATION_ABOVE_CAROUSEL_GAP
+  );
+}
 
 /** Coachmark bubble sits above the horizontal listing carousel. */
-export const MAP_COACHMARK_OVERLAY_EXTRA_GAP =
-  MAP_LISTING_CARD_HEIGHT + MAP_LISTING_CAROUSEL_BOTTOM_PADDING + 16;
+export function mapCoachmarkBottom(tabBarOverlayClearance: number): number {
+  return (
+    mapListingCarouselBottom(tabBarOverlayClearance) +
+    MAP_LISTING_CARD_HEIGHT +
+    MAP_COACHMARK_ABOVE_CAROUSEL_GAP
+  );
+}
 
 export const CATEGORY_SCROLL_GAP = 8;

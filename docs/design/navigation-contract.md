@@ -6,8 +6,8 @@ Single architecture: **Expo Router** file routes + React Navigation under the ho
 
 | Category | Routes | Header | Back |
 |----------|--------|--------|------|
-| **Tabs** | `/(tabs)/*` | `headerShown: false` | N/A (tab bar) |
-| **Full-bleed stack** | `/auth/*`, `/listing/*`, `/legal/[page]` | `headerShown: false` | `HeroChromeButton` (`arrow-back`) + `router.back()` / `navigation.goBack()` |
+| **Tabs** | `/(tabs)/*` | `headerShown: false` | N/A — iOS `NativeTabs`, Android floating pill (`FloatingTabBar`). Layout: [layout-contracts/tabs-chrome.md](layout-contracts/tabs-chrome.md) |
+| **Full-bleed stack** | `/auth/*`, `/listing/*`, `/account/*`, `/legal/[page]` | `headerShown: false` | `HeroChromeButton` (`arrow-back`) + `router.back()` / `navigation.goBack()` |
 
 Presets live in `apps/core/src/navigation/screenOptions.ts`.
 
@@ -22,6 +22,7 @@ Presets live in `apps/core/src/navigation/screenOptions.ts`.
 - Guest → auth: `navigateToAuthStart()` → `/auth`
 - Listing: `navigateToListingDetail({ collection, id })` → `/listing/:collection/:id`
 - Legal: `navigateToLegalDocument({ page })` → `/legal/:page`
+- Account stack: `navigateToAccountPath` / listings helpers in `rootNavigation.ts` → `/account/*`
 - Auth success exit: `dismissAuthFlow()` → `router.replace('/(tabs)/map')` (skipped when `authFlowPresentation === 'embedded'`)
 
 Auth step transitions: `apps/core/src/navigation/authPaths.ts` only — no raw legacy screen names (`LoginEmail`, `AuthStart`, …).
@@ -35,6 +36,7 @@ Auth step transitions: `apps/core/src/navigation/authPaths.ts` only — no raw l
 | `/auth/callback` | Verify email (`email`, `code` query params) |
 | `/listing/:collection/:id` | Listing detail |
 | `/legal/:page` | Legal document |
+| `/account/*` | Account stack (profile, listings, reach, language, theme, …) |
 
 Scheme: `deelbaar://` (see `app.json`).
 

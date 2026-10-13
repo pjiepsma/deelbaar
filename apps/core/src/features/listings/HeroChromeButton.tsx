@@ -8,9 +8,10 @@ type HeroChromeButtonProps = {
   children: ReactNode;
   onPress: () => void;
   accessibilityLabel: string;
+  testID?: string;
 };
 
-export function HeroChromeButton({ children, onPress, accessibilityLabel }: HeroChromeButtonProps) {
+export function HeroChromeButton({ children, onPress, accessibilityLabel, testID }: HeroChromeButtonProps) {
   return (
     <View
       style={{
@@ -24,7 +25,7 @@ export function HeroChromeButton({ children, onPress, accessibilityLabel }: Hero
         elevation: 5,
       }}
     >
-      <PressableFeedback onPress={onPress} accessibilityLabel={accessibilityLabel}>
+      <PressableFeedback testID={testID} onPress={onPress} accessibilityLabel={accessibilityLabel}>
         <View
           style={{
             width: PLACE_DETAIL_HERO_CHROME_SIZE,

@@ -7,6 +7,7 @@ import { Button, Card } from 'heroui-native';
 import { useLocale } from '../../context/LocaleContext';
 
 import { AuthScreenShell } from '../../components/shared';
+import { TestId } from '../../testing/testIds';
 
 import { AuthPath, authPush } from '../../navigation/authPaths';
 
@@ -37,6 +38,8 @@ export function ForgotPasswordEmailSentScreen() {
   return (
 
     <AuthScreenShell
+
+      testID={TestId.screenAuthForgotPasswordSent}
 
       title={t('auth.checkYourEmailTitle')}
 

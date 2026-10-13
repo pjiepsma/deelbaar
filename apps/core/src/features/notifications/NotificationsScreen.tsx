@@ -20,6 +20,7 @@ import { fetchNotifications, markNotificationRead } from '../../lib/api/notifica
 import { openNotificationActionUrl } from '../../lib/notifications/openNotificationActionUrl';
 import type { Notification } from '../../lib/types/payload-generated';
 import { navigateToAuthStart } from '../../navigation/rootNavigation';
+import { TestId } from '../../testing/testIds';
 
 function formatTimestamp(iso: string | null | undefined, locale: string): string {
   if (!iso) {
@@ -103,7 +104,7 @@ export function NotificationsScreen() {
 
   if (!user) {
     return (
-      <Screen horizontalPadding={TAB_SCREEN_HORIZONTAL_PADDING}>
+      <Screen testID={TestId.screenNotifications} horizontalPadding={TAB_SCREEN_HORIZONTAL_PADDING}>
         <View style={{ gap: 16, flex: 1 }}>
           <ScreenBackChrome onBack={() => router.back()} accessibilityLabel={t('listing.back')} />
           <GuestAuthCard
@@ -119,7 +120,7 @@ export function NotificationsScreen() {
   }
 
   return (
-    <Screen horizontalPadding={TAB_SCREEN_HORIZONTAL_PADDING}>
+    <Screen testID={TestId.screenNotifications} horizontalPadding={TAB_SCREEN_HORIZONTAL_PADDING}>
       <ScrollView
         className="flex-1"
         contentContainerStyle={{

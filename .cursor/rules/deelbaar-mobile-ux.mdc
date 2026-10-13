@@ -13,7 +13,7 @@ alwaysApply: false
 - **Never** show API or contract text in the UI (`auth_required`, `interaction.reason`, “Interaction locked”, raw enum names).
 - **Map cards:** no auth or entitlement labels; guests browse cards like everyone else.
 - **Gate on action:** guests who tap protected actions (save/favorite, follow, alerts, full listing when gated) get the sign-in modal; use human copy only. **Never** favorite, follow, or persist saved state while logged out — use `runMapProtectedAction` in `apps/core/src/features/map/mapProtectedAction.ts`.
-- **Tabs:** one shared guest layout for Hub and Favorites; Profile follows the Settings pattern (guest and signed-in share skeleton).
+- **Tabs:** Map · Favorites · Account; Favorites guest + Account upsell share GuestAuthCard template; Account guest/signed-in share skeleton (hosting under Account).
 - **i18n:** English and Dutch for all new user-visible strings.
 
 ## When implementing
@@ -22,4 +22,4 @@ Design from the master doc (user journeys and access layers), not by copying wha
 
 Complete the checklist at the bottom of `mobile-ux-master.md` before finishing.
 
-**UI verification:** layout contract + **Layout proof** first; optional screenshot — `.cursor/rules/verify-ui-copy-with-screenshot.mdc`.
+**UI verification:** layout contract + **Layout proof** + agent-device a11y assert — `.cursor/rules/verify-ui-copy-with-screenshot.mdc` and `docs/design/agent-visual-verify.md`.

@@ -1,5 +1,8 @@
 import * as Location from 'expo-location';
 
+/** Stale last-known must not fake a successful my-location move (emulator defaults linger for hours). */
+const LAST_KNOWN_MAX_AGE_MS = 60_000;
+
 function coordsFromPosition(position: Location.LocationObject): [number, number] | null {
   const lng = position.coords.longitude;
   const lat = position.coords.latitude;
@@ -25,20 +28,27 @@ export async function resolveDeviceLngLat(): Promise<[number, number] | null> {
     return null;
   }
 
-  const lastKnown = await Location.getLastKnownPositionAsync();
-  if (lastKnown) {
-    const lngLat = coordsFromPosition(lastKnown);
-    if (lngLat) {
-      return lngLat;
-    }
-  }
-
+  // Balanced + mayShowUserSettingsDialog(true) fails with "unsatisfied device settings"
+  // when Google Location Accuracy is off (Expo emulator guidance). Prefer GPS High, no dialog.
   try {
     const position = await Location.getCurrentPositionAsync({
-      accuracy: Location.Accuracy.Balanced,
+      accuracy: Location.Accuracy.High,
+      mayShowUserSettingsDialog: false,
     });
-    return coordsFromPosition(position);
+    const current = coordsFromPosition(position);
+    if (current) {
+      return current;
+    }
   } catch {
-    return null;
+    // Fall through to fresh last-known.
   }
+
+  const lastKnown = await Location.getLastKnownPositionAsync({
+    maxAge: LAST_KNOWN_MAX_AGE_MS,
+  });
+  if (lastKnown) {
+    return coordsFromPosition(lastKnown);
+  }
+
+  return null;
 }

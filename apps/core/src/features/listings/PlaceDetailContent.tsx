@@ -29,6 +29,7 @@ import { PlaceDetailHero, type PlaceDetailHeroMode } from './PlaceDetailHero';
 import { PlaceDetailReviewsSection } from './PlaceDetailReviewsSection';
 import type { PlaceDetailReviewRow } from './placeDetailReviews.model';
 import type { AuthUser } from '../../lib/api/auth/authClient';
+import { TestId } from '../../testing/testIds';
 
 type Props = {
   place: MapPlaceRecord;
@@ -92,7 +93,7 @@ export function PlaceDetailContent({
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: PLACE_DETAIL_BG }}>
+    <View testID={TestId.screenListingDetail} style={{ flex: 1, backgroundColor: PLACE_DETAIL_BG }}>
       <PlaceDetailHero
         heroMode={heroMode}
         onHeroModeChange={onHeroModeChange}

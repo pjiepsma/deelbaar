@@ -27,16 +27,17 @@ import {
   MAP_CAROUSEL_VIEWPORT_MARGIN,
   MAP_AREA_SEARCH_ZOOM,
   MAP_CENTER,
-  MAP_COACHMARK_OVERLAY_EXTRA_GAP,
   MAP_DEFAULT_ZOOM,
-  MAP_LISTING_CAROUSEL_BOTTOM_PADDING,
   MAP_MARKER_VIEWPORT_MARGIN,
   MAP_MAX_RENDERED_PINS,
-  MAP_MY_LOCATION_BOTTOM_OFFSET,
   MAP_OVERLAY_HORIZONTAL_PADDING,
   MAP_OVERLAY_TOP_GAP,
   MAP_ZOOM_STATE_THROTTLE_MS,
+  mapCoachmarkBottom,
+  mapMyLocationBottom,
 } from './map.constants';
+import { tabBarOverlayClearance } from '../../navigation/tabBarClearance';
+import { TestId } from '../../testing/testIds';
 import {
   getMapCoachmarkActivationDone,
   getMapCoachmarkCardsDone,
@@ -82,6 +83,7 @@ export function MapScreen() {
   const [mapViewportCenter, setMapViewportCenter] = useState<[number, number]>(MAP_CENTER);
   const [mapViewportZoom, setMapViewportZoom] = useState(MAP_DEFAULT_ZOOM);
   const insets = useSafeAreaInsets();
+  const overlayTabClearance = tabBarOverlayClearance(insets.bottom);
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const { referenceLngLat, setReferenceLngLat } = useDiscoveryArea();
   const cameraDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -573,7 +575,7 @@ export function MapScreen() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View testID={TestId.screenMap} style={{ flex: 1 }}>
       <Mapbox.MapView
         style={{ flex: 1 }}
         styleURL={mapStyleURL}
@@ -639,7 +641,7 @@ export function MapScreen() {
         style={{
           position: 'absolute',
           right: MAP_OVERLAY_HORIZONTAL_PADDING,
-          bottom: MAP_MY_LOCATION_BOTTOM_OFFSET,
+          bottom: mapMyLocationBottom(overlayTabClearance),
         }}
       >
         <MapMyLocationButton onPress={onMyLocationPress} accessibilityLabel={t('map.myLocation')} />
@@ -669,7 +671,7 @@ export function MapScreen() {
             position: 'absolute',
             left: MAP_OVERLAY_HORIZONTAL_PADDING,
             right: MAP_OVERLAY_HORIZONTAL_PADDING,
-            bottom: MAP_LISTING_CAROUSEL_BOTTOM_PADDING + MAP_COACHMARK_OVERLAY_EXTRA_GAP,
+            bottom: mapCoachmarkBottom(overlayTabClearance),
             zIndex: 40,
           }}
         >

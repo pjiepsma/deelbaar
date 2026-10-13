@@ -21,6 +21,7 @@ import { fetchCurrentUserFull } from '../../lib/api/users/fetchCurrentUserFull';
 import { navigateToAuthStart } from '../../navigation/rootNavigation';
 import type { User } from '../../lib/types/payload-generated';
 import { buildMapPlaceKindLabel } from '../../lib/mapPlaces/mapPlaceTaxonomy';
+import { TestId } from '../../testing/testIds';
 import { CARD_IMAGE_HEIGHT } from '../map/map.constants';
 import { mapPayloadListingToMapCard, sortMapCardsByDistance } from '../map/mapListing.mapper';
 import type { MapPlaceRecord } from '../map/map.types';
@@ -140,7 +141,11 @@ export function SavedScreen() {
 
   if (!user) {
     return (
-      <Screen withTabBarSpacing horizontalPadding={TAB_SCREEN_HORIZONTAL_PADDING}>
+      <Screen
+        testID={TestId.screenFavoritesGuest}
+        withTabBarSpacing
+        horizontalPadding={TAB_SCREEN_HORIZONTAL_PADDING}
+      >
         <ScrollView
           className="flex-1"
           contentContainerStyle={{
@@ -165,7 +170,11 @@ export function SavedScreen() {
   }
 
   return (
-    <Screen withTabBarSpacing horizontalPadding={TAB_SCREEN_HORIZONTAL_PADDING}>
+    <Screen
+      testID={TestId.screenFavorites}
+      withTabBarSpacing
+      horizontalPadding={TAB_SCREEN_HORIZONTAL_PADDING}
+    >
       <ScrollView
         className="flex-1"
         contentContainerStyle={{

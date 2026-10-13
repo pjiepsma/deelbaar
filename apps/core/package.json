@@ -16,6 +16,7 @@
     "icons:generate": "node ../../scripts/generate-core-app-icons.cjs"
   },
   "dependencies": {
+    "@expo-google-fonts/fredoka": "^0.4.1",
     "@expo-google-fonts/nunito": "^0.4.2",
     "@expo/metro-runtime": "~55.0.11",
     "@gorhom/bottom-sheet": "^5.2.14",
@@ -39,8 +40,8 @@
     "expo-secure-store": "^55.0.14",
     "expo-splash-screen": "~55.0.21",
     "expo-status-bar": "~55.0.6",
-    "heroui-native": "^1.0.4",
-    "heroui-native-pro": "1.0.0-beta.3",
+    "heroui-native": "^1.0.10",
+    "heroui-native-pro": "1.0.0-beta.11",
     "react": "19.2.0",
     "react-native": "0.83.6",
     "react-native-gesture-handler": "~2.30.0",

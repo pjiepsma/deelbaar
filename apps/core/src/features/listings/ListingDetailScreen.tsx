@@ -31,6 +31,7 @@ import { resolveHeroPhotoUrls, resolvePlaceLngLat } from './placeDetail.model';
 import type { PlaceDetailReviewRow } from './placeDetailReviews.model';
 import { showPlaceDetailContributorComingSoon } from './placeDetailActions';
 import { PLACE_DETAIL_BG } from './placeDetail.constants';
+import { TestId } from '../../testing/testIds';
 
 function parseListingId(raw: string | undefined): number {
   const parsed = Number(raw);
@@ -223,7 +224,11 @@ export function ListingDetailScreen() {
           paddingHorizontal: 20,
         }}
       >
-        <HeroChromeButton onPress={() => router.back()} accessibilityLabel={t('listing.back')}>
+        <HeroChromeButton
+          testID={TestId.btnBack}
+          onPress={() => router.back()}
+          accessibilityLabel={t('listing.back')}
+        >
           <Ionicons name="arrow-back" size={22} color="#1A1A1A" />
         </HeroChromeButton>
         <Text className="text-foreground mt-4 text-lg font-semibold">{t('listing.unavailableTitle')}</Text>

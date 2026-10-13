@@ -11,6 +11,7 @@ import { getAuthFlowPresentation } from './authFlowPresentation';
 import { dismissAuthFlow } from './auth.navigation';
 import { locationErrorMessage } from '../../lib/location/locationErrorMessage';
 import { AuthScreenShell } from '../../components/shared';
+import { TestId } from '../../testing/testIds';
 
 export function AllowLocationScreen() {
   const router = useRouter();
@@ -57,6 +58,7 @@ export function AllowLocationScreen() {
 
   return (
     <AuthScreenShell
+      testID={TestId.screenAuthAllowLocation}
       title={t('auth.locationTitle')}
       description={t('auth.locationDescription')}
       onBack={() => router.back()}

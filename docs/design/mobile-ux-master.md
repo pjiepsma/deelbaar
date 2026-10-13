@@ -12,8 +12,8 @@ Map-first neighbourhood app:
 
 - **Discover** shared places (kiosks, markets, taps) on the map
 - **Save** favorites for quick return
-- **Host** manage their listing in Hub
-- **Configure** the app in Profile (theme, language, legal, account)
+- **Host** manage their listing under Account → My listings
+- **Configure** the app in Account (theme, language, legal, reach, privacy)
 
 **Personality:** Warm, local, trustworthy, uncluttered. A useful neighbourhood tool — not a social network or fintech app.
 
@@ -43,7 +43,7 @@ Map-first neighbourhood app:
 
 **Map tab rules (Milestone 1):** viewport-sized fetch with prefetch buffer; abort superseded network requests; cap payloads and rendered pins; native map layers preferred over many React marker views. **Discovery** responses carry card-only fields; **focus** (pin or carousel snap) prefetches full place detail so opening a card feels instant.
 
-Same principles apply later to Favorites lists, place detail media, and Hub — bounded fetch, render what is on screen, background refresh by default.
+Same principles apply later to Favorites lists, place detail media, and Account hosting — bounded fetch, render what is on screen, background refresh by default.
 
 ---
 
@@ -54,9 +54,8 @@ Same principles apply later to Favorites lists, place detail media, and Hub — 
 | Map browse (pan, zoom, cards) | Full | Full |
 | Place detail (full screen from carousel) | Full content for guests; hero photos/map toggle; heart Save gated | Same + Save when `canFavorite` |
 | Save / follow / alerts | Tap → sign-in modal | Enabled, “coming soon”, or soft-disabled with human copy |
-| Hub tab | Sign-in to manage a listing | User’s listing(s) or honest empty |
 | Favorites tab | Sign-in to see saved list | Saved places or honest empty |
-| Profile tab | Settings without account (appearance, legal) + sign-in upsell | Identity, account rows, same preferences & legal, sign out |
+| Account tab | Quiet Account: perk invite join card (dual CTAs + doodle), settings, help/legal | Console: identity, host card, visitor tools, settings, session |
 
 Backend `interaction` fields (`canFavorite`, `reason`, etc.) are **implementation only**. Map them to user-facing copy in one place (i18n / a small copy helper). **Never** render `reason` or contract keys in JSX.
 
@@ -103,59 +102,58 @@ Cards look **equally tappable** for everyone. Tapping opens the **full-screen pl
 
 ## Tabs
 
+**Chrome shell:** iOS system `NativeTabs`; Android centered floating pill tab bar (`Surface` + haptics). Map carousel / overlays clear the floating pill on Android — see [layout-contracts/tabs-chrome.md](layout-contracts/tabs-chrome.md).
+
 ### Page chrome (all tabs)
 
 - **Title** — matches bottom tab label; appears **once** on the screen.
 - **Subtitle** — one muted line: what this tab is for.
-- **Inset & rhythm** — same horizontal padding and section gaps on Hub, Favorites, Profile.
+- **Inset & rhythm** — same horizontal padding and section gaps on Favorites and Account.
 
-### Guest sign-in block (Hub + Favorites)
+### Guest sign-in block (Favorites)
 
-Used only when the tab’s main value needs an account:
+Used when Favorites’ main value needs an account:
 
 - Sits **directly under** the subtitle (top of content). **Not** vertically centered on the empty screen.
-- Icon + **headline** (what you’ll do after sign-in) + **one sentence** (why) + full-width primary **“Log in or sign up”**.
+- Shared `GuestAuthCard`: icon + headline + one sentence + full-width **“Log in or sign up”**.
 - Headline **must not** repeat the tab title.
 
-Hub and Favorites **must use the same layout template** — only icon and copy differ.
+Account guest is a separate greenfield landing surface (not this card template). See [account-ux-master.md](account-ux-master.md).
 
-### Profile (guest)
+### Account (guest)
 
-Reads as **Settings**:
+Quiet Account — structurally different from signed-in:
 
-1. Title + short subtitle (settings, account, legal).
-2. Slim **account** upsell (not a giant centered empty-state hero).
-3. **Appearance** — theme (system / light / dark), language — works without login.
-4. **Legal & info** — Terms, Privacy, About — open in browser (CMS origin).
+1. Join invite card (perk title, 3 bullets, Open Doodle, Create account + Log in → auth).
+2. Settings list (language, theme with status → sheets).
+3. Help & legal list + version.
 
-### Profile (signed-in)
+References: [account-references/INDEX.md](account-references/INDEX.md).  
+Contracts: [layout-contracts/account-home-guest.md](layout-contracts/account-home-guest.md). See also [account-ux-master.md](account-ux-master.md).
 
-Same skeleton as guest:
+### Account (signed-in)
 
-1. Title (and optional subtitle if useful).
-2. **Identity** — avatar, name, profile entry.
-3. **Account** — grouped settings rows (stubs OK if not built).
-4. **Appearance** — same as guest.
-5. **Legal** — same as guest.
-6. **Sign out** — visually separated, destructive style.
+Feature-rich console:
+
+1. Identity band → profile.
+2. Next-steps deck when needed; host card (listings / add).
+3. Visitor tools (alerts, home base, reach) + guidelines / data.
+4. Settings, legal links, session (sign out / delete).
+
+Contracts: [layout-contracts/account-home-signed-in.md](layout-contracts/account-home-signed-in.md), [account-listings.md](layout-contracts/account-listings.md), [account-reach.md](layout-contracts/account-reach.md).
 
 ### Favorites (signed-in)
 
-- Same header pattern as Hub signed-in.
-- List of saved places (image, name, type, distance) or inline empty: “Nothing saved yet” + how saving works when the feature exists.
+- Same header rhythm as other tabs.
+- List of saved places or honest empty.
 - Subtitle may describe sort behaviour (e.g. distance from map area).
-
-### Hub (signed-in)
-
-- Same header pattern.
-- User’s listing(s) or inline empty with a path to add when available.
 
 ---
 
 ## Auth (modal)
 
 - Slide-up modal; dismiss returns to the same tab/context.
-- **Start:** logo, short map-first value line, email continue, Google.
+- **Start:** doodle hero (`AUTH_START_DOODLE`), title, short product line, email continue, Google. Contract: [layout-contracts/auth-start.md](layout-contracts/auth-start.md).
 - **Tone:** plain errors; no jargon.
 - **Onboarding:** verify email → welcome → notifications → location (honest about what is and isn’t stored).
 - **Forms:** keyboard-safe; one obvious primary action per step; consistent shell across auth screens.
@@ -181,6 +179,7 @@ All user-visible strings: **English and Dutch** in `apps/core/src/i18n/catalog.t
 
 | Element | Direction |
 |---------|-----------|
+| Brand colors | Moss + warm stone canvas + subtle clay card wash — [brand-colors.md](brand-colors.md) |
 | Screen title | One size/weight app-wide (large semibold) |
 | Subtitle | Muted, one line, body size |
 | Section title | Smaller than screen title, bold, tight gap to content |
@@ -189,10 +188,13 @@ All user-visible strings: **English and Dutch** in `apps/core/src/i18n/catalog.t
 | Settings / legal | Grouped list rows, chevrons where navigable |
 | Sign-in upsell | Compact surface/card under subtitle |
 | Place rows | Card with image + metadata |
-| Primary button | One style app-wide |
+| Primary button | Filled accent (moss); white label |
+| Soft / secondary CTA | `SoftCtaButton`: white + ink label, no border (Thuisbezorgd Create account) |
+| Google CTA | Soft CTA + multicolor `GoogleGlyph` |
+| Invite / join card | Subtle clay wash (`BRAND_INVITE_WASH` / `#F9F6F0`) on stone canvas + moss checkmarks |
 | Empty state | Icon + title + description; full-screen only when the **whole** screen has no other content |
 
-**Themes:** System / light / dark from Profile; applies app-wide.
+**Themes:** System / light / dark from Account; applies app-wide.
 
 ---
 
@@ -205,7 +207,7 @@ Implement in apps/core only. Before coding, read docs/design/mobile-ux-master.md
 
 You are implementing Deelbaar’s mobile UX spec, not patching screens ad hoc. Match the access layers, copy rules, and visual system in that document.
 
-Deliver cohesive UI across Map (cards + preview), Favorites, Hub, Profile, and auth touchpoints. Remove any user-visible system or diagnostic language.
+Deliver cohesive UI across Map (cards + preview), Favorites, Account, and auth touchpoints. Remove any user-visible system or diagnostic language.
 
 When finished, run the checklist below and pnpm --filter @deelbaar/core lint. List files changed.
 ```
@@ -219,11 +221,12 @@ Before marking UX work done:
 - [ ] No `interaction.reason`, `.replaceAll('_')`, “Interaction locked”, or contract keys in JSX
 - [ ] Map carousel cards show no auth/entitlement labels
 - [ ] Place detail screen: hero toggle, no route/footer, human copy (EN + NL)
-- [ ] Hub and Favorites guest share one layout template
-- [ ] Profile guest reads as Settings; signed-in extends same skeleton
+- [ ] Account guest is quiet Account (perk invite dual CTAs + doodle + settings ListGroup + help — not marketing stack)
+- [ ] Account signed-in is identity console + host/visitor tools (structurally different from guest)
+- [ ] Favorites guest uses GuestAuthCard
 - [ ] Sign-in uses modal auth; returns to prior context
 - [ ] `pnpm --filter @deelbaar/core lint` passes
-- [ ] **Layout proof** vs `docs/design/layout-contracts/` (place detail: `place-detail.md`); optional screenshot under `docs/design/` — `.cursor/rules/verify-ui-copy-with-screenshot.mdc`
+- [ ] **Layout proof** vs `docs/design/layout-contracts/` (place detail: `place-detail.md`); live a11y verify via agent-device — `.cursor/rules/verify-ui-copy-with-screenshot.mdc` / `docs/design/agent-visual-verify.md`
 
 ---
 

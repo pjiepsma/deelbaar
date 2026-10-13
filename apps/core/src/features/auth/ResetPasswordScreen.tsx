@@ -10,6 +10,7 @@ import { AuthPath, authPush } from '../../navigation/authPaths';
 import { dismissAuthFlow } from './auth.navigation';
 import { isPasswordValid, normalizeError } from './auth.validation';
 import { AuthScreenShell } from '../../components/shared';
+import { TestId } from '../../testing/testIds';
 
 export function ResetPasswordScreen() {
   const router = useRouter();
@@ -42,6 +43,7 @@ export function ResetPasswordScreen() {
 
   return (
     <AuthScreenShell
+      testID={TestId.screenAuthResetPassword}
       title={t('auth.resetPasswordTitle')}
       description={t('auth.resetPasswordDescription')}
       onBack={() => router.back()}

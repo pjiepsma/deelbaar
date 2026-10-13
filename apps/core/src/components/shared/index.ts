@@ -4,6 +4,7 @@ export { GuestAuthCard } from './guest-auth-card';
 export { ScreenBackChrome } from './screen-back-chrome';
 export { Screen } from './screen';
 export { SectionHeader } from './section-header';
+export { SoftCtaButton } from './soft-cta-button';
 export {
   TAB_SCREEN_CONTENT_BOTTOM_PADDING,
   TAB_SCREEN_HEADER_TOP_GAP,

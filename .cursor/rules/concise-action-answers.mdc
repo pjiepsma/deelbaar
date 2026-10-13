@@ -17,6 +17,6 @@ alwaysApply: true
 
 **One** clarifying sentence max when needed.
 
-**Handoff / PR / done:** same cap unless they asked for a full write-up. Layout proof = **Layout proof** block (see `verify-ui-copy-with-screenshot.mdc`), not a narrative.
+**Handoff / PR / done:** same cap unless they asked for a full write-up. Layout proof + live a11y asserts (see `verify-ui-copy-with-screenshot.mdc`), not a narrative.
 
 If they say **SHORT**, **compact**, or **stop the essay**: next reply **≤4 lines**.

@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import { View, type ViewProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { tabScreenBottomPadding } from '../../navigation/tabBarClearance';
+
 export interface ScreenProps extends ViewProps {
   children: ReactNode;
   withTabBarSpacing?: boolean;
@@ -24,7 +26,7 @@ export function Screen({
       style={[
         {
           paddingTop: insets.top,
-          paddingBottom: withTabBarSpacing ? 0 : insets.bottom,
+          paddingBottom: tabScreenBottomPadding(withTabBarSpacing, insets.bottom),
           paddingHorizontal: horizontalPadding,
         },
         style,

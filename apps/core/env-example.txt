@@ -16,12 +16,12 @@ EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID=your-google-ios-client-id.apps.googleuserconten
 # 3. Rebuild native app: pnpm prebuild --platform android && pnpm android  (or EAS dev build)
 # 4. CMS sends via firebase-admin + service account (apps/cms/.env FIREBASE_*); app stores FCM device token + pushPlatform.
 
-# HeroUI Native Pro — monorepo setup (https://heroui.pro/docs/native/getting-started/installation)
-# 1. Local: npx heroui-pro login  (once; browser GitHub auth)
-# 2. From repo root: pnpm install  (pnpm-workspace.yaml dangerouslyAllowAllBuilds allows postinstall)
-# 3. If heroui-native-pro/lib/ missing after install (tsc/Metro can't resolve Pro):
-#      node node_modules/heroui-native-pro/dist/postinstall/index.js
-#    (heroui-pro install often fails in this workspace — manual postinstall is the fallback)
-# 4. CI/EAS: set HEROUI_AUTH_TOKEN from https://heroui.pro/dashboard (not personal token)
-# 5. Imports: use granular subpaths (heroui-native-pro/stepper, /empty-state, …) — not barrel
-#    from 'heroui-native-pro' unless @shopify/react-native-skia is installed (chart components).
+# HeroUI Native Pro — https://docs.heroui.pro/docs/native/getting-started/installation
+# Put tokens in apps/core/.env (never apps/cms/.env). Not EXPO_PUBLIC.
+HEROUI_AUTH_TOKEN=your-cicd-token-from-heroui-dashboard
+HEROUI_PERSONAL_TOKEN=your-personal-token-from-heroui-dashboard
+# Cursor Pro MCP: copy Personal Token into gitignored .cursor/mcp.json
+#   (see https://heroui.pro/docs/native/getting-started/mcp-server). Reload MCP after edit.
+# Local: npx heroui-pro login once. CI/EAS: HEROUI_AUTH_TOKEN secret.
+# Imports: heroui-native-pro/stepper, /empty-state, … — not barrel unless Skia installed.
+

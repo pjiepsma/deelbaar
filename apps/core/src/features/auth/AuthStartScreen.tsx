@@ -1,9 +1,13 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Alert, Button, FieldError, Input, TextField, useThemeColor } from 'heroui-native';
+import { Alert, Button, FieldError, Input, Label, TextField, useThemeColor } from 'heroui-native';
 import { useMemo, useState } from 'react';
 import { Platform, Text, View } from 'react-native';
 
+import { DoodleImage } from '../../branding/DoodleImage';
+import { GoogleGlyph } from '../../branding/GoogleGlyph';
+import { AUTH_START_DOODLE, AUTH_START_DOODLE_SIZE } from '../../branding/doodles';
+import { AuthScreenShell, SoftCtaButton } from '../../components/shared';
+import { TestId } from '../../testing/testIds';
 import { useAuth } from '../../context/AuthContext';
 import { useLocale } from '../../context/LocaleContext';
 import { loginWithGoogleIdToken, lookupEmailRegistered } from '../../lib/api/auth/authClient';
@@ -16,9 +20,7 @@ import {
   authSignUpHref,
 } from '../../navigation/authPaths';
 import { dismissAuthFlow } from './auth.navigation';
-import { AuthScreenShell } from '../../components/shared';
 import { isEmailValid, normalizeEmail, normalizeError } from './auth.validation';
-import { DeelbaarLogo } from './DeelbaarLogo';
 
 const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
 const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
@@ -50,9 +52,6 @@ export function AuthStartScreen() {
   const router = useRouter();
   const { applyAuthResponse, pendingNotificationsAfterLogin } = useAuth();
   const { t } = useLocale();
-  const logoColor = useThemeColor('foreground');
-  const mutedColor = useThemeColor('muted');
-  const googleChromeColor = useThemeColor('foreground');
   const [email, setEmail] = useState('');
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
@@ -118,28 +117,36 @@ export function AuthStartScreen() {
 
   return (
     <AuthScreenShell
-      layout="centered"
+      testID={TestId.screenAuthStart}
+      layout="default"
       title={t('auth.loginOrSignUp')}
       titlePresentation="plain"
-      titleAlign="center"
+      titleAlign="left"
       onBack={() => router.back()}
       backAccessibilityLabel={t('listing.back')}
       leading={
-        <View className="items-center pb-5">
-          <DeelbaarLogo color={logoColor} />
-          <Text style={{ marginTop: 14, color: mutedColor, fontSize: 14, textAlign: 'center', paddingHorizontal: 8 }}>
-            {t('auth.valueProp')}
-          </Text>
+        <View className="items-center pb-4 pt-2">
+          <DoodleImage
+            id={AUTH_START_DOODLE}
+            size={AUTH_START_DOODLE_SIZE}
+            accessibilityLabel={t('auth.startArtA11y')}
+          />
         </View>
       }
     >
+      <Text className="text-muted mb-5 text-base">{t('auth.valueProp')}</Text>
+
       <View className="gap-4">
         <View className="gap-3">
           <TextField isInvalid={hasEmailError}>
+            <Label>{t('auth.emailLabel')}</Label>
             <Input
+              testID={TestId.fieldAuthEmail}
               placeholder={t('auth.emailPlaceholder')}
               keyboardType="email-address"
               autoCapitalize="none"
+              autoComplete="email"
+              textContentType="emailAddress"
               value={email}
               onChangeText={setEmail}
               returnKeyType="next"
@@ -153,32 +160,28 @@ export function AuthStartScreen() {
             {hasEmailError ? <FieldError>{t('auth.validEmailFieldError')}</FieldError> : null}
           </TextField>
           <Button
+            testID={TestId.btnAuthContinue}
             variant="primary"
             onPress={onContinue}
             isDisabled={isContinueDisabled}
             accessibilityLabel={t('auth.continue')}
           >
-            {isCheckingEmail ? t('auth.checkingEmail') : t('auth.continue')}
+            <Button.Label>
+              {isCheckingEmail ? t('auth.checkingEmail') : t('auth.continue')}
+            </Button.Label>
           </Button>
         </View>
 
-        <View className="gap-3 pt-4">
+        <View className="gap-3 pt-2">
           <AuthStartDivider label={t('auth.orDivider')} />
-          <Button
-            variant="outline"
+          <SoftCtaButton
+            testID={TestId.btnAuthGoogle}
             onPress={onContinueWithGoogle}
             isDisabled={isCheckingEmail || isGoogleSubmitting}
             accessibilityLabel={t('auth.continueWithGoogle')}
-          >
-            <Button.Label>
-              <View className="flex-row items-center gap-3">
-                <MaterialCommunityIcons name="google" size={20} color={googleChromeColor} />
-                <Text style={{ fontSize: 17, fontWeight: '500', color: googleChromeColor }}>
-                  {isGoogleSubmitting ? t('auth.connectingGoogle') : t('auth.continueWithGoogle')}
-                </Text>
-              </View>
-            </Button.Label>
-          </Button>
+            startIcon={<GoogleGlyph />}
+            label={isGoogleSubmitting ? t('auth.connectingGoogle') : t('auth.continueWithGoogle')}
+          />
         </View>
       </View>
 

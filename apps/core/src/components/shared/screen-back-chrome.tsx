@@ -4,6 +4,7 @@ import { View } from 'react-native';
 
 import { PLACE_DETAIL_HORIZONTAL_PADDING } from '../../features/listings/placeDetail.constants';
 import { HeroChromeButton } from '../../features/listings/HeroChromeButton';
+import { TestId } from '../../testing/testIds';
 
 const TOP_CHROME_PADDING = 8;
 
@@ -23,7 +24,11 @@ export function ScreenBackChrome({ onBack, accessibilityLabel }: ScreenBackChrom
         paddingHorizontal: PLACE_DETAIL_HORIZONTAL_PADDING,
       }}
     >
-      <HeroChromeButton onPress={onBack} accessibilityLabel={accessibilityLabel}>
+      <HeroChromeButton
+        testID={TestId.btnBack}
+        onPress={onBack}
+        accessibilityLabel={accessibilityLabel}
+      >
         <Ionicons name="arrow-back" size={22} color="#1A1A1A" />
       </HeroChromeButton>
     </View>

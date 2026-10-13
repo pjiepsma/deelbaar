@@ -1,3 +1,4 @@
+import { Fredoka_700Bold } from '@expo-google-fonts/fredoka';
 import {
   Nunito_300Light,
   Nunito_400Regular,
@@ -21,6 +22,7 @@ export function FontGate({ children }: PropsWithChildren) {
     Nunito_500Medium,
     Nunito_600SemiBold,
     Nunito_700Bold,
+    Fredoka_700Bold,
   });
 
   useEffect(() => {

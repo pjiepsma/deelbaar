@@ -1,12 +1,12 @@
 ---
-description: UI done = lint + layout contract math + optional screenshot; screenshot alone never passes layout
+description: UI done = lint + layout proof + agent-device a11y assert; no screenshot/capture pipeline
 globs: apps/core/**/*
 alwaysApply: true
 ---
 
-# Verify UI (contract first)
+# Verify UI (contract + live a11y)
 
-When you **finish** any `apps/core` screen, overlay, or flow with **layout or copy**:
+When you **finish** any `apps/core` screen, overlay, or flow with **layout or copy** — or when the user reports a **visual/layout bug**:
 
 ## 1. Always (blocks “done”)
 
@@ -14,32 +14,40 @@ When you **finish** any `apps/core` screen, overlay, or flow with **layout or co
 2. **Metro** — no `ERROR` / redbox / `Missing i18n path`
 3. **i18n** — every `t('…')` in the diff exists in **`en`** and **`nl`** in `catalog.ts`
 
-## 2. Layout (blocks “done” — no screenshot required)
+## 2. Layout (blocks “done”)
 
 4. Read the **layout contract** for that screen under `docs/design/layout-contracts/` (or formulas in the task). If none exists for a new screen, add one before handoff.
-5. **Prove invariants in code** — paste a **Layout proof** block (numbers from constants + `sheetTop` / `bottom` / heights). Example: `sheetTop = H - 24`; chrome `bottom` must be **≥ 24 + controlHeight + gap`; cite constant names.
+5. **Prove invariants in code** — paste a **Layout proof** block (numbers from constants + `sheetTop` / `bottom` / heights). Cite constant names.
 6. **One source of truth** — hero/sheet insets use shared derived constants, not conflicting magic numbers in the same feature.
-7. Check [mobile-ux-master.md](../../docs/design/mobile-ux-master.md) and any **pinned reference** image named in the task (`docs/design/*-reference.png`).
+7. Check [mobile-ux-master.md](../../docs/design/mobile-ux-master.md) and any pinned reference named in the task.
 
-**Forbidden for layout pass:** lint only, UI XML dump, file hash, “looks fine”, or screenshot without Layout proof.
+**Forbidden for layout pass:** lint only, file hash, “looks fine”, or guessing from chat without live evidence.
 
-## 3. Screenshot (optional — does not replace §2)
+## 3. Live verify — agent-device (blocks “done” for design / UI bugs)
 
-8. If a device is running and layout/copy is in scope: `./scripts/capture-ui-review.ps1 -Name <state>` → read `docs/design/review-<name>.png` in the same turn.
-9. If no device: say so; **do not** claim visual pass.
+**No screenshots. No `capture-ui-review.ps1`. No PNG evidence pipeline.**
+
+8. With Metro + Android emulator (or device) up: use **`agent-device`** to open the app, reach the target screen (press / deep-link), take an **accessibility snapshot**, and **assert** labels, roles, order, enabled state, and **rect sizes** (px→dp on Android) against the design/contract.
+9. Emulator/Metro down → say blocked; **do not** claim visual pass; **do not** speculative UI patch.
 
 ```markdown
 ### Layout proof
 - **Contract:** `docs/design/layout-contracts/<file>.md`
 - **Formulas:** (e.g. H, R, bottom inset, pass/fail per row)
 
-### Screenshot review (if captured)
-- **Captures:** `review-*.png` / `verify-*.png`
-- **State:** screen + guest/signed-in + mode
-- **Pass/fail:** one line per criterion
+### Live a11y verify
+- **Tool:** agent-device snapshot (interactive)
+- **State:** screen + guest/signed-in
+- **Asserts:** one line per criterion (label / size / order)
 ```
 
-Re-capture after layout fixes if you use screenshots.
+See [docs/design/agent-visual-verify.md](../../docs/design/agent-visual-verify.md) and speed rules in [docs/design/agent-device-fast.md](../../docs/design/agent-device-fast.md).
+
+## Bug reports (“button too small”, spacing wrong)
+
+1. **Forbidden:** UI edit from description alone.
+2. **Before edit:** agent-device → snapshot → identify the node (tree order + rects) → prove cause in code.
+3. **After edit:** re-snapshot + assert; layout proof if spacing.
 
 ## When this applies
 

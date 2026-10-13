@@ -1,12 +1,14 @@
 import { Card } from 'heroui-native';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { FlatList, useWindowDimensions, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { tabBarOverlayClearance } from '../../navigation/tabBarClearance';
 import {
   MAP_LISTING_CARD_GAP,
   MAP_LISTING_CARD_HEIGHT,
-  MAP_LISTING_CAROUSEL_BOTTOM_PADDING,
   MAP_OVERLAY_HORIZONTAL_PADDING,
+  mapListingCarouselBottom,
   mapListingCarouselCardWidth,
 } from './map.constants';
 import { MapListingCarouselCard } from './MapListingCarouselCard';
@@ -47,6 +49,8 @@ export function MapListingCarousel({
   onCarouselSnap,
 }: Props) {
   const { width: screenWidth } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const carouselBottom = mapListingCarouselBottom(tabBarOverlayClearance(insets.bottom));
   const cardWidth = mapListingCarouselCardWidth(screenWidth);
   const snapInterval = cardWidth + MAP_LISTING_CARD_GAP;
   const listRef = useRef<FlatList<MapListingCard | MapListingCardPlaceholder>>(null);
@@ -113,7 +117,7 @@ export function MapListingCarousel({
         position: 'absolute',
         left: 0,
         right: 0,
-        bottom: MAP_LISTING_CAROUSEL_BOTTOM_PADDING,
+        bottom: carouselBottom,
       }}
     >
       {fetchError ? (

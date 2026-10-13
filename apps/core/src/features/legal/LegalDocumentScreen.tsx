@@ -9,6 +9,7 @@ import { fetchCmsLegalPage } from '../../lib/legal/fetchCmsLegalPage';
 import type { CmsLegalDocument, CmsLegalPage } from '../../lib/legal/cmsLegal.types';
 import { firstRouteParam } from '../../navigation/routeParams';
 import { ScreenBackChrome } from '../../components/shared/screen-back-chrome';
+import { TestId } from '../../testing/testIds';
 
 function parseLegalPage(raw: string | undefined): CmsLegalPage {
   if (raw === 'terms' || raw === 'privacy' || raw === 'about') {
@@ -48,7 +49,7 @@ export function LegalDocumentScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-background">
+      <View testID={TestId.screenLegal} className="flex-1 bg-background">
         <ScreenBackChrome onBack={() => router.back()} accessibilityLabel={t('listing.back')} />
         <View className="flex-1 items-center justify-center">
           <Spinner size="lg" />
@@ -59,7 +60,7 @@ export function LegalDocumentScreen() {
 
   if (error || !document) {
     return (
-      <View className="flex-1 bg-background">
+      <View testID={TestId.screenLegal} className="flex-1 bg-background">
         <ScreenBackChrome onBack={() => router.back()} accessibilityLabel={t('listing.back')} />
         <View className="flex-1 px-4" style={{ paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }}>
           <Text className="text-foreground text-lg font-semibold">{t('legal.unavailableTitle')}</Text>
@@ -70,7 +71,7 @@ export function LegalDocumentScreen() {
   }
 
   return (
-    <View className="flex-1 bg-background">
+    <View testID={TestId.screenLegal} className="flex-1 bg-background">
       <ScreenBackChrome onBack={() => router.back()} accessibilityLabel={t('listing.back')} />
       <ScrollView
         className="flex-1 bg-background"
